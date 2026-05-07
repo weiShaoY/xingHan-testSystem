@@ -1,9 +1,74 @@
 <!-- 设置面板 -->
+<script setup lang="ts">
+import { useSettingsPanel } from './composables/useSettingsPanel'
+
+import BasicSettings from './widget/BasicSettings.vue'
+
+import BoxStyleSettings from './widget/BoxStyleSettings.vue'
+
+import ColorSettings from './widget/ColorSettings.vue'
+
+import ContainerSettings from './widget/ContainerSettings.vue'
+
+import MenuLayoutSettings from './widget/MenuLayoutSettings.vue'
+
+import MenuStyleSettings from './widget/MenuStyleSettings.vue'
+
+import SettingActions from './widget/SettingActions.vue'
+
+import SettingDrawer from './widget/SettingDrawer.vue'
+
+import SettingHeader from './widget/SettingHeader.vue'
+
+import ThemeSettings from './widget/ThemeSettings.vue'
+
+defineOptions({
+  name: 'ArtSettingsPanel',
+})
+
+const props = defineProps<Props>()
+
+type Props = {
+
+  /** 是否打开 */
+  open?: boolean
+}
+
+// 使用设置面板逻辑
+const settingsPanel = useSettingsPanel()
+
+const { showDrawer } = settingsPanel
+
+// 获取各种处理器
+const { handleOpen, handleClose, closeDrawer } = settingsPanel.useDrawerControl()
+
+const { initializeSettings, cleanupSettings } = settingsPanel.useSettingsInitializer()
+
+// 监听 props 变化
+settingsPanel.usePropsWatcher(props)
+
+onMounted(() => {
+  initializeSettings()
+})
+
+onUnmounted(() => {
+  cleanupSettings()
+})
+</script>
+
 <template>
-  <div class="layout-settings">
-    <SettingDrawer v-model="showDrawer" @open="handleOpen" @close="handleClose">
+  <div
+    class="layout-settings"
+  >
+    <SettingDrawer
+      v-model="showDrawer"
+      @open="handleOpen"
+      @close="handleClose"
+    >
       <!-- 头部关闭按钮 -->
-      <SettingHeader @close="closeDrawer" />
+      <SettingHeader
+        @close="closeDrawer"
+      />
       <!-- 主题风格 -->
       <ThemeSettings />
       <!-- 菜单布局 -->
@@ -23,49 +88,6 @@
     </SettingDrawer>
   </div>
 </template>
-
-<script setup lang="ts">
-  import { useSettingsPanel } from './composables/useSettingsPanel'
-
-  import SettingDrawer from './widget/SettingDrawer.vue'
-  import SettingHeader from './widget/SettingHeader.vue'
-  import ThemeSettings from './widget/ThemeSettings.vue'
-  import MenuLayoutSettings from './widget/MenuLayoutSettings.vue'
-  import MenuStyleSettings from './widget/MenuStyleSettings.vue'
-  import ColorSettings from './widget/ColorSettings.vue'
-  import BoxStyleSettings from './widget/BoxStyleSettings.vue'
-  import ContainerSettings from './widget/ContainerSettings.vue'
-  import BasicSettings from './widget/BasicSettings.vue'
-  import SettingActions from './widget/SettingActions.vue'
-
-  defineOptions({ name: 'ArtSettingsPanel' })
-
-  interface Props {
-    /** 是否打开 */
-    open?: boolean
-  }
-
-  const props = defineProps<Props>()
-
-  // 使用设置面板逻辑
-  const settingsPanel = useSettingsPanel()
-  const { showDrawer } = settingsPanel
-
-  // 获取各种处理器
-  const { handleOpen, handleClose, closeDrawer } = settingsPanel.useDrawerControl()
-  const { initializeSettings, cleanupSettings } = settingsPanel.useSettingsInitializer()
-
-  // 监听 props 变化
-  settingsPanel.usePropsWatcher(props)
-
-  onMounted(() => {
-    initializeSettings()
-  })
-
-  onUnmounted(() => {
-    cleanupSettings()
-  })
-</script>
 
 <style lang="scss">
   @use './style';

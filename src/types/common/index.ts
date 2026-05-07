@@ -53,13 +53,13 @@ export type KeyValue<T = any> = {
 }
 
 // 时间范围类型
-export interface TimeRange {
+export type TimeRange = {
   startTime: string
   endTime: string
 }
 
 // 文件类型
-export interface FileInfo {
+export type FileInfo = {
   name: string
   url: string
   size: number
@@ -68,13 +68,13 @@ export interface FileInfo {
 }
 
 // 坐标类型
-export interface Position {
+export type Position = {
   x: number
   y: number
 }
 
 // 尺寸类型
-export interface Size {
+export type Size = {
   width: number
   height: number
 }

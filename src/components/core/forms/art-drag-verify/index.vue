@@ -335,96 +335,96 @@
 
 <style lang="scss" scoped>
   .drag_verify {
-    position: relative;
-    box-sizing: border-box;
-    overflow: hidden;
-    text-align: center;
-    border: 1px solid var(--default-border-dashed);
+  position: relative;
+  box-sizing: border-box;
+  overflow: hidden;
+  text-align: center;
+  border: 1px solid var(--default-border-dashed);
 
-    .dv_handler {
-      position: absolute;
-      top: 0;
-      left: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: move;
+  .dv_handler {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: move;
 
-      i {
-        padding-left: 0;
-        font-size: 14px;
-        color: #999;
-      }
-
-      .el-icon-circle-check {
-        margin-top: 9px;
-        color: #6c6;
-      }
+    i {
+      padding-left: 0;
+      font-size: 14px;
+      color: #999;
     }
 
-    .dv_progress_bar {
-      position: absolute;
-      width: 0;
-      height: 34px;
-    }
-
-    .dv_text {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: transparent;
-      user-select: none;
-      background: linear-gradient(
-        to right,
-        var(--textColor) 0%,
-        var(--textColor) 40%,
-        #fff 50%,
-        var(--textColor) 60%,
-        var(--textColor) 100%
-      );
-      -webkit-background-clip: text;
-      background-clip: text;
-      animation: slidetounlock 2s cubic-bezier(0, 0.2, 1, 1) infinite;
-      -webkit-text-fill-color: transparent;
-      text-size-adjust: none;
-
-      * {
-        -webkit-text-fill-color: var(--textColor);
-      }
+    .el-icon-circle-check {
+      margin-top: 9px;
+      color: #6c6;
     }
   }
 
-  .goFirst {
-    left: 0 !important;
-    transition: left 0.5s;
+  .dv_progress_bar {
+    position: absolute;
+    width: 0;
+    height: 34px;
   }
 
-  .goFirst2 {
-    width: 0 !important;
-    transition: width 0.5s;
+  .dv_text {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: transparent;
+    user-select: none;
+    background: linear-gradient(
+      to right,
+      var(--textColor) 0%,
+      var(--textColor) 40%,
+      #fff 50%,
+      var(--textColor) 60%,
+      var(--textColor) 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    animation: slidetounlock 2s cubic-bezier(0, 0.2, 1, 1) infinite;
+    -webkit-text-fill-color: transparent;
+    text-size-adjust: none;
+
+    * {
+      -webkit-text-fill-color: var(--textColor);
+    }
   }
+}
+
+.goFirst {
+  left: 0 !important;
+  transition: left 0.5s;
+}
+
+.goFirst2 {
+  width: 0 !important;
+  transition: width 0.5s;
+}
 </style>
 
 <style lang="scss">
   @keyframes slidetounlock {
-    0% {
-      background-position: var(--pwidth) 0;
-    }
-
-    100% {
-      background-position: var(--width) 0;
-    }
+  0% {
+    background-position: var(--pwidth) 0;
   }
 
-  @keyframes slidetounlock2 {
-    0% {
-      background-position: var(--pwidth) 0;
-    }
-
-    100% {
-      background-position: var(--pwidth) 0;
-    }
+  100% {
+    background-position: var(--width) 0;
   }
+}
+
+@keyframes slidetounlock2 {
+  0% {
+    background-position: var(--pwidth) 0;
+  }
+
+  100% {
+    background-position: var(--pwidth) 0;
+  }
+}
 </style>

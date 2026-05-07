@@ -8,10 +8,14 @@
  */
 
 import type { Router, RouteRecordRaw } from 'vue-router'
+
 import type { AppRouteRecord } from '@/types/router'
+
 import { ComponentLoader } from './ComponentLoader'
-import { RouteValidator } from './RouteValidator'
+
 import { RouteTransformer } from './RouteTransformer'
+
+import { RouteValidator } from './RouteValidator'
 
 export class RouteRegistry {
   private router: Router
@@ -39,6 +43,7 @@ export class RouteRegistry {
 
     // 验证路由配置
     const validationResult = this.validator.validate(menuList)
+
     if (!validationResult.valid) {
       throw new Error(`路由配置验证失败: ${validationResult.errors.join(', ')}`)
     }
@@ -49,7 +54,9 @@ export class RouteRegistry {
     menuList.forEach((route) => {
       if (route.name && !this.router.hasRoute(route.name)) {
         const routeConfig = this.transformer.transform(route)
+
         const removeRouteFn = this.router.addRoute(routeConfig as RouteRecordRaw)
+
         removeRouteFns.push(removeRouteFn)
       }
     })
@@ -62,7 +69,7 @@ export class RouteRegistry {
    * 移除所有动态路由
    */
   unregister(): void {
-    this.removeRouteFns.forEach((fn) => fn())
+    this.removeRouteFns.forEach(fn => fn())
     this.removeRouteFns = []
     this.registered = false
   }

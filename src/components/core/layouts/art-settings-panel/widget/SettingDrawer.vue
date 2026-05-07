@@ -1,8 +1,43 @@
+<script setup lang="ts">
+type Props = {
+  modelValue: boolean
+}
+
+type Emits = {
+  (e: 'update:modelValue', value: boolean): void
+  (e: 'open'): void
+  (e: 'close'): void
+}
+
+const props = defineProps<Props>()
+
+const emit = defineEmits<Emits>()
+
+const visible = computed({
+  get: () => props.modelValue,
+  set: (value: boolean) => emit('update:modelValue', value),
+})
+
+function handleOpen() {
+  emit('open')
+}
+
+function handleDrawerClose() {
+  emit('close')
+}
+
+function handleClose() {
+  visible.value = false
+}
+</script>
+
 <template>
-  <div class="setting-drawer">
+  <div
+    class="setting-drawer"
+  >
     <ElDrawer
-      size="300px"
       v-model="visible"
+      size="300px"
       :lock-scroll="true"
       :with-header="false"
       :before-close="handleClose"
@@ -11,41 +46,11 @@
       @open="handleOpen"
       @close="handleDrawerClose"
     >
-      <div class="drawer-con">
+      <div
+        class="drawer-con"
+      >
         <slot />
       </div>
     </ElDrawer>
   </div>
 </template>
-
-<script setup lang="ts">
-  interface Props {
-    modelValue: boolean
-  }
-
-  interface Emits {
-    (e: 'update:modelValue', value: boolean): void
-    (e: 'open'): void
-    (e: 'close'): void
-  }
-
-  const props = defineProps<Props>()
-  const emit = defineEmits<Emits>()
-
-  const visible = computed({
-    get: () => props.modelValue,
-    set: (value: boolean) => emit('update:modelValue', value)
-  })
-
-  const handleOpen = () => {
-    emit('open')
-  }
-
-  const handleDrawerClose = () => {
-    emit('close')
-  }
-
-  const handleClose = () => {
-    visible.value = false
-  }
-</script>

@@ -30,19 +30,27 @@
  * @author Art Design Pro Team
  */
 
-import { useRoute } from 'vue-router'
-import { storeToRefs } from 'pinia'
-import { useAdminUserStore } from '@/store/modules/adminUser'
-import { useClientUserStore } from '@/store/modules/clientUser'
-import { useAppMode } from '@/hooks/core/useAppMode'
 import type { AppRouteRecord } from '@/types/router'
+
+import { storeToRefs } from 'pinia'
+
+import { useRoute } from 'vue-router'
+
+import { useAppMode } from '@/hooks/core/useAppMode'
+
+import { useAdminUserStore } from '@/store/modules/adminUser'
+
+import { useClientUserStore } from '@/store/modules/clientUser'
 
 type AuthItem = NonNullable<AppRouteRecord['meta']['authList']>[number]
 
-export const useAuth = () => {
+export function useAuth() {
   const route = useRoute()
+
   const userStore = route.path.startsWith('/client') ? useClientUserStore() : useAdminUserStore()
+
   const { isFrontendMode } = useAppMode()
+
   const { info } = storeToRefs(userStore)
 
   // 后端路由 meta 配置的权限列表（例如：[{ authMark: 'add' }]）
@@ -62,10 +70,10 @@ export const useAuth = () => {
     }
 
     // 后端模式
-    return backendAuthList.some((item) => item?.authMark === auth)
+    return backendAuthList.some(item => item?.authMark === auth)
   }
 
   return {
-    hasAuth
+    hasAuth,
   }
 }

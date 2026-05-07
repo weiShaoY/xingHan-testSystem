@@ -1,5 +1,6 @@
-import { useSettingStore } from '@/store/modules/setting'
 import { MenuThemeEnum, MenuTypeEnum } from '@/enums/appEnum'
+
+import { useSettingStore } from '@/store/modules/setting'
 
 /**
  * 设置状态管理
@@ -11,6 +12,7 @@ export function useSettingsState() {
   const initColorWeak = () => {
     if (settingStore.colorWeak) {
       const el = document.getElementsByTagName('html')[0]
+
       setTimeout(() => {
         el.classList.add('color-weak')
       }, 100)
@@ -22,6 +24,7 @@ export function useSettingsState() {
     if (type === MenuTypeEnum.LEFT || type === MenuTypeEnum.TOP_LEFT) {
       settingStore.setMenuOpen(true)
     }
+
     settingStore.switchMenuLayouts(type)
     if (type === MenuTypeEnum.DUAL_MENU) {
       settingStore.switchMenuStyles(MenuThemeEnum.DESIGN)
@@ -32,6 +35,6 @@ export function useSettingsState() {
   return {
     // 方法
     initColorWeak,
-    switchMenuLayouts
+    switchMenuLayouts,
   }
 }

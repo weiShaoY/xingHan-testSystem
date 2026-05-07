@@ -1,3 +1,5 @@
+import type { AppRouteRecord } from '@/types/router'
+
 /**
  * 菜单状态管理模块
  *
@@ -29,10 +31,12 @@
  * @author Art Design Pro Team
  */
 import { defineStore } from 'pinia'
+
 import { ref } from 'vue'
-import { AppRouteRecord } from '@/types/router'
-import { getFirstMenuPath } from '@/utils'
+
 import { HOME_PAGE_PATH } from '@/routers'
+
+import { getFirstMenuPath } from '@/utils'
 
 /**
  * 菜单状态管理
@@ -41,10 +45,13 @@ import { HOME_PAGE_PATH } from '@/routers'
 export const useMenuStore = defineStore('menuStore', () => {
   /** 首页路径 */
   const homePath = ref(HOME_PAGE_PATH)
+
   /** 菜单列表 */
   const menuList = ref<AppRouteRecord[]>([])
+
   /** 菜单宽度 */
   const menuWidth = ref('')
+
   /** 存储路由移除函数的数组 */
   const removeRouteFns = ref<(() => void)[]>([])
 
@@ -61,8 +68,10 @@ export const useMenuStore = defineStore('menuStore', () => {
    * 从路径提取一级前缀，例如 /admin/dashboard -> /admin
    */
   const getPathRootPrefix = (path = ''): string => {
-    if (!path || !path.startsWith('/')) return ''
+    if (!path || !path.startsWith('/')) { return '' }
+
     const [firstSegment] = path.split('/').filter(Boolean)
+
     return firstSegment ? `/${firstSegment}` : ''
   }
 
@@ -71,11 +80,14 @@ export const useMenuStore = defineStore('menuStore', () => {
    */
   const getScopedMenuList = (path = ''): AppRouteRecord[] => {
     const allMenus = menuList.value
+
     const rootPrefix = getPathRootPrefix(path)
-    if (!rootPrefix) return allMenus
+
+    if (!rootPrefix) { return allMenus }
 
     const scopedMenus = allMenus.filter((menu) => {
       const menuPath = String(menu.path || '')
+
       return menuPath === rootPrefix || menuPath.startsWith(`${rootPrefix}/`)
     })
 
@@ -109,7 +121,7 @@ export const useMenuStore = defineStore('menuStore', () => {
    * 执行所有存储的路由移除函数并清空数组
    */
   const removeAllDynamicRoutes = () => {
-    removeRouteFns.value.forEach((fn) => fn())
+    removeRouteFns.value.forEach(fn => fn())
     removeRouteFns.value = []
   }
 
@@ -131,6 +143,6 @@ export const useMenuStore = defineStore('menuStore', () => {
     setHomePath,
     addRemoveRouteFns,
     removeAllDynamicRoutes,
-    clearRemoveRouteFns
+    clearRemoveRouteFns,
   }
 })

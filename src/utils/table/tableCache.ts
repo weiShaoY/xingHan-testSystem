@@ -36,18 +36,22 @@ import { hash } from 'ohash'
 
 // 缓存失效策略枚举
 export enum CacheInvalidationStrategy {
+
   /** 清空所有缓存 */
   CLEAR_ALL = 'clear_all',
+
   /** 仅清空当前查询条件的缓存 */
   CLEAR_CURRENT = 'clear_current',
+
   /** 清空所有分页缓存（保留不同搜索条件的缓存） */
   CLEAR_PAGINATION = 'clear_pagination',
+
   /** 不清除缓存 */
-  KEEP_ALL = 'keep_all'
+  KEEP_ALL = 'keep_all',
 }
 
 // 通用 API 响应接口（兼容不同的后端响应格式）
-export interface ApiResponse<T = unknown> {
+export type ApiResponse<T = unknown> = {
   records?: T[]
   data?: T[]
   total?: number
@@ -57,15 +61,18 @@ export interface ApiResponse<T = unknown> {
 }
 
 // 缓存存储接口
-export interface CacheItem<T> {
+export type CacheItem<T> = {
   data: T[]
   response: ApiResponse<T>
   timestamp: number
   params: string
+
   // 缓存标签，用于分组管理
   tags: Set<string>
+
   // 访问次数（用于 LRU 算法）
   accessCount: number
+
   // 最后访问时间
   lastAccessTime: number
 }
@@ -102,22 +109,25 @@ export class TableCache<T> {
 
     // 添加搜索条件标签
     const searchKeys = Object.keys(params).filter(
-      (key) =>
-        !['current', 'size', 'total'].includes(key) &&
-        params[key] !== undefined &&
-        params[key] !== '' &&
-        params[key] !== null
+      key =>
+        !['current', 'size', 'total'].includes(key)
+        && params[key] !== undefined
+        && params[key] !== ''
+        && params[key] !== null,
     )
 
     if (searchKeys.length > 0) {
-      const searchTag = searchKeys.map((key) => `${key}:${String(params[key])}`).join('|')
+      const searchTag = searchKeys.map(key => `${key}:${String(params[key])}`).join('|')
+
       tags.add(`search:${searchTag}`)
-    } else {
+    }
+    else {
       tags.add('search:default')
     }
 
     // 添加分页标签
     tags.add(`pagination:${params.size || 10}`)
+
     // 添加通用分页标签，用于清理所有分页缓存
     tags.add('pagination')
 
@@ -126,17 +136,19 @@ export class TableCache<T> {
 
   // 🔧 优化：LRU 缓存清理
   private evictLRU(): void {
-    if (this.cache.size <= this.maxSize) return
+    if (this.cache.size <= this.maxSize) { return }
 
     // 找到最少使用的缓存项
     let lruKey = ''
+
     let minAccessCount = Infinity
+
     let oldestTime = Infinity
 
     for (const [key, item] of this.cache.entries()) {
       if (
-        item.accessCount < minAccessCount ||
-        (item.accessCount === minAccessCount && item.lastAccessTime < oldestTime)
+        item.accessCount < minAccessCount
+        || (item.accessCount === minAccessCount && item.lastAccessTime < oldestTime)
       ) {
         lruKey = key
         minAccessCount = item.accessCount
@@ -153,7 +165,9 @@ export class TableCache<T> {
   // 设置缓存
   set(params: unknown, data: T[], response: ApiResponse<T>): void {
     const key = this.generateKey(params)
+
     const tags = this.generateTags(params as Record<string, unknown>)
+
     const now = Date.now()
 
     // 检查是否需要清理
@@ -166,16 +180,17 @@ export class TableCache<T> {
       params: key,
       tags,
       accessCount: 1,
-      lastAccessTime: now
+      lastAccessTime: now,
     })
   }
 
   // 获取缓存
   get(params: unknown): CacheItem<T> | null {
     const key = this.generateKey(params)
+
     const item = this.cache.get(key)
 
-    if (!item) return null
+    if (!item) { return null }
 
     // 检查是否过期
     if (Date.now() - item.timestamp > this.cacheTime) {
@@ -196,8 +211,8 @@ export class TableCache<T> {
 
     for (const [key, item] of this.cache.entries()) {
       // 检查是否包含任意一个标签
-      const hasMatchingTag = tags.some((tag) =>
-        Array.from(item.tags).some((itemTag) => itemTag.includes(tag))
+      const hasMatchingTag = tags.some(tag =>
+        Array.from(item.tags).some(itemTag => itemTag.includes(tag)),
       )
 
       if (hasMatchingTag) {
@@ -212,7 +227,9 @@ export class TableCache<T> {
   // 清除当前搜索条件的缓存
   clearCurrentSearch(params: unknown): number {
     const key = this.generateKey(params)
+
     const deleted = this.cache.delete(key)
+
     return deleted ? 1 : 0
   }
 
@@ -227,9 +244,11 @@ export class TableCache<T> {
   }
 
   // 获取缓存统计信息
-  getStats(): { total: number; size: string; hitRate: string } {
+  getStats(): { total: number, size: string, hitRate: string } {
     const total = this.cache.size
+
     let totalSize = 0
+
     let totalAccess = 0
 
     for (const item of this.cache.values()) {
@@ -240,18 +259,20 @@ export class TableCache<T> {
 
     // 转换为人类可读的大小
     const sizeInKB = (totalSize / 1024).toFixed(2)
+
     const avgHits = total > 0 ? (totalAccess / total).toFixed(1) : '0'
 
     return {
       total,
       size: `${sizeInKB}KB`,
-      hitRate: `${avgHits} avg hits`
+      hitRate: `${avgHits} avg hits`,
     }
   }
 
   // 清理过期缓存
   cleanupExpired(): number {
     let cleanedCount = 0
+
     const now = Date.now()
 
     for (const [key, item] of this.cache.entries()) {

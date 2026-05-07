@@ -27,6 +27,7 @@ export class ComponentLoader {
 
     // 构建可能的路径
     const fullPath = `../../views${componentPath}.vue`
+
     const fullPathWithIndex = `../../views${componentPath}/index.vue`
 
     // 先尝试直接路径，再尝试添加/index的路径
@@ -34,7 +35,7 @@ export class ComponentLoader {
 
     if (!module) {
       console.error(
-        `[ComponentLoader] 未找到组件: ${componentPath}，尝试过的路径: ${fullPath} 和 ${fullPathWithIndex}`
+        `[ComponentLoader] 未找到组件: ${componentPath}，尝试过的路径: ${fullPath} 和 ${fullPathWithIndex}`,
       )
       return this.createErrorComponent(componentPath)
     }
@@ -63,8 +64,9 @@ export class ComponentLoader {
     return () =>
       Promise.resolve({
         render() {
-          return h('div', {})
-        }
+          return h('div', {
+          })
+        },
       })
   }
 
@@ -75,8 +77,10 @@ export class ComponentLoader {
     return () =>
       Promise.resolve({
         render() {
-          return h('div', { class: 'route-error' }, `组件未找到: ${componentPath}`)
-        }
+          return h('div', {
+            class: 'route-error',
+          }, `组件未找到: ${componentPath}`)
+        },
       })
   }
 }

@@ -4,5 +4,5 @@
  */
 export enum RoutesAlias {
   Layout = '/index/index', // 布局容器
-  Login = '/admin/auth/login' // 管理端登录页
+  Login = '/admin/auth/login', // 管理端登录页
 }

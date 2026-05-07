@@ -1,6 +1,7 @@
-/// <reference types="vite/client" />
+// / <reference types="vite/client" />
 
-interface ImportMetaEnv {
+type ImportMetaEnv = {
+
   /** 运行环境 */
   readonly VITE_APP_ENV: 'development' | 'production'
 
@@ -35,6 +36,6 @@ interface ImportMetaEnv {
   readonly VITE_LOCK_ENCRYPT_KEY: string
 }
 
-interface ImportMeta {
+type ImportMeta = {
   readonly env: ImportMetaEnv
 }

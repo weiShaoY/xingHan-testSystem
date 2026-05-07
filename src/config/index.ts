@@ -29,22 +29,36 @@
  * @author Art Design Pro Team
  */
 
-import { MenuThemeEnum, MenuTypeEnum, SystemThemeEnum } from '@/enums/appEnum'
-import { SystemConfig } from '@/types/config'
+import type { SystemConfig } from '@/types/config'
+
+import {
+  MenuThemeEnum,
+  MenuTypeEnum,
+  SystemThemeEnum,
+} from '@/enums/appEnum'
+
 import { configImages } from './assets/images'
+
 import fastEnterConfig from './modules/fastEnter'
+
 import { headerBarConfig } from './modules/headerBar'
 
 const appConfig: SystemConfig = {
   // 系统信息
   systemInfo: {
-    name: '培训系统' // 系统名称
+    name: '培训系统', // 系统名称
   },
+
   // 系统主题
   systemThemeStyles: {
-    [SystemThemeEnum.LIGHT]: { className: '' },
-    [SystemThemeEnum.DARK]: { className: SystemThemeEnum.DARK }
+    [SystemThemeEnum.LIGHT]: {
+      className: '',
+    },
+    [SystemThemeEnum.DARK]: {
+      className: SystemThemeEnum.DARK,
+    },
   },
+
   // 系统主题列表
   settingThemeList: [
     {
@@ -53,7 +67,7 @@ const appConfig: SystemConfig = {
       color: ['#fff', '#fff'],
       leftLineColor: '#EDEEF0',
       rightLineColor: '#EDEEF0',
-      img: configImages.themeStyles.light
+      img: configImages.themeStyles.light,
     },
     {
       name: 'Dark',
@@ -61,7 +75,7 @@ const appConfig: SystemConfig = {
       color: ['#22252A'],
       leftLineColor: '#3F4257',
       rightLineColor: '#3F4257',
-      img: configImages.themeStyles.dark
+      img: configImages.themeStyles.dark,
     },
     {
       name: 'System',
@@ -69,16 +83,34 @@ const appConfig: SystemConfig = {
       color: ['#fff', '#22252A'],
       leftLineColor: '#EDEEF0',
       rightLineColor: '#3F4257',
-      img: configImages.themeStyles.system
-    }
+      img: configImages.themeStyles.system,
+    },
   ],
+
   // 菜单布局列表
   menuLayoutList: [
-    { name: 'Left', value: MenuTypeEnum.LEFT, img: configImages.menuLayouts.vertical },
-    { name: 'Top', value: MenuTypeEnum.TOP, img: configImages.menuLayouts.horizontal },
-    { name: 'Mixed', value: MenuTypeEnum.TOP_LEFT, img: configImages.menuLayouts.mixed },
-    { name: 'Dual Column', value: MenuTypeEnum.DUAL_MENU, img: configImages.menuLayouts.dualColumn }
+    {
+      name: 'Left',
+      value: MenuTypeEnum.LEFT,
+      img: configImages.menuLayouts.vertical,
+    },
+    {
+      name: 'Top',
+      value: MenuTypeEnum.TOP,
+      img: configImages.menuLayouts.horizontal,
+    },
+    {
+      name: 'Mixed',
+      value: MenuTypeEnum.TOP_LEFT,
+      img: configImages.menuLayouts.mixed,
+    },
+    {
+      name: 'Dual Column',
+      value: MenuTypeEnum.DUAL_MENU,
+      img: configImages.menuLayouts.dualColumn,
+    },
   ],
+
   // 菜单主题列表
   themeList: [
     {
@@ -87,7 +119,7 @@ const appConfig: SystemConfig = {
       systemNameColor: 'var(--art-gray-800)',
       iconColor: '#6B6B6B',
       textColor: '#29343D',
-      img: configImages.menuStyles.design
+      img: configImages.menuStyles.design,
     },
     {
       theme: MenuThemeEnum.DARK,
@@ -95,7 +127,7 @@ const appConfig: SystemConfig = {
       systemNameColor: '#D9DADB',
       iconColor: '#BABBBD',
       textColor: '#BABBBD',
-      img: configImages.menuStyles.dark
+      img: configImages.menuStyles.dark,
     },
     {
       theme: MenuThemeEnum.LIGHT,
@@ -103,9 +135,10 @@ const appConfig: SystemConfig = {
       systemNameColor: 'var(--art-gray-800)',
       iconColor: '#6B6B6B',
       textColor: '#29343D',
-      img: configImages.menuStyles.light
-    }
+      img: configImages.menuStyles.light,
+    },
   ],
+
   // 暗黑模式菜单样式
   darkMenuStyles: [
     {
@@ -113,9 +146,10 @@ const appConfig: SystemConfig = {
       background: 'var(--default-box-color)',
       systemNameColor: '#DDDDDD',
       iconColor: '#BABBBD',
-      textColor: 'rgba(#FFFFFF, 0.7)'
-    }
+      textColor: 'rgba(#FFFFFF, 0.7)',
+    },
   ],
+
   // 系统主色
   systemMainColor: [
     '#5D87FF',
@@ -124,12 +158,14 @@ const appConfig: SystemConfig = {
     '#60C041',
     '#38C0FC',
     '#F9901F',
-    '#FF80C8'
+    '#FF80C8',
   ] as const,
+
   // 快速入口配置
   fastEnter: fastEnterConfig,
+
   // 顶部栏功能配置
-  headerBar: headerBarConfig
+  headerBar: headerBarConfig,
 }
 
 export default Object.freeze(appConfig)

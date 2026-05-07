@@ -1,4 +1,4 @@
-import { AppRouteRecord } from '@/types/router'
+import type { AppRouteRecord } from '@/types/router'
 
 export const safeguardRoutes: AppRouteRecord = {
   path: 'safeguard',
@@ -7,7 +7,7 @@ export const safeguardRoutes: AppRouteRecord = {
   meta: {
     title: 'menus.safeguard.title',
     icon: 'ri:shield-check-line',
-    keepAlive: false
+    keepAlive: false,
   },
   children: [
     {
@@ -17,8 +17,8 @@ export const safeguardRoutes: AppRouteRecord = {
       meta: {
         title: 'menus.safeguard.server',
         icon: 'ri:hard-drive-3-line',
-        keepAlive: true
-      }
-    }
-  ]
+        keepAlive: true,
+      },
+    },
+  ],
 }

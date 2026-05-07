@@ -1,4 +1,4 @@
-import { AppRouteRecord } from '@/types/router'
+import type { AppRouteRecord } from '@/types/router'
 
 export const resultRoutes: AppRouteRecord = {
   path: 'result',
@@ -6,7 +6,7 @@ export const resultRoutes: AppRouteRecord = {
   component: '',
   meta: {
     title: 'menus.result.title',
-    icon: 'ri:checkbox-circle-line'
+    icon: 'ri:checkbox-circle-line',
   },
   children: [
     {
@@ -16,8 +16,8 @@ export const resultRoutes: AppRouteRecord = {
       meta: {
         title: 'menus.result.success',
         icon: 'ri:checkbox-circle-line',
-        keepAlive: true
-      }
+        keepAlive: true,
+      },
     },
     {
       path: 'fail',
@@ -26,8 +26,8 @@ export const resultRoutes: AppRouteRecord = {
       meta: {
         title: 'menus.result.fail',
         icon: 'ri:close-circle-line',
-        keepAlive: true
-      }
-    }
-  ]
+        keepAlive: true,
+      },
+    },
+  ],
 }

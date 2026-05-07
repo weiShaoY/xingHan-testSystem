@@ -21,14 +21,19 @@
  * @author Art Design Pro Team
  */
 
-import { createI18n } from 'vue-i18n'
 import type { I18n, I18nOptions } from 'vue-i18n'
+
+import { createI18n } from 'vue-i18n'
+
 import { LanguageEnum } from '@/enums/appEnum'
+
 import { getSystemStorage } from '@/utils/storage'
+
 import { StorageKeyManager } from '@/utils/storage/storage-key-manager'
 
 // 同步导入语言文件
 import enMessages from './langs/en.json'
+
 import zhMessages from './langs/zh.json'
 
 /**
@@ -41,7 +46,7 @@ const storageKeyManager = new StorageKeyManager()
  */
 const messages = {
   [LanguageEnum.EN]: enMessages,
-  [LanguageEnum.ZH]: zhMessages
+  [LanguageEnum.ZH]: zhMessages,
 }
 
 /**
@@ -49,40 +54,52 @@ const messages = {
  * 用于语言切换下拉框
  */
 export const languageOptions = [
-  { value: LanguageEnum.ZH, label: '简体中文' },
-  { value: LanguageEnum.EN, label: 'English' }
+  {
+    value: LanguageEnum.ZH,
+    label: '简体中文',
+  },
+  {
+    value: LanguageEnum.EN,
+    label: 'English',
+  },
 ]
 
 /**
  * 从存储中获取语言设置
  * @returns 语言设置，如果获取失败则返回默认语言
  */
-const getDefaultLanguage = (): LanguageEnum => {
+function getDefaultLanguage(): LanguageEnum {
   // 尝试从版本化的存储中获取语言设置
   try {
     const storageKey = storageKeyManager.getStorageKey('user')
+
     const userStore = localStorage.getItem(storageKey)
 
     if (userStore) {
       const { language } = JSON.parse(userStore)
+
       if (language && Object.values(LanguageEnum).includes(language)) {
         return language
       }
     }
-  } catch (error) {
+  }
+  catch (error) {
     console.warn('[i18n] 从版本化存储获取语言设置失败:', error)
   }
 
   // 尝试从系统存储中获取语言设置
   try {
     const sys = getSystemStorage()
+
     if (sys) {
       const { user } = JSON.parse(sys)
+
       if (user?.language && Object.values(LanguageEnum).includes(user.language)) {
         return user.language
       }
     }
-  } catch (error) {
+  }
+  catch (error) {
     console.warn('[i18n] 从系统存储获取语言设置失败:', error)
   }
 
@@ -99,7 +116,7 @@ const i18nOptions: I18nOptions = {
   legacy: false,
   globalInjection: true,
   fallbackLocale: LanguageEnum.ZH,
-  messages
+  messages,
 }
 
 /**
@@ -110,7 +127,7 @@ const i18n: I18n = createI18n(i18nOptions)
 /**
  * 翻译函数类型
  */
-interface Translation {
+type Translation = {
   (key: string): string
 }
 

@@ -14,12 +14,14 @@
  * @module utils/navigation/jump
  * @author Art Design Pro Team
  */
-import { AppRouteRecord } from '@/types/router'
+import type { AppRouteRecord } from '@/types/router'
+
 import { router } from '@/routers'
+
 import { isNavigableMenuItem } from './route'
 
 // 打开外部链接
-export const openExternalLink = (link: string) => {
+export function openExternalLink(link: string) {
   window.open(link, '_blank')
 }
 
@@ -29,9 +31,10 @@ export const openExternalLink = (link: string) => {
  * @param jumpToFirst 是否跳转到第一个子菜单
  * @returns
  */
-export const handleMenuJump = (item: AppRouteRecord, jumpToFirst: boolean = false) => {
+export function handleMenuJump(item: AppRouteRecord, jumpToFirst: boolean = false) {
   // 处理外部链接
   const { link, isIframe } = item.meta
+
   if (link && !isIframe) {
     return openExternalLink(link)
   }
@@ -48,6 +51,7 @@ export const handleMenuJump = (item: AppRouteRecord, jumpToFirst: boolean = fals
         return child.children?.length ? findFirstLeafMenu(child.children) || child : child
       }
     }
+
     return undefined
   }
 

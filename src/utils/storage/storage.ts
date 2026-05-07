@@ -33,8 +33,11 @@
  * @author Art Design Pro Team
  */
 import { router } from '@/routers'
+
 import { useAdminUserStore } from '@/store/modules/adminUser'
+
 import { useClientUserStore } from '@/store/modules/clientUser'
+
 import { StorageConfig } from '@/utils/storage/storage-config'
 
 /**
@@ -54,8 +57,11 @@ class StorageCompatibilityManager {
    */
   getSystemStorage(): any {
     const version = this.getSystemVersion() || StorageConfig.CURRENT_VERSION
+
     const legacyKey = StorageConfig.generateLegacyKey(version)
+
     const data = localStorage.getItem(legacyKey)
+
     return data ? JSON.parse(data) : null
   }
 
@@ -64,10 +70,11 @@ class StorageCompatibilityManager {
    */
   private hasCurrentVersionStorage(): boolean {
     const storageKeys = Object.keys(localStorage)
+
     const currentVersionPattern = StorageConfig.createCurrentVersionPattern()
 
     return storageKeys.some(
-      (key) => currentVersionPattern.test(key) && localStorage.getItem(key) !== null
+      key => currentVersionPattern.test(key) && localStorage.getItem(key) !== null,
     )
   }
 
@@ -76,9 +83,10 @@ class StorageCompatibilityManager {
    */
   private hasAnyVersionStorage(): boolean {
     const storageKeys = Object.keys(localStorage)
+
     const versionPattern = StorageConfig.createVersionPattern()
 
-    return storageKeys.some((key) => versionPattern.test(key) && localStorage.getItem(key) !== null)
+    return storageKeys.some(key => versionPattern.test(key) && localStorage.getItem(key) !== null)
   }
 
   /**
@@ -87,10 +95,14 @@ class StorageCompatibilityManager {
   private getLegacyStorageData(): Record<string, any> {
     try {
       const systemStorage = this.getSystemStorage()
-      return systemStorage || {}
-    } catch (error) {
+
+      return systemStorage || {
+      }
+    }
+    catch (error) {
       console.warn('[Storage] 解析旧格式存储数据失败:', error)
-      return {}
+      return {
+      }
     }
   }
 
@@ -102,7 +114,7 @@ class StorageCompatibilityManager {
       type: 'error',
       offset: 40,
       duration: 5000,
-      message: '系统检测到本地数据异常，请重新登录系统恢复使用！'
+      message: '系统检测到本地数据异常，请重新登录系统恢复使用！',
     })
   }
 
@@ -116,10 +128,14 @@ class StorageCompatibilityManager {
         const userStore = router.currentRoute.value.path.startsWith('/client')
           ? useClientUserStore()
           : useAdminUserStore()
+
         userStore.logOut()
-        router.push({ name: 'Login' })
+        router.push({
+          name: 'Login',
+        })
         console.info('[Storage] 已执行系统登出')
-      } catch (error) {
+      }
+      catch (error) {
         console.error('[Storage] 系统登出失败:', error)
       }
     }, StorageConfig.LOGOUT_DELAY)
@@ -153,6 +169,7 @@ class StorageCompatibilityManager {
 
       // 检查旧版本存储结构
       const legacyData = this.getLegacyStorageData()
+
       if (Object.keys(legacyData).length === 0) {
         // 只有在需要验证登录状态时才执行登出操作
         if (requireAuth) {
@@ -160,6 +177,7 @@ class StorageCompatibilityManager {
           this.performSystemLogout()
           return false
         }
+
         // 首次访问或访问静态路由，不需要登出
         // console.debug('[Storage] 未发现存储数据，首次访问或访问静态路由')
         return true
@@ -167,13 +185,16 @@ class StorageCompatibilityManager {
 
       console.debug('[Storage] 发现旧版本存储数据')
       return true
-    } catch (error) {
+    }
+    catch (error) {
       console.error('[Storage] 存储数据验证失败:', error)
+
       // 只有在需要验证登录状态时才处理错误
       if (requireAuth) {
         this.handleStorageError()
         return false
       }
+
       return true
     }
   }
@@ -194,6 +215,7 @@ class StorageCompatibilityManager {
 
     // 检查旧版本存储结构
     const legacyData = this.getLegacyStorageData()
+
     return Object.keys(legacyData).length === 0
   }
 
@@ -204,6 +226,7 @@ class StorageCompatibilityManager {
   checkCompatibility(requireAuth: boolean = false): boolean {
     try {
       const isValid = this.validateStorageData(requireAuth)
+
       const isEmpty = this.isStorageEmpty()
 
       if (isValid || isEmpty) {
@@ -213,7 +236,8 @@ class StorageCompatibilityManager {
 
       console.warn('[Storage] 存储兼容性检查失败')
       return false
-    } catch (error) {
+    }
+    catch (error) {
       console.error('[Storage] 兼容性检查异常:', error)
       return false
     }

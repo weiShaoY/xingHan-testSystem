@@ -1,4 +1,4 @@
-import { AppRouteRecordRaw } from '@/utils/router'
+import type { AppRouteRecordRaw } from '@/utils/router'
 
 /**
  * 静态路由配置（不需要权限就能访问的路由）
@@ -22,73 +22,105 @@ export const staticRoutes: AppRouteRecordRaw[] = [
     path: '/admin/auth/login',
     name: 'Login',
     component: () => import('@views/admin/auth/login/index.vue'),
-    meta: { title: 'menus.login.title', isHideTab: true }
+    meta: {
+      title: 'menus.login.title',
+      isHideTab: true,
+    },
   },
   {
     path: '/admin/auth/register',
     name: 'Register',
     component: () => import('@views/admin/auth/register/index.vue'),
-    meta: { title: 'menus.register.title', isHideTab: true }
+    meta: {
+      title: 'menus.register.title',
+      isHideTab: true,
+    },
   },
   {
     path: '/admin/auth/forget-password',
     name: 'ForgetPassword',
     component: () => import('@views/admin/auth/forget-password/index.vue'),
-    meta: { title: 'menus.forgetPassword.title', isHideTab: true }
+    meta: {
+      title: 'menus.forgetPassword.title',
+      isHideTab: true,
+    },
   },
-  /////////////////////////////////////////////////////////////////////
+
+  // ///////////////////////////////////////////////////////////////////
 
   {
     path: '/client/auth/login',
     name: 'ClientLogin',
     component: () => import('@views/client/auth/login/index.vue'),
-    meta: { title: 'menus.login.title', isHideTab: true }
+    meta: {
+      title: 'menus.login.title',
+      isHideTab: true,
+    },
   },
   {
     path: '/client/auth/register',
     name: 'ClientRegister',
     component: () => import('@views/client/auth/register/index.vue'),
-    meta: { title: 'menus.register.title', isHideTab: true }
+    meta: {
+      title: 'menus.register.title',
+      isHideTab: true,
+    },
   },
   {
     path: '/client/auth/forget-password',
     name: 'ClientForgetPassword',
     component: () => import('@views/client/auth/forget-password/index.vue'),
-    meta: { title: 'menus.forgetPassword.title', isHideTab: true }
+    meta: {
+      title: 'menus.forgetPassword.title',
+      isHideTab: true,
+    },
   },
 
-  /////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////
   {
     path: '/403',
     name: 'Exception403',
     component: () => import('@views/exception/403/index.vue'),
-    meta: { title: '403', isHideTab: true }
+    meta: {
+      title: '403',
+      isHideTab: true,
+    },
   },
   {
     path: '/:pathMatch(.*)*',
     name: 'Exception404',
     component: () => import('@views/exception/404/index.vue'),
-    meta: { title: '404', isHideTab: true }
+    meta: {
+      title: '404',
+      isHideTab: true,
+    },
   },
   {
     path: '/500',
     name: 'Exception500',
     component: () => import('@views/exception/500/index.vue'),
-    meta: { title: '500', isHideTab: true }
+    meta: {
+      title: '500',
+      isHideTab: true,
+    },
   },
   {
     path: '/outside',
     component: () => import('@views/index/index.vue'),
     name: 'Outside',
-    meta: { title: 'menus.outside.title' },
+    meta: {
+      title: 'menus.outside.title',
+    },
     children: [
       // iframe 内嵌页面
       {
         path: '/outside/iframe/:path',
         name: 'Iframe',
         component: () => import('@/views/outside/Iframe.vue'),
-        meta: { title: 'iframe' }
-      }
-    ]
-  }
+        meta: {
+          title: 'iframe',
+        },
+      },
+    ],
+  },
 ]

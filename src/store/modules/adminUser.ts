@@ -1,14 +1,24 @@
+import type { AppRouteRecord } from '@/types/router'
+
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
+
+import { computed, ref } from 'vue'
+
 import { LanguageEnum } from '@/enums/appEnum'
+
 import { router } from '@/routers'
-import { useSettingStore } from './setting'
-import { useWorktabStore } from './worktab'
-import { AppRouteRecord } from '@/types/router'
-import { setPageTitle } from '@/utils/router'
+
 import { resetRouterState } from '@/routers/guards/beforeEach'
-import { useMenuStore } from './menu'
+
+import { setPageTitle } from '@/utils/router'
+
 import { StorageConfig } from '@/utils/storage/storage-config'
+
+import { useMenuStore } from './menu'
+
+import { useSettingStore } from './setting'
+
+import { useWorktabStore } from './worktab'
 
 const ADMIN_LAST_USER_ID_KEY = `${StorageConfig.LAST_USER_ID_KEY}:admin`
 
@@ -16,16 +26,26 @@ export const useAdminUserStore = defineStore(
   'adminUserStore',
   () => {
     const language = ref(LanguageEnum.ZH)
+
     const isLogin = ref(false)
+
     const isLock = ref(false)
+
     const lockPassword = ref('')
-    const info = ref<Partial<Api.Auth.UserInfo>>({})
+
+    const info = ref<Partial<Api.Auth.UserInfo>>({
+    })
+
     const searchHistory = ref<AppRouteRecord[]>([])
+
     const accessToken = ref('')
+
     const refreshToken = ref('')
 
     const getUserInfo = computed(() => info.value)
+
     const getSettingState = computed(() => useSettingStore().$state)
+
     const getWorktabState = computed(() => useWorktabStore().$state)
 
     const setUserInfo = (newInfo: Api.Auth.UserInfo) => {
@@ -62,11 +82,13 @@ export const useAdminUserStore = defineStore(
 
     const logOut = () => {
       const currentUserId = info.value.userId
+
       if (currentUserId) {
         localStorage.setItem(ADMIN_LAST_USER_ID_KEY, String(currentUserId))
       }
 
-      info.value = {}
+      info.value = {
+      }
       isLogin.value = false
       isLock.value = false
       lockPassword.value = ''
@@ -77,23 +99,31 @@ export const useAdminUserStore = defineStore(
       resetRouterState(500)
 
       const currentRoute = router.currentRoute.value
+
       const redirect = currentRoute.name !== 'Login' ? currentRoute.fullPath : undefined
 
       router.push({
         name: 'Login',
-        query: redirect ? { redirect } : undefined
+        query: redirect
+          ? {
+              redirect,
+            }
+          : undefined,
       })
     }
 
     const checkAndClearWorktabs = () => {
       const lastUserId = localStorage.getItem(ADMIN_LAST_USER_ID_KEY)
+
       const currentUserId = info.value.userId
 
-      if (!currentUserId) return
-      if (!lastUserId) return
+      if (!currentUserId) { return }
+
+      if (!lastUserId) { return }
 
       if (String(currentUserId) !== lastUserId) {
         const worktabStore = useWorktabStore()
+
         worktabStore.opened = []
         worktabStore.keepAliveExclude = []
       }
@@ -121,13 +151,13 @@ export const useAdminUserStore = defineStore(
       setLockPassword,
       setToken,
       logOut,
-      checkAndClearWorktabs
+      checkAndClearWorktabs,
     }
   },
   {
     persist: {
       key: 'adminUser',
-      storage: localStorage
-    }
-  }
+      storage: localStorage,
+    },
+  },
 )

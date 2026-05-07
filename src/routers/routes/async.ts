@@ -1,6 +1,8 @@
 // 权限文档：https://www.artd.pro/docs/zh/guide/in-depth/permission.html
-import { AppRouteRecord } from '@/types/router'
+import type { AppRouteRecord } from '@/types/router'
+
 import { adminRoutes } from '../modules/admin'
+
 import { clientRouteModules, clientRoutes } from '../modules/client'
 
 /**
@@ -9,5 +11,5 @@ import { clientRouteModules, clientRoutes } from '../modules/client'
  */
 export const asyncRoutes: AppRouteRecord[] = [
   adminRoutes,
-  ...(clientRouteModules.length ? [clientRoutes] : [])
+  ...(clientRouteModules.length ? [clientRoutes] : []),
 ]

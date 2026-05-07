@@ -1,17 +1,17 @@
-import { AppRouteRecord } from '@/types/router'
+import type { AppRouteRecord } from '@/types/router'
 
 export const Course: AppRouteRecord = {
   path: 'course',
   name: 'Course',
   component: '',
   redirect: {
-    name: 'AdminCourseList'
+    name: 'AdminCourseList',
   },
   meta: {
     title: '我的课程',
     icon: 'ri:ancient-pavilion-line',
     keepAlive: true,
-    sort: 0
+    sort: 0,
   },
   children: [
     {
@@ -22,8 +22,8 @@ export const Course: AppRouteRecord = {
         title: '课程列表',
         icon: 'ri:file-text-line',
         keepAlive: true,
-        sort: 0
-      }
+        sort: 0,
+      },
     },
     {
       path: 'detail/:id',
@@ -34,8 +34,8 @@ export const Course: AppRouteRecord = {
         icon: 'ri:eye-line',
         keepAlive: true,
         sort: 1,
-        isHide: true
-      }
+        isHide: true,
+      },
     },
     {
       path: 'edit/:id',
@@ -46,8 +46,8 @@ export const Course: AppRouteRecord = {
         icon: 'ri:edit-line',
         keepAlive: true,
         sort: 2,
-        isHide: true
-      }
+        isHide: true,
+      },
     },
     {
       path: 'create',
@@ -58,9 +58,10 @@ export const Course: AppRouteRecord = {
         icon: 'ri:add-line',
         keepAlive: true,
         sort: 3,
-        isHide: true
-      }
+        isHide: true,
+      },
     },
+
     // 添加课程小节 ( 文档 视频 考试 问卷 四种类型)
     // 添加小节（四种类型）
     {
@@ -72,8 +73,8 @@ export const Course: AppRouteRecord = {
         icon: 'ri:file-video-line',
         keepAlive: true,
         sort: 4,
-        isHide: true
-      }
+        isHide: true,
+      },
     },
     {
       path: 'section-document',
@@ -84,8 +85,8 @@ export const Course: AppRouteRecord = {
         icon: 'ri:file-word-line',
         keepAlive: true,
         sort: 5,
-        isHide: true
-      }
+        isHide: true,
+      },
     },
     {
       path: 'section-exam',
@@ -96,8 +97,8 @@ export const Course: AppRouteRecord = {
         icon: 'ri:file-text-line',
         keepAlive: true,
         sort: 6,
-        isHide: true
-      }
+        isHide: true,
+      },
     },
     {
       path: 'section-question',
@@ -108,8 +109,8 @@ export const Course: AppRouteRecord = {
         icon: 'ri:file-text-line',
         keepAlive: true,
         sort: 7,
-        isHide: true
-      }
-    }
-  ]
+        isHide: true,
+      },
+    },
+  ],
 }

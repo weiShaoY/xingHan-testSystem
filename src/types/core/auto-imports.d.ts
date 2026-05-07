@@ -9,8 +9,6 @@ declare global {
   const EffectScope: typeof import('vue').EffectScope
   const ElLoading: typeof import('element-plus/es').ElLoading
   const ElMessage: typeof import('element-plus/es').ElMessage
-  const ElMessageBox: typeof import('element-plus/es')['ElMessageBox']
-  const ElNotification: typeof import('element-plus/es')['ElNotification']
   const PasswordStrength: typeof import('../../utils/form/validator').PasswordStrength
   const StorageConfig: typeof import('../../utils/storage/storage-config').StorageConfig
   const StorageKeyManager: typeof import('../../utils/storage/storage-key-manager').StorageKeyManager
@@ -138,8 +136,6 @@ declare global {
   const refThrottled: typeof import('@vueuse/core').refThrottled
   const refWithControl: typeof import('@vueuse/core').refWithControl
   const resolveComponent: typeof import('vue').resolveComponent
-  const resolveRef: typeof import('@vueuse/core')['resolveRef']
-  const resolveUnref: typeof import('@vueuse/core')['resolveUnref']
   const rgbToHex: typeof import('../../utils/ui/colors').rgbToHex
   const setActivePinia: typeof import('pinia').setActivePinia
   const setElementThemeColor: typeof import('../../utils/ui/colors').setElementThemeColor
@@ -376,23 +372,23 @@ declare global {
   export type { Component, Slot, Slots, ComponentPublicInstance, ComputedRef, DirectiveBinding, ExtractDefaultPropTypes, ExtractPropTypes, ExtractPublicPropTypes, InjectionKey, PropType, Ref, ShallowRef, MaybeRef, MaybeRefOrGetter, VNode, WritableComputedRef } from 'vue'
   import('vue')
   // @ts-ignore
+  export type { ResponsiveBreakpoint } from '../../utils/form/responsive'
+  import('../../utils/form/responsive')
+  // @ts-ignore
+  export type { PasswordStrength } from '../../utils/form/validator'
+  import('../../utils/form/validator')
+  // @ts-ignore
   export type { AppRouteRecordRaw } from '../../utils/router'
   import('../../utils/router')
+  // @ts-ignore
+  export type { WebSocketClient } from '../../utils/socket/index'
+  import('../../utils/socket/index')
   // @ts-ignore
   export type { StorageConfig } from '../../utils/storage/storage-config'
   import('../../utils/storage/storage-config')
   // @ts-ignore
   export type { StorageKeyManager } from '../../utils/storage/storage-key-manager'
   import('../../utils/storage/storage-key-manager')
-  // @ts-ignore
-  export type { PasswordStrength } from '../../utils/form/validator'
-  import('../../utils/form/validator')
-  // @ts-ignore
-  export type { ResponsiveBreakpoint } from '../../utils/form/responsive'
-  import('../../utils/form/responsive')
-  // @ts-ignore
-  export type { WebSocketClient } from '../../utils/socket/index'
-  import('../../utils/socket/index')
   // @ts-ignore
   export type { AuthDirective, HighlightDirective, RippleDirective, RolesDirective } from '../../directives/index'
   import('../../directives/index')
@@ -482,7 +478,6 @@ declare module 'vue' {
     readonly isReadonly: UnwrapRef<typeof import('vue')['isReadonly']>
     readonly isRef: UnwrapRef<typeof import('vue')['isRef']>
     readonly isShallow: UnwrapRef<typeof import('vue')['isShallow']>
-    readonly jumpToFirst: UnwrapRef<typeof import('../../utils/navigation/jump')['jumpToFirst']>
     readonly loadingService: UnwrapRef<typeof import('../../utils/ui/loading')['loadingService']>
     readonly makeDestructurable: UnwrapRef<typeof import('@vueuse/core')['makeDestructurable']>
     readonly mapActions: UnwrapRef<typeof import('pinia')['mapActions']>

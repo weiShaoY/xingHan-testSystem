@@ -37,10 +37,13 @@ export const tableConfig = {
   // 响应数据字段映射配置，系统会从接口返回数据中按顺序查找这些字段
   // 列表数据
   recordFields: ['list', 'data', 'records', 'items', 'result', 'rows'],
+
   // 总条数
   totalFields: ['total', 'count'],
+
   // 当前页码
   currentFields: ['current', 'page', 'pageNum'],
+
   // 每页大小
   sizeFields: ['size', 'pageSize', 'limit'],
 
@@ -49,7 +52,8 @@ export const tableConfig = {
   paginationKey: {
     // 当前页码
     current: 'current',
+
     // 每页大小
-    size: 'size'
-  }
+    size: 'size',
+  },
 }

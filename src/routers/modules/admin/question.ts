@@ -1,18 +1,18 @@
 // 题库
-import { AppRouteRecord } from '@/types/router'
+import type { AppRouteRecord } from '@/types/router'
 
 export const Question: AppRouteRecord = {
   path: 'question',
   name: 'Question',
   component: '',
   redirect: {
-    name: 'AdminQuestionList'
+    name: 'AdminQuestionList',
   },
   meta: {
     title: '题库管理',
     icon: 'ri:file-text-line',
     keepAlive: true,
-    sort: 0
+    sort: 0,
   },
   children: [
     {
@@ -23,8 +23,8 @@ export const Question: AppRouteRecord = {
         title: '题库列表',
         icon: 'ri:align-item-left-fill',
         keepAlive: true,
-        sort: 0
-      }
+        sort: 0,
+      },
     },
     {
       path: 'edit/:id',
@@ -35,8 +35,8 @@ export const Question: AppRouteRecord = {
         icon: 'ri:add-line',
         keepAlive: true,
         sort: 1,
-        isHide: true
-      }
+        isHide: true,
+      },
     },
     {
       path: 'detail/:id',
@@ -47,8 +47,8 @@ export const Question: AppRouteRecord = {
         icon: 'ri:eye-line',
         keepAlive: true,
         sort: 1,
-        isHide: true
-      }
-    }
-  ]
+        isHide: true,
+      },
+    },
+  ],
 }

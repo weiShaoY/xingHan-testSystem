@@ -31,13 +31,23 @@
  * @author Art Design Pro Team
  */
 
-import { useSettingStore } from '@/store/modules/setting'
-import { SystemThemeEnum } from '@/enums/appEnum'
-import AppConfig from '@/config'
-import { SystemThemeTypes } from '@/types/store'
-import { getDarkColor, getLightColor, setElementThemeColor } from '@/utils/ui'
+import type { SystemThemeTypes } from '@/types/store'
+
 import { usePreferredDark } from '@vueuse/core'
+
 import { watch } from 'vue'
+
+import AppConfig from '@/config'
+
+import { SystemThemeEnum } from '@/enums/appEnum'
+
+import { useSettingStore } from '@/store/modules/setting'
+
+import {
+  getDarkColor,
+  getLightColor,
+  setElementThemeColor,
+} from '@/utils/ui'
 
 export function useTheme() {
   const settingStore = useSettingStore()
@@ -45,6 +55,7 @@ export function useTheme() {
   // 禁用过渡效果
   const disableTransitions = () => {
     const style = document.createElement('style')
+
     style.setAttribute('id', 'disable-transitions')
     style.textContent = '* { transition: none !important; }'
     document.head.appendChild(style)
@@ -53,6 +64,7 @@ export function useTheme() {
   // 启用过渡效果
   const enableTransitions = () => {
     const style = document.getElementById('disable-transitions')
+
     if (style) {
       style.remove()
     }
@@ -64,6 +76,7 @@ export function useTheme() {
     disableTransitions()
 
     const el = document.getElementsByTagName('html')[0]
+
     const isDark = theme === SystemThemeEnum.DARK
 
     if (!themeMode) {
@@ -82,7 +95,7 @@ export function useTheme() {
     for (let i = 1; i <= 9; i++) {
       document.documentElement.style.setProperty(
         `--el-color-primary-light-${i}`,
-        isDark ? `${getDarkColor(primary, i / 10)}` : `${getLightColor(primary, i / 10)}`
+        isDark ? `${getDarkColor(primary, i / 10)}` : `${getLightColor(primary, i / 10)}`,
       )
     }
 
@@ -103,6 +116,7 @@ export function useTheme() {
   // 自动设置系统主题
   const setSystemAutoTheme = () => {
     const theme = prefersDark.value ? SystemThemeEnum.DARK : SystemThemeEnum.LIGHT
+
     setSystemTheme(theme, SystemThemeEnum.AUTO)
   }
 
@@ -110,7 +124,8 @@ export function useTheme() {
   const switchThemeStyles = (theme: SystemThemeEnum) => {
     if (theme === SystemThemeEnum.AUTO) {
       setSystemAutoTheme()
-    } else {
+    }
+    else {
       setSystemTheme(theme)
     }
   }
@@ -119,7 +134,7 @@ export function useTheme() {
     setSystemTheme,
     setSystemAutoTheme,
     switchThemeStyles,
-    prefersDark
+    prefersDark,
   }
 }
 
@@ -128,22 +143,26 @@ export function useTheme() {
  */
 export function initializeTheme() {
   const settingStore = useSettingStore()
+
   const prefersDark = usePreferredDark()
 
   // 根据系统偏好应用主题
   const applyThemeByMode = () => {
     const el = document.getElementsByTagName('html')[0]
+
     let actualTheme = settingStore.systemThemeType
 
     // 如果是 AUTO 模式，检测系统偏好
     if (settingStore.systemThemeMode === SystemThemeEnum.AUTO) {
       actualTheme = prefersDark.value ? SystemThemeEnum.DARK : SystemThemeEnum.LIGHT
+
       // 更新实际应用的主题类型
       settingStore.systemThemeType = actualTheme
     }
 
     // 设置主题 class
     const currentTheme = AppConfig.systemThemeStyles[actualTheme as keyof SystemThemeTypes]
+
     if (currentTheme) {
       el.setAttribute('class', currentTheme.className)
     }
@@ -168,7 +187,9 @@ export function initializeTheme() {
           applyThemeByMode()
         }
       },
-      { immediate: false }
+      {
+        immediate: false,
+      },
     )
   }
 }

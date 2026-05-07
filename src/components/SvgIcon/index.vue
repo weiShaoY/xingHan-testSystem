@@ -1,134 +1,137 @@
 <script setup lang="ts">
-  import type { CSSProperties } from 'vue'
+import type { CSSProperties } from 'vue'
 
-  import { twMerge } from 'tailwind-merge'
+import { twMerge } from 'tailwind-merge'
 
-  /**
+/**
    * SVG 图标组件属性类型
    */
-  type SvgIconPropsType = {
-    /** 图标的名称 */
-    icon: string
+type SvgIconPropsType = {
 
-    /** 图标的前缀 */
-    prefix?: string
+  /** 图标的名称 */
+  icon: string
 
-    /** 图标的颜色 */
-    color?: string
+  /** 图标的前缀 */
+  prefix?: string
 
-    /** 图标的大小 */
-    size?: string | number
+  /** 图标的颜色 */
+  color?: string
 
-    /** 图标的高度 */
-    height?: string | number
+  /** 图标的大小 */
+  size?: string | number
 
-    /** 图标的宽度 */
-    width?: string | number
+  /** 图标的高度 */
+  height?: string | number
 
-    /** 额外的 CSS 类名 */
-    class?: string | Record<string, boolean> | Array<string | Record<string, boolean>>
+  /** 图标的宽度 */
+  width?: string | number
 
-    /** 行内样式 */
-    style?: CSSProperties
+  /** 额外的 CSS 类名 */
+  class?: string | Record<string, boolean> | Array<string | Record<string, boolean>>
 
-    /** 图标的描述文本 */
-    description?: string
+  /** 行内样式 */
+  style?: CSSProperties
 
-    /** 是否禁用 */
-    disabled?: boolean
-  }
+  /** 图标的描述文本 */
+  description?: string
 
-  /**
+  /** 是否禁用 */
+  disabled?: boolean
+}
+
+/**
    * 组件属性默认值
    */
-  const props = withDefaults(defineProps<SvgIconPropsType>(), {
-    prefix: 'icon',
-    size: 24,
-    color: 'currentColor',
-    description: '',
-    disabled: false
-  })
+const props = withDefaults(defineProps<SvgIconPropsType>(), {
+  prefix: 'icon',
+  size: 24,
+  color: 'currentColor',
+  description: '',
+  disabled: false,
+})
 
-  /**
+/**
    * 基础类名
    */
-  const BASE_CLASSES =
-    'anticon fill-current inline-block h-[1em] w-[1em] overflow-hidden outline-none'
+const BASE_CLASSES
+  = 'anticon fill-current inline-block h-[1em] w-[1em] overflow-hidden outline-none'
 
-  /**
+/**
    * 计算 `symbolId` 用于引用图标
    */
-  const symbolId = computed(() => `#${props.prefix}-${props.icon}`)
+const symbolId = computed(() => `#${props.prefix}-${props.icon}`)
 
-  /**
+/**
    * 处理类名，将不同类型的类名转换为字符串
    */
-  function stringifyClass(
-    input: string | Record<string, boolean> | Array<string | Record<string, boolean>>
-  ): string {
-    if (typeof input === 'string') {
-      return input
-    }
-
-    if (Array.isArray(input)) {
-      return input.map((item) => stringifyClass(item)).join(' ')
-    }
-
-    return Object.entries(input)
-      .filter(([_, value]) => value)
-      .map(([key]) => key)
-      .join(' ')
+function stringifyClass(
+  input: string | Record<string, boolean> | Array<string | Record<string, boolean>>,
+): string {
+  if (typeof input === 'string') {
+    return input
   }
 
-  /**
+  if (Array.isArray(input)) {
+    return input.map(item => stringifyClass(item)).join(' ')
+  }
+
+  return Object.entries(input)
+    .filter(([_, value]) => value)
+    .map(([key]) => key)
+    .join(' ')
+}
+
+/**
    * 计算合并后的类名
    */
-  const computedClass = computed(() => {
-    const classes = [BASE_CLASSES]
+const computedClass = computed(() => {
+  const classes = [BASE_CLASSES]
 
-    if (props.disabled) {
-      classes.push('opacity-50 cursor-not-allowed')
-    }
+  if (props.disabled) {
+    classes.push('opacity-50 cursor-not-allowed')
+  }
 
-    if (props.class) {
-      const classString = stringifyClass(props.class)
+  if (props.class) {
+    const classString = stringifyClass(props.class)
 
-      return twMerge(...classes, classString)
-    }
+    return twMerge(...classes, classString)
+  }
 
-    return classes.join(' ')
-  })
+  return classes.join(' ')
+})
 
-  /**
+/**
    * 计算 SVG 的行内样式
    */
-  const computedStyle = computed(() => {
-    const style: CSSProperties = {
-      verticalAlign: 'middle',
-      color: props.color,
-      ...props.style
-    }
+const computedStyle = computed(() => {
+  const style: CSSProperties = {
+    verticalAlign: 'middle',
+    color: props.color,
+    ...props.style,
+  }
 
-    // 优先使用 height 和 width，否则使用 size
-    if (props.height !== undefined) {
-      style.height = props.height
-    } else {
-      style.height = props.size
-    }
+  // 优先使用 height 和 width，否则使用 size
+  if (props.height !== undefined) {
+    style.height = props.height
+  }
+  else {
+    style.height = props.size
+  }
 
-    if (props.width !== undefined) {
-      style.width = props.width
-    } else {
-      style.width = props.size
-    }
+  if (props.width !== undefined) {
+    style.width = props.width
+  }
+  else {
+    style.width = props.size
+  }
 
-    return style
-  })
+  return style
+})
 
-  /**
+/**
    * 计算图标的描述文本
    */
-  const ariaLabel = computed(() => props.description || props.icon)
+const ariaLabel = computed(() => props.description || props.icon)
 </script>
 
 <template>
@@ -142,6 +145,9 @@
   >
     <title>{{ ariaLabel }}</title>
 
-    <use :xlink:href="symbolId" fill="currentColor" />
+    <use
+      :xlink:href="symbolId"
+      fill="currentColor"
+    />
   </svg>
 </template>

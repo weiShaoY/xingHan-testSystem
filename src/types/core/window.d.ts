@@ -1,11 +1,13 @@
 export {}
 
 declare global {
+
   /**
    * 全局 Window 对象类型扩展
    * @description 为 Window 对象添加全局插件和工具的类型定义
    */
   export interface Window {
+
     /**
      * NProgress 进度条实例
      * @description 用于显示页面加载进度

@@ -1,4 +1,4 @@
-import { AppRouteRecord } from '@/types/router'
+import type { AppRouteRecord } from '@/types/router'
 
 export const exceptionRoutes: AppRouteRecord = {
   path: 'exception',
@@ -6,7 +6,7 @@ export const exceptionRoutes: AppRouteRecord = {
   component: '',
   meta: {
     title: 'menus.exception.title',
-    icon: 'ri:error-warning-line'
+    icon: 'ri:error-warning-line',
   },
   children: [
     {
@@ -17,8 +17,8 @@ export const exceptionRoutes: AppRouteRecord = {
         title: 'menus.exception.forbidden',
         keepAlive: true,
         isHideTab: true,
-        isFullPage: true
-      }
+        isFullPage: true,
+      },
     },
     {
       path: '404',
@@ -28,8 +28,8 @@ export const exceptionRoutes: AppRouteRecord = {
         title: 'menus.exception.notFound',
         keepAlive: true,
         isHideTab: true,
-        isFullPage: true
-      }
+        isFullPage: true,
+      },
     },
     {
       path: '500',
@@ -39,8 +39,8 @@ export const exceptionRoutes: AppRouteRecord = {
         title: 'menus.exception.serverError',
         keepAlive: true,
         isHideTab: true,
-        isFullPage: true
-      }
-    }
-  ]
+        isFullPage: true,
+      },
+    },
+  ],
 }

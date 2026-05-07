@@ -1,39 +1,62 @@
-import { ref, computed, watch } from 'vue'
-import { useSettingStore } from '@/store/modules/setting'
-import { storeToRefs } from 'pinia'
 import { useBreakpoints } from '@vueuse/core'
+
+import { storeToRefs } from 'pinia'
+
+import {
+  computed,
+  ref,
+  watch,
+} from 'vue'
+
 import AppConfig from '@/config'
-import { SystemThemeEnum, MenuTypeEnum } from '@/enums/appEnum'
-import { mittBus } from '@/utils/sys'
-import { StorageConfig } from '@/utils'
-import { useTheme } from '@/hooks/core/useTheme'
+
+import { MenuTypeEnum, SystemThemeEnum } from '@/enums/appEnum'
+
 import { useCeremony } from '@/hooks/core/useCeremony'
-import { useSettingsState } from './useSettingsState'
+
+import { useTheme } from '@/hooks/core/useTheme'
+
+import { useSettingStore } from '@/store/modules/setting'
+
+import { StorageConfig } from '@/utils'
+
+import { mittBus } from '@/utils/sys'
+
 import { useSettingsHandlers } from './useSettingsHandlers'
+
+import { useSettingsState } from './useSettingsState'
 
 /**
  * 设置面板核心逻辑管理
  */
 export function useSettingsPanel() {
   const settingStore = useSettingStore()
+
   const { systemThemeType, systemThemeMode, menuType } = storeToRefs(settingStore)
 
   // Composables
   const { openFestival, cleanup } = useCeremony()
+
   const { setSystemTheme, setSystemAutoTheme } = useTheme()
+
   const { initColorWeak } = useSettingsState()
+
   const { domOperations } = useSettingsHandlers()
 
   // 响应式状态
   const showDrawer = ref(false)
 
   // 使用 VueUse breakpoints 优化性能
-  const breakpoints = useBreakpoints({ tablet: 1000 })
+  const breakpoints = useBreakpoints({
+    tablet: 1000,
+  })
+
   const isMobile = breakpoints.smaller('tablet')
 
   // 记录窗口宽度变化前的菜单类型
   const getStoredDesktopMenuType = (): MenuTypeEnum | undefined => {
     const storedMenuType = localStorage.getItem(StorageConfig.RESPONSIVE_MENU_TYPE_KEY)
+
     return Object.values(MenuTypeEnum).includes(storedMenuType as MenuTypeEnum)
       ? (storedMenuType as MenuTypeEnum)
       : undefined
@@ -48,7 +71,9 @@ export function useSettingsPanel() {
   }
 
   const storedDesktopMenuType = getStoredDesktopMenuType()
+
   const beforeMenuType = ref<MenuTypeEnum | undefined>(storedDesktopMenuType)
+
   const hasChangedMenu = ref(Boolean(storedDesktopMenuType))
 
   // 计算属性
@@ -68,7 +93,8 @@ export function useSettingsPanel() {
     const initSystemTheme = () => {
       if (systemThemeMode.value === SystemThemeEnum.AUTO) {
         setSystemAutoTheme()
-      } else {
+      }
+      else {
         setSystemTheme(systemThemeType.value)
       }
     }
@@ -76,6 +102,7 @@ export function useSettingsPanel() {
     // 监听系统主题变化
     const listenerSystemTheme = () => {
       const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+
       mediaQuery.addEventListener('change', initSystemTheme)
       return () => {
         mediaQuery.removeEventListener('change', initSystemTheme)
@@ -85,7 +112,7 @@ export function useSettingsPanel() {
     return {
       initSystemColor,
       initSystemTheme,
-      listenerSystemTheme
+      listenerSystemTheme,
     }
   }
 
@@ -107,7 +134,8 @@ export function useSettingsPanel() {
           }
 
           settingStore.setMenuOpen(false)
-        } else {
+        }
+        else {
           // 恢复桌面端布局
           if (hasChangedMenu.value && beforeMenuType.value) {
             if (menuType.value === MenuTypeEnum.LEFT) {
@@ -121,10 +149,14 @@ export function useSettingsPanel() {
           settingStore.setMenuOpen(true)
         }
       },
-      { immediate: true }
+      {
+        immediate: true,
+      },
     )
 
-    return { stopWatch }
+    return {
+      stopWatch,
+    }
   }
 
   // 抽屉控制
@@ -138,6 +170,7 @@ export function useSettingsPanel() {
       if (themeChangeTimer) {
         clearTimeout(themeChangeTimer)
       }
+
       // 延迟添加 theme-change class，避免抽屉打开动画受影响
       themeChangeTimer = setTimeout(() => {
         domOperations.setBodyClass('theme-change', true)
@@ -152,6 +185,7 @@ export function useSettingsPanel() {
         clearTimeout(themeChangeTimer)
         themeChangeTimer = null
       }
+
       // 立即移除 theme-change class
       domOperations.setBodyClass('theme-change', false)
     }
@@ -170,7 +204,7 @@ export function useSettingsPanel() {
       handleOpen,
       handleClose,
       openSetting,
-      closeDrawer
+      closeDrawer,
     }
   }
 
@@ -182,15 +216,18 @@ export function useSettingsPanel() {
         if (val !== undefined) {
           showDrawer.value = val
         }
-      }
+      },
     )
   }
 
   // 初始化设置
   const useSettingsInitializer = () => {
     const themeHandlers = useThemeHandlers()
+
     const { openSetting } = useDrawerControl()
+
     const { stopWatch } = useResponsiveLayout()
+
     let themeCleanup: (() => void) | null = null
 
     const initializeSettings = () => {
@@ -201,6 +238,7 @@ export function useSettingsPanel() {
 
       // 设置盒子模式
       const boxMode = settingStore.boxBorderMode ? 'border-mode' : 'shadow-mode'
+
       domOperations.setRootAttribute('data-box-mode', boxMode)
 
       themeHandlers.initSystemTheme()
@@ -215,7 +253,7 @@ export function useSettingsPanel() {
 
     return {
       initializeSettings,
-      cleanupSettings
+      cleanupSettings,
     }
   }
 
@@ -228,6 +266,6 @@ export function useSettingsPanel() {
     useResponsiveLayout,
     useDrawerControl,
     usePropsWatcher,
-    useSettingsInitializer
+    useSettingsInitializer,
   }
 }

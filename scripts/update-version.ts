@@ -18,9 +18,6 @@ async function run() {
   // 生成新的 app-version meta 标签
   const meta = `<meta name="app-version" content="${version}" />`
 
-
-
-
   // 如果已存在 app-version，则替换；否则插入到 <head> 后面
   const nextContent = APP_VERSION_META_RE.test(content)
     ? content.replace(APP_VERSION_META_RE, meta)

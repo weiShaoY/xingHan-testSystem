@@ -1,17 +1,17 @@
-import { AppRouteRecord } from '@/types/router'
+import type { AppRouteRecord } from '@/types/router'
 
 export const Project: AppRouteRecord = {
   path: 'project',
   name: 'Project',
   component: '',
   redirect: {
-    name: 'AdminProjectList'
+    name: 'AdminProjectList',
   },
   meta: {
     title: '项目管理',
     icon: 'ri:armchair-line',
     keepAlive: true,
-    sort: 0
+    sort: 0,
   },
   children: [
     {
@@ -22,8 +22,8 @@ export const Project: AppRouteRecord = {
         title: '项目列表',
         icon: 'ri:list-check',
         keepAlive: true,
-        sort: 0
-      }
+        sort: 0,
+      },
     },
     {
       path: 'detail/:id',
@@ -34,8 +34,8 @@ export const Project: AppRouteRecord = {
         icon: 'ri:eye-line',
         keepAlive: true,
         sort: 1,
-        isHide: true
-      }
+        isHide: true,
+      },
     },
     {
       path: 'edit/:id',
@@ -46,8 +46,8 @@ export const Project: AppRouteRecord = {
         icon: 'ri:pencil-line',
         keepAlive: true,
         sort: 2,
-        isHide: true
-      }
-    }
-  ]
+        isHide: true,
+      },
+    },
+  ],
 }

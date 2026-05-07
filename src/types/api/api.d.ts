@@ -33,14 +33,19 @@
  */
 
 declare namespace Api {
+
   /** 通用类型 */
   namespace Common {
+
     /** 分页参数 */
-    interface PaginationParams {
+    type PaginationParams = {
+
       /** 当前页码 */
       current: number
+
       /** 每页条数 */
       size: number
+
       /** 总条数 */
       total: number
     }
@@ -49,7 +54,7 @@ declare namespace Api {
     type CommonSearchParams = Pick<PaginationParams, 'current' | 'size'>
 
     /** 分页响应基础结构 */
-    interface PaginatedResponse<T = any> {
+    type PaginatedResponse<T = any> = {
       records: T[]
       current: number
       size: number
@@ -62,20 +67,21 @@ declare namespace Api {
 
   /** 认证类型 */
   namespace Auth {
+
     /** 登录参数 */
-    interface LoginParams {
+    type LoginParams = {
       userName: string
       password: string
     }
 
     /** 登录响应 */
-    interface LoginResponse {
+    type LoginResponse = {
       token: string
       refreshToken: string
     }
 
     /** 用户信息 */
-    interface UserInfo {
+    type UserInfo = {
       buttons: string[]
       roles: string[]
       userId: number
@@ -87,11 +93,12 @@ declare namespace Api {
 
   /** 系统管理类型 */
   namespace SystemManage {
+
     /** 用户列表 */
     type UserList = Api.Common.PaginatedResponse<UserListItem>
 
     /** 用户列表项 */
-    interface UserListItem {
+    type UserListItem = {
       id: number
       avatar: string
       status: string
@@ -109,15 +116,15 @@ declare namespace Api {
 
     /** 用户搜索参数 */
     type UserSearchParams = Partial<
-      Pick<UserListItem, 'id' | 'userName' | 'userGender' | 'userPhone' | 'userEmail' | 'status'> &
-        Api.Common.CommonSearchParams
+      Pick<UserListItem, 'id' | 'userName' | 'userGender' | 'userPhone' | 'userEmail' | 'status'>
+      & Api.Common.CommonSearchParams
     >
 
     /** 角色列表 */
     type RoleList = Api.Common.PaginatedResponse<RoleListItem>
 
     /** 角色列表项 */
-    interface RoleListItem {
+    type RoleListItem = {
       roleId: number
       roleName: string
       roleCode: string
@@ -128,11 +135,11 @@ declare namespace Api {
 
     /** 角色搜索参数 */
     type RoleSearchParams = Partial<
-      Pick<RoleListItem, 'roleId' | 'roleName' | 'roleCode' | 'description' | 'enabled'> &
-        Api.Common.CommonSearchParams & {
-          startTime: string | null
-          endTime: string | null
-        }
+      Pick<RoleListItem, 'roleId' | 'roleName' | 'roleCode' | 'description' | 'enabled'>
+      & Api.Common.CommonSearchParams & {
+        startTime: string | null
+        endTime: string | null
+      }
     >
   }
 }

@@ -112,6 +112,7 @@ export class StorageConfig {
    */
   static extractVersionFromKey(key: string): string | null {
     const match = key.match(new RegExp(`^${this.STORAGE_PREFIX}([^-]+)`))
+
     return match ? match[1] : null
   }
 
@@ -120,6 +121,7 @@ export class StorageConfig {
    */
   static extractStoreIdFromKey(key: string): string | null {
     const match = key.match(new RegExp(`^${this.STORAGE_PREFIX}[^-]+-(.+)$`))
+
     return match ? match[1] : null
   }
 }

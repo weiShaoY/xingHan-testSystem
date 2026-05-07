@@ -40,15 +40,16 @@
  */
 
 import type { ApiResponse } from './tableCache'
+
 import { tableConfig } from './tableConfig'
 
 // 请求参数基础接口，扩展分页参数
-export interface BaseRequestParams extends Api.Common.PaginationParams {
+export type BaseRequestParams = {
   [key: string]: unknown
-}
+} & Api.Common.PaginationParams
 
 // 错误处理接口
-export interface TableError {
+export type TableError = {
   code: string
   message: string
   details?: unknown
@@ -61,6 +62,7 @@ function extractRecords<T>(obj: Record<string, unknown>, fields: string[]): T[] 
       return obj[field] as T[]
     }
   }
+
   return []
 }
 
@@ -71,18 +73,23 @@ function extractTotal(obj: Record<string, unknown>, records: unknown[], fields: 
       return obj[field] as number
     }
   }
+
   return records.length
 }
 
 // 辅助函数：提取分页参数
 function extractPagination(
   obj: Record<string, unknown>,
-  data?: Record<string, unknown>
+  data?: Record<string, unknown>,
 ): Pick<ApiResponse<unknown>, 'current' | 'size'> | undefined {
-  const result: Partial<Pick<ApiResponse<unknown>, 'current' | 'size'>> = {}
-  const sources = [obj, data ?? {}]
+  const result: Partial<Pick<ApiResponse<unknown>, 'current' | 'size'>> = {
+  }
+
+  const sources = [obj, data ?? {
+  }]
 
   const currentFields = tableConfig.currentFields
+
   for (const src of sources) {
     for (const field of currentFields) {
       if (field in src && typeof src[field] === 'number') {
@@ -90,10 +97,12 @@ function extractPagination(
         break
       }
     }
-    if (result.current !== undefined) break
+
+    if (result.current !== undefined) { break }
   }
 
   const sizeFields = tableConfig.sizeFields
+
   for (const src of sources) {
     for (const field of sizeFields) {
       if (field in src && typeof src[field] === 'number') {
@@ -101,41 +110,55 @@ function extractPagination(
         break
       }
     }
-    if (result.size !== undefined) break
+
+    if (result.size !== undefined) { break }
   }
 
-  if (result.current === undefined && result.size === undefined) return undefined
+  if (result.current === undefined && result.size === undefined) { return undefined }
+
   return result
 }
 
 /**
  * 默认响应适配器 - 支持多种常见的API响应格式
  */
-export const defaultResponseAdapter = <T>(response: unknown): ApiResponse<T> => {
+export function defaultResponseAdapter<T>(response: unknown): ApiResponse<T> {
   // 定义支持的字段
   const recordFields = tableConfig.recordFields
 
   if (!response) {
-    return { records: [], total: 0 }
+    return {
+      records: [],
+      total: 0,
+    }
   }
 
   if (Array.isArray(response)) {
-    return { records: response, total: response.length }
+    return {
+      records: response,
+      total: response.length,
+    }
   }
 
   if (typeof response !== 'object') {
     console.warn(
-      '[tableUtils] 无法识别的响应格式，支持的格式包括: 数组、包含' +
-        recordFields.join('/') +
-        '字段的对象、嵌套data对象。当前格式:',
-      response
+      `[tableUtils] 无法识别的响应格式，支持的格式包括: 数组、包含${
+        recordFields.join('/')
+      }字段的对象、嵌套data对象。当前格式:`,
+      response,
     )
-    return { records: [], total: 0 }
+    return {
+      records: [],
+      total: 0,
+    }
   }
 
   const res = response as Record<string, unknown>
+
   let records: T[] = []
+
   let total = 0
+
   let pagination: Pick<ApiResponse<unknown>, 'current' | 'size'> | undefined
 
   // 处理标准格式或直接列表
@@ -146,6 +169,7 @@ export const defaultResponseAdapter = <T>(response: unknown): ApiResponse<T> => 
   // 如果没有找到，检查嵌套data
   if (records.length === 0 && 'data' in res && typeof res.data === 'object') {
     const data = res.data as Record<string, unknown>
+
     records = extractRecords(data, ['list', 'records', 'items'])
     total = extractTotal(data, records, tableConfig.totalFields)
     pagination = extractPagination(res, data)
@@ -156,34 +180,37 @@ export const defaultResponseAdapter = <T>(response: unknown): ApiResponse<T> => 
     }
   }
 
-  if (!recordFields.some((field) => field in res) && records.length === 0) {
+  if (!recordFields.some(field => field in res) && records.length === 0) {
     console.warn('[tableUtils] 无法识别的响应格式')
-    console.warn('支持的字段包括: ' + recordFields.join('、'), response)
+    console.warn(`支持的字段包括: ${recordFields.join('、')}`, response)
     console.warn('扩展字段请到 utils/table/tableConfig 文件配置')
   }
 
-  const result: ApiResponse<T> = { records, total }
+  const result: ApiResponse<T> = {
+    records,
+    total,
+  }
+
   if (pagination) {
     Object.assign(result, pagination)
   }
+
   return result
 }
 
 /**
  * 从标准化的API响应中提取表格数据
  */
-export const extractTableData = <T>(response: ApiResponse<T>): T[] => {
+export function extractTableData<T>(response: ApiResponse<T>): T[] {
   const data = response.records || response.data || []
+
   return Array.isArray(data) ? data : []
 }
 
 /**
  * 根据API响应更新分页信息
  */
-export const updatePaginationFromResponse = <T>(
-  pagination: Api.Common.PaginationParams,
-  response: ApiResponse<T>
-): void => {
+export function updatePaginationFromResponse<T>(pagination: Api.Common.PaginationParams, response: ApiResponse<T>): void {
   pagination.total = response.total ?? pagination.total ?? 0
 
   if (response.current !== undefined) {
@@ -191,6 +218,7 @@ export const updatePaginationFromResponse = <T>(
   }
 
   const maxPage = Math.max(1, Math.ceil(pagination.total / (pagination.size || 1)))
+
   if (pagination.current > maxPage) {
     pagination.current = maxPage
   }
@@ -199,28 +227,32 @@ export const updatePaginationFromResponse = <T>(
 /**
  * 创建智能防抖函数 - 支持取消和立即执行
  */
-export const createSmartDebounce = <T extends (...args: any[]) => Promise<any>>(
-  fn: T,
-  delay: number
-): T & { cancel: () => void; flush: () => Promise<any> } => {
+export function createSmartDebounce<T extends (...args: any[]) => Promise<any>>(fn: T, delay: number): T & { cancel: () => void, flush: () => Promise<any> } {
   let timeoutId: NodeJS.Timeout | null = null
+
   let lastArgs: Parameters<T> | null = null
+
   let lastResolve: ((value: any) => void) | null = null
+
   let lastReject: ((reason: any) => void) | null = null
 
   const debouncedFn = (...args: Parameters<T>): Promise<any> => {
     return new Promise((resolve, reject) => {
-      if (timeoutId) clearTimeout(timeoutId)
+      if (timeoutId) { clearTimeout(timeoutId) }
+
       lastArgs = args
       lastResolve = resolve
       lastReject = reject
       timeoutId = setTimeout(async () => {
         try {
           const result = await fn(...args)
+
           resolve(result)
-        } catch (error) {
+        }
+        catch (error) {
           reject(error)
-        } finally {
+        }
+        finally {
           timeoutId = null
           lastArgs = null
           lastResolve = null
@@ -231,7 +263,8 @@ export const createSmartDebounce = <T extends (...args: any[]) => Promise<any>>(
   }
 
   debouncedFn.cancel = () => {
-    if (timeoutId) clearTimeout(timeoutId)
+    if (timeoutId) { clearTimeout(timeoutId) }
+
     timeoutId = null
     lastArgs = null
     lastResolve = null
@@ -243,20 +276,26 @@ export const createSmartDebounce = <T extends (...args: any[]) => Promise<any>>(
       clearTimeout(timeoutId)
       timeoutId = null
       const args = lastArgs
+
       const resolve = lastResolve
+
       const reject = lastReject
+
       lastArgs = null
       lastResolve = null
       lastReject = null
       try {
         const result = await fn(...args)
+
         resolve(result)
         return result
-      } catch (error) {
+      }
+      catch (error) {
         reject(error)
         throw error
       }
     }
+
     return Promise.resolve()
   }
 
@@ -266,27 +305,25 @@ export const createSmartDebounce = <T extends (...args: any[]) => Promise<any>>(
 /**
  * 生成错误处理函数
  */
-export const createErrorHandler = (
-  onError?: (error: TableError) => void,
-  enableLog: boolean = false
-) => {
+export function createErrorHandler(onError?: (error: TableError) => void, enableLog: boolean = false) {
   const logger = {
     error: (message: string, ...args: any[]) => {
-      if (enableLog) console.error(`[useTable] ${message}`, ...args)
-    }
+      if (enableLog) { console.error(`[useTable] ${message}`, ...args) }
+    },
   }
 
   return (err: unknown, context: string): TableError => {
     const tableError: TableError = {
       code: 'UNKNOWN_ERROR',
       message: '未知错误',
-      details: err
+      details: err,
     }
 
     if (err instanceof Error) {
       tableError.message = err.message
       tableError.code = err.name
-    } else if (typeof err === 'string') {
+    }
+    else if (typeof err === 'string') {
       tableError.message = err
     }
 

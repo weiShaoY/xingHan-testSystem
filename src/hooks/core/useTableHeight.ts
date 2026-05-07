@@ -15,18 +15,24 @@
  * @author Art Design Pro Team
  */
 
-import { computed, type Ref } from 'vue'
+import type { Ref } from 'vue'
+
+import { computed } from 'vue'
 
 /**
  * 表格高度计算器配置接口
  */
-interface TableHeightOptions {
+type TableHeightOptions = {
+
   /** 是否显示表格头部 */
   showTableHeader: Ref<boolean>
+
   /** 分页器高度 */
   paginationHeight: Ref<number>
+
   /** 表格头部高度 */
   tableHeaderHeight: Ref<number>
+
   /** 分页器间距 */
   paginationSpacing: Ref<number>
 }
@@ -46,8 +52,9 @@ class TableHeightCalculator {
    */
   calculate(): { height: string } {
     const offset = this.calculateOffset()
+
     return {
-      height: offset === 0 ? '100%' : `calc(100% - ${offset}px)`
+      height: offset === 0 ? '100%' : `calc(100% - ${offset}px)`,
     }
   }
 
@@ -60,6 +67,7 @@ class TableHeightCalculator {
     }
 
     const headerHeight = this.getHeaderHeight()
+
     const paginationOffset = this.calculatePaginationOffset()
 
     return headerHeight + paginationOffset + TableHeightCalculator.TABLE_HEADER_SPACING
@@ -77,6 +85,7 @@ class TableHeightCalculator {
    */
   private calculatePaginationOffset(): number {
     const { paginationHeight, paginationSpacing } = this.options
+
     return paginationHeight.value === 0 ? 0 : paginationHeight.value + paginationSpacing.value
   }
 }
@@ -95,11 +104,12 @@ class TableHeightCalculator {
 export function useTableHeight(options: TableHeightOptions) {
   const containerHeight = computed(() => {
     const calculator = new TableHeightCalculator(options)
+
     return calculator.calculate()
   })
 
   return {
     /** 容器高度样式对象 */
-    containerHeight
+    containerHeight,
   }
 }

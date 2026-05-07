@@ -1,4 +1,5 @@
-import { AppRouteRecord } from '@/types/router'
+import type { AppRouteRecord } from '@/types/router'
+
 import { RoutesAlias } from '../../routesAlias'
 
 /**
@@ -11,7 +12,7 @@ export const clientRouteModules: AppRouteRecord[] = [
     component: '',
     meta: {
       title: '测试',
-      icon: 'ri:flask-line'
+      icon: 'ri:flask-line',
     },
     children: [
       {
@@ -20,7 +21,7 @@ export const clientRouteModules: AppRouteRecord[] = [
         component: '',
         meta: {
           title: 'A',
-          icon: 'ri:folder-line'
+          icon: 'ri:folder-line',
         },
         children: [
           {
@@ -30,13 +31,13 @@ export const clientRouteModules: AppRouteRecord[] = [
             meta: {
               title: 'A1',
               icon: 'ri:file-line',
-              keepAlive: false
-            }
-          }
-        ]
-      }
-    ]
-  }
+              keepAlive: false,
+            },
+          },
+        ],
+      },
+    ],
+  },
 ]
 
 /**
@@ -49,8 +50,8 @@ export const clientRoutes: AppRouteRecord = {
   meta: {
     title: '客户端',
     icon: 'ri:user-line',
-    isMenuRoot: true
+    isMenuRoot: true,
   },
   redirect: '/client/test/a/a1',
-  children: clientRouteModules
+  children: clientRouteModules,
 }

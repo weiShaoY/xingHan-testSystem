@@ -26,6 +26,7 @@ export function useAppMode() {
    * 前端模式：权限由前端路由配置控制
    */
   const isFrontendMode = computed(() => accessMode === 'frontend')
+
   /**
    * 是否为后端控制模式
    * 后端模式：权限由后端接口返回的菜单数据控制
@@ -40,6 +41,6 @@ export function useAppMode() {
   return {
     isFrontendMode,
     isBackendMode,
-    currentMode
+    currentMode,
   }
 }

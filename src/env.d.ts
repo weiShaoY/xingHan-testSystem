@@ -1,4 +1,4 @@
-/// <reference types="vite/client" />
+// / <reference types="vite/client" />
 
 declare module 'nprogress'
 
@@ -17,13 +17,13 @@ declare module 'qrcode.vue' {
   export type Level = 'L' | 'M' | 'Q' | 'H'
   export type RenderAs = 'canvas' | 'svg'
   export type GradientType = 'linear' | 'radial'
-  export interface ImageSettings {
+  export type ImageSettings = {
     src: string
     height: number
     width: number
     excavate: boolean
   }
-  export interface QRCodeProps {
+  export type QRCodeProps = {
     value: string
     size?: number
     level?: Level

@@ -55,9 +55,10 @@ export class StorageKeyManager {
    */
   private findExistingKey(storeId: string): string | null {
     const storageKeys = Object.keys(localStorage)
+
     const pattern = StorageConfig.createKeyPattern(storeId)
 
-    return storageKeys.find((key) => pattern.test(key) && localStorage.getItem(key)) || null
+    return storageKeys.find(key => pattern.test(key) && localStorage.getItem(key)) || null
   }
 
   /**
@@ -66,11 +67,13 @@ export class StorageKeyManager {
   private migrateData(fromKey: string, toKey: string): void {
     try {
       const existingData = localStorage.getItem(fromKey)
+
       if (existingData) {
         localStorage.setItem(toKey, existingData)
         console.info(`[Storage] 已迁移数据: ${fromKey} → ${toKey}`)
       }
-    } catch (error) {
+    }
+    catch (error) {
       console.warn(`[Storage] 数据迁移失败: ${fromKey}`, error)
     }
   }
@@ -88,6 +91,7 @@ export class StorageKeyManager {
 
     // 查找并迁移其他版本的数据
     const existingKey = this.findExistingKey(storeId)
+
     if (existingKey) {
       this.migrateData(existingKey, currentKey)
     }

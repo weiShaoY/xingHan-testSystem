@@ -1,3 +1,11 @@
+import type {
+  ContainerWidthEnum,
+  MenuThemeEnum,
+  MenuTypeEnum,
+} from '@/enums/appEnum'
+
+import type { MenuThemeType } from '@/types/store'
+
 /**
  * 系统设置状态管理模块
  *
@@ -31,14 +39,20 @@
  * @author Art Design Pro Team
  */
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
-import { MenuThemeType } from '@/types/store'
+
+import { computed, ref } from 'vue'
+
 import AppConfig from '@/config'
-import { SystemThemeEnum, MenuThemeEnum, MenuTypeEnum, ContainerWidthEnum } from '@/enums/appEnum'
-import { setElementThemeColor } from '@/utils/ui'
-import { useCeremony } from '@/hooks/core/useCeremony'
-import { StorageConfig } from '@/utils'
+
 import { SETTING_DEFAULT_CONFIG } from '@/config/setting'
+
+import { SystemThemeEnum } from '@/enums/appEnum'
+
+import { useCeremony } from '@/hooks/core/useCeremony'
+
+import { StorageConfig } from '@/utils'
+
+import { setElementThemeColor } from '@/utils/ui'
 
 /**
  * 系统设置状态管理
@@ -50,66 +64,89 @@ export const useSettingStore = defineStore(
     // 菜单相关设置
     /** 菜单类型 */
     const menuType = ref(SETTING_DEFAULT_CONFIG.menuType)
+
     /** 菜单展开宽度 */
     const menuOpenWidth = ref(SETTING_DEFAULT_CONFIG.menuOpenWidth)
+
     /** 菜单是否展开 */
     const menuOpen = ref(SETTING_DEFAULT_CONFIG.menuOpen)
+
     /** 双菜单是否显示文本 */
     const dualMenuShowText = ref(SETTING_DEFAULT_CONFIG.dualMenuShowText)
 
     // 主题相关设置
     /** 系统主题类型 */
     const systemThemeType = ref(SETTING_DEFAULT_CONFIG.systemThemeType)
+
     /** 系统主题模式 */
     const systemThemeMode = ref(SETTING_DEFAULT_CONFIG.systemThemeMode)
+
     /** 菜单主题类型 */
     const menuThemeType = ref(SETTING_DEFAULT_CONFIG.menuThemeType)
+
     /** 系统主题颜色 */
     const systemThemeColor = ref(SETTING_DEFAULT_CONFIG.systemThemeColor)
 
     // 界面显示设置
     /** 是否显示菜单按钮 */
     const showMenuButton = ref(SETTING_DEFAULT_CONFIG.showMenuButton)
+
     /** 是否显示快速入口 */
     const showFastEnter = ref(SETTING_DEFAULT_CONFIG.showFastEnter)
+
     /** 是否显示刷新按钮 */
     const showRefreshButton = ref(SETTING_DEFAULT_CONFIG.showRefreshButton)
+
     /** 是否显示面包屑 */
     const showCrumbs = ref(SETTING_DEFAULT_CONFIG.showCrumbs)
+
     /** 是否显示工作台标签 */
     const showWorkTab = ref(SETTING_DEFAULT_CONFIG.showWorkTab)
+
     /** 是否显示语言切换 */
     const showLanguage = ref(SETTING_DEFAULT_CONFIG.showLanguage)
+
     /** 是否显示进度条 */
     const showNprogress = ref(SETTING_DEFAULT_CONFIG.showNprogress)
+
     /** 是否显示设置引导 */
     const showSettingGuide = ref(SETTING_DEFAULT_CONFIG.showSettingGuide)
+
     /** 是否显示节日文本 */
     const showFestivalText = ref(SETTING_DEFAULT_CONFIG.showFestivalText)
+
     /** 是否显示水印 */
     const watermarkVisible = ref(SETTING_DEFAULT_CONFIG.watermarkVisible)
 
     // 功能设置
     /** 是否自动关闭 */
     const autoClose = ref(SETTING_DEFAULT_CONFIG.autoClose)
+
     /** 是否唯一展开 */
     const uniqueOpened = ref(SETTING_DEFAULT_CONFIG.uniqueOpened)
+
     /** 是否色弱模式 */
     const colorWeak = ref(SETTING_DEFAULT_CONFIG.colorWeak)
+
     /** 是否刷新 */
     const refresh = ref(SETTING_DEFAULT_CONFIG.refresh)
+
     /** 是否加载节日烟花 */
     const holidayFireworksLoaded = ref(SETTING_DEFAULT_CONFIG.holidayFireworksLoaded)
 
     // 样式设置
     /** 边框模式 */
     const boxBorderMode = ref(SETTING_DEFAULT_CONFIG.boxBorderMode)
+
     /** 页面过渡效果 */
     const pageTransition = ref(SETTING_DEFAULT_CONFIG.pageTransition)
+
     /** 标签页样式 */
     const tabStyle = ref(SETTING_DEFAULT_CONFIG.tabStyle)
+
     /** 自定义圆角 */
     const customRadius = ref(SETTING_DEFAULT_CONFIG.customRadius)
+
     /** 容器宽度 */
     const containerWidth = ref(SETTING_DEFAULT_CONFIG.containerWidth)
 
@@ -122,10 +159,12 @@ export const useSettingStore = defineStore(
      * 根据当前主题类型和暗色模式返回对应的主题配置
      */
     const getMenuTheme = computed((): MenuThemeType => {
-      const list = AppConfig.themeList.filter((item) => item.theme === menuThemeType.value)
+      const list = AppConfig.themeList.filter(item => item.theme === menuThemeType.value)
+
       if (isDark.value) {
         return AppConfig.darkMenuStyles[0]
-      } else {
+      }
+      else {
         return list[0]
       }
     })
@@ -141,14 +180,14 @@ export const useSettingStore = defineStore(
      * 获取菜单展开宽度
      */
     const getMenuOpenWidth = computed((): string => {
-      return menuOpenWidth.value + 'px' || SETTING_DEFAULT_CONFIG.menuOpenWidth + 'px'
+      return `${menuOpenWidth.value}px` || `${SETTING_DEFAULT_CONFIG.menuOpenWidth}px`
     })
 
     /**
      * 获取自定义圆角
      */
     const getCustomRadius = computed((): string => {
-      return customRadius.value + 'rem' || SETTING_DEFAULT_CONFIG.customRadius + 'rem'
+      return `${customRadius.value}rem` || `${SETTING_DEFAULT_CONFIG.customRadius}rem`
     })
 
     /**
@@ -156,7 +195,7 @@ export const useSettingStore = defineStore(
      * 根据当前日期和节日日期判断是否显示烟花效果
      */
     const isShowFireworks = computed((): boolean => {
-      return festivalDate.value === useCeremony().currentFestivalData.value?.date ? false : true
+      return festivalDate.value !== useCeremony().currentFestivalData.value?.date
     })
 
     /**
@@ -438,13 +477,13 @@ export const useSettingStore = defineStore(
       setholidayFireworksLoaded,
       setShowFestivalText,
       setFestivalDate,
-      setDualMenuShowText
+      setDualMenuShowText,
     }
   },
   {
     persist: {
       key: 'setting',
-      storage: localStorage
-    }
-  }
+      storage: localStorage,
+    },
+  },
 )

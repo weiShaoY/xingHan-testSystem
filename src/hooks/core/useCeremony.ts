@@ -40,12 +40,21 @@
  * @author Art Design Pro Team
  */
 
-import { useTimeoutFn, useIntervalFn, useDateFormat } from '@vueuse/core'
+import {
+  useDateFormat,
+  useIntervalFn,
+  useTimeoutFn,
+} from '@vueuse/core'
+
 import { storeToRefs } from 'pinia'
+
 import { computed } from 'vue'
-import { useSettingStore } from '@/store/modules/setting'
-import { mittBus } from '@/utils/sys'
+
 import { festivalConfigList } from '@/config/modules/festival'
+
+import { useSettingStore } from '@/store/modules/setting'
+
+import { mittBus } from '@/utils/sys'
 
 /**
  * 节日庆祝配置常量
@@ -53,12 +62,15 @@ import { festivalConfigList } from '@/config/modules/festival'
 const FESTIVAL_CONFIG = {
   /** 初始延迟（毫秒） */
   INITIAL_DELAY: 300,
+
   /** 烟花播放间隔（毫秒） */
   FIREWORK_INTERVAL: 1000,
+
   /** 文本显示延迟（毫秒） */
   TEXT_DELAY: 2000,
+
   /** 默认烟花播放次数 */
-  DEFAULT_FIREWORKS_COUNT: 3
+  DEFAULT_FIREWORKS_COUNT: 3,
 } as const
 
 /**
@@ -67,6 +79,7 @@ const FESTIVAL_CONFIG = {
  */
 export function useCeremony() {
   const settingStore = useSettingStore()
+
   const { holidayFireworksLoaded, isShowFireworks } = storeToRefs(settingStore)
 
   let fireworksInterval: { pause: () => void } | null = null
@@ -80,7 +93,7 @@ export function useCeremony() {
   const isDateInRange = (
     currentDate: string,
     festivalDate: string,
-    festivalEndDate?: string
+    festivalEndDate?: string,
   ): boolean => {
     if (!festivalEndDate) {
       // 单日节日
@@ -89,7 +102,9 @@ export function useCeremony() {
 
     // 跨日期节日
     const current = new Date(currentDate)
+
     const start = new Date(festivalDate)
+
     const end = new Date(festivalEndDate)
 
     return current >= start && current <= end
@@ -100,7 +115,8 @@ export function useCeremony() {
    */
   const currentFestivalData = computed(() => {
     const currentDate = useDateFormat(new Date(), 'YYYY-MM-DD').value
-    return festivalConfigList.find((item) => isDateInRange(currentDate, item.date, item.endDate))
+
+    return festivalConfigList.find(item => isDateInRange(currentDate, item.date, item.endDate))
   })
 
   /**
@@ -134,6 +150,7 @@ export function useCeremony() {
    */
   const startFireworksLoop = () => {
     let playedCount = 0
+
     // 使用节日配置的播放次数，如果没有则使用默认值
     const count = currentFestivalData.value?.count ?? FESTIVAL_CONFIG.DEFAULT_FIREWORKS_COUNT
 
@@ -147,7 +164,9 @@ export function useCeremony() {
       }
     }, FESTIVAL_CONFIG.FIREWORK_INTERVAL)
 
-    fireworksInterval = { pause }
+    fireworksInterval = {
+      pause,
+    }
   }
 
   /**
@@ -159,6 +178,7 @@ export function useCeremony() {
     }
 
     const { start } = useTimeoutFn(startFireworksLoop, FESTIVAL_CONFIG.INITIAL_DELAY)
+
     start()
   }
 
@@ -170,6 +190,7 @@ export function useCeremony() {
       fireworksInterval.pause()
       fireworksInterval = null
     }
+
     settingStore.setShowFestivalText(false)
     updateFestivalDate()
   }
@@ -179,6 +200,6 @@ export function useCeremony() {
     cleanup,
     holidayFireworksLoaded,
     currentFestivalData,
-    isShowFireworks
+    isShowFireworks,
   }
 }

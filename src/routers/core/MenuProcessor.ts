@@ -8,13 +8,20 @@
  */
 
 import type { AppRouteRecord } from '@/types/router'
-import { useAdminUserStore } from '@/store/modules/adminUser'
-import { useClientUserStore } from '@/store/modules/clientUser'
-import { useAppMode } from '@/hooks/core/useAppMode'
+
 import { fetchGetMenuList } from '@/api/system-manage'
-import { asyncRoutes } from '../routes/async'
-import { RoutesAlias } from '../routesAlias'
+
+import { useAppMode } from '@/hooks/core/useAppMode'
+
+import { useAdminUserStore } from '@/store/modules/adminUser'
+
+import { useClientUserStore } from '@/store/modules/clientUser'
+
 import { formatMenuTitle } from '@/utils'
+
+import { asyncRoutes } from '../routes/async'
+
+import { RoutesAlias } from '../routesAlias'
 
 export class MenuProcessor {
   /**
@@ -24,9 +31,11 @@ export class MenuProcessor {
     const { isFrontendMode } = useAppMode()
 
     let menuList: AppRouteRecord[]
+
     if (isFrontendMode.value) {
       menuList = await this.processFrontendMenu(path)
-    } else {
+    }
+    else {
       menuList = await this.processBackendMenu(path)
     }
 
@@ -42,6 +51,7 @@ export class MenuProcessor {
    */
   private async processFrontendMenu(path?: string): Promise<AppRouteRecord[]> {
     const userStore = path?.startsWith('/client') ? useClientUserStore() : useAdminUserStore()
+
     const roles = userStore.info?.roles
 
     let menuList = [...asyncRoutes]
@@ -59,6 +69,7 @@ export class MenuProcessor {
    */
   private async processBackendMenu(path?: string): Promise<AppRouteRecord[]> {
     const list = await fetchGetMenuList(path)
+
     return this.filterEmptyMenus(list)
   }
 
@@ -68,13 +79,18 @@ export class MenuProcessor {
   private filterMenuByRoles(menu: AppRouteRecord[], roles: string[]): AppRouteRecord[] {
     return menu.reduce((acc: AppRouteRecord[], item) => {
       const itemRoles = item.meta?.roles
-      const hasPermission = !itemRoles || itemRoles.some((role) => roles?.includes(role))
+
+      const hasPermission = !itemRoles || itemRoles.some(role => roles?.includes(role))
 
       if (hasPermission) {
-        const filteredItem = { ...item }
+        const filteredItem = {
+          ...item,
+        }
+
         if (filteredItem.children?.length) {
           filteredItem.children = this.filterMenuByRoles(filteredItem.children, roles)
         }
+
         acc.push(filteredItem)
       }
 
@@ -91,11 +107,13 @@ export class MenuProcessor {
         // 如果有子菜单，先递归过滤子菜单
         if (item.children && item.children.length > 0) {
           const filteredChildren = this.filterEmptyMenus(item.children)
+
           return {
             ...item,
-            children: filteredChildren
+            children: filteredChildren,
           }
         }
+
         return item
       })
       .filter((item) => {
@@ -160,7 +178,7 @@ export class MenuProcessor {
         ...item,
         path: fullPath,
         redirect,
-        children
+        children,
       }
     })
   }
@@ -171,15 +189,16 @@ export class MenuProcessor {
    */
   private sortMenuTree(menuList: AppRouteRecord[]): AppRouteRecord[] {
     return [...menuList]
-      .map((item) => ({
+      .map(item => ({
         ...item,
-        children: item.children?.length ? this.sortMenuTree(item.children) : item.children
+        children: item.children?.length ? this.sortMenuTree(item.children) : item.children,
       }))
       .sort((a, b) => this.getRouteSortValue(a) - this.getRouteSortValue(b))
   }
 
   private getRouteSortValue(route: AppRouteRecord): number {
     const sort = route.meta?.sort
+
     return Number.isFinite(sort) ? (sort as number) : Number.MAX_SAFE_INTEGER
   }
 
@@ -197,6 +216,7 @@ export class MenuProcessor {
       }
 
       const nestedRedirect = this.resolveDefaultRedirect(child.children)
+
       if (nestedRedirect) {
         return nestedRedirect
       }
@@ -210,12 +230,12 @@ export class MenuProcessor {
    */
   private isNavigableRoute(route: AppRouteRecord): boolean {
     return Boolean(
-      route.path &&
-        route.path !== '/' &&
-        !route.meta?.link &&
-        route.meta?.isIframe !== true &&
-        route.component &&
-        route.component !== ''
+      route.path
+      && route.path !== '/'
+      && !route.meta?.link
+      && route.meta?.isIframe !== true
+      && route.component
+      && route.component !== '',
     )
   }
 
@@ -229,7 +249,7 @@ export class MenuProcessor {
    */
   private validateMenuPaths(menuList: AppRouteRecord[], level = 1): void {
     menuList.forEach((route) => {
-      if (!route.children?.length) return
+      if (!route.children?.length) { return }
 
       const parentName = String(route.name || route.path || '未知路由')
 
@@ -237,7 +257,7 @@ export class MenuProcessor {
         const childPath = child.path || ''
 
         // 跳过合法的绝对路径：外部链接和 iframe 路由
-        if (this.isValidAbsolutePath(childPath)) return
+        if (this.isValidAbsolutePath(childPath)) { return }
 
         // 检测非法的绝对路径
         if (childPath.startsWith('/')) {
@@ -255,9 +275,9 @@ export class MenuProcessor {
    */
   private isValidAbsolutePath(path: string): boolean {
     return (
-      path.startsWith('http://') ||
-      path.startsWith('https://') ||
-      path.startsWith('/outside/iframe/')
+      path.startsWith('http://')
+      || path.startsWith('https://')
+      || path.startsWith('/outside/iframe/')
     )
   }
 
@@ -268,18 +288,20 @@ export class MenuProcessor {
     route: AppRouteRecord,
     path: string,
     parentName: string,
-    level: number
+    level: number,
   ): void {
     const routeName = String(route.name || path || '未知路由')
+
     const menuTitle = route.meta?.title || routeName
+
     const suggestedPath = path.split('/').pop() || path.slice(1)
 
     console.error(
-      `[路由配置错误] 菜单 "${formatMenuTitle(menuTitle)}" (name: ${routeName}, path: ${path}) 配置错误\n` +
-        `  位置: ${parentName} > ${routeName}\n` +
-        `  问题: ${level + 1}级菜单的 path 不能以 / 开头\n` +
-        `  当前配置: path: '${path}'\n` +
-        `  应该改为: path: '${suggestedPath}'`
+      `[路由配置错误] 菜单 "${formatMenuTitle(menuTitle)}" (name: ${routeName}, path: ${path}) 配置错误\n`
+      + `  位置: ${parentName} > ${routeName}\n`
+      + `  问题: ${level + 1}级菜单的 path 不能以 / 开头\n`
+      + `  当前配置: path: '${path}'\n`
+      + `  应该改为: path: '${suggestedPath}'`,
     )
   }
 
@@ -287,7 +309,7 @@ export class MenuProcessor {
    * 构建完整路径
    */
   private buildFullPath(path: string, parentPath: string): string {
-    if (!path) return ''
+    if (!path) { return '' }
 
     // 外部链接直接返回
     if (path.startsWith('http://') || path.startsWith('https://')) {
@@ -303,7 +325,9 @@ export class MenuProcessor {
     if (parentPath) {
       // 移除父路径末尾的斜杠，移除子路径开头的斜杠，然后拼接
       const cleanParent = parentPath.replace(/\/$/, '')
+
       const cleanChild = path.replace(/^\//, '')
+
       return `${cleanParent}/${cleanChild}`
     }
 

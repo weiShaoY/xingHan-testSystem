@@ -46,7 +46,7 @@ import { useSettingStore } from '@/store/modules/setting'
 /**
  * 颜色转换结果接口
  */
-interface RgbaResult {
+type RgbaResult = {
   red: number
   green: number
   blue: number
@@ -69,7 +69,8 @@ export function getCssVar(name: string): string {
  */
 function isValidHexColor(hex: string): boolean {
   const cleanHex = hex.trim().replace(/^#/, '')
-  return /^[0-9A-Fa-f]{3}$|^[0-9A-Fa-f]{6}$/.test(cleanHex)
+
+  return /^[0-9A-F]{3}$|^[0-9A-F]{6}$/i.test(cleanHex)
 }
 
 /**
@@ -81,6 +82,7 @@ function isValidHexColor(hex: string): boolean {
  */
 function isValidRgbValue(r: number, g: number, b: number): boolean {
   const isValid = (value: number) => Number.isInteger(value) && value >= 0 && value <= 255
+
   return isValid(r) && isValid(g) && isValid(b)
 }
 
@@ -96,18 +98,19 @@ export function hexToRgba(hex: string, opacity: number): RgbaResult {
   }
 
   // 移除可能存在的 # 前缀并转换为大写
-  let cleanHex = hex.trim().replace(/^#/, '').toUpperCase()
+  let cleanHex = hex.trim().replace(/^#/, '')
+.toUpperCase()
 
   // 如果是缩写形式（如 FFF），转换为完整形式
   if (cleanHex.length === 3) {
     cleanHex = cleanHex
       .split('')
-      .map((char) => char.repeat(2))
+      .map(char => char.repeat(2))
       .join('')
   }
 
   // 解析 RGB 值
-  const [red, green, blue] = cleanHex.match(/\w\w/g)!.map((x) => parseInt(x, 16))
+  const [red, green, blue] = cleanHex.match(/\w\w/g)!.map(x => Number.parseInt(x, 16))
 
   // 确保 opacity 在有效范围内
   const validOpacity = Math.max(0, Math.min(1, opacity))
@@ -115,7 +118,12 @@ export function hexToRgba(hex: string, opacity: number): RgbaResult {
   // 构建 RGBA 字符串
   const rgba = `rgba(${red}, ${green}, ${blue}, ${validOpacity.toFixed(2)})`
 
-  return { red, green, blue, rgba }
+  return {
+    red,
+    green,
+    blue,
+    rgba,
+  }
 }
 
 /**
@@ -130,22 +138,24 @@ export function hexToRgb(hexColor: string): number[] {
   }
 
   const cleanHex = hexColor.replace(/^#/, '')
+
   let hex = cleanHex
 
   // 处理缩写形式
   if (hex.length === 3) {
     hex = hex
       .split('')
-      .map((char) => char.repeat(2))
+      .map(char => char.repeat(2))
       .join('')
   }
 
   const hexPairs = hex.match(/../g)
+
   if (!hexPairs) {
     throw new Error('Invalid hex color format')
   }
 
-  return hexPairs.map((hexPair) => parseInt(hexPair, 16))
+  return hexPairs.map(hexPair => Number.parseInt(hexPair, 16))
 }
 
 /**
@@ -163,6 +173,7 @@ export function rgbToHex(r: number, g: number, b: number): string {
 
   const toHex = (value: number) => {
     const hex = value.toString(16)
+
     return hex.length === 1 ? `0${hex}` : hex
   }
 
@@ -180,10 +191,12 @@ export function colourBlend(color1: string, color2: string, ratio: number): stri
   const validRatio = Math.max(0, Math.min(1, Number(ratio)))
 
   const rgb1 = hexToRgb(color1)
+
   const rgb2 = hexToRgb(color2)
 
   const blendedRgb = rgb1.map((value1, index) => {
     const value2 = rgb2[index]
+
     return Math.round(value1 * (1 - validRatio) + value2 * validRatio)
   })
 
@@ -208,7 +221,8 @@ export function getLightColor(color: string, level: number, isDark: boolean = fa
   }
 
   const rgb = hexToRgb(color)
-  const lightRgb = rgb.map((value) => Math.floor((255 - value) * level + value))
+
+  const lightRgb = rgb.map(value => Math.floor((255 - value) * level + value))
 
   return rgbToHex(lightRgb[0], lightRgb[1], lightRgb[2])
 }
@@ -226,7 +240,8 @@ export function getDarkColor(color: string, level: number): string {
   }
 
   const rgb = hexToRgb(color)
-  const darkRgb = rgb.map((value) => Math.floor(value * (1 - level)))
+
+  const darkRgb = rgb.map(value => Math.floor(value * (1 - level)))
 
   return rgbToHex(darkRgb[0], darkRgb[1], darkRgb[2])
 }
@@ -242,14 +257,14 @@ export function handleElementThemeColor(theme: string, isDark: boolean = false):
   for (let i = 1; i <= 9; i++) {
     document.documentElement.style.setProperty(
       `--el-color-primary-light-${i}`,
-      getLightColor(theme, i / 10, isDark)
+      getLightColor(theme, i / 10, isDark),
     )
   }
 
   for (let i = 1; i <= 9; i++) {
     document.documentElement.style.setProperty(
       `--el-color-primary-dark-${i}`,
-      getDarkColor(theme, i / 10)
+      getDarkColor(theme, i / 10),
     )
   }
 }
@@ -260,6 +275,7 @@ export function handleElementThemeColor(theme: string, isDark: boolean = false):
  */
 export function setElementThemeColor(color: string): void {
   const mixColor = '#ffffff'
+
   const elStyle = document.documentElement.style
 
   elStyle.setProperty('--el-color-primary', color)
@@ -268,6 +284,7 @@ export function setElementThemeColor(color: string): void {
   // 生成更淡一点的颜色
   for (let i = 1; i < 16; i++) {
     const itemColor = colourBlend(color, mixColor, i / 16)
+
     elStyle.setProperty(`--el-color-primary-custom-${i}`, itemColor)
   }
 }

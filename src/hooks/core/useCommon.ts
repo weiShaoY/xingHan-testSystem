@@ -16,11 +16,14 @@
  */
 
 import { computed } from 'vue'
+
 import { useMenuStore } from '@/store/modules/menu'
+
 import { useSettingStore } from '@/store/modules/setting'
 
 export function useCommon() {
   const menuStore = useMenuStore()
+
   const settingStore = useSettingStore()
 
   /**
@@ -43,6 +46,7 @@ export function useCommon() {
    */
   const scrollToTop = () => {
     const scrollContainer = document.getElementById('app-main')
+
     if (scrollContainer) {
       scrollContainer.scrollTop = 0
     }
@@ -54,10 +58,11 @@ export function useCommon() {
    */
   const smoothScrollToTop = () => {
     const scrollContainer = document.getElementById('app-main')
+
     if (scrollContainer) {
       scrollContainer.scrollTo({
         top: 0,
-        behavior: 'smooth'
+        behavior: 'smooth',
       })
     }
   }
@@ -69,10 +74,11 @@ export function useCommon() {
    */
   const scrollTo = (top: number, smooth: boolean = false) => {
     const scrollContainer = document.getElementById('app-main')
+
     if (scrollContainer) {
       scrollContainer.scrollTo({
         top,
-        behavior: smooth ? 'smooth' : 'auto'
+        behavior: smooth ? 'smooth' : 'auto',
       })
     }
   }
@@ -82,6 +88,6 @@ export function useCommon() {
     refresh,
     scrollTo,
     scrollToTop,
-    smoothScrollToTop
+    smoothScrollToTop,
   }
 }

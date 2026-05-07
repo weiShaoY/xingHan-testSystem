@@ -35,32 +35,66 @@
  * @module router/guards/beforeEach
  * @author Art Design Pro Team
  */
-import type { Router, RouteLocationNormalized, NavigationGuardNext } from 'vue-router'
-import { nextTick } from 'vue'
+import type {
+  NavigationGuardNext,
+  RouteLocationNormalized,
+  Router,
+} from 'vue-router'
+
 import NProgress from 'nprogress'
-import { useSettingStore } from '@/store/modules/setting'
-import { useAdminUserStore } from '@/store/modules/adminUser'
-import { useClientUserStore } from '@/store/modules/clientUser'
-import { useMenuStore } from '@/store/modules/menu'
-import { setWorktab } from '@/utils/navigation'
-import { setPageTitle } from '@/utils/router'
-import { staticRoutes } from '../routes/static'
-import { loadingService } from '@/utils/ui'
-import { useCommon } from '@/hooks/core/useCommon'
-import { useWorktabStore } from '@/store/modules/worktab'
+
+import { nextTick } from 'vue'
+
 import { fetchGetUserInfo } from '@/api/auth'
-import { ApiStatus } from '@/utils/http/status'
+
+import { useCommon } from '@/hooks/core/useCommon'
+
+import { useAdminUserStore } from '@/store/modules/adminUser'
+
+import { useClientUserStore } from '@/store/modules/clientUser'
+
+import { useMenuStore } from '@/store/modules/menu'
+
+import { useSettingStore } from '@/store/modules/setting'
+
+import { useWorktabStore } from '@/store/modules/worktab'
+
 import { isHttpError } from '@/utils/http/error'
-import { RouteRegistry, MenuProcessor, IframeRouteManager, RoutePermissionValidator } from '../core'
+
+import { ApiStatus } from '@/utils/http/status'
+
+import { setWorktab } from '@/utils/navigation'
+
+import { setPageTitle } from '@/utils/router'
+
+import { loadingService } from '@/utils/ui'
+
+import {
+  IframeRouteManager,
+  MenuProcessor,
+  RoutePermissionValidator,
+  RouteRegistry,
+} from '../core'
+
+import { staticRoutes } from '../routes/static'
 
 // 路由注册器实例
 let routeRegistry: RouteRegistry | null = null
 
 // 菜单处理器实例
-const menuProcessor = new MenuProcessor()
+let menuProcessor: MenuProcessor | null = null
 
-const getRouteUserStore = (path: string) =>
-  path.startsWith('/client') ? useClientUserStore() : useAdminUserStore()
+function getMenuProcessor(): MenuProcessor {
+  if (!menuProcessor) {
+    menuProcessor = new MenuProcessor()
+  }
+
+  return menuProcessor
+}
+
+function getRouteUserStore(path: string) {
+  return path.startsWith('/client') ? useClientUserStore() : useAdminUserStore()
+}
 
 // 跟踪是否需要关闭 loading
 let pendingLoading = false
@@ -112,16 +146,19 @@ export function setupBeforeEachGuard(router: Router): void {
     async (
       to: RouteLocationNormalized,
       from: RouteLocationNormalized,
-      next: NavigationGuardNext
+      next: NavigationGuardNext,
     ) => {
       try {
         await handleRouteGuard(to, from, next, router)
-      } catch (error) {
+      }
+      catch (error) {
         console.error('[RouteGuard] 路由守卫处理失败:', error)
         closeLoading()
-        next({ name: 'Exception500' })
+        next({
+          name: 'Exception500',
+        })
       }
-    }
+    },
   )
 }
 
@@ -144,9 +181,10 @@ async function handleRouteGuard(
   to: RouteLocationNormalized,
   from: RouteLocationNormalized,
   next: NavigationGuardNext,
-  router: Router
+  router: Router,
 ): Promise<void> {
   const settingStore = useSettingStore()
+
   const userStore = getRouteUserStore(to.path)
 
   // 启动进度条
@@ -164,10 +202,15 @@ async function handleRouteGuard(
     // 已经失败过，直接放行到错误页面，不再重试
     if (to.matched.length > 0) {
       next()
-    } else {
-      // 未匹配到路由，跳转到 500 页面
-      next({ name: 'Exception500', replace: true })
     }
+    else {
+      // 未匹配到路由，跳转到 500 页面
+      next({
+        name: 'Exception500',
+        replace: true,
+      })
+    }
+
     return
   }
 
@@ -179,6 +222,7 @@ async function handleRouteGuard(
       next(false)
       return
     }
+
     await handleDynamicRoutes(to, next, router)
     return
   }
@@ -197,7 +241,9 @@ async function handleRouteGuard(
   }
 
   // 6. 未匹配到路由，跳转到 404
-  next({ name: 'Exception404' })
+  next({
+    name: 'Exception404',
+  })
 }
 
 /**
@@ -207,7 +253,7 @@ async function handleRouteGuard(
 function handleLoginStatus(
   to: RouteLocationNormalized,
   userStore: ReturnType<typeof getRouteUserStore>,
-  next: NavigationGuardNext
+  next: NavigationGuardNext,
 ): boolean {
   // 已登录或访问登录页或静态路由，直接放行
   if (userStore.isLogin || isStaticRoute(to.path)) {
@@ -217,7 +263,9 @@ function handleLoginStatus(
   // 未登录且访问需要权限的页面，跳转到登录页并携带 redirect 参数
   next({
     name: to.path.startsWith('/client') ? 'ClientLogin' : 'Login',
-    query: { redirect: to.fullPath }
+    query: {
+      redirect: to.fullPath,
+    },
   })
   return false
 }
@@ -236,15 +284,19 @@ function isStaticRoute(path: string): boolean {
 
       // 处理动态路由参数匹配
       const routePath = route.path
+
       const pattern = routePath.replace(/:[^/]+/g, '[^/]+').replace(/\*/g, '.*')
+
       const regex = new RegExp(`^${pattern}$`)
 
       if (regex.test(targetPath)) {
         return true
       }
+
       if (route.children && route.children.length > 0) {
         return checkRoute(route.children, targetPath)
       }
+
       return false
     })
   }
@@ -258,7 +310,7 @@ function isStaticRoute(path: string): boolean {
 async function handleDynamicRoutes(
   to: RouteLocationNormalized,
   next: NavigationGuardNext,
-  router: Router
+  router: Router,
 ): Promise<void> {
   // 标记初始化进行中
   routeInitInProgress = true
@@ -272,6 +324,8 @@ async function handleDynamicRoutes(
     await fetchUserInfo(to.path)
 
     // 2. 获取菜单数据
+    const menuProcessor = getMenuProcessor()
+
     const menuList = await menuProcessor.getMenuList(to.path)
 
     // 3. 验证菜单数据
@@ -284,6 +338,7 @@ async function handleDynamicRoutes(
 
     // 5. 保存侧边栏菜单数据到 store
     const menuStore = useMenuStore()
+
     menuStore.setMenuList(menuProcessor.getSidebarMenuList(menuList))
     menuStore.addRemoveRouteFns(routeRegistry?.getRemoveRouteFns() || [])
 
@@ -300,17 +355,18 @@ async function handleDynamicRoutes(
         path: to.path,
         query: to.query,
         hash: to.hash,
-        replace: true
+        replace: true,
       })
       return
     }
 
     // 8. 验证目标路径权限
     const { homePath } = useCommon()
+
     const { path: validatedPath, hasPermission } = RoutePermissionValidator.validatePath(
       to.path,
       menuList,
-      homePath.value || '/'
+      homePath.value || '/',
     )
 
     // 初始化成功，重置进行中标记
@@ -327,18 +383,20 @@ async function handleDynamicRoutes(
       // 直接跳转到首页
       next({
         path: validatedPath,
-        replace: true
+        replace: true,
       })
-    } else {
+    }
+    else {
       // 有权限，正常导航
       next({
         path: to.path,
         query: to.query,
         hash: to.hash,
-        replace: true
+        replace: true,
       })
     }
-  } catch (error) {
+  }
+  catch (error) {
     console.error('[RouteGuard] 动态路由注册失败:', error)
 
     // 关闭 loading
@@ -362,7 +420,10 @@ async function handleDynamicRoutes(
     }
 
     // 跳转到 500 页面，使用 replace 避免产生历史记录
-    next({ name: 'Exception500', replace: true })
+    next({
+      name: 'Exception500',
+      replace: true,
+    })
   }
 }
 
@@ -371,8 +432,11 @@ async function handleDynamicRoutes(
  */
 async function fetchUserInfo(path: string): Promise<void> {
   const userStore = getRouteUserStore(path)
+
   const data = await fetchGetUserInfo(path)
+
   userStore.setUserInfo(data)
+
   // 检查并清理工作台标签页（如果是不同用户登录）
   userStore.checkAndClearWorktabs()
 }
@@ -386,6 +450,7 @@ export function resetRouterState(delay: number): void {
     IframeRouteManager.getInstance().clear()
 
     const menuStore = useMenuStore()
+
     menuStore.removeAllDynamicRoutes()
     menuStore.setMenuList([])
 
@@ -404,8 +469,12 @@ function handleRootPathRedirect(to: RouteLocationNormalized, next: NavigationGua
   }
 
   const { homePath } = useCommon()
+
   if (homePath.value && homePath.value !== '/') {
-    next({ path: homePath.value, replace: true })
+    next({
+      path: homePath.value,
+      replace: true,
+    })
     return true
   }
 
