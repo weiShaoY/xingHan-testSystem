@@ -8,6 +8,11 @@ declare module 'vue-img-cutter'
 
 declare module 'file-saver'
 
+declare module '@wangeditor/editor-for-vue' {
+  export const Editor: any
+  export const Toolbar: any
+}
+
 declare module 'qrcode.vue' {
   export type Level = 'L' | 'M' | 'Q' | 'H'
   export type RenderAs = 'canvas' | 'svg'

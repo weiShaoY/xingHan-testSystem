@@ -44,6 +44,7 @@ export default ({ mode }: { mode: string }) => {
         '@icons': resolvePath('src/assets/icons'),
         '@utils': resolvePath('src/utils'),
         '@stores': resolvePath('src/store'),
+        '@plugins': resolvePath('src/plugins'),
         '@styles': resolvePath('src/assets/styles')
       }
     },

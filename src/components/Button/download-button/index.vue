@@ -1,5 +1,6 @@
 <!------------------------------------  下载按钮  ------------------------------------------------->
 <script setup lang="ts">
+import { ElNotification } from 'element-plus'
 import type { Placement } from 'element-plus'
 
 import type { CSSProperties } from 'vue'
@@ -80,13 +81,28 @@ type Props = {
  */
 const downloading = ref(false)
 
+function getFileName(url: string): string {
+  const pathname = new URL(url, window.location.href).pathname
+  return decodeURIComponent(pathname.split('/').pop() || 'download')
+}
+
+async function downloadFile(url: string): Promise<void> {
+  const link = document.createElement('a')
+  link.href = url
+  link.download = getFileName(url)
+  link.rel = 'noopener'
+  document.body.appendChild(link)
+  link.click()
+  link.remove()
+}
+
 /**
  * 下载处理器映射
  */
 const downloadHandlers = {
-  image: downloadImage,
-  video: downloadVideo,
-  audio: downloadAudio,
+  image: downloadFile,
+  video: downloadFile,
+  audio: downloadFile,
 } as const
 
 /**
@@ -114,10 +130,9 @@ async function handleDownload(_event: MouseEvent): Promise<void> {
     emit('click')
   }
   catch (error) {
-    window.$notification.error('下载失败:')
     const errorMessage = error instanceof Error ? error.message : '下载过程中发生未知错误'
 
-    window.$notification.error({
+    ElNotification.error({
       title: '下载失败',
       message: errorMessage,
       duration: 3000,

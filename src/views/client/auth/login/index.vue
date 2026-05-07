@@ -9,6 +9,7 @@
       <div class="auth-right-wrap">
         <div class="form">
           <h3 class="title">{{ $t('login.title') }}</h3>
+          <h3 class="title">{{ $t('login.title') }}</h3>
           <p class="sub-title">{{ $t('login.subTitle') }}</p>
           <ElForm
             ref="formRef"

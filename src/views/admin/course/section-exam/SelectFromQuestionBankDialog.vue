@@ -1,6 +1,7 @@
 <!------  2026-04-15---16:52---星期三  ------>
 <!------------------------------------    ------------------------------------------------->
 <script lang="ts" setup>
+import { ElNotification } from 'element-plus'
 
 const visible = defineModel({
   type: Boolean,
@@ -202,13 +203,13 @@ function handleRandomSelection() {
   const list = formData.value.questions
 
   if (count <= 0) {
-    window.$notification.error('请输入随机选择的题目数')
+    ElNotification.error('请输入随机选择的题目数')
 
     return
   }
 
   if (count > list.length) {
-    window.$notification.warning('数量不能超过题目总数')
+    ElNotification.warning('数量不能超过题目总数')
     return
   }
 
