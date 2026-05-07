@@ -120,7 +120,7 @@ export const upgradeLogList = ref<UpgradeLog[]>([
       'views 文件目录、文件名、代码优化',
       'useTable 分页请求字段增加全局配置 tableConfig.ts',
       '优化路由配置为模块化结构',
-      '获取菜单接口使用 apifox mock 数据（需在 .env 中 将 VITE_ACCESS_MODE 设为 backend 模式）',
+      '获取菜单接口使用 apifox mock 数据（需在 .env 中 将 VITE_APP_ACCESS_MODE 设为 backend 模式）',
     ],
   },
   {

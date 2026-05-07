@@ -2,7 +2,7 @@
  * useAppMode - 应用模式管理
  *
  * 提供应用访问模式的判断和管理功能，支持前端和后端两种权限控制模式。
- * 根据环境变量 VITE_ACCESS_MODE 自动识别当前运行模式。
+ * 根据环境变量 VITE_APP_ACCESS_MODE 自动识别当前运行模式。
  *
  * ## 主要功能
  *
@@ -19,7 +19,7 @@ import { computed } from 'vue'
 
 export function useAppMode() {
   // 获取访问模式配置
-  const accessMode = import.meta.env.VITE_ACCESS_MODE
+  const accessMode = import.meta.env.VITE_APP_ACCESS_MODE
 
   /**
    * 是否为前端控制模式

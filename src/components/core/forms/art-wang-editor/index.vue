@@ -39,7 +39,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 type InsertFnType = (url: string, alt: string, href: string) => void
 
-const { VITE_API_URL } = import.meta.env
+const { VITE_APP_API_URL } = import.meta.env
 
 // Props 定义
 type Props = {
@@ -94,7 +94,7 @@ const DEFAULT_UPLOAD_CONFIG = {
 
 // 计算属性：上传服务器地址
 const uploadServer = computed(
-  () => props.uploadConfig?.server || `${VITE_API_URL}/api/common/upload/wangeditor`,
+  () => props.uploadConfig?.server || `${VITE_APP_API_URL}/api/common/upload/wangeditor`,
 )
 
 // 合并上传配置

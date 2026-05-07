@@ -24,7 +24,7 @@ const { keepAliveExclude } = storeToRefs(useWorktabStore())
 
 const isRefresh = shallowRef(true)
 
-const isOpenRouteInfo = import.meta.env.VITE_OPEN_ROUTE_INFO
+const isOpenRouteInfo = import.meta.env.VITE_APP_OPEN_ROUTE_INFO
 
 const showTransitionMask = ref(false)
 

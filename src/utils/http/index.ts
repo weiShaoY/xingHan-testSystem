@@ -72,13 +72,13 @@ type ExtendedAxiosRequestConfig = {
   authPath?: string
 } & AxiosRequestConfig
 
-const { VITE_API_URL, VITE_WITH_CREDENTIALS } = import.meta.env
+const { VITE_APP_API_URL, VITE_APP_WITH_CREDENTIALS } = import.meta.env
 
 /** Axios实例 */
 const axiosInstance = axios.create({
   timeout: REQUEST_TIMEOUT,
-  baseURL: VITE_API_URL,
-  withCredentials: VITE_WITH_CREDENTIALS === 'true',
+  baseURL: VITE_APP_API_URL,
+  withCredentials: VITE_APP_WITH_CREDENTIALS === 'true',
   validateStatus: status => status >= 200 && status < 300,
   transformResponse: [
     (data, headers) => {

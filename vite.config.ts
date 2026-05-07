@@ -18,31 +18,37 @@ import { defineConfig, loadEnv } from 'vite'
 
 import viteCompression from 'vite-plugin-compression'
 
-// import { visualizer } from 'rollup-plugin-visualizer'
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons-ng'
 
 import vueDevTools from 'vite-plugin-vue-devtools'
+
+function resolvePath(paths: string) {
+  return path.resolve(__dirname, paths)
+}
 
 export default ({ mode }: { mode: string }) => {
   const root = process.cwd()
 
   const env = loadEnv(mode, root)
 
-  const { VITE_VERSION, VITE_PORT, VITE_BASE_URL, VITE_API_URL, VITE_API_PROXY_URL } = env
+  const { VITE_APP_VERSION, VITE_APP_PORT, VITE_APP_BASE_URL, VITE_APP_API_URL, VITE_APP_API_PROXY_URL } = env
 
-  console.log(`🚀 API_URL = ${VITE_API_URL}`)
-  console.log(`🚀 VERSION = ${VITE_VERSION}`)
+  console.log(`🚀 API_URL = ${VITE_APP_API_URL}`)
+  console.log(`🚀 VERSION = ${VITE_APP_VERSION}`)
 
   return defineConfig({
+
     define: {
-      __APP_VERSION__: JSON.stringify(VITE_VERSION),
+      __APP_VERSION__: JSON.stringify(VITE_APP_VERSION),
     },
-    base: VITE_BASE_URL,
+
+    base: VITE_APP_BASE_URL,
+
     server: {
-      port: Number(VITE_PORT),
+      port: Number(VITE_APP_PORT),
       proxy: {
         '/api': {
-          target: VITE_API_PROXY_URL,
+          target: VITE_APP_API_PROXY_URL,
           changeOrigin: true,
         },
       },
@@ -84,6 +90,7 @@ export default ({ mode }: { mode: string }) => {
     },
     plugins: [
       vue(),
+
       UnoCSS(),
 
       // 自动按需导入 API
@@ -130,21 +137,14 @@ export default ({ mode }: { mode: string }) => {
         threshold: 10240, // 只有大小大于该值的资源会被处理 10240B = 10KB
         deleteOriginFile: false, // 压缩后是否删除原文件
       }),
-      vueDevTools(),
 
-      // 打包分析
-      // visualizer({
-      //   open: true,
-      //   gzipSize: true,
-      //   brotliSize: true,
-      //   filename: 'dist/stats.html' // 分析图生成的文件名及路径
-      // }),
-
-      // SVG 图标
       createSvgIconsPlugin({
         iconDirs: [path.resolve(__dirname, 'src/assets/svgs')],
         symbolId: 'icon-[dir]-[name]',
       }),
+
+      vueDevTools(),
+
     ],
 
     // 依赖预构建：避免运行时重复请求与转换，提升首次加载速度
@@ -190,8 +190,4 @@ export default ({ mode }: { mode: string }) => {
       },
     },
   })
-}
-
-function resolvePath(paths: string) {
-  return path.resolve(__dirname, paths)
 }

@@ -18,7 +18,7 @@ import { mittBus } from '@/utils/sys'
 const { t } = useI18n()
 
 // 环境变量
-const ENCRYPT_KEY = import.meta.env.VITE_LOCK_ENCRYPT_KEY
+const ENCRYPT_KEY = import.meta.env.VITE_APP_LOCK_ENCRYPT_KEY
 
 // Store
 const userStore = useRoute().path.startsWith('/client')

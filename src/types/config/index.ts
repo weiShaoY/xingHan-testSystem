@@ -196,25 +196,25 @@ export type EnvConfig = {
   NODE_ENV: string
 
   // 应用版本
-  VITE_VERSION: string
+  VITE_APP_VERSION: string
 
   // 应用端口
-  VITE_PORT: string
+  VITE_APP_PORT: string
 
   // 应用基础路径
-  VITE_BASE_URL: string
+  VITE_APP_BASE_URL: string
 
   // API 地址
-  VITE_API_URL: string
+  VITE_APP_API_URL: string
 
   // 是否开启 Mock
-  VITE_USE_MOCK?: string
+  VITE_APP_USE_MOCK?: string
 
   // 是否开启压缩
-  VITE_USE_GZIP?: string
+  VITE_APP_USE_GZIP?: string
 
   // 是否开启 CDN
-  VITE_USE_CDN?: string
+  VITE_APP_USE_CDN?: string
 }
 
 // 应用配置
