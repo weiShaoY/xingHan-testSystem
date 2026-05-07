@@ -268,8 +268,6 @@ onMounted(initScrollState)
 </template>
 
 <style scoped>
-  @reference '@styles/core/tailwind.css';
-
 .button-arrow {
   @apply absolute
     top-1/2

@@ -2,9 +2,9 @@ import path from 'node:path'
 
 import { fileURLToPath } from 'node:url'
 
-import tailwindcss from '@tailwindcss/vite'
-
 import vue from '@vitejs/plugin-vue'
+
+import UnoCSS from 'unocss/vite'
 
 import AutoImport from 'unplugin-auto-import/vite'
 
@@ -84,7 +84,7 @@ export default ({ mode }: { mode: string }) => {
     },
     plugins: [
       vue(),
-      tailwindcss(),
+      UnoCSS(),
 
       // 自动按需导入 API
       AutoImport({

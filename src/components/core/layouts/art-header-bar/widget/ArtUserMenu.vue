@@ -200,8 +200,6 @@ function closeUserMenu(): void {
 </template>
 
 <style scoped>
-  @reference '@styles/core/tailwind.css';
-
 @layer components {
   .btn-item {
     @apply flex items-center p-2 mb-3 select-none rounded-md cursor-pointer last:mb-0;

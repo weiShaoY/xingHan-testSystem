@@ -288,8 +288,6 @@ function handleAnimationReset() {
 </template>
 
 <style scoped>
-  @reference '@styles/core/tailwind.css';
-
 .count {
   @apply p-5
     mb-5
