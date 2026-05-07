@@ -1,9 +1,10 @@
 <!------------------------------------  下载按钮  ------------------------------------------------->
 <script setup lang="ts">
-import { ElNotification } from 'element-plus'
 import type { Placement } from 'element-plus'
 
 import type { CSSProperties } from 'vue'
+
+import { ElNotification } from 'element-plus'
 
 /**
  * 组件名称
@@ -83,11 +84,13 @@ const downloading = ref(false)
 
 function getFileName(url: string): string {
   const pathname = new URL(url, window.location.href).pathname
+
   return decodeURIComponent(pathname.split('/').pop() || 'download')
 }
 
 async function downloadFile(url: string): Promise<void> {
   const link = document.createElement('a')
+
   link.href = url
   link.download = getFileName(url)
   link.rel = 'noopener'

@@ -55,12 +55,15 @@ declare global {
   const emojo: typeof import('../../utils/ui/emojo').default
   const extendRef: typeof import('@vueuse/core').extendRef
   const formatMenuTitle: typeof import('../../utils/router').formatMenuTitle
+  const formatTimestampToChineseDate: typeof import('../../utils/time').formatTimestampToChineseDate
   const getActivePinia: typeof import('pinia').getActivePinia
   const getCssVar: typeof import('../../utils/ui/colors').getCssVar
   const getCurrentInstance: typeof import('vue').getCurrentInstance
   const getCurrentScope: typeof import('vue').getCurrentScope
   const getCurrentWatcher: typeof import('vue').getCurrentWatcher
   const getDarkColor: typeof import('../../utils/ui/colors').getDarkColor
+  const getDuration: typeof import('../../utils/time').getDuration
+  const getElapsedTime: typeof import('../../utils/time').getElapsedTime
   const getFirstMenuPath: typeof import('../../utils/navigation/route').getFirstMenuPath
   const getLightColor: typeof import('../../utils/ui/colors').getLightColor
   const getPasswordStrength: typeof import('../../utils/form/validator').getPasswordStrength
@@ -447,12 +450,15 @@ declare module 'vue' {
     readonly emojo: UnwrapRef<typeof import('../../utils/ui/emojo')['default']>
     readonly extendRef: UnwrapRef<typeof import('@vueuse/core')['extendRef']>
     readonly formatMenuTitle: UnwrapRef<typeof import('../../utils/router')['formatMenuTitle']>
+    readonly formatTimestampToChineseDate: UnwrapRef<typeof import('../../utils/time')['formatTimestampToChineseDate']>
     readonly getActivePinia: UnwrapRef<typeof import('pinia')['getActivePinia']>
     readonly getCssVar: UnwrapRef<typeof import('../../utils/ui/colors')['getCssVar']>
     readonly getCurrentInstance: UnwrapRef<typeof import('vue')['getCurrentInstance']>
     readonly getCurrentScope: UnwrapRef<typeof import('vue')['getCurrentScope']>
     readonly getCurrentWatcher: UnwrapRef<typeof import('vue')['getCurrentWatcher']>
     readonly getDarkColor: UnwrapRef<typeof import('../../utils/ui/colors')['getDarkColor']>
+    readonly getDuration: UnwrapRef<typeof import('../../utils/time')['getDuration']>
+    readonly getElapsedTime: UnwrapRef<typeof import('../../utils/time')['getElapsedTime']>
     readonly getFirstMenuPath: UnwrapRef<typeof import('../../utils/navigation/route')['getFirstMenuPath']>
     readonly getLightColor: UnwrapRef<typeof import('../../utils/ui/colors')['getLightColor']>
     readonly getPasswordStrength: UnwrapRef<typeof import('../../utils/form/validator')['getPasswordStrength']>

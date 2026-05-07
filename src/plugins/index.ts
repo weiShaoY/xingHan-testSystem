@@ -9,10 +9,15 @@ export * from './echarts'
 
 import './svgIcons'
 
+import { setVersionTip } from './version'
+
 /**
  * 设置插件
  * @param app - Vue 应用实例
  */
 export function setupPlugins(app: VueApp) {
   console.log('🚀 ~ file: index.ts:15 ~ app:', app)
+
+    setVersionTip()
+
 }
