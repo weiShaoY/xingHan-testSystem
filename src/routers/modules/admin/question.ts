@@ -50,5 +50,17 @@ export const Question: AppRouteRecord = {
         isHide: true,
       },
     },
+    {
+      path: 'create',
+      name: 'AdminQuestionCreate',
+      component: '/admin/question/create',
+      meta: {
+        title: '题库创建',
+        icon: 'ri:add-line',
+        keepAlive: true,
+        sort: 1,
+        isHide: true,
+      },
+    },
   ],
 }

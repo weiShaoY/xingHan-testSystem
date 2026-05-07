@@ -61,7 +61,7 @@ const sourceList = ref<QuestionBank[]>([
    */
 function goToCreateQuestionBank() {
   router.push({
-    name: 'AdminQuestionEdit',
+    name: 'AdminQuestionCreate',
     params: {
       id: 'create',
     },
@@ -151,8 +151,8 @@ function deleteQuestionBank(item: QuestionBank) {
       </div>
 
       <div
-
-        class="art-card mb-5 px-5 flex flex-1 flex-col h-35 justify-center relative max-sm:mb-4"
+        class="art-card mb-5 px-5 flex flex-1 flex-col h-35 cursor-cell justify-center relative max-sm:mb-4"
+        @click="goToDetail(item)"
       >
         <div
           class="flex items-center justify-between"
@@ -169,6 +169,7 @@ function deleteQuestionBank(item: QuestionBank) {
             <ArtIconButton
               type="delete"
               class="ml-3 max-sm:ml-[7px]"
+              @click="deleteQuestionBank(item)"
             />
 
             <ArtIconButton
@@ -179,6 +180,7 @@ function deleteQuestionBank(item: QuestionBank) {
             <ArtIconButton
               type="edit"
               class="ml-3 max-sm:ml-[7px]"
+              @click="goToEdit(item)"
             />
 
             <ArtIconButton
