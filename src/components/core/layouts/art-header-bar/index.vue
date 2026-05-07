@@ -269,7 +269,7 @@ function openChat(): void {
           icon="ri:refresh-line"
           class="refresh-btn !ml-3 max-sm:!hidden"
           :style="{ marginLeft: !isLeftMenu ? '10px' : '0' }"
-          @click="reload"
+          @click="() => reload()"
         />
 
         <!-- 快速入口 -->

@@ -174,13 +174,10 @@ function deleteQuestionBank(item: QuestionBank) {
             <ArtIconButton
               type="export"
               class="ml-3 max-sm:ml-[7px]"
-            >
-              按钮
-            </ArtIconButton>
+            />
 
             <ArtIconButton
               type="edit"
-              tooltip="编辑"
               class="ml-3 max-sm:ml-[7px]"
             />
 
