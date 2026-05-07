@@ -47,6 +47,7 @@ function handleClick(event: MouseEvent) {
     class="block cursor-pointer"
     @click="handleClick"
   >
+
     <SvgIcon
       class="transform transition-transform duration-500 hover:-translate-y-1"
       :icon="icon"
