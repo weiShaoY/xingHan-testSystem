@@ -14,7 +14,7 @@ const emit = defineEmits<{
 type Props = {
 
   /** 按钮类型 */
-  type?: 'add' | 'edit' | 'delete' | 'more' | 'view'
+  type?: 'add' | 'edit' | 'delete' | 'more' | 'view' | 'export'
 
   /** 按钮图标 */
   icon?: string
@@ -47,6 +47,10 @@ const defaultButtons = {
     icon: 'ri:eye-line',
     class: 'bg-info/12 text-info',
   },
+  export: {
+    icon: 'ri:export-line',
+    class: 'bg-success/12 text-success',
+  },
   more: {
     icon: 'ri:more-2-fill',
     class: '',
@@ -70,7 +74,7 @@ function handleClick() {
 
 <template>
   <div
-    class="inline-flex items-center justify-center min-w-8 h-8 px-2.5 mr-2.5 text-sm c-p rounded-md align-middle"
+    class="text-sm mr-2.5 px-2.5 align-middle rounded-md inline-flex h-8 min-w-8 c-p items-center justify-center"
     :class="[
       buttonClass,
     ]"

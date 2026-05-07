@@ -32,7 +32,7 @@ const chartData = computed<LineDataItem[]>(() => [
 
 <template>
   <div
-    class="art-card h-100 p-5 mb-5 max-sm:mb-4"
+    class="art-card mb-5 p-5 h-100 max-sm:mb-4"
   >
     <div
       class="art-card-header"

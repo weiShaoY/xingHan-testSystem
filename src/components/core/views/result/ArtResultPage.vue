@@ -29,17 +29,17 @@ type ResultPageProps = {
 
 <template>
   <div
-    class="page-content box-border !px-20 py-3.5 text-center max-md:!px-5"
+    class="page-content py-3.5 text-center box-border !px-20 max-md:!px-5"
     :class="type"
   >
     <ArtSvgIcon
-      class="icon size-22 p-2 mt-16 block rounded-full !text-white"
+      class="icon mt-16 p-2 rounded-full size-22 block !text-white"
       :icon="iconCode"
       :class="type === 'success' ? 'bg-[#19BE6B]' : 'bg-[#ED4014]'"
     />
 
     <h1
-      class="title mt-8 text-3xl font-medium !text-g-900 max-md:mt-2.5 max-md:text-2xl"
+      class="title text-3xl font-medium mt-8 max-md:text-2xl !text-g-900 max-md:mt-2.5"
     >
       {{
         title
@@ -47,13 +47,13 @@ type ResultPageProps = {
     </h1>
 
     <p
-      class="msg mt-5 text-base text-g-600"
+      class="msg text-base text-g-600 mt-5"
     >
       {{ message }}
     </p>
 
     <div
-      class="res mt-7.5 rounded bg-g-200/80 dark:bg-g-300/40 px-7.5 py-5.5 text-left max-md:px-7.5 max-md:py-2.5 [&_p]:flex [&_p]:items-center [&_p]:py-2 [&_p]:text-sm [&_p]:text-[#808695] [&_p_i]:mr-1.5"
+      class="res mt-7.5 px-7.5 py-5.5 text-left rounded bg-g-200/80 [&_p]:text-sm [&_p]:text-[#808695] [&_p_i]:mr-1.5 [&_p]:py-2 max-md:px-7.5 max-md:py-2.5 dark:bg-g-300/40 [&_p]:flex [&_p]:items-center"
     >
       <slot
         name="content"

@@ -73,6 +73,7 @@ export const adminRoutes: AppRouteRecord = {
     icon: 'ri:shield-line',
     isMenuRoot: true,
   },
-  redirect: '/admin/dashboard/console',
+  redirect: '/admin/course/list',
+
   children: adminModules,
 }

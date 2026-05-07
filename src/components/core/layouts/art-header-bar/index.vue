@@ -215,13 +215,13 @@ function openChat(): void {
 
 <template>
   <div
-    class="w-full bg-[var(--default-bg-color)]"
+    class="bg-[var(--default-bg-color)] w-full"
     :class="[
       tabStyle === 'tab-card' || tabStyle === 'tab-google' ? 'mb-5 max-sm:mb-3 !bg-box' : '',
     ]"
   >
     <div
-      class="relative box-border flex-b h-15 leading-15 select-none"
+      class="leading-15 flex-b h-15 select-none box-border relative"
       :class="[
         tabStyle === 'tab-card' || tabStyle === 'tab-google'
           ? 'border-b border-[var(--art-card-border)]'
@@ -229,7 +229,7 @@ function openChat(): void {
       ]"
     >
       <div
-        class="flex-c flex-1 min-w-0 leading-15"
+        class="leading-15 flex-c flex-1 min-w-0"
         style="display: flex"
       >
         <!-- 系统信息  -->
@@ -244,14 +244,14 @@ function openChat(): void {
 
           <p
             v-if="width >= 1400"
-            class="my-0 mx-2 ml-2 text-lg"
+            class="text-lg mx-2 my-0 ml-2"
           >
             {{ AppConfig.systemInfo.name }}
           </p>
         </div>
 
         <ArtLogo
-          class="!hidden pl-3.5 overflow-hidden align-[-0.15em] fill-current"
+          class="pl-3.5 align-[-0.15em] overflow-hidden fill-current !hidden"
           @click="toHome"
         />
 
@@ -267,7 +267,7 @@ function openChat(): void {
         <ArtIconButton
           v-if="shouldShowRefreshButton"
           icon="ri:refresh-line"
-          class="!ml-3 refresh-btn max-sm:!hidden"
+          class="refresh-btn !ml-3 max-sm:!hidden"
           :style="{ marginLeft: !isLeftMenu ? '10px' : '0' }"
           @click="reload"
         />
@@ -306,7 +306,7 @@ function openChat(): void {
         <!-- 搜索 -->
         <div
           v-if="shouldShowGlobalSearch"
-          class="flex-cb w-40 h-9 px-2.5 c-p border border-g-400 rounded-custom-sm max-md:!hidden"
+          class="rounded-custom-sm px-2.5 border border-g-400 flex-cb h-9 w-40 c-p max-md:!hidden"
           @click="openSearchDialog"
         >
           <div
@@ -318,12 +318,12 @@ function openChat(): void {
             />
 
             <span
-              class="ml-1 text-xs font-normal text-g-500"
+              class="text-xs text-g-500 font-normal ml-1"
             >{{ $t('topBar.search.title') }}</span>
           </div>
 
           <div
-            class="flex-c h-5 px-1.5 text-g-500/80 border border-g-400 rounded"
+            class="text-g-500/80 px-1.5 border border-g-400 rounded flex-c h-5"
           >
             <ArtSvgIcon
               v-if="isWindows"
@@ -338,7 +338,7 @@ function openChat(): void {
             />
 
             <span
-              class="ml-0.5 text-xs"
+              class="text-xs ml-0.5"
             >k</span>
           </div>
         </div>
@@ -348,7 +348,7 @@ function openChat(): void {
           v-if="shouldShowFullscreen"
           :icon="isFullscreen ? 'ri:fullscreen-exit-line' : 'ri:fullscreen-fill'"
           :class="[!isFullscreen ? 'full-screen-btn' : 'exit-full-screen-btn']"
-          class="max-md:!hidden ml-3"
+          class="ml-3 max-md:!hidden"
           @click="toggleFullScreen"
         />
 
@@ -398,7 +398,7 @@ function openChat(): void {
           @click="visibleNotice"
         >
           <div
-            class="absolute top-2 right-2 size-1.5 !bg-danger rounded-full"
+            class="rounded-full size-1.5 right-2 top-2 absolute !bg-danger"
           />
         </ArtIconButton>
 
@@ -410,7 +410,7 @@ function openChat(): void {
           @click="openChat"
         >
           <div
-            class="breathing-dot absolute top-2 right-2 size-1.5 !bg-success rounded-full"
+            class="breathing-dot rounded-full size-1.5 right-2 top-2 absolute !bg-success"
           />
         </ArtIconButton>
 

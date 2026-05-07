@@ -361,26 +361,26 @@ watch(
     @click.stop
   >
     <div
-      class="flex-cb px-3.5 mt-3.5"
+      class="mt-3.5 px-3.5 flex-cb"
     >
       <span
-        class="text-base font-medium text-g-800"
+        class="text-base text-g-800 font-medium"
       >{{ $t('notice.title') }}</span>
 
       <span
-        class="text-xs text-g-800 px-1.5 py-1 c-p select-none rounded hover:bg-g-200"
+        class="text-xs text-g-800 px-1.5 py-1 rounded c-p select-none hover:bg-g-200"
       >
         {{ $t('notice.btnRead') }}
       </span>
     </div>
 
     <ul
-      class="box-border flex items-end w-full h-12.5 px-3.5 border-b-d"
+      class="px-3.5 border-b-d flex h-12.5 w-full items-end box-border"
     >
       <li
         v-for="(item, index) in barList"
         :key="index"
-        class="h-12 leading-12 mr-5 overflow-hidden text-[13px] text-g-700 c-p select-none"
+        class="text-[13px] text-g-700 leading-12 mr-5 h-12 c-p select-none overflow-hidden"
         :class="{ 'bar-active': barActiveIndex === index }"
         @click="changeBar(index)"
       >
@@ -389,10 +389,10 @@ watch(
     </ul>
 
     <div
-      class="w-full h-[calc(100%-95px)]"
+      class="h-[calc(100%-95px)] w-full"
     >
       <div
-        class="h-[calc(100%-60px)] overflow-y-scroll scrollbar-thin"
+        class="scrollbar-thin h-[calc(100%-60px)] overflow-y-scroll"
       >
         <!-- 通知 -->
         <ul
@@ -401,10 +401,10 @@ watch(
           <li
             v-for="(item, index) in noticeList"
             :key="index"
-            class="box-border flex-c px-3.5 py-3.5 c-p last:border-b-0 hover:bg-g-200/60"
+            class="px-3.5 py-3.5 flex-c c-p box-border last:border-b-0 hover:bg-g-200/60"
           >
             <div
-              class="size-9 leading-9 text-center rounded-lg flex-cc"
+              class="leading-9 text-center rounded-lg flex-cc size-9"
               :class="[getNoticeStyle(item.type).iconClass]"
             >
               <ArtSvgIcon
@@ -414,16 +414,16 @@ watch(
             </div>
 
             <div
-              class="w-[calc(100%-45px)] ml-3.5"
+              class="ml-3.5 w-[calc(100%-45px)]"
             >
               <h4
-                class="text-sm font-normal leading-5.5 text-g-900"
+                class="text-sm text-g-900 leading-5.5 font-normal"
               >
                 {{ item.title }}
               </h4>
 
               <p
-                class="mt-1.5 text-xs text-g-500"
+                class="text-xs text-g-500 mt-1.5"
               >
                 {{ item.time }}
               </p>
@@ -438,28 +438,28 @@ watch(
           <li
             v-for="(item, index) in msgList"
             :key="index"
-            class="box-border flex-c px-3.5 py-3.5 c-p last:border-b-0 hover:bg-g-200/60"
+            class="px-3.5 py-3.5 flex-c c-p box-border last:border-b-0 hover:bg-g-200/60"
           >
             <div
-              class="w-9 h-9"
+              class="h-9 w-9"
             >
               <img
                 :src="item.avatar"
-                class="w-full h-full rounded-lg"
+                class="rounded-lg h-full w-full"
               >
             </div>
 
             <div
-              class="w-[calc(100%-45px)] ml-3.5"
+              class="ml-3.5 w-[calc(100%-45px)]"
             >
               <h4
-                class="text-xs font-normal leading-5.5"
+                class="text-xs leading-5.5 font-normal"
               >
                 {{ item.title }}
               </h4>
 
               <p
-                class="mt-1.5 text-xs text-g-500"
+                class="text-xs text-g-500 mt-1.5"
               >
                 {{ item.time }}
               </p>
@@ -474,7 +474,7 @@ watch(
           <li
             v-for="(item, index) in pendingList"
             :key="index"
-            class="box-border px-5 py-3.5 last:border-b-0"
+            class="px-5 py-3.5 box-border last:border-b-0"
           >
             <h4>
               {{ item.title }}
@@ -491,7 +491,7 @@ watch(
         <!-- 空状态 -->
         <div
           v-show="currentTabIsEmpty"
-          class="relative top-25 h-full text-g-500 text-center !bg-transparent"
+          class="text-g-500 text-center h-full top-25 relative !bg-transparent"
         >
           <ArtSvgIcon
             icon="system-uicons:inbox"
@@ -499,7 +499,7 @@ watch(
           />
 
           <p
-            class="mt-3.5 text-xs !bg-transparent"
+            class="text-xs mt-3.5 !bg-transparent"
           >
             {{ $t('notice.text[0]') }}{{ barList[barActiveIndex].name }}
           </p>
@@ -507,11 +507,11 @@ watch(
       </div>
 
       <div
-        class="relative box-border w-full px-3.5"
+        class="px-3.5 w-full box-border relative"
       >
         <ElButton
           v-ripple
-          class="w-full mt-3"
+          class="mt-3 w-full"
           @click="handleViewAll"
         >
           {{ $t('notice.viewAll') }}

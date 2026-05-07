@@ -9,11 +9,11 @@ defineOptions({
 
 <template>
   <div
-    class="mx-auto pt-5 mb-5"
+    class="mx-auto mb-5 pt-5"
   >
     <!-- 标题 -->
     <h3
-      class="text-2xl font-medium text-g-900 mb-8"
+      class="text-2xl text-g-900 font-medium mb-8"
     >
       更新日志
     </h3>
@@ -25,14 +25,14 @@ defineOptions({
       <div
         v-for="item in upgradeLogList"
         :key="item.version"
-        class="art-card-sm rounded-lg p-6 transition-shadow max-md:p-4"
+        class="art-card-sm p-6 rounded-lg transition-shadow max-md:p-4"
       >
         <!-- 版本和日期 -->
         <div
-          class="flex-cb gap-3 mb-4 flex-wrap"
+          class="mb-4 flex-cb flex-wrap gap-3"
         >
           <span
-            class="px-3 py-1 bg-theme/10 text-theme text-sm font-medium rounded-full"
+            class="text-sm text-theme font-medium px-3 py-1 rounded-full bg-theme/10"
           >
             {{ item.version }}
           </span>
@@ -44,7 +44,7 @@ defineOptions({
 
         <!-- 标题 -->
         <h4
-          class="text-lg font-medium text-g-900 mb-3"
+          class="text-lg text-g-900 font-medium mb-3"
         >
           {{ item.title }}
         </h4>
@@ -52,12 +52,12 @@ defineOptions({
         <!-- 详情列表 -->
         <ul
           v-if="item.detail?.length"
-          class="space-y-2 mb-4"
+          class="mb-4 space-y-2"
         >
           <li
             v-for="(detail, index) in item.detail"
             :key="index"
-            class="flex-c gap-2 text-sm text-g-600"
+            class="text-sm text-g-600 flex-c gap-2"
           >
             <span
               class="mt-0.5"
@@ -72,7 +72,7 @@ defineOptions({
         <!-- 备注 -->
         <div
           v-if="item.remark"
-          class="text-sm text-g-800 bg-g-300/60 rounded p-3 mb-3"
+          class="text-sm text-g-800 mb-3 p-3 rounded bg-g-300/60"
         >
           {{ item.remark }}
         </div>

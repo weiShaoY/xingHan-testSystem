@@ -21,6 +21,9 @@ const route = useRoute()
 
 const router = useRouter()
 
+// 辅助函数：判断是否为首页
+const isHomeRoute = (route: RouteLocationMatched): boolean => route.name === '/'
+
 // 使用computed替代watch，提高性能
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => {
   const { matched } = route
@@ -72,9 +75,6 @@ function createBreadcrumbItem(route: RouteLocationMatched): BreadcrumbItem {
     meta: route.meta,
   }
 }
-
-// 辅助函数：判断是否为首页
-const isHomeRoute = (route: RouteLocationMatched): boolean => route.name === '/'
 
 // 辅助函数：判断是否为最后一项
 function isLastItem(index: number): boolean {
@@ -140,7 +140,7 @@ async function handleBreadcrumbClick(item: BreadcrumbItem, index: number): Promi
       <li
         v-for="(item, index) in breadcrumbItems"
         :key="item.path"
-        class="box-border flex-c h-7 text-sm leading-7"
+        class="text-sm leading-7 flex-c h-7 box-border"
       >
         <div
           :class="
@@ -151,13 +151,13 @@ async function handleBreadcrumbClick(item: BreadcrumbItem, index: number): Promi
           @click="handleBreadcrumbClick(item, index)"
         >
           <span
-            class="block max-w-46 overflow-hidden text-ellipsis whitespace-nowrap px-1.5 text-sm text-g-600 dark:text-g-800"
+            class="text-sm text-g-600 px-1.5 max-w-46 block whitespace-nowrap text-ellipsis overflow-hidden dark:text-g-800"
           >{{ formatMenuTitle(item.meta?.title as string) }}</span>
         </div>
 
         <div
           v-if="!isLastItem(index) && item.meta?.title"
-          class="mx-1 text-sm not-italic text-g-500"
+          class="text-sm text-g-500 mx-1 not-italic"
           aria-hidden="true"
         >
           /

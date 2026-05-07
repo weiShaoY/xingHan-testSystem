@@ -301,7 +301,7 @@ onMounted(() => {
   <div>
     <div>
       <div
-        class="max-w-250 mx-auto my-5"
+        class="mx-auto my-5 max-w-250"
       >
         <!-- 文章标题、类型 -->
         <ElRow
@@ -342,10 +342,10 @@ onMounted(() => {
         />
 
         <div
-          class="p-5 mt-5 art-card-xs"
+          class="art-card-xs mt-5 p-5"
         >
           <h2
-            class="mb-5 text-xl font-medium"
+            class="text-xl font-medium mb-5"
           >
             发布设置
           </h2>
@@ -367,7 +367,7 @@ onMounted(() => {
                 >
                   <div
                     v-if="!cover"
-                    class="flex-cc flex-col w-65 h-40 border border-dashed border-[#d9d9d9] rounded-md"
+                    class="border border-[#d9d9d9] rounded-md border-dashed flex-cc flex-col h-40 w-65"
                   >
                     <ElIcon
                       class="!text-xl !text-g-600"
@@ -376,7 +376,7 @@ onMounted(() => {
                     </ElIcon>
 
                     <div
-                      class="mt-2 text-sm text-g-600"
+                      class="text-sm text-g-600 mt-2"
                     >
                       点击上传封面
                     </div>
@@ -385,12 +385,12 @@ onMounted(() => {
                   <img
                     v-else
                     :src="cover"
-                    class="block w-65 h-40 object-cover"
+                    class="h-40 w-65 block object-cover"
                   >
                 </ElUpload>
 
                 <div
-                  class="mt-2 text-xs text-g-700"
+                  class="text-xs text-g-700 mt-2"
                 >
                   建议尺寸 16:9，jpg/png 格式
                 </div>

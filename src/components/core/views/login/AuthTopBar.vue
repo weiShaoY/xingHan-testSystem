@@ -55,10 +55,10 @@ function changeThemeColor(color: string) {
 
 <template>
   <div
-    class="absolute w-full flex-cb top-4.5 z-10 flex-c !justify-end max-[1180px]:!justify-between"
+    class="flex-c flex-cb w-full top-4.5 absolute z-10 !justify-end max-[1180px]:!justify-between"
   >
     <div
-      class="flex-cc !hidden max-[1180px]:!flex ml-2 max-sm:ml-6"
+      class="ml-2 flex-cc max-sm:ml-6 !hidden max-[1180px]:!flex"
     >
       <ArtLogo
         class="icon"
@@ -66,25 +66,25 @@ function changeThemeColor(color: string) {
       />
 
       <h1
-        class="text-xl ont-mediumf ml-2"
+        class="ont-mediumf text-xl ml-2"
       >
         {{ AppConfig.systemInfo.name }}
       </h1>
     </div>
 
     <div
-      class="flex-cc gap-1.5 mr-2 max-sm:mr-5"
+      class="mr-2 flex-cc gap-1.5 max-sm:mr-5"
     >
       <div
-        class="color-picker-expandable relative flex-c max-sm:!hidden"
+        class="color-picker-expandable flex-c relative max-sm:!hidden"
       >
         <div
-          class="color-dots absolute right-0 rounded-full flex-c gap-2 rounded-5 px-2.5 py-2 pr-9 pl-2.5 opacity-0"
+          class="color-dots px-2.5 py-2 pl-2.5 pr-9 rounded-5 rounded-full opacity-0 flex-c gap-2 right-0 absolute"
         >
           <div
             v-for="(color, index) in mainColors"
             :key="color"
-            class="color-dot relative size-5 c-p flex-cc rounded-full opacity-0"
+            class="color-dot rounded-full opacity-0 flex-cc size-5 c-p relative"
             :class="{ active: color === systemThemeColor }"
             :style="{ 'background': color, '--index': index }"
             @click="changeThemeColor(color)"
@@ -98,7 +98,7 @@ function changeThemeColor(color: string) {
         </div>
 
         <div
-          class="btn palette-btn relative z-[2] h-8 w-8 c-p flex-cc tad-300"
+          class="btn palette-btn flex-cc h-8 w-8 c-p tad-300 relative z-[2]"
         >
           <ArtSvgIcon
             icon="ri:palette-line"
@@ -113,7 +113,7 @@ function changeThemeColor(color: string) {
         @command="changeLanguage"
       >
         <div
-          class="btn language-btn h-8 w-8 c-p flex-cc tad-300"
+          class="btn language-btn flex-cc h-8 w-8 c-p tad-300"
         >
           <ArtSvgIcon
             icon="ri:translate-2"
@@ -151,7 +151,7 @@ function changeThemeColor(color: string) {
 
       <div
         v-if="shouldShowThemeToggle"
-        class="btn theme-btn h-8 w-8 c-p flex-cc tad-300"
+        class="btn theme-btn flex-cc h-8 w-8 c-p tad-300"
         @click="themeAnimation"
       >
         <ArtSvgIcon

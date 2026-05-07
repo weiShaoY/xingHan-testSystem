@@ -272,13 +272,13 @@ const {
     class="art-full-height"
   >
     <div
-      class="box-border flex gap-4 h-full max-md:block max-md:gap-0 max-md:h-auto"
+      class="flex gap-4 h-full box-border max-md:gap-0 max-md:h-auto max-md:block"
     >
       <div
-        class="flex-shrink-0 w-58 h-full max-md:w-full max-md:h-auto max-md:mb-5"
+        class="flex-shrink-0 h-full w-58 max-md:mb-5 max-md:h-auto max-md:w-full"
       >
         <ElCard
-          class="tree-card art-card-xs flex flex-col h-full mt-0"
+          class="tree-card art-card-xs mt-0 flex flex-col h-full"
         >
           <template
             #header
@@ -300,14 +300,14 @@ const {
       </div>
 
       <div
-        class="flex flex-col flex-grow min-w-0"
+        class="flex flex-grow flex-col min-w-0"
       >
         <UserSearch
           v-model="defaultFilter"
         />
 
         <ElCard
-          class="flex flex-col flex-1 min-h-0 art-table-card"
+          class="art-table-card flex flex-1 flex-col min-h-0"
         >
           <ArtTableHeader
             v-model:columns="columnChecks"

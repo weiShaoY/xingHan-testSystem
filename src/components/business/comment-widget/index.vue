@@ -80,7 +80,7 @@ function findComment(comments: Comment[], commentId: number): Comment | undefine
 <template>
   <div>
     <ElForm
-      class="w-full mx-auto mb-10"
+      class="mx-auto mb-10 w-full"
       @submit.prevent="addComment"
     >
       <ElFormItem
@@ -90,7 +90,7 @@ function findComment(comments: Comment[], commentId: number): Comment | undefine
         <ElInput
           v-model="newComment.author"
           placeholder="你的名称"
-          class="block w-full"
+          class="w-full block"
           clearable
         />
       </ElFormItem>
@@ -109,7 +109,7 @@ function findComment(comments: Comment[], commentId: number): Comment | undefine
 
       <ElFormItem>
         <div
-          class="flex justify-end w-full"
+          class="flex w-full justify-end"
         >
           <ElButton
             type="primary"
@@ -123,7 +123,7 @@ function findComment(comments: Comment[], commentId: number): Comment | undefine
 
     <ul>
       <div
-        class="pb-5 text-lg font-medium"
+        class="text-lg font-medium pb-5"
       >
         评论 {{ comments.length }}
       </div>
@@ -133,7 +133,7 @@ function findComment(comments: Comment[], commentId: number): Comment | undefine
         :key="comment.id"
         :comment="comment"
         :show-reply-form="showReplyForm"
-        class="pb-2.5 mb-5 border-b border-g-400"
+        class="mb-5 pb-2.5 border-b border-g-400"
         @toggle-reply="toggleReply"
         @add-reply="addReply"
       />

@@ -64,7 +64,7 @@ function handleClick(item: ButtonMoreItem) {
     >
       <ArtIconButton
         icon="ri:more-2-fill"
-        class="!size-8 bg-g-200 dark:bg-g-300/45 text-sm"
+        class="text-sm bg-g-200 dark:bg-g-300/45 !size-8"
       />
 
       <template

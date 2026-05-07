@@ -1047,7 +1047,7 @@ function handleColumnCommand(command: string): void {
 
 <template>
   <div
-    class="flex flex-col gap-4 pb-5"
+    class="pb-5 flex flex-col gap-4"
   >
     <!-- 功能介绍卡片 -->
     <ElCard
@@ -1057,7 +1057,7 @@ function handleColumnCommand(command: string): void {
         #header
       >
         <div
-          class="flex-wrap gap-3 flex-cb"
+          class="flex-cb flex-wrap gap-3"
         >
           <h3
             class="m-0"
@@ -1101,7 +1101,7 @@ function handleColumnCommand(command: string): void {
 
       <div>
         <p
-          class="m-0 mb-4 leading-[1.6] text-g-700"
+          class="text-g-700 leading-[1.6] m-0 mb-4"
         >
           集成搜索、刷新、全屏、大小控制、列显示隐藏、拖拽排序、表格样式控制、并内置 useTable
           组合式函数，提供强大的组合式 API，集成数据获取、智能缓存（LRU算法）、
@@ -1127,7 +1127,7 @@ function handleColumnCommand(command: string): void {
                   class="flex-cb"
                 >
                   <span
-                    class="font-medium text-g-700"
+                    class="text-g-700 font-medium"
                   >缓存状态：</span>
 
                   <ElTag
@@ -1141,11 +1141,11 @@ function handleColumnCommand(command: string): void {
                   class="flex-cb"
                 >
                   <span
-                    class="font-medium text-g-700"
+                    class="text-g-700 font-medium"
                   >缓存条数：</span>
 
                   <span
-                    class="font-semibold text-theme"
+                    class="text-theme font-semibold"
                   >{{ cacheInfo.total }}</span>
                 </div>
 
@@ -1153,11 +1153,11 @@ function handleColumnCommand(command: string): void {
                   class="flex-cb"
                 >
                   <span
-                    class="font-medium text-g-700"
+                    class="text-g-700 font-medium"
                   >缓存大小：</span>
 
                   <span
-                    class="font-semibold text-theme"
+                    class="text-theme font-semibold"
                   >{{ cacheInfo.size }}</span>
                 </div>
 
@@ -1165,16 +1165,16 @@ function handleColumnCommand(command: string): void {
                   class="flex-cb"
                 >
                   <span
-                    class="font-medium text-g-700"
+                    class="text-g-700 font-medium"
                   >命中信息：</span>
 
                   <span
-                    class="font-semibold text-theme"
+                    class="text-theme font-semibold"
                   >{{ cacheInfo.hitRate }}</span>
                 </div>
 
                 <div
-                  class="flex gap-2 mt-2"
+                  class="mt-2 flex gap-2"
                 >
                   <ElButton
                     size="small"
@@ -1234,7 +1234,7 @@ function handleColumnCommand(command: string): void {
                     <div
                       v-for="(log, index) in cacheDebugLogs"
                       :key="index"
-                      class="p-1.5 px-2 text-xs leading-[1.4] bg-g-200 border-l-1 border-g-400 rounded"
+                      class="text-xs leading-[1.4] p-1.5 px-2 border-l-1 border-g-400 rounded bg-g-200"
                       :class="{
                         'bg-[rgba(103,194,58,0.1)] !border-l-success': log.includes('✅'),
                         'bg-[rgba(64,158,255,0.1)] !border-l-theme': log.includes('🎯'),
@@ -1247,7 +1247,7 @@ function handleColumnCommand(command: string): void {
                 </div>
 
                 <div
-                  class="flex gap-2 mt-2"
+                  class="mt-2 flex gap-2"
                 >
                   <ElButton
                     size="small"
@@ -1270,7 +1270,7 @@ function handleColumnCommand(command: string): void {
                   class="flex-cb"
                 >
                   <span
-                    class="font-medium text-g-700"
+                    class="text-g-700 font-medium"
                   >加载状态：</span>
 
                   <ElTag
@@ -1284,7 +1284,7 @@ function handleColumnCommand(command: string): void {
                   class="flex-cb"
                 >
                   <span
-                    class="font-medium text-g-700"
+                    class="text-g-700 font-medium"
                   >数据状态：</span>
 
                   <ElTag
@@ -1298,7 +1298,7 @@ function handleColumnCommand(command: string): void {
                   class="flex-cb"
                 >
                   <span
-                    class="font-medium text-g-700"
+                    class="text-g-700 font-medium"
                   >错误状态：</span>
 
                   <ElTag
@@ -1312,19 +1312,19 @@ function handleColumnCommand(command: string): void {
                   class="flex flex-col gap-2"
                 >
                   <span
-                    class="font-medium text-g-700"
+                    class="text-g-700 font-medium"
                   >当前请求参数：</span>
 
                   <ElText
                     tag="pre"
-                    class="max-h-50 p-2 overflow-y-auto text-xs bg-g-200 border border-g-400 rounded-md"
+                    class="text-xs p-2 border border-g-400 rounded-md bg-g-200 max-h-50 overflow-y-auto"
                   >
                     {{ JSON.stringify(requestParams, null, 2) }}
                   </ElText>
                 </div>
 
                 <div
-                  class="flex gap-2 mt-2"
+                  class="mt-2 flex gap-2"
                 >
                   <ElButton
                     size="small"
@@ -1347,7 +1347,7 @@ function handleColumnCommand(command: string): void {
 
         <!-- 功能开关 -->
         <div
-          class="flex flex-wrap gap-4 mt-4"
+          class="mt-4 flex flex-wrap gap-4"
         >
           <ElSwitch
             v-model="showDebugPanel"
@@ -1381,7 +1381,7 @@ function handleColumnCommand(command: string): void {
 
     <!-- 表格区域 -->
     <ElCard
-      class="flex-1 art-table-card"
+      class="art-table-card flex-1"
       style="margin-top: 0"
     >
       <template
@@ -1591,7 +1591,7 @@ function handleColumnCommand(command: string): void {
           #avatar="{ row }"
         >
           <div
-            class="flex gap-3 user-info"
+            class="user-info flex gap-3"
           >
             <ElAvatar
               :src="row.avatar"
@@ -1602,7 +1602,7 @@ function handleColumnCommand(command: string): void {
               class="flex-1 min-w-0"
             >
               <p
-                class="m-0 overflow-hidden font-medium text-ellipsis whitespace-nowrap"
+                class="font-medium m-0 whitespace-nowrap text-ellipsis overflow-hidden"
               >
                 {{
                   row.userName
@@ -1610,7 +1610,7 @@ function handleColumnCommand(command: string): void {
               </p>
 
               <p
-                class="m-0 mt-1 overflow-hidden text-xs text-g-700 text-ellipsis whitespace-nowrap"
+                class="text-xs text-g-700 m-0 mt-1 whitespace-nowrap text-ellipsis overflow-hidden"
               >
                 {{ row.userEmail }}
               </p>
@@ -1707,7 +1707,7 @@ function handleColumnCommand(command: string): void {
               #reference
             >
               <div
-                class="inline-block gap-1 text-theme c-p custom-header"
+                class="custom-header text-theme gap-1 inline-block c-p"
               >
                 <span>{{ column.label }}</span>
 
@@ -1755,16 +1755,16 @@ function handleColumnCommand(command: string): void {
       >
         <!-- 事件监听演示 -->
         <div
-          class="p-4 bg-g-200 border-full-d rounded-lg"
+          class="p-4 border-full-d rounded-lg bg-g-200"
         >
           <h5
-            class="m-0 mb-4 text-sm font-semibold"
+            class="text-sm font-semibold m-0 mb-4"
           >
             事件监听演示
           </h5>
 
           <div
-            class="flex flex-wrap gap-2 mb-3 last:mb-0"
+            class="mb-3 flex flex-wrap gap-2 last:mb-0"
           >
             <ElButton
               :type="eventDemoEnabled ? 'success' : 'primary'"
@@ -1783,10 +1783,10 @@ function handleColumnCommand(command: string): void {
 
           <div
             v-if="eventDemoEnabled && eventLogs.length > 0"
-            class="p-3 mt-3 bg-g-200 border border-g-400 rounded-md"
+            class="mt-3 p-3 border border-g-400 rounded-md bg-g-200"
           >
             <div
-              class="flex-cb mb-2 font-medium text-g-700"
+              class="text-g-700 font-medium mb-2 flex-cb"
             >
               <span>最近事件日志：</span>
 
@@ -1803,7 +1803,7 @@ function handleColumnCommand(command: string): void {
               <div
                 v-for="(log, index) in eventLogs.slice(0, 20)"
                 :key="index"
-                class="flex-c gap-2 p-1.5 px-2 text-xs bg-g-300 border-l-1 border-g-400 rounded"
+                class="text-xs p-1.5 px-2 border-l-1 border-g-400 rounded bg-g-300 flex-c gap-2"
               >
                 <ElTag
                   :type="getEventType(log.type)"
@@ -1813,7 +1813,7 @@ function handleColumnCommand(command: string): void {
                 </ElTag>
 
                 <span
-                  class="flex-1 text-g-700"
+                  class="text-g-700 flex-1"
                 >{{ log.message }}</span>
 
                 <span
@@ -1826,16 +1826,16 @@ function handleColumnCommand(command: string): void {
 
         <!-- 表格配置演示 -->
         <div
-          class="p-4 bg-g-200 border-full-d rounded-lg"
+          class="p-4 border-full-d rounded-lg bg-g-200"
         >
           <h5
-            class="m-0 mb-4 text-sm font-semibold"
+            class="text-sm font-semibold m-0 mb-4"
           >
             表格配置演示
           </h5>
 
           <div
-            class="flex flex-wrap gap-2 mb-3 last:mb-0"
+            class="mb-3 flex flex-wrap gap-2 last:mb-0"
           >
             <ElSwitch
               v-model="tableConfig.fixedHeight"
@@ -1848,16 +1848,16 @@ function handleColumnCommand(command: string): void {
 
         <!-- 自定义功能演示 -->
         <div
-          class="p-4 bg-g-200 border-full-d rounded-lg"
+          class="p-4 border-full-d rounded-lg bg-g-200"
         >
           <h5
-            class="m-0 mb-4 text-sm font-semibold"
+            class="text-sm font-semibold m-0 mb-4"
           >
             自定义功能
           </h5>
 
           <div
-            class="flex flex-wrap gap-2 mb-3 last:mb-0"
+            class="mb-3 flex flex-wrap gap-2 last:mb-0"
           >
             <ElButton
               @click="handleScrollToTop"

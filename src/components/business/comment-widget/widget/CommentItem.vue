@@ -74,30 +74,30 @@ function randomColor() {
         class="flex-c"
       >
         <div
-          class="size-5 mr-2.5 text-xs font-medium text-white rounded-full flex-cc"
+          class="text-xs text-white font-medium mr-2.5 rounded-full flex-cc size-5"
           :style="{ background: randomColor() }"
         >
           {{ comment.author.substring(0, 1) }}
         </div>
 
         <strong
-          class="block text-sm font-medium"
+          class="text-sm font-medium block"
         >{{ comment.author }}</strong>
       </div>
 
       <span
-        class="block mt-2.5 text-sm text-g-700"
+        class="text-sm text-g-700 mt-2.5 block"
       >{{ comment.content }}</span>
 
       <div
-        class="flex-c mt-2.5"
+        class="mt-2.5 flex-c"
       >
         <span
           class="text-xs text-g-700"
         >{{ formatDate(comment.timestamp) }}</span>
 
         <div
-          class="ml-5 text-xs text-g-700 c-p select-none hover:text-theme"
+          class="text-xs text-g-700 ml-5 c-p select-none hover:text-theme"
           @click="toggleReply(comment.id)"
         >
           回复
@@ -149,7 +149,7 @@ function randomColor() {
 
       <ElFormItem>
         <div
-          class="flex justify-end gap-2 w-full"
+          class="flex gap-2 w-full justify-end"
         >
           <ElButton
             @click="toggleReply(comment.id)"

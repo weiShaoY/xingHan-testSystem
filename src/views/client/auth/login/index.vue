@@ -199,12 +199,12 @@ function showLoginSuccessNotice() {
 
 <template>
   <div
-    class="flex w-full h-screen"
+    class="flex h-screen w-full"
   >
     <LoginLeftView />
 
     <div
-      class="relative flex-1"
+      class="flex-1 relative"
     >
       <AuthTopBar />
 
@@ -217,7 +217,7 @@ function showLoginSuccessNotice() {
           <h3
             class="title"
           >
-            {{ $t('login.title') }}
+            客户端登录
           </h3>
 
           <h3
@@ -283,11 +283,11 @@ function showLoginSuccessNotice() {
 
             <!-- 推拽验证 -->
             <div
-              class="relative pb-5 mt-6"
+              class="mt-6 pb-5 relative"
             >
               <div
-                class="relative z-[2] overflow-hidden select-none rounded-lg border border-transparent tad-300"
-                :class="{ '!border-[#FF4E4F]': !isPassing && isClickPass }"
+                class="border border-transparent rounded-lg select-none tad-300 relative z-[2] overflow-hidden"
+                :class="{ '!border-[#FF4E4F] border-solid border border-solid': !isPassing && isClickPass }"
               >
                 <ArtDragVerify
                   ref="dragVerify"
@@ -302,7 +302,7 @@ function showLoginSuccessNotice() {
               </div>
 
               <p
-                class="absolute top-0 z-[1] px-px mt-2 text-xs text-[#f56c6c] tad-300"
+                class="text-xs text-[#f56c6c] mt-2 px-px tad-300 top-0 absolute z-[1]"
                 :class="{ 'translate-y-10': !isPassing && isClickPass }"
               >
                 {{ $t('login.placeholder.slider') }}
@@ -310,7 +310,7 @@ function showLoginSuccessNotice() {
             </div>
 
             <div
-              class="flex-cb mt-2 text-sm"
+              class="text-sm mt-2 flex-cb"
             >
               <ElCheckbox
                 v-model="formData.rememberPassword"
@@ -335,7 +335,7 @@ function showLoginSuccessNotice() {
             >
               <ElButton
                 v-ripple
-                class="w-full custom-height"
+                class="custom-height w-full"
                 type="primary"
                 :loading="loading"
                 @click="handleSubmit"
@@ -345,7 +345,7 @@ function showLoginSuccessNotice() {
             </div>
 
             <div
-              class="mt-5 text-sm text-gray-600"
+              class="text-sm text-gray-600 mt-5"
             >
               <span>{{ $t('login.noAccount') }}</span>
 

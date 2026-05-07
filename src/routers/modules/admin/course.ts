@@ -4,9 +4,7 @@ export const Course: AppRouteRecord = {
   path: 'course',
   name: 'Course',
   component: '',
-  redirect: {
-    name: 'AdminCourseList',
-  },
+  redirect: '/admin/course/list',
   meta: {
     title: '我的课程',
     icon: 'ri:ancient-pavilion-line',

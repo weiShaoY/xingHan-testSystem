@@ -118,6 +118,7 @@ declare global {
   const onUpdated: typeof import('vue').onUpdated
   const onWatcherCleanup: typeof import('vue').onWatcherCleanup
   const openExternalLink: typeof import('../../utils/navigation/jump').openExternalLink
+  const parseSize: typeof import('../../utils/size').parseSize
   const pausableWatch: typeof import('@vueuse/core').pausableWatch
   const provide: typeof import('vue').provide
   const provideLocal: typeof import('@vueuse/core').provideLocal
@@ -148,6 +149,7 @@ declare global {
   const shallowRef: typeof import('vue').shallowRef
   const socket: typeof import('../../utils/socket/index').default
   const storeToRefs: typeof import('pinia').storeToRefs
+  const subtractSize: typeof import('../../utils/size').subtractSize
   const syncRef: typeof import('@vueuse/core').syncRef
   const syncRefs: typeof import('@vueuse/core').syncRefs
   const systemUpgrade: typeof import('../../utils/sys/upgrade').systemUpgrade
@@ -390,6 +392,9 @@ declare global {
   export type { StorageKeyManager } from '../../utils/storage/storage-key-manager'
   import('../../utils/storage/storage-key-manager')
   // @ts-ignore
+  export type { SizeValue } from '../../utils/size'
+  import('../../utils/size')
+  // @ts-ignore
   export type { AuthDirective, HighlightDirective, RippleDirective, RolesDirective } from '../../directives/index'
   import('../../directives/index')
 }
@@ -400,6 +405,8 @@ declare module 'vue' {
   interface GlobalComponents {}
   interface ComponentCustomProperties {
     readonly EffectScope: UnwrapRef<typeof import('vue')['EffectScope']>
+    readonly ElLoading: UnwrapRef<typeof import('element-plus/es')['ElLoading']>
+    readonly ElMessage: UnwrapRef<typeof import('element-plus/es')['ElMessage']>
     readonly PasswordStrength: UnwrapRef<typeof import('../../utils/form/validator')['PasswordStrength']>
     readonly StorageConfig: UnwrapRef<typeof import('../../utils/storage/storage-config')['StorageConfig']>
     readonly StorageKeyManager: UnwrapRef<typeof import('../../utils/storage/storage-key-manager')['StorageKeyManager']>
@@ -508,6 +515,7 @@ declare module 'vue' {
     readonly onUpdated: UnwrapRef<typeof import('vue')['onUpdated']>
     readonly onWatcherCleanup: UnwrapRef<typeof import('vue')['onWatcherCleanup']>
     readonly openExternalLink: UnwrapRef<typeof import('../../utils/navigation/jump')['openExternalLink']>
+    readonly parseSize: UnwrapRef<typeof import('../../utils/size')['parseSize']>
     readonly pausableWatch: UnwrapRef<typeof import('@vueuse/core')['pausableWatch']>
     readonly provide: UnwrapRef<typeof import('vue')['provide']>
     readonly provideLocal: UnwrapRef<typeof import('@vueuse/core')['provideLocal']>
@@ -538,6 +546,7 @@ declare module 'vue' {
     readonly shallowRef: UnwrapRef<typeof import('vue')['shallowRef']>
     readonly socket: UnwrapRef<typeof import('../../utils/socket/index')['default']>
     readonly storeToRefs: UnwrapRef<typeof import('pinia')['storeToRefs']>
+    readonly subtractSize: UnwrapRef<typeof import('../../utils/size')['subtractSize']>
     readonly syncRef: UnwrapRef<typeof import('@vueuse/core')['syncRef']>
     readonly syncRefs: UnwrapRef<typeof import('@vueuse/core')['syncRefs']>
     readonly systemUpgrade: UnwrapRef<typeof import('../../utils/sys/upgrade')['systemUpgrade']>

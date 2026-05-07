@@ -61,10 +61,10 @@ const dataList = reactive<CardDataItem[]>([
       :lg="6"
     >
       <div
-        class="art-card relative flex flex-col justify-center h-35 px-5 mb-5 max-sm:mb-4"
+        class="art-card mb-5 px-5 flex flex-col h-35 justify-center relative max-sm:mb-4"
       >
         <span
-          class="text-g-700 text-sm"
+          class="text-sm text-g-700"
         >{{ item.des }}</span>
 
         <ArtCountTo
@@ -74,14 +74,14 @@ const dataList = reactive<CardDataItem[]>([
         />
 
         <div
-          class="flex-c mt-1"
+          class="mt-1 flex-c"
         >
           <span
             class="text-xs text-g-600"
           >较上周</span>
 
           <span
-            class="ml-1 text-xs font-semibold"
+            class="text-xs font-semibold ml-1"
             :class="[!item.change.includes('+') ? 'text-danger' : 'text-success']"
           >
             {{ item.change }}
@@ -89,7 +89,7 @@ const dataList = reactive<CardDataItem[]>([
         </div>
 
         <div
-          class="absolute top-0 bottom-0 right-5 m-auto size-12.5 rounded-xl flex-cc bg-theme/10"
+          class="m-auto rounded-xl bg-theme/10 flex-cc size-12.5 bottom-0 right-5 top-0 absolute"
         >
           <ArtSvgIcon
             :icon="item.icon"

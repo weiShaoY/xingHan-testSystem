@@ -8,7 +8,7 @@ defineOptions({
 
 <template>
   <div
-    class="space-y-5 mb-5"
+    class="mb-5 space-y-5"
   >
     <div
       class="text-2xl font-medium mt-5 max-sm:text-2xl max-sm:mt-3"
@@ -57,7 +57,7 @@ defineOptions({
       </div>
 
       <div
-        class="flex items-center gap-6"
+        class="flex gap-6 items-center"
       >
         <ArtSvgIcon
           icon="ri:github-fill"
@@ -112,7 +112,7 @@ defineOptions({
       </div>
 
       <div
-        class="flex items-center gap-6"
+        class="flex gap-6 items-center"
       >
         <ArtSvgIcon
           icon="svg-spinners:3-dots-fade"
@@ -167,7 +167,7 @@ defineOptions({
       </div>
 
       <div
-        class="flex items-center gap-6"
+        class="flex gap-6 items-center"
       >
         <ArtSvgIcon
           icon="line-md:phone-call-twotone-loop"
@@ -232,7 +232,7 @@ defineOptions({
           </div>
 
           <div
-            class="bg-g-200 dark:bg-g-300/30 p-4 rounded font-mono text-sm text-g-800"
+            class="text-sm text-g-800 font-mono p-4 rounded bg-g-200 dark:bg-g-300/30"
           >
             &lt;ArtSvgIcon icon="ri:home-line" /&gt;
           </div>
@@ -246,7 +246,7 @@ defineOptions({
           </div>
 
           <div
-            class="bg-g-200 dark:bg-g-300/30 p-4 rounded font-mono text-sm text-g-800"
+            class="text-sm text-g-800 font-mono p-4 rounded bg-g-200 dark:bg-g-300/30"
           >
             &lt;ArtSvgIcon icon="ri:user-line" class="text-2xl" /&gt;
           </div>
@@ -260,7 +260,7 @@ defineOptions({
           </div>
 
           <div
-            class="bg-g-200 dark:bg-g-300/30 p-4 rounded font-mono text-sm text-g-800"
+            class="text-sm text-g-800 font-mono p-4 rounded bg-g-200 dark:bg-g-300/30"
           >
             &lt;ArtSvgIcon icon="ri:heart-fill" class="text-red-500" /&gt;
           </div>
@@ -274,7 +274,7 @@ defineOptions({
           </div>
 
           <div
-            class="bg-g-200 dark:bg-g-300/30 p-4 rounded font-mono text-sm text-g-800"
+            class="text-sm text-g-800 font-mono p-4 rounded bg-g-200 dark:bg-g-300/30"
           >
             &lt;ArtSvgIcon icon="ri:star-fill" class="text-4xl text-yellow-500" /&gt;
           </div>

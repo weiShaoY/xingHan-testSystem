@@ -148,7 +148,7 @@ const iconSize = computed(() => props.size - 14)
     >
       <ElButton
         quaternary
-        class="!h-auto !p-0"
+        class="!p-0 !h-auto"
         :type="type"
         :loading="loading"
         :disabled="disabled"
@@ -179,7 +179,7 @@ const iconSize = computed(() => props.size - 14)
       v-else
       text
       quaternary
-      class="!h-auto !p-0"
+      class="!p-0 !h-auto"
       :type="type"
       :loading="loading"
       :disabled="disabled"
