@@ -1,103 +1,49 @@
+<!------  2026-04-15---16:08---星期三  ------>
+<!------------------------------------    ------------------------------------------------->
 <script lang="ts" setup>
   import { ref } from 'vue'
 
-  import AllocateDialog from './AllocateDialog.vue'
-
-  import CreateProjectDialog from './CreateProjectDialog.vue'
-
-  const inputVModel = ref('')
-
-  /**
-   *  是否显示创建学习项目弹窗
-   */
-  const isShowCreateProjectDialog = ref(false)
-
-  /**
-   * 学习项目类型定义
-   */
-  type StudyProject = {
-    /** 唯一标识 */
-    id: string
-
-    /** 项目标题 */
-    title: string
-
-    /** 项目描述 */
-    description: string
-
-    /** 时间 */
-    date: string
-
-    /** 学习阶段数量 */
-    stageCount: number
-
-    /** 课程数量 */
-    courseCount: number
-
-    /** 跳转链接 */
-    link?: string
-  }
-
-  /**
-   * 学习项目列表
-   */
-  const projectList = ref<StudyProject[]>([
-    {
-      id: '1',
-      title: '未命名学习项目1',
-      description: '暂时没有项目描述',
-      date: '2026/04/12',
-      stageCount: 1,
-      courseCount: 1,
-      link: '#'
-    },
-    {
-      id: '2',
-      title: 'Vue3 进阶训练',
-      description: '深入学习组合式 API + Pinia 状态管理',
-      date: '2026/04/10',
-      stageCount: 3,
-      courseCount: 8,
-      link: '#'
-    },
-    {
-      id: '3',
-      title: '前端工程化实践',
-      description: 'Vite + 自动化部署 + CI/CD 实战',
-      date: '2026/04/08',
-      stageCount: 2,
-      courseCount: 5,
-      link: '#'
-    }
-  ])
-
-  /**
-   * 获取课程描述文本
-   * @param item 学习项目
-   * @returns 文本描述
-   */
-  function getCourseText(item: StudyProject): string {
-    return `${item.stageCount} 个学习阶段，${item.courseCount} 门课程`
-  }
-
-  const isShowAllocateDialog = ref(false)
-
-  /**
-   *  打开分配弹窗
-   */
-  function openAllocateDialog(item: StudyProject) {
-    console.log('🚀 ~ file: index.vue:83 ~ item:', item)
-    isShowAllocateDialog.value = true
-  }
+  import AllocateCourseDialog from './AllocateCourseDialog.vue'
 
   const router = useRouter()
 
   /**
-   *  跳转到详情页
+   * 是否显示分配学习任务弹窗
    */
-  function goToDetail(item: StudyProject) {
+  const isShowAllocateCourseDialog = ref(false)
+
+  /**
+   * 课程类型定义
+   */
+  type Course = {
+    id: number
+    name: string
+    updateTime: string
+    isAdded: boolean
+    lessons: number
+    completedLessons: number
+    tags: string[]
+    description: string
+    year: string
+    date: string
+    lastUpdateTime: string
+  }
+
+  /**
+   *  跳转到创建课程
+   */
+  function goToCreateCourse() {
     router.push({
-      name: 'AdminProjectDetail',
+      name: 'AdminCourseCreate'
+    })
+  }
+
+  /**
+   * 跳转到编辑页
+   */
+  function goToEdit(item: Course) {
+    router.push({
+      name: 'AdminCourseEdit',
       params: {
         id: item.id
       }
@@ -105,84 +51,179 @@
   }
 
   /**
-   *  跳转到编辑页
+   * 跳转到详情页
    */
-  function goToEdit(item: StudyProject) {
+  function goToDetail(item: Course) {
     router.push({
-      name: 'AdminProjectEdit',
+      name: 'AdminCourseDetail',
       params: {
         id: item.id
       }
     })
   }
-  window.$message.success('操作成功111111111111111111111111')
+
+  /**
+   * 课程列表
+   */
+  const sourceList = ref<Course[]>([
+    {
+      id: 1,
+      name: '前端开发基础课程',
+      updateTime: '2026-04-13 15:36',
+      isAdded: true,
+      lessons: 12,
+      completedLessons: 8,
+      tags: ['前端', 'HTML', 'CSS'],
+      description:
+        '本课程主要介绍前端开发的基础知识，包括HTML、CSS和JavaScript的核心概念和实践技巧。',
+      year: '2026 年',
+      date: '4月13日',
+      lastUpdateTime: '最后更新15:36'
+    },
+    {
+      id: 2,
+      name: 'Vue3实战开发',
+      updateTime: '2026-04-10 10:24',
+      isAdded: true,
+      lessons: 18,
+      completedLessons: 5,
+      tags: ['前端', 'Vue', 'TypeScript'],
+      description: '从入门到精通Vue3框架，学习组合式API、响应式原理和实战项目开发。',
+      year: '2026 年',
+      date: '4月10日',
+      lastUpdateTime: '最后更新10:24'
+    },
+    {
+      id: 3,
+      name: 'Node.js后端开发',
+      updateTime: '2026-04-08 14:15',
+      isAdded: false,
+      lessons: 20,
+      completedLessons: 0,
+      tags: ['后端', 'Node.js', 'Express'],
+      description: '学习Node.js后端开发，包括Express框架、数据库操作和RESTful API设计。',
+      year: '2026 年',
+      date: '4月8日',
+      lastUpdateTime: '最后更新14:15'
+    },
+    {
+      id: 4,
+      name: 'React高级应用',
+      updateTime: '2026-04-05 09:30',
+      isAdded: true,
+      lessons: 15,
+      completedLessons: 12,
+      tags: ['前端', 'React', 'Hooks'],
+      description: '深入学习React高级特性，包括Hooks、Context API、Redux状态管理等。',
+      year: '2026 年',
+      date: '4月5日',
+      lastUpdateTime: '最后更新09:30'
+    },
+    {
+      id: 5,
+      name: '数据库设计与优化',
+      updateTime: '2026-04-01 16:45',
+      isAdded: false,
+      lessons: 10,
+      completedLessons: 0,
+      tags: ['数据库', 'MySQL', '优化'],
+      description: '学习数据库设计原则、SQL优化技巧和数据库性能调优方法。',
+      year: '2026 年',
+      date: '4月1日',
+      lastUpdateTime: '最后更新16:45'
+    }
+  ])
 </script>
 
 <template>
   <div class="relative mx-auto max-w-7xl px-10 max-sm:px-5">
-    <CreateProjectDialog v-if="isShowCreateProjectDialog" v-model="isShowCreateProjectDialog" />
+    <!-- 分配学习任务弹窗 -->
+    <AllocateCourseDialog v-if="isShowAllocateCourseDialog" v-model="isShowAllocateCourseDialog" />
 
-    <div class="flex items-center justify-between">
-      <el-input v-model="inputVModel" placeholder="学习项目名称、描述、标签或访问码">
-        <template #append>
-          <el-button class="flex items-center justify-center">
-            <SvgIcon icon="search" />
-          </el-button>
-        </template>
-      </el-input>
-
-      <el-button class="ml-20" type="primary" @click="isShowCreateProjectDialog = true">
-        创建学习项目
-      </el-button>
+    <div class="my-5 w-full flex items-center justify-end">
+      <el-button class="ml-20" type="primary" @click="goToCreateCourse"> 创建课程 </el-button>
     </div>
 
-    <div class="mt-10">
-      <AllocateDialog v-if="isShowAllocateDialog" v-model="isShowAllocateDialog" />
+    <div
+      v-for="item in sourceList"
+      :key="item.id"
+      class="mb-6 flex justify-between gap-5 rounded-3"
+      @click="goToDetail(item)"
+    >
+      <div class="flex flex-col gap-4 color-primary">
+        <div class="flex justify-end">
+          {{ item.year }}
+        </div>
 
-      <el-timeline>
-        <el-timeline-item
-          v-for="item in projectList"
-          :key="item.id"
-          center
-          :timestamp="item.date"
-          placement="top"
-          @click="goToDetail(item)"
-        >
-          <el-card>
-            <template #header>
-              <div class="flex items-center justify-between">
-                <span>
-                  {{ item.title }}
-                </span>
+        <div class="text-10 font-bold">
+          {{ item.date }}
+        </div>
 
-                <div class="flex items-center gap-2">
-                  <el-button class="flex items-center justify-center" @click.stop="goToEdit(item)">
-                    <SvgIcon icon="admin-edit" />
-                  </el-button>
+        <div class="flex justify-end">
+          {{ item.lastUpdateTime }}
+        </div>
+      </div>
 
-                  <!-- 分配 -->
-                  <el-button
-                    class="flex items-center justify-center"
-                    @click.stop="openAllocateDialog(item)"
-                  >
-                    <SvgIcon icon="admin-allocate" />
-                  </el-button>
-                </div>
-              </div>
-            </template>
+      <div class="flex-1 bg-[#f5f5f5] p-6">
+        <!-- 头部 -->
+        <div class="flex items-center justify-between">
+          <div class="text-xl font-bold">
+            {{ item.name }}
+          </div>
 
-            <h4>
+          <div class="flex items-center gap-2">
+            <el-button class="flex items-center justify-center" @click.stop="goToEdit(item)">
+              <SvgIcon icon="admin-edit" />
+            </el-button>
+
+            <!-- 分配 -->
+            <el-button
+              class="flex items-center justify-center"
+              @click.stop="isShowAllocateCourseDialog = true"
+            >
+              <SvgIcon icon="admin-allocate" />
+            </el-button>
+          </div>
+        </div>
+
+        <el-divider />
+
+        <!-- 内容 -->
+        <div class="flex justify-between border rounded-3 p-6">
+          <!-- 左侧 -->
+          <div>
+            <p class="mb-2 font-medium"> 参与信息 </p>
+
+            <div class="flex items-center gap-4">
+              <p> 总课时: {{ item.lessons }}节 </p>
+
+              <p> 已完成: {{ item.completedLessons }}节 </p>
+
+              <p> 进度: {{ Math.round((item.completedLessons / item.lessons) * 100) }}% </p>
+            </div>
+          </div>
+          <!-- 中间 -->
+          <div>
+            <p class="mb-2 font-medium"> 课程标签 </p>
+
+            <div class="flex flex-wrap gap-2">
+              <el-tag v-for="(tag, index) in item.tags" :key="index" size="small">
+                {{ tag }}
+              </el-tag>
+            </div>
+          </div>
+          <!-- 右侧 -->
+          <div class="max-w-md">
+            <p class="mb-2 font-medium"> 课程介绍 </p>
+
+            <p class="line-clamp-2 text-gray-600">
               {{ item.description }}
-            </h4>
-
-            <el-link :href="item.link" type="primary" class="mt-10">
-              {{ getCourseText(item) }} >
-            </el-link>
-          </el-card>
-        </el-timeline-item>
-      </el-timeline>
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
-<style></style>
+<style lang="scss" scoped></style>
