@@ -16,13 +16,7 @@
     "lint:stylelint": "stylelint  \"**/*.{css,scss,vue}\" --fix",
     "lint:lint-staged": "lint-staged",
     "prepare": "husky",
-    "commit": "git-cz",
     "clean:dev": "tsx scripts/clean-dev.ts"
-  },
-  "config": {
-    "commitizen": {
-      "path": "node_modules/cz-git"
-    }
   },
   "lint-staged": {
     "*.{js,ts,mjs,mts,tsx}": [
@@ -80,8 +74,6 @@
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
-    "@commitlint/cli": "^20.5.3",
-    "@commitlint/config-conventional": "^20.5.3",
     "@eslint/js": "^10.0.1",
     "@types/node": "^25.6.0",
     "@typescript-eslint/eslint-plugin": "^8.3.0",
