@@ -133,7 +133,7 @@ function goToEdit() {
     class="flex flex-col gap-4"
   >
     <el-page-header
-      class="art-card p-4 z-10"
+      class="art-card z-10"
       @back="$router.back()"
     >
       <template
@@ -184,7 +184,7 @@ function goToEdit() {
     </el-page-header>
 
     <div
-      class="art-card p-4 flex flex-col gap-5"
+      class="art-card flex flex-col gap-5"
     >
       <div
         v-for="(stage, index) in stages"

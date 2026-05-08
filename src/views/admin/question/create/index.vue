@@ -439,7 +439,7 @@ function importQuestions() {
     class="flex flex-col gap-4"
   >
     <el-page-header
-      class="art-card p-4 z-10"
+      class="art-card z-10"
       @back="$router.back()"
     >
       <template
@@ -484,7 +484,7 @@ function importQuestions() {
     </el-page-header>
 
     <div
-      class="art-card p-4"
+      class="art-card"
     >
       <el-form
         label-position="top"
@@ -508,7 +508,7 @@ function importQuestions() {
           class="mb-10"
         >
           <div
-            class="art-card p-6 flex flex-col gap-3"
+            class="art-card flex flex-col gap-3"
             :class="[
               movingStageId === stage.id
                 ? '!bg-primary/10'

@@ -88,7 +88,7 @@ const sourceList = ref<QuestionBank[]>([
 /**
    * 跳转到创建题库
    */
-function goToCreateQuestionBank() {
+function goToCreateQuestion() {
   router.push({
     name: 'AdminQuestionCreate',
     params: {
@@ -137,13 +137,12 @@ function deleteQuestionBank(item: QuestionBank) {
     <div
       class="my-5 flex w-full items-center justify-end"
     >
-      <el-button
-        class="ml-20"
-        type="primary"
-        @click="goToCreateQuestionBank"
+      <ArtIconButton
+        type="add"
+        @click="goToCreateQuestion"
       >
         创建题库
-      </el-button>
+      </ArtIconButton>
     </div>
 
     <div
@@ -180,7 +179,7 @@ function deleteQuestionBank(item: QuestionBank) {
       </div>
 
       <div
-        class="art-card mb-5 px-5 flex flex-1 flex-col h-35 cursor-cell justify-center relative max-sm:mb-4"
+        class="art-card mb-5 flex flex-1 flex-col h-35 cursor-cell justify-center relative max-sm:mb-4"
         @click="goToDetail(item)"
       >
         <div

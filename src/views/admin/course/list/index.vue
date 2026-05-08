@@ -27,7 +27,43 @@ type Course = {
   year: string
   date: string
   lastUpdateTime: string
+
+  time: {
+    year: number
+    month: number
+    day: number
+    hour: number
+    minute: number
+  }
 }
+
+/**
+   * 课程列表
+   */
+const sourceList = ref<Course[]>([
+  {
+    id: 1,
+    name: '前端开发基础课程',
+    updateTime: '2026-04-13 15:36',
+    isAdded: true,
+    lessons: 12,
+    completedLessons: 8,
+    tags: ['前端', 'HTML', 'CSS'],
+    description:
+        '本课程主要介绍前端开发的基础知识，包括HTML、CSS和JavaScript的核心概念和实践技巧。',
+    year: '2026 年',
+    date: '4月13日',
+    lastUpdateTime: '最后更新15:36',
+    time: {
+      year: 2026,
+      month: 4,
+      day: 15,
+      hour: 16,
+      minute: 8,
+    },
+  },
+
+])
 
 /**
    *  跳转到创建课程
@@ -61,83 +97,11 @@ function goToDetail(item: Course) {
     },
   })
 }
-
-/**
-   * 课程列表
-   */
-const sourceList = ref<Course[]>([
-  {
-    id: 1,
-    name: '前端开发基础课程',
-    updateTime: '2026-04-13 15:36',
-    isAdded: true,
-    lessons: 12,
-    completedLessons: 8,
-    tags: ['前端', 'HTML', 'CSS'],
-    description:
-        '本课程主要介绍前端开发的基础知识，包括HTML、CSS和JavaScript的核心概念和实践技巧。',
-    year: '2026 年',
-    date: '4月13日',
-    lastUpdateTime: '最后更新15:36',
-  },
-  {
-    id: 2,
-    name: 'Vue3实战开发',
-    updateTime: '2026-04-10 10:24',
-    isAdded: true,
-    lessons: 18,
-    completedLessons: 5,
-    tags: ['前端', 'Vue', 'TypeScript'],
-    description: '从入门到精通Vue3框架，学习组合式API、响应式原理和实战项目开发。',
-    year: '2026 年',
-    date: '4月10日',
-    lastUpdateTime: '最后更新10:24',
-  },
-  {
-    id: 3,
-    name: 'Node.js后端开发',
-    updateTime: '2026-04-08 14:15',
-    isAdded: false,
-    lessons: 20,
-    completedLessons: 0,
-    tags: ['后端', 'Node.js', 'Express'],
-    description: '学习Node.js后端开发，包括Express框架、数据库操作和RESTful API设计。',
-    year: '2026 年',
-    date: '4月8日',
-    lastUpdateTime: '最后更新14:15',
-  },
-  {
-    id: 4,
-    name: 'React高级应用',
-    updateTime: '2026-04-05 09:30',
-    isAdded: true,
-    lessons: 15,
-    completedLessons: 12,
-    tags: ['前端', 'React', 'Hooks'],
-    description: '深入学习React高级特性，包括Hooks、Context API、Redux状态管理等。',
-    year: '2026 年',
-    date: '4月5日',
-    lastUpdateTime: '最后更新09:30',
-  },
-  {
-    id: 5,
-    name: '数据库设计与优化',
-    updateTime: '2026-04-01 16:45',
-    isAdded: false,
-    lessons: 10,
-    completedLessons: 0,
-    tags: ['数据库', 'MySQL', '优化'],
-    description: '学习数据库设计原则、SQL优化技巧和数据库性能调优方法。',
-    year: '2026 年',
-    date: '4月1日',
-    lastUpdateTime: '最后更新16:45',
-  },
-])
 </script>
 
 <template>
   <div
-    class="relative mx-auto max-w-7xl px-10 max-sm:px-5"
+    class="mx-auto px-10 max-w-7xl relative max-sm:px-5"
   >
     <!-- 分配学习任务弹窗 -->
     <AllocateCourseDialog
@@ -146,98 +110,97 @@ const sourceList = ref<Course[]>([
     />
 
     <div
-      class="my-5 w-full flex items-center justify-end"
+      class="my-5 flex w-full items-center justify-end"
     >
-      <el-button
-        class="ml-20"
-        type="primary"
+
+      <ArtIconButton
+        type="add"
         @click="goToCreateCourse"
       >
         创建课程
-      </el-button>
+      </ArtIconButton>
     </div>
 
     <div
       v-for="item in sourceList"
       :key="item.id"
-      class="mb-6 flex justify-between gap-5 rounded-3"
-      @click="goToDetail(item)"
+      class="flex-c gap-5"
     >
       <div
-        class="flex flex-col gap-4 color-primary"
+        class="flex flex-col items-end"
       >
         <div
-          class="flex justify-end"
+          class="color-primary"
         >
-          {{ item.year }}
+          {{ item.time.year }} 年
         </div>
 
         <div
-          class="text-10 font-bold"
+          class="color-primary"
         >
-          {{ item.date }}
+          {{ item.time.month }} 月 {{ item.time.day }} 日
         </div>
 
         <div
-          class="flex justify-end"
+          class=""
         >
-          {{ item.lastUpdateTime }}
+          创建时间   {{ item.time.hour }}:{{ item.time.minute < 10 ? `0${item.time.minute}` : item.time.minute }}
         </div>
       </div>
 
       <div
-        class="flex-1 bg-[#f5f5f5] p-6"
+        class="bg-primary h-10 w-2"
       >
-        <!-- 头部 -->
+        <!-- 分隔符 -->
+      </div>
+
+      <div
+        class="art-card mb-5 flex flex-1 flex-col cursor-cell justify-center relative max-sm:mb-4"
+        @click="goToDetail(item)"
+      >
         <div
           class="flex items-center justify-between"
         >
           <div
-            class="text-xl font-bold"
+            class=""
           >
             {{ item.name }}
           </div>
 
           <div
-            class="flex items-center gap-2"
+            class="flex gap-2 items-center justify-center"
           >
-            <el-button
-              class="flex items-center justify-center"
-              @click.stop="goToEdit(item)"
-            >
-              <SvgIcon
-                icon="admin-edit"
-              />
-            </el-button>
+            <ArtIconButton
+              type="edit"
+              class="ml-3 max-sm:ml-[7px]"
+              @click="goToEdit(item)"
+            />
 
-            <!-- 分配 -->
-            <el-button
-              class="flex items-center justify-center"
-              @click.stop="isShowAllocateCourseDialog = true"
-            >
-              <SvgIcon
-                icon="admin-allocate"
-              />
-            </el-button>
+            <ArtIconButton
+              icon="material-symbols:person-add-outline-rounded"
+              type="primary"
+              tooltip="分配"
+              class="ml-3 max-sm:ml-[7px]"
+              @click="isShowAllocateCourseDialog = true"
+            />
           </div>
         </div>
 
         <el-divider />
 
-        <!-- 内容 -->
         <div
-          class="flex justify-between border rounded-3 p-6"
+          class="flex gap-5 items-start justify-between"
         >
-          <!-- 左侧 -->
+          <!-- 参与信息 -->
           <div>
             <p
-              class="mb-2 font-medium"
+              class="font-medium mb-2"
             >
               参与信息
             </p>
 
             <div
-              class="flex items-center gap-4"
+              class="text-3 color-info flex gap-4 items-center"
             >
               <p>
                 总课时: {{ item.lessons }}节
@@ -252,10 +215,11 @@ const sourceList = ref<Course[]>([
               </p>
             </div>
           </div>
-          <!-- 中间 -->
+
+          <!-- 课程标签 -->
           <div>
             <p
-              class="mb-2 font-medium"
+              class="font-medium mb-2"
             >
               课程标签
             </p>
@@ -272,25 +236,28 @@ const sourceList = ref<Course[]>([
               </el-tag>
             </div>
           </div>
-          <!-- 右侧 -->
+
+          <!-- 课程介绍 -->
           <div
             class="max-w-md"
           >
             <p
-              class="mb-2 font-medium"
+              class="font-medium mb-2"
             >
               课程介绍
             </p>
 
             <p
-              class="line-clamp-2 text-gray-600"
+              class="text-3 color-info"
             >
               {{ item.description }}
             </p>
           </div>
         </div>
+
       </div>
     </div>
+
   </div>
 </template>
 
