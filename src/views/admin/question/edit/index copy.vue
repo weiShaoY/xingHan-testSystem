@@ -358,7 +358,7 @@ function importQuestions() {
       class="art-card p-4"
     >
       <el-form
-        label-position="top"
+        label-position="left"
       >
 
         <!-- 标题 -->
@@ -376,7 +376,7 @@ function importQuestions() {
         <div
           v-for="(stage, stageIndex) in stages"
           :key="stage.id"
-          class="art-card mb-5 p-6 flex flex-col gap-5"
+          class="art-card mb-5 p-6"
         >
           <div
             class="flex gap-7 items-center"
@@ -426,6 +426,7 @@ function importQuestions() {
           </div>
 
           <!-- 题目类型选择 -->
+
           <el-radio-group
             v-model="stage.type"
             class="mt-5.5 gap-12"
@@ -440,15 +441,14 @@ function importQuestions() {
             </el-radio>
           </el-radio-group>
 
-          <!-- 单选题和多选题 -->
           <div
             v-if="stage.type !== '开放式题'"
+            class="mt-4.5 w-[86%]"
           >
-            <!-- 选项 -->
             <div
               v-for="(option, optionIndex) in stage.answerOptions"
               :key="optionIndex"
-              class="mb-2 flex gap-2 items-center justify-between"
+              class="mb-3.5 flex gap-2.5 items-center"
             >
               <el-input
                 v-model="option.content"
@@ -477,30 +477,22 @@ function importQuestions() {
                 </template>
               </el-input>
 
-              <div
-                class="flex gap-1 items-center justify-between"
-              >
-                <ArtIconButton
-                  type="add"
-                  @click="addOption(stage, optionIndex)"
-                />
+              <el-button
+                icon="Plus"
+                @click="addOption(stage, optionIndex)"
+              />
 
-                <ArtIconButton
-                  type="delete"
-                  :disabled="(stage.answerOptions?.length ?? 0) <= 1"
-                  @click="removeOption(stage, optionIndex)"
-                />
-
-              </div>
-
+              <el-button
+                icon="Minus"
+                :disabled="(stage.answerOptions?.length ?? 0) <= 1"
+                @click="removeOption(stage, optionIndex)"
+              />
             </div>
 
             <el-form-item
               label="正确答案"
-              required
               class="mt-4.5 [&_.el-select]:w-full"
             >
-              <!-- 单选题 -->
               <el-select
                 v-if="stage.type === '单选题'"
                 :model-value="getCorrectSingleOption(stage)"
@@ -513,13 +505,8 @@ function importQuestions() {
                   :label="option.content"
                   :value="option.content"
                 />
-
-                <template
-                  #header
-                />
               </el-select>
 
-              <!-- 多选题 -->
               <el-select
                 v-else
                 :model-value="getCorrectOptionContents(stage)"
@@ -587,27 +574,21 @@ function importQuestions() {
             </div>
           </div>
 
-          <!-- 分值和难度 -->
           <div
-            class="flex gap-5 items-center"
+            class="mt-4.5 flex gap-7 items-center [&_.el-input-number]:w-28 [&_.el-select]:w-28"
           >
             <el-form-item
               label="分值"
-              class="!w-40"
-              required
             >
               <el-input-number
                 v-model="stage.score"
                 :min="0"
-                :controls="true"
-                placeholder="本题分值"
+                :controls="false"
               />
             </el-form-item>
 
             <el-form-item
               label="难度"
-              class="!w-40"
-              required
             >
               <el-select
                 v-model="stage.difficulty"
@@ -622,16 +603,23 @@ function importQuestions() {
             </el-form-item>
           </div>
 
-          <!-- 答案说明 -->
           <el-form-item
             label="答案说明（选填）"
-            required
+            class="mt-1 w-full [&_p]:text-3.25 [&_p]:color-[var(--art-gray-600)] [&_p]:leading-6.5 [&_p]:mb-0 [&_p]:mt-1"
           >
-            <p
-              class="text-3 color-info"
+            <template
+              #label
             >
-              填写答题思路，帮助学员理解考试内容，提升考试成绩。
-            </p>
+              <div>
+                <div>
+                  答案说明（选填）
+                </div>
+
+                <p>
+                  填写答题思路，帮助学员理解考试内容，提升考试成绩。
+                </p>
+              </div>
+            </template>
 
             <el-input
               v-model="stage.answerExplanation"
@@ -644,7 +632,7 @@ function importQuestions() {
         </div>
 
         <div
-          class="p-8 border flex gap-5 items-center !border-[var(--art-card-border)] !bg-[var(--art-gray-100)]"
+          class="mt-7 p-4.5 border border-[var(--art-card-border)] bg-[var(--art-gray-100)] flex gap-5 items-center"
         >
 
           <art-icon-button

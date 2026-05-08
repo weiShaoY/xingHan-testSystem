@@ -22,7 +22,7 @@ type Props = {
   circle?: boolean
 
   /** 按钮类型 */
-  type?: 'add' | 'edit' | 'delete' | 'more' | 'view' | 'export' | 'default' | 'success'
+  type?: 'default' | 'view' | 'more' | 'add' | 'edit' | 'delete' | 'import' | 'export' | 'success' | 'link'
 
   /** icon 颜色 */
   iconColor?: string
@@ -50,53 +50,70 @@ type Props = {
 }
 
 type ButtonPreset = {
-  icon: string
+  icon?: string
   class: string
   tooltip?: string
 }
 
-// 默认按钮配置
+/**
+   *  默认按钮配置
+   */
 const defaultButtons: Record<NonNullable<Props['type']>, ButtonPreset> = {
-  add: {
-    icon: 'ri:add-fill',
-    class: 'bg-theme/12 text-theme',
+  default: {
+    icon: '',
+    class: 'bg-info/6 text-info',
   },
-  edit: {
-    icon: 'ri:pencil-line',
-    class: 'bg-secondary/12 text-secondary',
-    tooltip: '编辑',
-  },
-  delete: {
-    icon: 'ri:delete-bin-5-line',
-    class: 'bg-error/12 text-error',
-    tooltip: '删除',
-  },
+
   view: {
     icon: 'ri:eye-line',
     class: 'bg-info/12 text-info',
     tooltip: '查看',
   },
+
+  more: {
+    icon: 'ri:more-2-fill',
+    class: '',
+  },
+
+  add: {
+    icon: 'ri:add-fill',
+    class: 'bg-theme/12 text-theme',
+  },
+
+  edit: {
+    icon: 'ri:pencil-line',
+    class: 'bg-secondary/12 text-secondary',
+    tooltip: '编辑',
+  },
+
+  delete: {
+    icon: 'ri:delete-bin-5-line',
+    class: 'bg-error/12 text-error',
+    tooltip: '删除',
+  },
+
+  import: {
+    icon: 'ri:import-line',
+    class: 'bg-primary/12 text-primary',
+  },
+
   export: {
     icon: 'ix:arrow-down',
     class: 'bg-success/12 text-success',
     tooltip: '导出',
   },
-  more: {
-    icon: 'ri:more-2-fill',
-    class: '',
-  },
-  default: {
-    icon: '',
-    class: 'bg-info/6 text-info',
-  },
+
   success: {
     icon: 'ri:check-line',
     class: 'bg-primary/12 text-primary',
   },
+
+  link: {
+    class: 'text-primary hover:text-primary/80 hover:underline underline-offset-6',
+  },
 }
 
 // 获取图标内容
-
 const iconContent = computed(() => {
   return props.icon || (props.type ? defaultButtons[props.type]?.icon : '') || ''
 })
@@ -138,7 +155,7 @@ function handleClick(event: MouseEvent) {
     :z-index="zIndex"
   >
     <div
-      class="text-sm mr-2.5 px-2.5 align-middle rounded-md inline-flex gap-2 h-8 min-w-8 items-center justify-center"
+      class="text-sm mr-2 px-2.5 align-middle rounded-md inline-flex gap-2 h-8 min-w-8 items-center justify-center"
       :class="[buttonClass, buttonStateClass, { 'rounded-full': circle }]"
       :style="{ backgroundColor: buttonBgColor, color: iconColor }"
       :aria-disabled="disabled"
@@ -159,7 +176,7 @@ function handleClick(event: MouseEvent) {
 
   <div
     v-else
-    class="text-sm mr-2.5 px-2.5 align-middle rounded-md inline-flex gap-2 h-8 min-w-8 items-center justify-center"
+    class="text-sm mr-2 px-2.5 align-middle rounded-md inline-flex gap-2 h-8 min-w-8 items-center justify-center"
     :class="[buttonClass, buttonStateClass, { 'rounded-full': circle }]"
     :style="{ backgroundColor: buttonBgColor, color: iconColor }"
     :aria-disabled="disabled"
