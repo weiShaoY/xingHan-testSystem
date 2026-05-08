@@ -177,9 +177,7 @@ function goToDetail(item: Course) {
             />
 
             <ArtIconButton
-              icon="material-symbols:person-add-outline-rounded"
-              type="primary"
-              tooltip="分配"
+              type="allocate"
               class="ml-3 max-sm:ml-[7px]"
               @click="isShowAllocateCourseDialog = true"
             />

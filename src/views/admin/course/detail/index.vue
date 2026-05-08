@@ -3,11 +3,9 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 
-import SvgIcon from '@/components/SvgIcon/index.vue'
-
 import AllocateCourseDialog from '../list/AllocateCourseDialog.vue'
 
-import CreateChapterDialog from './CreateChapterDialog.vue'
+import ChapterFormDialog from './ChapterFormDialog.vue'
 
 const router = useRouter()
 
@@ -19,7 +17,7 @@ const isShowAllocateCourseDialog = ref(false)
 /**
    * 是否显示新建章节弹窗
    */
-const isShowCreateChapterDialog = ref(false)
+const isShowChapterFormDialog = ref(false)
 
 /**
    *  是否显示新建小节弹窗
@@ -112,7 +110,7 @@ const courseItems = ref<CourseItem[]>([
    */
 function goToEdit() {
   router.push({
-    name: 'AdminMyCourseEdit',
+    name: 'AdminCourseEdit',
     query: {
       id: router.currentRoute.value.query.id,
     },
@@ -120,11 +118,8 @@ function goToEdit() {
 }
 
 /**
-
  * 跳转到添加小节（根据类型）
-
  */
-
 function goToAddSection(type: 'video' | 'document' | 'exam' | 'question') {
   const routeMap = {
     video: 'AdminCourseSectionVideo',
@@ -184,18 +179,20 @@ function editSection(sectionId: number) {
 
 <template>
   <div
-    class="w-full"
+    class="mb-10 flex flex-col gap-4"
   >
     <!-- 分配学习任务弹窗 -->
     <AllocateCourseDialog
       v-if="isShowAllocateCourseDialog"
       v-model="isShowAllocateCourseDialog"
     />
-    <!-- 新建章节弹窗 -->
-    <CreateChapterDialog
-      v-if="isShowCreateChapterDialog"
-      v-model="isShowCreateChapterDialog"
+
+    <!-- 章节弹窗 -->
+    <ChapterFormDialog
+      v-if="isShowChapterFormDialog"
+      v-model="isShowChapterFormDialog"
     />
+
     <!-- 新建小节弹窗 -->
     <el-dialog
       v-if="isShowCreateSectionDialog"
@@ -205,7 +202,7 @@ function editSection(sectionId: number) {
       :show-close="false"
     >
       <div
-        class="w-full flex items-center justify-center gap-2"
+        class="flex gap-2 w-full items-center justify-center"
       >
         <el-button
           v-for="item in sectionTypeButtons"
@@ -219,15 +216,25 @@ function editSection(sectionId: number) {
     </el-dialog>
 
     <el-page-header
+      class="art-card z-10"
       @back="$router.back()"
     >
       <template
         #content
       >
+
         <div
-          class="flex items-center"
+          class="flex gap-5 items-center"
         >
-          学习课程1 详情页
+          <span>学习课程1 详情页</span>
+
+          <div
+            class="text-sm color-info font-normal flex gap-2"
+          >
+            <span>
+              小节数量: {{ courseItems.filter(stage => stage.type === 'section').length }}
+            </span>
+          </div>
         </div>
       </template>
 
@@ -235,49 +242,39 @@ function editSection(sectionId: number) {
         #extra
       >
         <div
-          class="flex items-center gap-2"
+          class="flex gap-2 items-center"
         >
-          <el-button
-            class="flex items-center justify-center"
-            @click.stop="goToEdit()"
-          >
-            <SvgIcon
-              icon="admin-edit"
-            />
-          </el-button>
+          <ArtIconButton
+            type="allocate"
+            class="ml-3 max-sm:ml-[7px]"
+            @click="isShowAllocateCourseDialog = true"
+          />
 
-          <!-- 分配 -->
-          <el-button
-            class="flex items-center justify-center"
-            @click.stop="isShowAllocateCourseDialog = true"
+          <ArtIconButton
+            type="edit"
+            class="ml-3 max-sm:ml-[7px]"
+            @click="goToEdit()"
+          />
+
+          <ArtIconButton
+            type="add"
+            class="ml-3 max-sm:ml-[7px]"
+            @click="isShowChapterFormDialog = true"
           >
-            <SvgIcon
-              icon="admin-allocate"
-            />
-          </el-button>
+            添加章节
+          </ArtIconButton>
+
+          <ArtIconButton
+            type="add"
+            class="ml-3 max-sm:ml-[7px]"
+            @click="isShowCreateSectionDialog = true"
+          >
+            添加课程小节
+          </ArtIconButton>
+
         </div>
       </template>
     </el-page-header>
-
-    <div
-      class="my-5 w-full flex items-center justify-end"
-    >
-      <el-button
-        plain
-        class="ml-2"
-        @click="isShowCreateChapterDialog = true"
-      >
-        添加章节
-      </el-button>
-
-      <el-button
-        type="primary"
-        class="ml-2"
-        @click="isShowCreateSectionDialog = true"
-      >
-        添加课程小节
-      </el-button>
-    </div>
 
     <!-- // 分两种 1 章节, 2 小节  章节可以包含小节  章节是 二级数组 -->
 
@@ -295,10 +292,10 @@ function editSection(sectionId: number) {
           #header
         >
           <div
-            class="w-full flex items-center justify-between"
+            class="flex w-full items-center justify-between"
           >
             <div
-              class="flex items-center gap-2"
+              class="flex gap-2 items-center"
             >
               <div
                 class=""
@@ -308,21 +305,21 @@ function editSection(sectionId: number) {
             </div>
 
             <div
-              class="flex items-center gap-2"
+              class="flex gap-2 items-center"
             >
-              <el-button
-                class="flex items-center justify-center"
+              <ArtIconButton
+                type="add"
+                class="ml-3 max-sm:ml-[7px]"
                 @click="isShowCreateSectionDialog = true"
               >
-                添加小节
-              </el-button>
+                添加课程小节
+              </ArtIconButton>
 
-              <el-button
-                class="flex items-center justify-center"
+              <ArtIconButton
+                type="edit"
+                class="ml-3 max-sm:ml-[7px]"
                 @click="editChapter(item.id)"
-              >
-                编辑
-              </el-button>
+              />
             </div>
           </div>
         </template>
@@ -334,10 +331,10 @@ function editSection(sectionId: number) {
           class="mb-2"
         >
           <div
-            class="w-full flex items-center justify-between"
+            class="flex w-full items-center justify-between"
           >
             <div
-              class="flex items-center gap-5"
+              class="flex gap-5 items-center"
             >
               <div
                 class=""
@@ -359,24 +356,20 @@ function editSection(sectionId: number) {
             </div>
 
             <div
-              class="flex items-center gap-2"
+              class="flex gap-2 items-center"
             >
-              <el-button
-                class="flex items-center justify-center"
-                @click="editSection(section.id)"
-              >
-                <SvgIcon
-                  icon="admin-edit"
-                />
-              </el-button>
 
-              <el-button
-                class="flex items-center justify-center"
-              >
-                <SvgIcon
-                  icon="admin-allocate"
-                />
-              </el-button>
+              <ArtIconButton
+                type="allocate"
+                class="ml-3 max-sm:ml-[7px]"
+                @click="isShowAllocateCourseDialog = true"
+              />
+
+              <ArtIconButton
+                type="edit"
+                class="ml-3 max-sm:ml-[7px]"
+                @click="editSection(item.id)"
+              />
             </div>
           </div>
         </el-card>
@@ -387,10 +380,10 @@ function editSection(sectionId: number) {
         v-else-if="item.type === 'section'"
       >
         <div
-          class="w-full flex items-center justify-between"
+          class="flex w-full items-center justify-between"
         >
           <div
-            class="flex items-center gap-5"
+            class="flex gap-5 items-center"
           >
             <div
               class=""
@@ -412,23 +405,15 @@ function editSection(sectionId: number) {
           </div>
 
           <div
-            class="flex items-center gap-2"
+            class="flex gap-2 items-center"
           >
-            <el-button
-              class="flex items-center justify-center"
-            >
-              <SvgIcon
-                icon="admin-edit"
-              />
-            </el-button>
 
-            <el-button
-              class="flex items-center justify-center"
-            >
-              <SvgIcon
-                icon="admin-allocate"
-              />
-            </el-button>
+            <ArtIconButton
+              type="edit"
+              class="ml-3 max-sm:ml-[7px]"
+              @click="editSection(item.id)"
+            />
+
           </div>
         </div>
       </el-card>

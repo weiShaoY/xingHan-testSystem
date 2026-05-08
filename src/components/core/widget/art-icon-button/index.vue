@@ -22,7 +22,7 @@ type Props = {
   circle?: boolean
 
   /** 按钮类型 */
-  type?: 'default' | 'view' | 'more' | 'add' | 'edit' | 'delete' | 'import' | 'export' | 'link' | 'primary' | 'success' | 'warning' | 'error'
+  type?: 'default' | 'view' | 'more' | 'add' | 'edit' | 'delete' | 'import' | 'export' | 'link' | 'primary' | 'success' | 'warning' | 'error' | 'allocate'
 
   /** icon 颜色 */
   iconColor?: string
@@ -120,6 +120,12 @@ const defaultButtons: Record<NonNullable<Props['type']>, ButtonPreset> = {
 
   error: {
     class: 'bg-error/12 text-error',
+  },
+
+  allocate: {
+    icon: 'material-symbols:person-add-outline-rounded',
+    class: 'bg-primary/12 text-primary',
+    tooltip: '分配',
   },
 }
 
