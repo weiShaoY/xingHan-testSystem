@@ -1,157 +1,466 @@
 <!------  2026-04-15---16:08---星期三  ------>
 <!------------------------------------    ------------------------------------------------->
 <script lang="ts" setup>
-import { QuestionFilled } from '@element-plus/icons-vue'
-
 import { ref } from 'vue'
 
-const activeTab = ref('basic')
+/**
+ * 题目选项数据
+ */
+type QuestionOption = {
+
+  /** 选项内容 */
+  content: string
+
+  /** 是否为正确答案 */
+  isCorrect: boolean
+}
 
 /**
- * 表单数据
+ * 题目类型
  */
-const formData = ref({
-  // 基本信息
-  name: '未命名课程',
-  courseForm: 'online', // online, offline, hybrid, other
-  category: '',
-  tags: '',
-
-  // 图片设置
-  coverImage: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=autumn%20forest%20road%20scenery%20with%20colorful%20trees&image_size=landscape_4_3',
-  backgroundImage: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=autumn%20forest%20landscape%20with%20colorful%20trees&image_size=landscape_4_3',
-
-  // 报名设置
-  enableEnrollment: true,
-  enrollmentTitle: '未命名课程',
-  enrollmentQuotaType: 'unlimited', // unlimited, limited
-  enrollmentLimit: '',
-  enrollmentTimeType: 'unlimited', // unlimited, limited
-  enrollmentStart: '',
-  enrollmentEnd: '',
-  enrollmentAuditType: 'auto', // auto, manual
-  allowCancelEnrollment: 'no', // yes, no
-  enrollmentIntroduction: '',
-  enrollmentFields: {
-    name: false,
-    phone: false,
-    company: false,
-  },
-  enrollmentFieldLabels: {
-    name: '输入真实姓名',
-    phone: '输入手机号码',
-    company: '您的公司',
-  },
-  enrollmentFieldRequired: {
-    name: false,
-    phone: false,
-    company: false,
-  },
-
-  // 高级设置
-  enablePassMode: true,
-  electiveUnlockCondition: 'previous_completed',
-  singleSectionMode: false,
-  enableAutoEvaluation: true,
-  enableAutoNextSection: false,
-  showCompletedLearners: true,
-  enableLearningTimeLimit: false,
-  showSectionNumbers: true,
-})
+type QuestionType = '单选题' | '多选题' | '开放式题'
 
 /**
- * 内容分类选项
+ * 题目难度
  */
-const categoryOptions = [
+type Difficulty = '易' | '中' | '难'
+
+/**
+ * 题目数据
+ */
+type Stage = {
+
+  /** 阶段ID */
+  id: string
+
+  /** 阶段名称 */
+  name: string
+
+  /** 题目类型 */
+  type: QuestionType
+
+  /** 分值 */
+  score: number
+
+  /** 难度 */
+  difficulty: Difficulty
+
+  /** 标准答案 */
+  standardAnswer?: string[]
+
+  /** 单选或多选选项和答案 */
+  answerOptions?: QuestionOption[]
+
+  /** 答案说明 */
+  answerExplanation?: string
+}
+
+/**
+ * 题目列表数据
+ */
+const stages = ref<Stage[]>([
   {
-    label: '前端开发',
-    value: 'frontend',
+    id: '1',
+    name: '学习阶段一',
+    type: '单选题',
+    score: 10,
+    difficulty: '中',
+    answerOptions: [
+      {
+        content: '1',
+        isCorrect: true,
+      },
+      {
+        content: '2',
+        isCorrect: false,
+      },
+      {
+        content: '3',
+        isCorrect: false,
+      },
+      {
+        content: '4',
+        isCorrect: false,
+      },
+    ],
+  },
+])
+
+/**
+ * 题库标题
+ */
+const questionBankTitle = ref('未命名题库')
+
+/**
+ * 题目类型选项
+ */
+const questionTypes: { label: string, value: QuestionType }[] = [
+  {
+    label: '单选题',
+    value: '单选题',
   },
   {
-    label: '后端开发',
-    value: 'backend',
+    label: '多选题',
+    value: '多选题',
   },
   {
-    label: '移动开发',
-    value: 'mobile',
-  },
-  {
-    label: '数据分析',
-    value: 'data',
-  },
-  {
-    label: '人工智能',
-    value: 'ai',
-  },
-  {
-    label: '云计算',
-    value: 'cloud',
-  },
-  {
-    label: '网络安全',
-    value: 'security',
-  },
-  {
-    label: '其他',
-    value: 'other',
+    label: '开放式问题',
+    value: '开放式题',
   },
 ]
 
 /**
- * 上传图片
+ * 难度选项
  */
-function uploadImage(type: string) {
-  // 这里可以添加图片上传逻辑
-  console.log('上传图片:', type)
+const difficultyOptions: Difficulty[] = ['易', '中', '难']
+
+/**
+ * 选项序号标签
+ */
+const optionLabels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
+
+/**
+ * 题目操作按钮配置
+ */
+const stageActions = [
+  {
+    label: '移动',
+    action: 'move',
+  },
+  {
+    label: '复制',
+    action: 'copy',
+  },
+  {
+    label: '删除',
+    action: 'delete',
+  },
+]
+
+/**
+ * 题干右侧工具图标
+ */
+const questionTools = [
+  'ri:mic-line',
+  'ri:video-line',
+  'ri:image-line',
+  'ri:superscript',
+]
+
+/**
+ * 当前正在移动的题目 ID
+ */
+const movingStageId = ref('')
+
+/**
+ * 创建题目选项
+ *
+ * @param content 选项内容
+ * @returns 题目选项数据
+ */
+function createOption(content = ''): QuestionOption {
+  return {
+    content,
+    isCorrect: false,
+  }
 }
 
 /**
- * AI生成图片
+ * 创建题目
+ *
+ * @param type 题目类型
+ * @returns 题目数据
  */
-function generateImage(type: string) {
-  // 这里可以添加AI生成图片逻辑
-  console.log('AI生成图片:', type)
+function createStage(type: QuestionType = '单选题'): Stage {
+  const id = `${Date.now()}`
+
+  return {
+    id,
+    name: '',
+    type,
+    score: 10,
+    difficulty: '中',
+    answerOptions: type === '开放式题'
+      ? undefined
+      : [
+          createOption(''),
+          createOption(''),
+          createOption(''),
+          createOption(''),
+        ],
+    standardAnswer: type === '开放式题' ? [''] : undefined,
+    answerExplanation: '',
+  }
 }
 
 /**
- * 自定义封面
+ * 获取选项展示序号
+ *
+ * @param index 选项索引
+ * @returns 选项标签
  */
-function customCover() {
-  // 这里可以添加自定义封面逻辑
-  console.log('自定义封面')
+function getOptionLabel(index: number) {
+  return optionLabels[index] ?? `${index + 1}`
 }
 
 /**
- * 添加报名字段
+ * 获取题目的所有正确选项内容
+ *
+ * @param stage 题目数据
+ * @returns 正确选项内容列表
  */
-function addEnrollmentField() {
-  // 这里可以添加添加报名字段的逻辑
-  console.log('添加报名字段')
+function getCorrectOptionContents(stage: Stage) {
+  return stage.answerOptions
+    ?.filter(option => option.isCorrect)
+    .map(option => option.content)
+    .filter(Boolean) ?? []
 }
 
 /**
- * 完成创建
+ * 获取单选题的正确选项内容
+ *
+ * @param stage 题目数据
+ * @returns 正确选项内容
  */
-function handleComplete() {
-  // 这里可以添加表单提交逻辑
-  console.log('完成创建:', formData.value)
+function getCorrectSingleOption(stage: Stage) {
+  return getCorrectOptionContents(stage)[0] ?? ''
 }
+
+/**
+ * 设置单选题正确答案
+ *
+ * @param stage 题目数据
+ * @param value 正确选项内容
+ */
+function setCorrectSingleOption(stage: Stage, value: string) {
+  stage.answerOptions?.forEach((option) => {
+    option.isCorrect = option.content === value
+  })
+}
+
+/**
+ * 设置多选题正确答案
+ *
+ * @param stage 题目数据
+ * @param values 正确选项内容列表
+ */
+function setCorrectMultipleOptions(stage: Stage, values: string[]) {
+  stage.answerOptions?.forEach((option) => {
+    option.isCorrect = values.includes(option.content)
+  })
+}
+
+/**
+ * 处理题目类型切换
+ *
+ * @param stage 题目数据
+ */
+function handleQuestionTypeChange(stage: Stage) {
+  if (stage.type === '开放式题') {
+    stage.answerOptions = undefined
+    stage.standardAnswer = stage.standardAnswer?.length ? stage.standardAnswer : ['']
+    return
+  }
+
+  stage.standardAnswer = undefined
+  stage.answerOptions = stage.answerOptions?.length
+    ? stage.answerOptions
+    : [createOption(''), createOption(''), createOption(''), createOption('')]
+}
+
+/**
+ * 添加选项
+ *
+ * @param stage 题目数据
+ * @param index 当前选项索引，不传则添加到末尾
+ */
+function addOption(stage: Stage, index?: number) {
+  if (!stage.answerOptions) {
+    stage.answerOptions = []
+  }
+
+  const insertIndex = typeof index === 'number' ? index + 1 : stage.answerOptions.length
+
+  stage.answerOptions.splice(insertIndex, 0, createOption(''))
+}
+
+/**
+ * 删除选项
+ *
+ * @param stage 题目数据
+ * @param index 选项索引
+ */
+function removeOption(stage: Stage, index: number) {
+  if (!stage.answerOptions || stage.answerOptions.length <= 1) {
+    return
+  }
+
+  stage.answerOptions.splice(index, 1)
+}
+
+/**
+ * 添加开放式题标准答案
+ *
+ * @param stage 题目数据
+ * @param index 当前答案索引，不传则添加到末尾
+ */
+function addStandardAnswer(stage: Stage, index?: number) {
+  if (!stage.standardAnswer) {
+    stage.standardAnswer = []
+  }
+
+  const insertIndex = typeof index === 'number' ? index + 1 : stage.standardAnswer.length
+
+  stage.standardAnswer.splice(insertIndex, 0, '')
+}
+
+/**
+ * 删除开放式题标准答案
+ *
+ * @param stage 题目数据
+ * @param index 答案索引
+ */
+function removeStandardAnswer(stage: Stage, index: number) {
+  if (!stage.standardAnswer || stage.standardAnswer.length <= 1) {
+    return
+  }
+
+  stage.standardAnswer.splice(index, 1)
+}
+
+/**
+ * 添加新题目
+ */
+function addQuestion() {
+  stages.value.push(createStage())
+}
+
+/**
+ * 复制题目
+ *
+ * @param stage 被复制的题目数据
+ */
+function copyQuestion(stage: Stage) {
+  stages.value.push({
+    ...structuredClone(stage),
+    id: `${Date.now()}`,
+  })
+}
+
+/**
+ * 删除题目
+ *
+ * @param stageIndex 题目索引
+ */
+function deleteQuestion(stageIndex: number) {
+  if (stages.value.length <= 1) {
+    return
+  }
+
+  stages.value.splice(stageIndex, 1)
+}
+
+/**
+ * 进入题目移动模式
+ *
+ * @param stageIndex 要移动的题目索引
+ */
+function moveQuestion(stageIndex: number) {
+  movingStageId.value = stages.value[stageIndex]?.id ?? ''
+}
+
+/**
+ * 取消题目移动模式
+ */
+function cancelMoveQuestion() {
+  movingStageId.value = ''
+}
+
+/**
+ * 将当前移动题目插入到目标题目之后
+ *
+ * @param targetIndex 目标题目索引
+ */
+function moveQuestionTo(targetIndex: number) {
+  if (!movingStageId.value) {
+    return
+  }
+
+  const sourceIndex = stages.value.findIndex(stage => stage.id === movingStageId.value)
+
+  if (sourceIndex === -1) {
+    cancelMoveQuestion()
+    return
+  }
+
+  const [stage] = stages.value.splice(sourceIndex, 1)
+
+  const insertIndex = sourceIndex < targetIndex ? targetIndex : targetIndex + 1
+
+  stages.value.splice(insertIndex, 0, stage)
+
+  cancelMoveQuestion()
+}
+
+/**
+ * 处理题目操作按钮点击
+ *
+ * @param action 操作类型
+ * @param stage 当前题目数据
+ * @param stageIndex 当前题目索引
+ */
+function handleStageAction(action: string, stage: Stage, stageIndex: number) {
+  //  移动
+  if (action === 'move') {
+    moveQuestion(stageIndex)
+  }
+
+  if (action === 'copy') {
+    copyQuestion(stage)
+  }
+
+  if (action === 'delete') {
+    deleteQuestion(stageIndex)
+  }
+}
+
+/**
+ * 批量导入题目示例
+ */
+function importQuestions() {
+  stages.value.push(createStage('单选题'))
+  stages.value.push(createStage('多选题'))
+}
+
 </script>
 
 <template>
   <div
-    class="w-full"
+    class="flex flex-col gap-4"
   >
     <el-page-header
+      class="art-card p-4 z-10"
       @back="$router.back()"
     >
       <template
         #content
       >
         <div
-          class="flex items-center"
+          class="flex gap-5 items-center"
         >
-          创建课程
+          <span>创建题库</span>
+
+          <div
+            class="text-sm color-info font-normal flex gap-2"
+          >
+            <span>单选题数量: {{ stages.filter(stage => stage.type === '单选题').length }}</span>
+
+            <span>多选题数量: {{ stages.filter(stage => stage.type === '多选题').length }}</span>
+
+            <span>开放式题数量: {{ stages.filter(stage => stage.type === '开放式题').length }}</span>
+
+          </div>
+
         </div>
       </template>
 
@@ -161,698 +470,366 @@ function handleComplete() {
         <div
           class="flex items-center"
         >
-          <el-button
-            type="primary"
-            class="ml-2"
-            @click="handleComplete"
+
+          <ArtIconButton
+            class="ml-3 max-sm:ml-[7px]"
+            type="success"
+            @click="$router.back()"
           >
             完成
-          </el-button>
+          </ArtIconButton>
+
         </div>
       </template>
     </el-page-header>
 
     <div
-      class="mb-30 mt-10"
+      class="art-card p-4"
     >
-      <el-tabs
-        v-model="activeTab"
+      <el-form
+        label-position="top"
       >
-        <el-tab-pane
-          label="基本信息"
-          name="basic"
-          class="mt-5 p-6 border rounded-3"
+
+        <!-- 标题 -->
+        <el-form-item
+          required
+          label="标题"
+          class="!mb-10"
         >
-          <el-form
-            label-width="120px"
-            label-position="top"
-          >
-            <el-form-item
-              label="课程名称"
-              required
-            >
-              <el-input
-                v-model="formData.name"
-                placeholder="请输入课程名称"
-                class="w-full"
-              />
-            </el-form-item>
+          <el-input
+            v-model="questionBankTitle"
+            placeholder="请输入题库标题"
+          />
+        </el-form-item>
 
-            <el-form-item
-              label="课程形式"
-              required
-            >
-              <el-radio-group
-                v-model="formData.courseForm"
-              >
-                <el-radio
-                  value="online"
-                >
-                  在线课程
-                </el-radio>
-
-                <el-radio
-                  value="offline"
-                >
-                  面授课程
-                </el-radio>
-
-                <el-radio
-                  value="hybrid"
-                >
-                  混合式学习
-                </el-radio>
-
-                <el-radio
-                  value="other"
-                >
-                  其他
-                </el-radio>
-              </el-radio-group>
-            </el-form-item>
-
-            <el-form-item
-              label="内容分类"
-              required
-            >
-              <el-select
-                v-model="formData.category"
-                placeholder="请选择分类"
-                class="w-full"
-              >
-                <el-option
-                  v-for="item in categoryOptions"
-                  :key="item.value"
-                  :value="item.value"
-                  :label="item.label"
-                />
-              </el-select>
-            </el-form-item>
-
-            <el-form-item
-              label="课程标签"
-              required
-            >
-              <el-input
-                v-model="formData.tags"
-                placeholder="用逗号隔开，方便更多学员找到您的课程"
-                class="w-full"
-              />
-            </el-form-item>
-
-            <el-form-item
-              label="课程展示图片设置"
-            >
-              <div
-                class="flex gap-8"
-              >
-                <!-- 课程封面图 -->
-                <div
-                  class="flex flex-col items-center"
-                >
-                  <div
-                    class="mb-4"
-                  >
-                    <img
-                      :src="formData.coverImage"
-                      alt="课程封面图"
-                      class="rounded h-40 w-64 object-cover"
-                    >
-                  </div>
-
-                  <div
-                    class="flex gap-2"
-                  >
-                    <el-button
-                      type="primary"
-                      @click="customCover"
-                    >
-                      自定义封面
-                    </el-button>
-
-                    <el-button
-                      type="warning"
-                      @click="generateImage('cover')"
-                    >
-                      AI生成
-                    </el-button>
-                  </div>
-                </div>
-
-                <!-- 课程背景图 -->
-                <div
-                  class="flex flex-col items-center"
-                >
-                  <div
-                    class="mb-4"
-                  >
-                    <img
-                      :src="formData.backgroundImage"
-                      alt="课程背景图"
-                      class="rounded h-40 w-64 object-cover"
-                    >
-                  </div>
-
-                  <div
-                    class="flex gap-2"
-                  >
-                    <el-button
-                      type="primary"
-                      @click="uploadImage('background')"
-                    >
-                      上传图片
-                    </el-button>
-
-                    <el-button
-                      type="warning"
-                      @click="generateImage('background')"
-                    >
-                      AI生成
-                    </el-button>
-                  </div>
-                </div>
-              </div>
-            </el-form-item>
-          </el-form>
-        </el-tab-pane>
-
-        <el-tab-pane
-          label="报名"
-          name="enrollment"
-          class="mt-5 p-6 border rounded-3"
+        <div
+          v-for="(stage, stageIndex) in stages"
+          :key="stage.id"
+          class="mb-10"
         >
           <div
-            class="mb-4"
+            class="art-card p-6 flex flex-col gap-3"
+            :class="[
+              movingStageId === stage.id
+                ? '!bg-primary/10'
+                : '',
+            ]"
           >
             <div
-              class="flex gap-2 items-center"
+              class="flex gap-7 items-center"
             >
-              <span
-                class="font-medium"
+              <el-input
+                v-model="stage.name"
+                placeholder="请输入题目"
+                class="flex-1"
               >
-                报名
-              </span>
-
-              <el-tooltip
-                content="开启报名后可以在小节的更多设置中开启小节试学，学员在报名之前可以完整学习试学小节的内容。"
-              >
-                <el-icon
-                  class="cursor-help"
+                <template
+                  #prefix
                 >
-                  <QuestionFilled />
-                </el-icon>
-              </el-tooltip>
+                  <div
+                    class="color-primary pr-5"
+                  >
+                    Q{{ stageIndex + 1 }}.
+                  </div>
+                </template>
 
-              <el-switch
-                v-model="formData.enableEnrollment"
-              />
+                <template
+                  #append
+                >
+                  <div
+                    class="text-5 color-[var(--art-gray-800)] flex gap-3.5 items-center"
+                  >
+                    <ArtSvgIcon
+                      v-for="tool in questionTools"
+                      :key="tool"
+                      :icon="tool"
+                    />
+                  </div>
+                </template>
+              </el-input>
+
+              <div
+                class="flex flex-shrink-0 gap-2 items-center"
+              >
+                <ArtIconButton
+                  v-for="item in stageActions"
+                  :key="item.action"
+                  type="link"
+                  @click="handleStageAction(item.action, stage, stageIndex)"
+                >
+                  {{ item.label }}
+                </ArtIconButton>
+              </div>
             </div>
-          </div>
 
-          <el-form
-            label-position="top"
-            label-width="120px"
-          >
-            <!-- 报名页标题 -->
-            <el-form-item
-              label="报名页标题"
-              required
+            <!-- 题目类型选择 -->
+            <el-radio-group
+              v-model="stage.type"
+              class="mt-5.5 gap-12"
+              @change="handleQuestionTypeChange(stage)"
             >
-              <el-input
-                v-model="formData.enrollmentTitle"
-                placeholder="未命名课程"
-                class="w-full"
-              />
-            </el-form-item>
+              <el-radio
+                v-for="item in questionTypes"
+                :key="item.value"
+                :value="item.value"
+              >
+                {{ item.label }}
+              </el-radio>
+            </el-radio-group>
 
-            <!-- 报名名额 -->
-            <el-form-item
-              label="报名名额"
+            <!-- 单选题和多选题 -->
+            <template
+              v-if="stage.type !== '开放式题'"
             >
-              <el-radio-group
-                v-model="formData.enrollmentQuotaType"
-              >
-                <el-radio
-                  value="unlimited"
-                >
-                  不限制
-                </el-radio>
-
-                <el-radio
-                  value="limited"
-                >
-                  限制
-                </el-radio>
-              </el-radio-group>
-
-              <el-input
-                v-if="formData.enrollmentQuotaType === 'limited'"
-                v-model="formData.enrollmentLimit"
-                type="number"
-                placeholder="请输入限制人数"
-                class="ml-6 mt-2 w-40"
-              />
-
-              <span
-                v-if="formData.enrollmentQuotaType === 'limited'"
-                class="ml-2"
-              >个</span>
-
-              <el-tooltip
-                v-if="formData.enrollmentQuotaType === 'limited'"
-                content="设置报名总名额"
-              >
-                <el-icon
-                  class="ml-1 cursor-help"
-                >
-                  <QuestionFilled />
-                </el-icon>
-              </el-tooltip>
-            </el-form-item>
-
-            <!-- 报名开放时间 -->
-            <el-form-item
-              label="报名开放时间"
-            >
-
-              <el-radio-group
-                v-model="formData.enrollmentTimeType"
-              >
-                <el-radio
-                  value="unlimited"
-                >
-                  不限制
-                </el-radio>
-
-                <el-radio
-                  value="limited"
-                >
-                  限制
-                </el-radio>
-              </el-radio-group>
-
+              <!-- 选项 -->
               <div
-                v-if="formData.enrollmentTimeType === 'limited'"
-                class="ml-6 mt-2"
+                v-for="(option, optionIndex) in stage.answerOptions"
+                :key="optionIndex"
+                class="mb-2 flex gap-2 items-center justify-between"
               >
-                <el-date-picker
-                  v-model="formData.enrollmentStart"
-                  type="datetime"
-                  placeholder="开始时间"
-                  class="mr-4"
-                />
+                <el-input
+                  v-model="option.content"
+                  placeholder="请输入选项内容"
+                >
+                  <template
+                    #prepend
+                  >
+                    {{ getOptionLabel(optionIndex) }}.
+                  </template>
 
-                <el-date-picker
-                  v-model="formData.enrollmentEnd"
-                  type="datetime"
-                  placeholder="结束时间"
-                />
+                  <template
+                    #suffix
+                  >
+                    <div
+                      class="text-4.5 inline-flex gap-3"
+                    >
+                      <ArtSvgIcon
+                        icon="ri:image-line"
+                      />
+
+                      <ArtSvgIcon
+                        icon="ri:superscript"
+                      />
+                    </div>
+                  </template>
+                </el-input>
+
+                <div
+                  class="flex gap-1 items-center justify-between"
+                >
+                  <ArtIconButton
+                    type="add"
+                    @click="addOption(stage, optionIndex)"
+                  />
+
+                  <ArtIconButton
+                    type="delete"
+                    :disabled="(stage.answerOptions?.length ?? 0) <= 1"
+                    @click="removeOption(stage, optionIndex)"
+                  />
+
+                </div>
+
               </div>
 
-              <el-tooltip
-                content="设置报名开始和结束时间"
+              <el-form-item
+                label="正确答案"
+                required
+                class="mt-4.5 [&_.el-select]:w-full"
               >
-                <el-icon
-                  class="ml-1 cursor-help"
+                <!-- 单选题 -->
+                <el-select
+                  v-if="stage.type === '单选题'"
+                  :model-value="getCorrectSingleOption(stage)"
+                  placeholder="请选择正确答案"
+                  @update:model-value="value => setCorrectSingleOption(stage, value)"
                 >
-                  <QuestionFilled />
-                </el-icon>
-              </el-tooltip>
-            </el-form-item>
+                  <el-option
+                    v-for="option in stage.answerOptions"
+                    :key="option.content"
+                    :label="option.content"
+                    :value="option.content"
+                  />
 
-            <!-- 审核方式 -->
-            <el-form-item
-              label="审核方式"
+                  <template
+                    #header
+                  />
+                </el-select>
+
+                <!-- 多选题 -->
+                <el-select
+                  v-else
+                  :model-value="getCorrectOptionContents(stage)"
+                  multiple
+
+                  placeholder="请选择正确答案"
+                  @update:model-value="value => setCorrectMultipleOptions(stage, value)"
+                >
+                  <el-option
+                    v-for="option in stage.answerOptions"
+                    :key="option.content"
+                    :label="option.content"
+                    :value="option.content"
+                  />
+                </el-select>
+              </el-form-item>
+            </template>
+
+            <template
+              v-else
             >
-              <el-radio-group
-                v-model="formData.enrollmentAuditType"
+              <el-form-item
+                label="标准答案 (选填)"
+                required
               >
-                <el-radio
-                  value="auto"
+                <p
+                  class="text-3 color-info"
                 >
-                  自动审核
-                </el-radio>
+                  设置一个或多个标准答案，学员提交的答案和任何一个标准答案一致则自动得分，否则不得分；不设置标准答案时，学员提交答案后不会立即得分，需您手动给学员评分。
+                </p>
 
-                <el-radio
-                  value="manual"
-                >
-                  手动审核
-                </el-radio>
-              </el-radio-group>
-
-              <el-tooltip
-                content="设置报名审核方式"
-              >
-                <el-icon
-                  class="ml-1 cursor-help"
-                >
-                  <QuestionFilled />
-                </el-icon>
-              </el-tooltip>
-            </el-form-item>
-
-            <!-- 允许学员取消报名 -->
-            <el-form-item
-              label="允许学员取消报名"
-            >
-              <el-radio-group
-                v-model="formData.allowCancelEnrollment"
-              >
-                <el-radio
-                  value="no"
-                >
-                  不允许
-                </el-radio>
-
-                <el-radio
-                  value="yes"
-                >
-                  允许
-                </el-radio>
-              </el-radio-group>
-
-              <el-tooltip
-                content="设置是否允许学员取消报名"
-              >
-                <el-icon
-                  class="ml-1 cursor-help"
-                >
-                  <QuestionFilled />
-                </el-icon>
-              </el-tooltip>
-            </el-form-item>
-
-            <!-- 报名介绍 -->
-            <el-form-item
-              label="报名介绍"
-            >
-              <el-input
-                v-model="formData.enrollmentIntroduction"
-                type="textarea"
-                :rows="6"
-                placeholder="请输入报名介绍"
-                class="w-full"
-              />
-            </el-form-item>
-
-            <!-- 报名信息 -->
-            <el-form-item
-              label="报名信息"
-            >
-
-              <div
-                class=""
-              >
-                <!-- 姓名 -->
                 <div
-                  class="mb-3 flex gap-2 items-center"
+                  class="flex flex-col gap-3 w-full items-center"
                 >
-                  <el-checkbox
-                    v-model="formData.enrollmentFields.name"
-                  />
-
-                  <span>姓名</span>
-
-                  <el-input
-                    v-model="formData.enrollmentFieldLabels.name"
-                    placeholder="输入真实姓名"
-                    class="ml-2 flex-1"
-                  />
-
-                  <el-checkbox
-                    v-model="formData.enrollmentFieldRequired.name"
+                  <div
+                    v-for="(_, answerIndex) in stage.standardAnswer"
+                    :key="answerIndex"
+                    class="flex gap-3 w-full items-center"
                   >
-                    必填
-                  </el-checkbox>
+                    <el-input
+                      v-model="stage.standardAnswer![answerIndex]"
+                      class="!flex-1"
+                      placeholder="请输入标准答案"
+                    >
+                      <template
+                        v-if="answerIndex > 0"
+                        #prepend
+                      >
+                        或
+                      </template>
+                    </el-input>
 
-                  <el-button
-                    @click="addEnrollmentField"
-                  >
-                    +
-                  </el-button>
-                </div>
-                <!-- 手机号 -->
-                <div
-                  class="mb-3 flex gap-2 items-center"
-                >
-                  <el-checkbox
-                    v-model="formData.enrollmentFields.phone"
-                  />
+                    <div
+                      class="flex gap-2 items-center"
+                    >
+                      <ArtIconButton
+                        type="add"
+                        @click="addStandardAnswer(stage, answerIndex)"
+                      />
 
-                  <span>手机号</span>
+                      <ArtIconButton
+                        type="delete"
+                        :disabled="(stage.standardAnswer?.length ?? 0) <= 1"
+                        @click="removeStandardAnswer(stage, answerIndex)"
+                      />
+                    </div>
 
-                  <el-input
-                    v-model="formData.enrollmentFieldLabels.phone"
-                    placeholder="输入手机号码"
-                    class="ml-2 flex-1"
-                  />
+                  </div>
 
-                  <el-checkbox
-                    v-model="formData.enrollmentFieldRequired.phone"
-                  >
-                    必填
-                  </el-checkbox>
-
-                  <el-button
-                    @click="addEnrollmentField"
-                  >
-                    +
-                  </el-button>
                 </div>
 
-                <!-- 公司 -->
-                <div
-                  class="mb-3 flex gap-2 items-center"
-                >
-                  <el-checkbox
-                    v-model="formData.enrollmentFields.company"
-                  />
+              </el-form-item>
 
-                  <span>公司</span>
+            </template>
 
-                  <el-input
-                    v-model="formData.enrollmentFieldLabels.company"
-                    placeholder="您的公司"
-                    class="ml-2 flex-1"
-                  />
-
-                  <el-checkbox
-                    v-model="formData.enrollmentFieldRequired.company"
-                  >
-                    必填
-                  </el-checkbox>
-
-                  <el-button
-                    @click="addEnrollmentField"
-                  >
-                    +
-                  </el-button>
-                </div>
-              </div>
-            </el-form-item>
-          </el-form>
-        </el-tab-pane>
-
-        <el-tab-pane
-          label="高级设置"
-          name="advanced"
-          class="mt-5 p-6 border rounded-3"
-        >
-          <div
-            class=""
-          >
+            <!-- 分值和难度 -->
             <div
-              class="mb-6"
+              class="flex gap-5 items-center"
+            >
+              <el-form-item
+                label="分值"
+                class="!w-40"
+                required
+              >
+                <el-input-number
+                  v-model="stage.score"
+                  :min="0"
+                  :controls="true"
+                  placeholder="本题分值"
+                />
+              </el-form-item>
+
+              <el-form-item
+                label="难度"
+                class="!w-40"
+                required
+              >
+                <el-select
+                  v-model="stage.difficulty"
+                >
+                  <el-option
+                    v-for="item in difficultyOptions"
+                    :key="item"
+                    :label="item"
+                    :value="item"
+                  />
+                </el-select>
+              </el-form-item>
+            </div>
+
+            <!-- 答案说明 -->
+            <el-form-item
+              label="答案说明(选填)"
+              required
             >
               <p
-                class="color-textSecondary text-4"
+                class="text-3 color-info"
               >
-                课程在您的个人主页默认为隐藏状态。您可以设置个人主页是否展示该课程。
+                填写答题思路，帮助学员理解考试内容，提升考试成绩。
               </p>
-            </div>
 
-            <el-form
-              label-position="left"
-            >
-              <!-- 按课程小节解锁（闯关模式） -->
-              <el-form-item>
+              <el-input
+                v-model="stage.answerExplanation"
+                type="textarea"
+                :rows="3"
+                placeholder="请输入答案说明"
+              />
+            </el-form-item>
 
-                <div
-                  class="flex flex-col"
-                >
-                  <el-checkbox
-                    v-model="formData.enablePassMode"
-                  >
-                    按课程小节解锁（闯关模式）
-                  </el-checkbox>
-
-                  <div
-                    class="color-textSecondary text-sm ml-6 mt-2"
-                  >
-                    闯关模式下，学员需完成上一必修小节，才会解锁下一必修小节。两个必修小节间的选修小节将自动解锁。<br>
-                    课程拥有者和协作者不受闯关模式影响，始终可以查看所有小节。
-                  </div>
-
-                </div>
-
-              </el-form-item>
-
-              <!-- 选修小节解锁条件 -->
-              <el-form-item>
-                <div
-                  class="pl-10 flex flex-col"
-                >
-                  <div
-                    class=""
-                  >
-                    选修小节解锁条件
-                  </div>
-
-                  <el-radio-group
-                    v-model="formData.electiveUnlockCondition"
-                  >
-                    <el-radio
-                      value="previous_section"
-                    >
-                      前面的必修小节解锁之后
-                    </el-radio>
-
-                    <el-radio
-                      value="previous_completed"
-                    >
-                      前面的必修小节完成之后
-                    </el-radio>
-                  </el-radio-group>
-                </div>
-
-              </el-form-item>
-
-              <!-- 单节模式 -->
-              <el-form-item>
-                <div
-                  class=""
-                >
-                  <el-checkbox
-                    v-model="formData.singleSectionMode"
-                  >
-                    单节模式
-                  </el-checkbox>
-
-                  <div
-                    class="color-textSecondary text-sm ml-6 mt-2"
-                  >
-                    单节模式下，学员参与小节时，将无法从当前小节跳转至上一节或下一节课程。
-                  </div>
-
-                </div>
-              </el-form-item>
-
-              <!-- 学完视频和微课自动弹出课程评价弹窗 -->
-              <el-form-item>
-                <div
-                  class=""
-                >
-                  <el-checkbox
-                    v-model="formData.enableAutoEvaluation"
-                  >
-                    学完视频和微课自动弹出课程评价弹窗
-                  </el-checkbox>
-
-                  <div
-                    class="color-textSecondary text-sm ml-6 mt-2"
-                  >
-                    开启时，在学员学完视频和微课小节时，会自动弹出课程评价弹窗。关闭时，弹窗不会自动弹出。
-
-                  </div>
-                </div>
-              </el-form-item>
-
-              <!-- 学完视频和微课自动进入下一个小节 -->
-              <el-form-item>
-                <div
-                  class=""
-                >
-                  <el-checkbox
-                    v-model="formData.enableAutoNextSection"
-                  >
-                    学完视频和微课自动进入下一个小节
-                  </el-checkbox>
-
-                  <div
-                    class="color-textSecondary text-sm ml-6 mt-2"
-                  >
-                    开启时，在学员学完视频和微课小节时，会自动进入下一个小节。关闭时，学完不会自动进入下一个小节。该设置项仅在"学完视频和微课自动弹出课程评价弹窗"为"关闭"时生效。
-                  </div>
-                </div>
-              </el-form-item>
-
-              <!-- 视频和微课详情中显示已经学完的学员 -->
-              <el-form-item>
-                <div
-                  class=""
-                >
-                  <el-checkbox
-                    v-model="formData.showCompletedLearners"
-                  >
-                    视频和微课详情中显示已经学完的学员
-                  </el-checkbox>
-
-                  <div
-                    class="color-textSecondary text-sm ml-6 mt-2"
-                  >
-                    开启时，学员可在视频和微课小节详情中查看"正在学习"与"已经学完"的学员。关闭时，"正在学习"与"已经学完"的学员将会被隐藏。
-                  </div>
-                </div>
-              </el-form-item>
-
-              <!-- 课程学习时长统计上限 -->
-              <el-form-item>
-                <div
-                  class=""
-                >
-                  <el-checkbox
-                    v-model="formData.enableLearningTimeLimit"
-                  >
-                    课程学习时长统计上限
-                  </el-checkbox>
-
-                  <div
-                    class="color-textSecondary text-sm ml-6 mt-2"
-                  >
-                    设置学习时长上限后，学员在本课程有效学习时长的最大值为讲师设置值。实际学习时长会始终被记录。
-                  </div>
-                </div>
-              </el-form-item>
-
-              <!-- 显示小节序号 -->
-              <el-form-item>
-                <div
-                  class=""
-                >
-                  <el-checkbox
-                    v-model="formData.showSectionNumbers"
-                  >
-                    显示小节序号
-                  </el-checkbox>
-
-                  <div
-                    class="color-textSecondary text-sm ml-6 mt-2"
-                  >
-                    开启时，从第一个小节开始显示默认序号，小节顺序调整后序号会自动更新。<br>
-                    关闭后，小节不再显示默认序号，您可以在小节标题中加入自定义序号。
-                  </div>
-                </div>
-              </el-form-item>
-            </el-form>
           </div>
 
-        </el-tab-pane>
+          <div
+            v-if="movingStageId"
+            class="my-3 flex gap-3 items-center justify-center"
+          >
+            <art-icon-button
+              type="warning"
+              :disabled="movingStageId === stage.id"
+              @click="moveQuestionTo(stageIndex)"
+            >
+              移动到此后
+            </art-icon-button>
 
-      </el-tabs>
+            <art-icon-button
+              type="error"
+              @click="cancelMoveQuestion"
+            >
+              取消
+            </art-icon-button>
+
+          </div>
+        </div>
+
+        <!-- 底部 -->
+        <div
+          class="p-8 border flex gap-5 items-center !border-[var(--art-card-border)] !bg-[var(--art-gray-100)]"
+        >
+          <art-icon-button
+            type="import"
+            @click="importQuestions"
+          >
+            批量导入问题
+          </art-icon-button>
+
+          <art-icon-button
+            type="add"
+            @click="addQuestion"
+          >
+            添加问题
+          </art-icon-button>
+        </div>
+      </el-form>
     </div>
+
   </div>
 </template>
-
-<style lang="scss" scoped>
-
-</style>

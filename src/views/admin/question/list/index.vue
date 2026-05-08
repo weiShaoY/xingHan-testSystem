@@ -142,7 +142,7 @@ function deleteQuestionBank(item: QuestionBank) {
         type="primary"
         @click="goToCreateQuestionBank"
       >
-        新增题库
+        创建题库
       </el-button>
     </div>
 
