@@ -36,6 +36,7 @@ export const Question: AppRouteRecord = {
         keepAlive: true,
         sort: 1,
         isHide: true,
+        activePath: '/admin/question/list',
       },
     },
     {
@@ -48,6 +49,8 @@ export const Question: AppRouteRecord = {
         keepAlive: true,
         sort: 1,
         isHide: true,
+        activePath: '/admin/question/list',
+
       },
     },
     {
@@ -60,6 +63,8 @@ export const Question: AppRouteRecord = {
         keepAlive: true,
         sort: 1,
         isHide: true,
+        activePath: '/admin/question/list',
+
       },
     },
   ],

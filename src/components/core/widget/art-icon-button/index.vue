@@ -113,9 +113,10 @@ const tooltipContent = computed(() => {
 })
 
 function handleClick(event: MouseEvent) {
+  event.stopPropagation()
+
   if (props.disabled) {
     event.preventDefault()
-    event.stopPropagation()
     return
   }
 

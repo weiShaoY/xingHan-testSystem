@@ -59,6 +59,14 @@ const stages = ref<Stage[]>([
     courseName: '课程3',
     required: true,
   },
+  {
+    id: '4',
+    name: '学习阶段四',
+    description: '学习阶段四阶段描述',
+    courseType: '线下课程',
+    courseName: '课程4',
+    required: false,
+  },
 ])
 
 /**
@@ -76,9 +84,10 @@ function goToEdit() {
 
 <template>
   <div
-    class="w-full"
+    class="pt-20 flex flex-col gap-4 relative"
   >
     <el-page-header
+      class="art-card px-2 py-4 left-0 right-0 top-0 absolute"
       @back="$router.back()"
     >
       <template
@@ -87,7 +96,7 @@ function goToEdit() {
         <div
           class="flex items-center"
         >
-          学习项目1 详情页
+          题库1 详情页
         </div>
       </template>
 
@@ -97,13 +106,11 @@ function goToEdit() {
         <div
           class="flex items-center"
         >
-          <el-button
-            type="primary"
-            class="ml-2"
+          <ArtIconButton
+            type="edit"
+            class="ml-3 max-sm:ml-[7px]"
             @click="goToEdit()"
-          >
-            编辑内容
-          </el-button>
+          />
         </div>
       </template>
     </el-page-header>
@@ -111,7 +118,7 @@ function goToEdit() {
     <div
       v-for="(stage, index) in stages"
       :key="stage.id"
-      class="mb-5 mt-10 border rounded-3 p-4"
+      class="p-4 border rounded-3"
     >
       <p
         class="text-5 font-bold"
@@ -120,7 +127,7 @@ function goToEdit() {
       </p>
 
       <div
-        class="h-30 color-[#b1b1b1]"
+        class="color-[#b1b1b1] h-30"
       >
         {{ stage.description }}
       </div>
@@ -129,7 +136,7 @@ function goToEdit() {
         class="flex items-center justify-between"
       >
         <div
-          class="flex items-center gap-2"
+          class="flex gap-2 items-center"
         >
           <div>
             {{ stage.required ? '必修' : '选修' }}
@@ -143,7 +150,7 @@ function goToEdit() {
         </div>
 
         <div
-          class="flex items-center gap-2"
+          class="flex gap-2 items-center"
         >
           <BaseButton
             icon="admin-edit"
