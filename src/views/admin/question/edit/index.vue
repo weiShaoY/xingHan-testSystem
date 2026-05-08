@@ -1,212 +1,337 @@
 <!------  2026-04-15---16:08---星期三  ------>
 <!------------------------------------    ------------------------------------------------->
 <script lang="ts" setup>
-import type { TabPaneName } from 'element-plus'
-
-import {
-  Delete,
-  Folder,
-  QuestionFilled,
-  Select,
-  Top,
-  View,
-} from '@element-plus/icons-vue'
-
 import { ref } from 'vue'
 
-import AddCourseDialog from './AddCourseDialog.vue'
+type QuestionOption = {
 
-/**
-   * 课程类型定义
-   */
-type Course = {
-  id: string
-  name: string
-  type: string
-  required: boolean
+  /** 选项内容 */
+  content: string
+
+  /** 是否为正确答案 */
+  isCorrect: boolean
 }
+
+type QuestionType = '单选题' | '多选题' | '开放式题'
+
+type Difficulty = '易' | '中' | '难'
 
 /**
    * 阶段类型定义
    */
 type Stage = {
+
+  /** 阶段ID */
   id: string
+
+  /** 阶段名称 */
   name: string
-  description: string
-  courses: Course[]
+
+  type: QuestionType
+
+  /** 分值 */
+  score: number
+
+  /** 难度 */
+  difficulty: Difficulty
+
+  /** 标准答案 */
+  standardAnswer?: string[]
+
+  /** 单选或多选选项和答案 */
+  answerOptions?: QuestionOption[]
+
+  /** 答案说明 */
+  answerExplanation?: string
 }
 
 /**
-   * 标签页激活状态
-   */
-const activeTab = ref('basic')
-
-/**
-   * 激活的阶段ID
-   */
-const activeStageId = ref('1')
-
-/**
-   * 阶段索引计数器
-   */
-let stageIndex = 2
-
-/**
-   * 高级设置
-   */
-const advancedSettings = ref({
-  // 是否启用多个学习阶段
-  enableMultipleStages: true,
-
-  // 解锁条件：stage-按学习阶段解锁，course-按课程解锁，none-不限定学习顺序
-  unlockCondition: 'stage',
-
-  // 展示方式：expanded-展开学习阶段下的课程，collapsed-折叠学习阶段下的课程
-  displayMode: 'expanded',
-})
-
-/**
-   * 弹窗相关数据
-   */
-const isShowAddCourseDialog = ref(false)
-
-const currentStageIndex = ref(0)
-
-/**
-   * 阶段列表
+   * 阶段列表数据
    */
 const stages = ref<Stage[]>([
   {
     id: '1',
     name: '学习阶段一',
-    description: '学习阶段一阶段描述',
-    courses: [
+    type: '单选题',
+    score: 10,
+    difficulty: '中',
+    answerOptions: [
       {
-        id: '1',
-        name: '课程1',
-        type: '在线课程',
-        required: true,
+        content: '1',
+        isCorrect: true,
+      },
+      {
+        content: '2',
+        isCorrect: false,
+      },
+      {
+        content: '3',
+        isCorrect: false,
+      },
+      {
+        content: '4',
+        isCorrect: false,
       },
     ],
   },
   {
     id: '2',
     name: '学习阶段二',
-    description: '学习阶段二阶段描述',
-    courses: [],
+    type: '多选题',
+    score: 10,
+    difficulty: '易',
+    answerOptions: [
+      {
+        content: '1',
+        isCorrect: true,
+      },
+      {
+        content: '12',
+        isCorrect: true,
+      },
+      {
+        content: '3',
+        isCorrect: false,
+      },
+    ],
+  },
+  {
+    id: '3',
+    name: '学习阶段三',
+    type: '开放式题',
+    score: 10,
+    difficulty: '中',
+    standardAnswer: ['开放式问题答案1', '开放式问题答案2'],
   },
 ])
 
-/**
-   * 处理标签页的编辑（添加/删除）
-   */
-function handleTabsEdit(targetName: TabPaneName | undefined, action: 'remove' | 'add') {
-  if (action === 'add') {
-    // 添加新的学习阶段
-    const newStage: Stage = {
-      id: `${++stageIndex}`,
-      name: `学习阶段${stageIndex}`,
-      description: '',
-      courses: [],
-    }
+const questionBankTitle = ref('未命名题库')
 
-    stages.value.push(newStage)
-    activeStageId.value = newStage.id
-  }
-  else if (action === 'remove') {
-    // 删除学习阶段
-    const tabs = stages.value
+const questionTypes: { label: string, value: QuestionType }[] = [
+  {
+    label: '单选题',
+    value: '单选题',
+  },
+  {
+    label: '多选题',
+    value: '多选题',
+  },
+  {
+    label: '开放式问题',
+    value: '开放式题',
+  },
+]
 
-    let activeName = activeStageId.value
+const difficultyOptions: Difficulty[] = ['易', '中', '难']
 
-    if (activeName === targetName) {
-      tabs.forEach((tab, index) => {
-        if (tab.id === targetName) {
-          const nextTab = tabs[index + 1] || tabs[index - 1]
+const optionLabels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
 
-          if (nextTab) {
-            activeName = nextTab.id
-          }
-        }
-      })
-    }
+const stageActions = [
+  {
+    label: '移动',
+    action: 'move',
+  },
+  {
+    label: '复制',
+    action: 'copy',
+  },
+  {
+    label: '删除',
+    action: 'delete',
+  },
+]
 
-    activeStageId.value = activeName
-    stages.value = tabs.filter(tab => tab.id !== targetName)
+const questionTools = [
+  'ri:mic-line',
+  'ri:video-line',
+  'ri:image-line',
+  'ri:superscript',
+]
 
-    // 重新编号阶段ID
-    stages.value.forEach((stage, i) => {
-      stage.id = `${i + 1}`
-    })
-    stageIndex = stages.value.length
+function createOption(content = ''): QuestionOption {
+  return {
+    content,
+    isCorrect: false,
   }
 }
 
-/**
-   * 打开添加课程弹窗
-   */
-function addCourse(stageIndex: number) {
-  currentStageIndex.value = stageIndex
-  isShowAddCourseDialog.value = true
+function createStage(type: QuestionType = '单选题'): Stage {
+  const id = `${Date.now()}`
+
+  return {
+    id,
+    name: '',
+    type,
+    score: 10,
+    difficulty: '中',
+    answerOptions: type === '开放式题'
+      ? undefined
+      : [
+          createOption(''),
+          createOption(''),
+          createOption(''),
+          createOption(''),
+        ],
+    standardAnswer: type === '开放式题' ? [''] : undefined,
+    answerExplanation: '',
+  }
 }
 
-/**
-   * 添加课程到阶段
-   */
-function addCourseToStage(course: any, stageIndex: number) {
-  const stage = stages.value[stageIndex]
+function getOptionLabel(index: number) {
+  return optionLabels[index] ?? `${index + 1}`
+}
 
-  // 检查课程是否已添加
-  const isExist = stage.courses.some((c: Course) => c.name === course.name)
+function getCorrectOptionContents(stage: Stage) {
+  return stage.answerOptions
+    ?.filter(option => option.isCorrect)
+    .map(option => option.content)
+    .filter(Boolean) ?? []
+}
 
-  if (isExist) {
+function getCorrectSingleOption(stage: Stage) {
+  return getCorrectOptionContents(stage)[0] ?? ''
+}
+
+function setCorrectSingleOption(stage: Stage, value: string) {
+  stage.answerOptions?.forEach((option) => {
+    option.isCorrect = option.content === value
+  })
+}
+
+function setCorrectMultipleOptions(stage: Stage, values: string[]) {
+  stage.answerOptions?.forEach((option) => {
+    option.isCorrect = values.includes(option.content)
+  })
+}
+
+function handleQuestionTypeChange(stage: Stage) {
+  if (stage.type === '开放式题') {
+    stage.answerOptions = undefined
+    stage.standardAnswer = stage.standardAnswer?.length ? stage.standardAnswer : ['']
     return
   }
 
-  const newCourse: Course = {
-    id: (stage.courses.length + 1).toString(),
-    name: course.name,
-    type: '在线课程',
-    required: true,
+  stage.standardAnswer = undefined
+  stage.answerOptions = stage.answerOptions?.length
+    ? stage.answerOptions
+    : [createOption(''), createOption(''), createOption(''), createOption('')]
+}
+
+function addOption(stage: Stage, index?: number) {
+  if (!stage.answerOptions) {
+    stage.answerOptions = []
   }
 
-  stage.courses.push(newCourse)
+  const insertIndex = typeof index === 'number' ? index + 1 : stage.answerOptions.length
+
+  stage.answerOptions.splice(insertIndex, 0, createOption(''))
 }
 
-/**
-   * 删除课程
-   */
-function removeCourse(stageIndex: number, courseIndex: number) {
-  stages.value[stageIndex].courses.splice(courseIndex, 1)
+function removeOption(stage: Stage, index: number) {
+  if (!stage.answerOptions || stage.answerOptions.length <= 1) {
+    return
+  }
 
-  // 重新编号课程ID
-  stages.value[stageIndex].courses.forEach((course, i) => {
-    course.id = `${i + 1}`
+  stage.answerOptions.splice(index, 1)
+}
+
+function addStandardAnswer(stage: Stage, index?: number) {
+  if (!stage.standardAnswer) {
+    stage.standardAnswer = []
+  }
+
+  const insertIndex = typeof index === 'number' ? index + 1 : stage.standardAnswer.length
+
+  stage.standardAnswer.splice(insertIndex, 0, '')
+}
+
+function removeStandardAnswer(stage: Stage, index: number) {
+  if (!stage.standardAnswer || stage.standardAnswer.length <= 1) {
+    return
+  }
+
+  stage.standardAnswer.splice(index, 1)
+}
+
+function addQuestion() {
+  stages.value.push(createStage())
+}
+
+function copyQuestion(stage: Stage) {
+  stages.value.push({
+    ...structuredClone(stage),
+    id: `${Date.now()}`,
   })
 }
+
+function deleteQuestion(stageIndex: number) {
+  if (stages.value.length <= 1) {
+    return
+  }
+
+  stages.value.splice(stageIndex, 1)
+}
+
+function moveQuestion(stageIndex: number) {
+  if (stages.value.length <= 1) {
+    return
+  }
+
+  const targetIndex = stageIndex === 0 ? 1 : stageIndex - 1
+
+  const [stage] = stages.value.splice(stageIndex, 1)
+
+  stages.value.splice(targetIndex, 0, stage)
+}
+
+function handleStageAction(action: string, stage: Stage, stageIndex: number) {
+  if (action === 'move') {
+    moveQuestion(stageIndex)
+  }
+
+  if (action === 'copy') {
+    copyQuestion(stage)
+  }
+
+  if (action === 'delete') {
+    deleteQuestion(stageIndex)
+  }
+}
+
+function importQuestions() {
+  stages.value.push(createStage('单选题'))
+  stages.value.push(createStage('多选题'))
+}
+
 </script>
 
 <template>
   <div
-    class="w-full"
+    class="flex flex-col gap-4"
   >
-    <!-- 添加课程弹窗组件 -->
-    <AddCourseDialog
-      v-model="isShowAddCourseDialog"
-      :stage-index="currentStageIndex"
-      @add-course="addCourseToStage"
-    />
-
     <el-page-header
+      class="art-card p-4 z-10"
       @back="$router.back()"
     >
       <template
         #content
       >
         <div
-          class="flex items-center"
+          class="flex gap-5 items-center"
         >
-          学习项目1 详情页
+          <span>题库1 编辑页</span>
+
+          <div
+            class="text-sm color-info font-normal flex gap-2"
+          >
+            <span>单选题数量: {{ stages.filter(stage => stage.type === '单选题').length }}</span>
+
+            <span>多选题数量: {{ stages.filter(stage => stage.type === '多选题').length }}</span>
+
+            <span>开放式题数量: {{ stages.filter(stage => stage.type === '开放式题').length }}</span>
+
+          </div>
+
         </div>
       </template>
 
@@ -216,349 +341,324 @@ function removeCourse(stageIndex: number, courseIndex: number) {
         <div
           class="flex items-center"
         >
-          <el-button
-            type="primary"
-            class="ml-2"
+
+          <ArtIconButton
+            class="ml-3 max-sm:ml-[7px]"
+            type="success"
+            @click="$router.back()"
           >
             完成
-          </el-button>
+          </ArtIconButton>
+
         </div>
       </template>
     </el-page-header>
 
-    <!-- 标签页 -->
     <div
-      class="mt-10"
+      class="art-card p-6"
     >
-      <el-tabs
-        v-model="activeTab"
-        class=""
+      <el-form
+        label-position="top"
       >
-        <el-tab-pane
-          label="目录编辑"
-          name="basic"
-          class="mt-5 border rounded-3 p-6"
+        <el-form-item
+          required
+          label="标题"
         >
-          <!-- 阶段管理 -->
-          <div
-            class="mt-5"
-          >
-            <!-- 阶段标签页 -->
-            <el-tabs
-              v-model="activeStageId"
-              class="mb-5"
-              type="card"
-              editable
-              @edit="handleTabsEdit"
-            >
-              <template
-                #add-icon
-              >
-                <el-icon>
-                  <Select />
-                </el-icon>
-              </template>
+          <el-input
+            v-model="questionBankTitle"
+            placeholder="请输入题库标题"
+          />
+        </el-form-item>
 
-              <el-tab-pane
-                v-for="(stage, index) in stages"
-                :key="stage.id"
-                :label="`阶段 ${stage.id}: ${stage.name}`"
-                :name="stage.id"
-              >
-                <el-form
-                  label-position="left"
-                  label-width="120px"
-                >
-                  <el-form-item
-                    label="阶段名称"
-                    required
-                  >
-                    <el-input
-                      v-model="stage.name"
-                      placeholder="请输入阶段名称"
-                      class="w-full"
-                    />
-                  </el-form-item>
-
-                  <el-form-item
-                    label="阶段描述"
-                  >
-                    <el-input
-                      v-model="stage.description"
-                      type="textarea"
-                      :rows="4"
-                      placeholder="请输入阶段描述"
-                      class="w-full"
-                    />
-                  </el-form-item>
-
-                  <el-form-item
-                    label="课程"
-                    required
-                  >
-                    <div
-                      class=""
-                    >
-                      <div
-                        class=""
-                      >
-                        <!-- 课程列表 -->
-                        <div
-                          v-for="(course, courseIndex) in stage.courses"
-                          :key="course.id"
-                          class="mb-3 flex items-center justify-between border rounded p-3"
-                        >
-                          <div
-                            class="flex items-center gap-3"
-                          >
-                            <div
-                              class="w-8 text-center"
-                            >
-                              {{ course.id }}
-                            </div>
-
-                            <el-select
-                              v-model="course.required"
-                              placeholder="选择类型"
-                              class="w-20"
-                            >
-                              <el-option
-                                label="必修"
-                                :value="true"
-                              />
-
-                              <el-option
-                                label="选修"
-                                :value="false"
-                              />
-                            </el-select>
-
-                            <div
-                              class="flex items-center gap-2"
-                            >
-                              <el-button
-                                size="small"
-                              >
-                                <el-icon>
-                                  <Folder />
-                                </el-icon>
-                              </el-button>
-
-                              <span>{{ course.type }} {{ course.name }}</span>
-                            </div>
-                          </div>
-
-                          <div
-                            class="flex items-center gap-2"
-                          >
-                            <el-button
-                              size="small"
-                            >
-                              <el-icon>
-                                <Top />
-                              </el-icon>
-                            </el-button>
-
-                            <el-button
-                              size="small"
-                            >
-                              <el-icon>
-                                <View />
-                              </el-icon>
-                            </el-button>
-
-                            <el-button
-                              type="danger"
-                              link
-                              size="small"
-                              @click="removeCourse(index, courseIndex)"
-                            >
-                              <el-icon>
-                                <Delete />
-                              </el-icon>
-                            </el-button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <el-divider />
-
-                    <el-button
-                      class="mt-2"
-                      type="primary"
-                      plain
-                      @click="addCourse(index)"
-                    >
-                      + 添加课程
-                    </el-button>
-                  </el-form-item>
-                </el-form>
-              </el-tab-pane>
-            </el-tabs>
-          </div>
-        </el-tab-pane>
-
-        <el-tab-pane
-          label="高级设置"
-          name="advanced"
-          class="px-0"
+        <div
+          v-for="(stage, stageIndex) in stages"
+          :key="stage.id"
+          class="py-6 pb-7 border-b border-[var(--art-card-border)]"
         >
-          <!-- 高级设置内容 -->
           <div
-            class="mt-5 border rounded-3 p-6"
+            class="flex gap-7 items-center"
           >
-            <!-- 设置多个学习阶段 -->
             <div
-              class="mb-6"
+              class="px-3 border border-[var(--art-card-border)] rounded flex flex-1 gap-4 h-10 items-center"
             >
+              <span>Q{{ stageIndex + 1 }}.</span>
+
+              <el-input
+                v-model="stage.name"
+                placeholder="请输入题目"
+                class="flex-1 [&_.el-input__wrapper]:shadow-none"
+              />
+
               <div
-                class="mb-2 flex items-center justify-between"
+                class="text-5 color-[var(--art-gray-800)] flex gap-3.5 items-center"
               >
-                <span
-                  class="font-medium"
-                >设置多个学习阶段</span>
-
-                <el-tooltip
-                  content="开启后可以创建多个学习阶段"
-                  placement="top"
-                >
-                  <el-button
-                    link
-                    size="small"
-                  >
-                    <el-icon>
-                      <QuestionFilled />
-                    </el-icon>
-                  </el-button>
-                </el-tooltip>
+                <ArtSvgIcon
+                  v-for="tool in questionTools"
+                  :key="tool"
+                  :icon="tool"
+                />
               </div>
+            </div>
 
-              <el-switch
-                v-model="advancedSettings.enableMultipleStages"
-                active-text=""
-                inactive-text=""
+            <div
+              class="flex flex-shrink-0 gap-2 items-center"
+            >
+              <el-button
+                v-for="item in stageActions"
+                :key="item.action"
+                link
+                type="primary"
+                @click="handleStageAction(item.action, stage, stageIndex)"
+              >
+                {{ item.label }}
+              </el-button>
+            </div>
+          </div>
+
+          <el-radio-group
+            v-model="stage.type"
+            class="mt-5.5 gap-12"
+            @change="handleQuestionTypeChange(stage)"
+          >
+            <el-radio
+              v-for="item in questionTypes"
+              :key="item.value"
+              :value="item.value"
+            >
+              {{ item.label }}
+            </el-radio>
+          </el-radio-group>
+
+          <div
+            v-if="stage.type !== '开放式题'"
+            class="mt-4.5 w-[86%]"
+          >
+            <div
+              v-for="(option, optionIndex) in stage.answerOptions"
+              :key="optionIndex"
+              class="mb-3.5 flex gap-2.5 items-center"
+            >
+              <el-input
+                v-model="option.content"
+                placeholder="请输入选项内容"
+              >
+                <template
+                  #prepend
+                >
+                  {{ getOptionLabel(optionIndex) }}.
+                </template>
+
+                <template
+                  #suffix
+                >
+                  <div
+                    class="text-4.5 inline-flex gap-3"
+                  >
+                    <ArtSvgIcon
+                      icon="ri:image-line"
+                    />
+
+                    <ArtSvgIcon
+                      icon="ri:superscript"
+                    />
+                  </div>
+                </template>
+              </el-input>
+
+              <el-button
+                icon="Plus"
+                @click="addOption(stage, optionIndex)"
+              />
+
+              <el-button
+                icon="Minus"
+                :disabled="(stage.answerOptions?.length ?? 0) <= 1"
+                @click="removeOption(stage, optionIndex)"
               />
             </div>
 
-            <!-- 解锁条件 -->
-            <div
-              class="mb-6"
+            <el-form-item
+              label="正确答案"
+              class="mt-4.5 [&_.el-select]:w-full"
             >
-              <div
-                class="mb-2 flex items-center"
+              <el-select
+                v-if="stage.type === '单选题'"
+                :model-value="getCorrectSingleOption(stage)"
+                placeholder="请选择正确答案"
+                @update:model-value="value => setCorrectSingleOption(stage, value)"
               >
-                <span
-                  class="font-medium"
-                >解锁条件</span>
+                <el-option
+                  v-for="option in stage.answerOptions"
+                  :key="option.content"
+                  :label="option.content"
+                  :value="option.content"
+                />
+              </el-select>
 
-                <el-tooltip
-                  content="设置课程的解锁方式"
-                  placement="top"
-                >
-                  <el-button
-                    link
-                    size="small"
-                    class="ml-2"
-                  >
-                    <el-icon>
-                      <QuestionFilled />
-                    </el-icon>
-                  </el-button>
-                </el-tooltip>
+              <el-select
+                v-else
+                :model-value="getCorrectOptionContents(stage)"
+                multiple
+                collapse-tags
+                collapse-tags-tooltip
+                placeholder="请选择正确答案"
+                @update:model-value="value => setCorrectMultipleOptions(stage, value)"
+              >
+                <el-option
+                  v-for="option in stage.answerOptions"
+                  :key="option.content"
+                  :label="option.content"
+                  :value="option.content"
+                />
+              </el-select>
+            </el-form-item>
+          </div>
+
+          <div
+            v-else
+            class="mt-4.5 w-[86%]"
+          >
+            <div
+              class="color-[var(--art-gray-900)] mb-3"
+            >
+              <div>
+                标准答案（选填）
               </div>
 
-              <el-radio-group
-                v-model="advancedSettings.unlockCondition"
+              <p
+                class="text-3.25 color-[var(--art-gray-600)] leading-6.5 mb-0 mt-1"
               >
-                <el-radio
-                  value="stage"
-                >
-                  按学习阶段解锁
-                </el-radio>
-
-                <el-radio
-                  value="course"
-                >
-                  按课程解锁
-                </el-radio>
-
-                <el-radio
-                  value="none"
-                >
-                  不限定学习顺序
-                </el-radio>
-              </el-radio-group>
+                设置一个或多个标准答案，学员提交的答案和任何一个标准答案一致则自动得分，否则不得分；不设置标准答案时，学员提交答案后不会立即得分，需您手动给学员评分。
+              </p>
             </div>
 
-            <!-- 展示方式 -->
             <div
-              class="mb-6"
+              v-for="(_, answerIndex) in stage.standardAnswer"
+              :key="answerIndex"
+              class="mb-3.5 flex gap-2.5 items-center"
             >
-              <div
-                class="mb-2 flex items-center"
+              <el-input
+                v-model="stage.standardAnswer![answerIndex]"
+                placeholder="请输入标准答案"
               >
-                <span
-                  class="font-medium"
-                >展示方式</span>
-
-                <el-tooltip
-                  content="设置课程的展示方式"
-                  placement="top"
+                <template
+                  v-if="answerIndex > 0"
+                  #prepend
                 >
-                  <el-button
-                    link
-                    size="small"
-                    class="ml-2"
-                  >
-                    <el-icon>
-                      <QuestionFilled />
-                    </el-icon>
-                  </el-button>
-                </el-tooltip>
-              </div>
+                  或
+                </template>
+              </el-input>
 
-              <el-radio-group
-                v-model="advancedSettings.displayMode"
-              >
-                <el-radio
-                  value="expanded"
-                >
-                  展开学习阶段下的课程
-                </el-radio>
+              <el-button
+                icon="Plus"
+                @click="addStandardAnswer(stage, answerIndex)"
+              />
 
-                <el-radio
-                  value="collapsed"
-                >
-                  折叠学习阶段下的课程
-                </el-radio>
-              </el-radio-group>
+              <el-button
+                icon="Minus"
+                :disabled="(stage.standardAnswer?.length ?? 0) <= 1"
+                @click="removeStandardAnswer(stage, answerIndex)"
+              />
             </div>
           </div>
-        </el-tab-pane>
-      </el-tabs>
 
-      <el-divider />
+          <div
+            class="mt-4.5 flex gap-7 items-center [&_.el-input-number]:w-28 [&_.el-select]:w-28"
+          >
+            <el-form-item
+              label="分值"
+            >
+              <el-input-number
+                v-model="stage.score"
+                :min="0"
+                :controls="false"
+              />
+            </el-form-item>
 
-      <div
-        class="flex justify-end"
-      >
-        <el-button
-          type="primary"
+            <el-form-item
+              label="难度"
+            >
+              <el-select
+                v-model="stage.difficulty"
+              >
+                <el-option
+                  v-for="item in difficultyOptions"
+                  :key="item"
+                  :label="item"
+                  :value="item"
+                />
+              </el-select>
+            </el-form-item>
+          </div>
+
+          <el-form-item
+            label="答案说明（选填）"
+            class="mt-1 w-full [&_p]:text-3.25 [&_p]:color-[var(--art-gray-600)] [&_p]:leading-6.5 [&_p]:mb-0 [&_p]:mt-1"
+          >
+            <template
+              #label
+            >
+              <div>
+                <div>
+                  答案说明（选填）
+                </div>
+
+                <p>
+                  填写答题思路，帮助学员理解考试内容，提升考试成绩。
+                </p>
+              </div>
+            </template>
+
+            <el-input
+              v-model="stage.answerExplanation"
+              type="textarea"
+              :rows="3"
+              placeholder="请输入答案说明"
+            />
+          </el-form-item>
+
+          <div
+            class="mt-4.5 px-4.5 py-2.5 border border-[var(--art-card-border)] bg-[var(--art-gray-100)] flex gap-3 items-center"
+          >
+            <el-button
+              link
+              type="primary"
+            >
+              <ArtSvgIcon
+                icon="ri:arrow-down-s-line"
+              />
+              高级设置
+            </el-button>
+
+            <el-button
+              size="small"
+              disabled
+            >
+              智能排序
+            </el-button>
+          </div>
+        </div>
+
+        <div
+          class="mt-7 p-4.5 border border-[var(--art-card-border)] bg-[var(--art-gray-100)] flex gap-3.5 items-center"
         >
-          完成
-        </el-button>
-      </div>
+          <el-button
+            type="warning"
+            icon="Plus"
+            @click="importQuestions"
+          >
+            批量导入问题
+          </el-button>
+
+          <el-button
+            icon="Plus"
+            @click="addQuestion"
+          >
+            添加问题
+          </el-button>
+        </div>
+      </el-form>
     </div>
+
   </div>
 </template>
-
-<style lang="scss" scoped>
-  .el-tag {
-  font-size: 14px;
-}
-
-.el-button + .el-button {
-  margin-left: 8px;
-}
-</style>

@@ -22,7 +22,7 @@ type Props = {
   circle?: boolean
 
   /** 按钮类型 */
-  type?: 'add' | 'edit' | 'delete' | 'more' | 'view' | 'export' | 'default'
+  type?: 'add' | 'edit' | 'delete' | 'more' | 'view' | 'export' | 'default' | 'success'
 
   /** icon 颜色 */
   iconColor?: string
@@ -88,6 +88,10 @@ const defaultButtons: Record<NonNullable<Props['type']>, ButtonPreset> = {
   default: {
     icon: '',
     class: 'bg-info/6 text-info',
+  },
+  success: {
+    icon: 'ri:check-line',
+    class: 'bg-primary/12 text-primary',
   },
 }
 

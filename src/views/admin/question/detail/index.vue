@@ -3,9 +3,16 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 
-import BaseButton from '@/components/Button/base-button/index.vue'
-
 const router = useRouter()
+
+type QuestionOption = {
+
+  /** 选项内容 */
+  content: string
+
+  /** 是否为正确答案 */
+  isCorrect: boolean
+}
 
 /**
    * 阶段类型定义
@@ -18,17 +25,19 @@ type Stage = {
   /** 阶段名称 */
   name: string
 
-  /** 阶段描述 */
-  description: string
+  type: '单选题' | '多选题' | '开放式题'
 
-  /** 课程类型 */
-  courseType: string
+  /** 分值 */
+  score: number
 
-  /** 课程名称 */
-  courseName: string
+  /** 难度 */
+  difficulty: '简单' | '中等' | '困难'
 
-  /** 是否必修 */
-  required: boolean
+  /** 标准答案 */
+  standardAnswer?: string[]
+
+  /** 单选或多选选项和答案 */
+  answerOptions?: QuestionOption[]
 }
 
 /**
@@ -38,43 +47,80 @@ const stages = ref<Stage[]>([
   {
     id: '1',
     name: '学习阶段一',
-    description: '学习阶段一阶段描述',
-    courseType: '在线课程',
-    courseName: '课程1',
-    required: true,
+    type: '单选题',
+    score: 10,
+    difficulty: '简单',
+    answerOptions: [
+      {
+        content: '选项A',
+        isCorrect: true,
+      },
+      {
+        content: '选项B',
+        isCorrect: false,
+      },
+      {
+        content: '选项C',
+        isCorrect: false,
+      },
+    ],
   },
   {
     id: '2',
     name: '学习阶段二',
-    description: '学习阶段二阶段描述',
-    courseType: '在线课程',
-    courseName: '课程2',
-    required: false,
+    type: '多选题',
+    score: 10,
+    difficulty: '中等',
+    answerOptions: [
+      {
+        content: '选项A',
+        isCorrect: true,
+      },
+      {
+        content: '选项B',
+        isCorrect: true,
+      },
+      {
+        content: '选项C',
+        isCorrect: false,
+      },
+    ],
   },
   {
     id: '3',
     name: '学习阶段三',
-    description: '学习阶段三阶段描述',
-    courseType: '线下课程',
-    courseName: '课程3',
-    required: true,
+    type: '开放式题',
+    score: 20,
+    difficulty: '困难',
+    standardAnswer: ['学习阶段三标准答案1', '学习阶段三标准答案2'],
   },
   {
     id: '4',
     name: '学习阶段四',
-    description: '学习阶段四阶段描述',
-    courseType: '线下课程',
-    courseName: '课程4',
-    required: false,
+
+    type: '开放式题',
+    score: 20,
+    difficulty: '困难',
+    standardAnswer: ['学习阶段四标准答案1', '学习阶段四标准答案2'],
   },
 ])
+
+function getCorrectOptionContents(stage: Stage) {
+  return stage.answerOptions
+    ?.filter(option => option.isCorrect)
+    .map(option => option.content) ?? []
+}
+
+function getCorrectSingleOption(stage: Stage) {
+  return getCorrectOptionContents(stage)[0] ?? ''
+}
 
 /**
    * 跳转到编辑页
    */
 function goToEdit() {
   router.push({
-    name: 'AdminProjectEdit',
+    name: 'AdminQuestionEdit',
     params: {
       id: router.currentRoute.value.params.id,
     },
@@ -84,19 +130,31 @@ function goToEdit() {
 
 <template>
   <div
-    class="pt-20 flex flex-col gap-4 relative"
+    class="flex flex-col gap-4"
   >
     <el-page-header
-      class="art-card px-2 py-4 left-0 right-0 top-0 absolute"
+      class="art-card p-4 z-10"
       @back="$router.back()"
     >
       <template
         #content
       >
         <div
-          class="flex items-center"
+          class="flex gap-5 items-center"
         >
-          题库1 详情页
+          <span>题库1 详情页</span>
+
+          <div
+            class="text-sm color-info font-normal flex gap-2"
+          >
+            <span>单选题数量: {{ stages.filter(stage => stage.type === '单选题').length }}</span>
+
+            <span>多选题数量: {{ stages.filter(stage => stage.type === '多选题').length }}</span>
+
+            <span>开放式题数量: {{ stages.filter(stage => stage.type === '开放式题').length }}</span>
+
+          </div>
+
         </div>
       </template>
 
@@ -111,59 +169,125 @@ function goToEdit() {
             class="ml-3 max-sm:ml-[7px]"
             @click="goToEdit()"
           />
+
+          <ArtIconButton
+            type="export"
+            class="ml-3 max-sm:ml-[7px]"
+          />
+
+          <ArtIconButton
+            type="delete"
+            class="ml-3 max-sm:ml-[7px]"
+          />
         </div>
       </template>
     </el-page-header>
 
     <div
-      v-for="(stage, index) in stages"
-      :key="stage.id"
-      class="p-4 border rounded-3"
+      class="art-card p-4 flex flex-col gap-5"
     >
-      <p
-        class="text-5 font-bold"
-      >
-        阶段{{ index + 1 }}:{{ stage.name }}
-      </p>
-
       <div
-        class="color-[#b1b1b1] h-30"
-      >
-        {{ stage.description }}
-      </div>
-
-      <div
-        class="flex items-center justify-between"
+        v-for="(stage, index) in stages"
+        :key="stage.id"
+        class=""
       >
         <div
-          class="flex gap-2 items-center"
+          class="flex gap-10"
         >
-          <div>
-            {{ stage.required ? '必修' : '选修' }}
+          <div
+            class="color-primary"
+          >
+            Q{{ index + 1 }}
           </div>
 
           <div
-            class=""
+            class="flex flex-col gap-3"
           >
-            {{ stage.courseType }} {{ stage.courseName }}
+            <!-- 上面 -->
+
+            <div
+              class="flex gap-10 items-center"
+            >
+
+              <div
+                class="flex gap-2 items-center"
+              >
+                <span
+                  class=""
+                >
+                  ({{ stage.type }})  {{ stage.score }}分
+                </span>
+
+              </div>
+
+            </div>
+
+            <!-- 选项 -->
+            <div
+              class="s"
+            >
+              <!-- 单选题 -->
+              <el-radio-group
+                v-if="stage.type === '单选题'"
+                :model-value="getCorrectSingleOption(stage)"
+                disabled
+              >
+                <el-radio
+                  v-for="option in stage.answerOptions"
+                  :key="option.content"
+                  :value="option.content"
+                  size="large"
+                >
+                  {{ option.content }}
+                </el-radio>
+
+              </el-radio-group>
+              <!-- 多选题 -->
+              <el-checkbox-group
+                v-if="stage.type === '多选题'"
+                :model-value="getCorrectOptionContents(stage)"
+                disabled
+              >
+                <el-checkbox
+                  v-for="option in stage.answerOptions"
+                  :key="option.content"
+                  :value="option.content"
+                  size="large"
+                >
+                  {{ option.content }}
+                </el-checkbox>
+
+              </el-checkbox-group>
+            </div>
+
+            <div
+              v-if="stage.standardAnswer"
+              class=""
+            >
+              难度: {{ stage.difficulty }}
+            </div>
+
+            <!-- 下面 -->
+            <div
+              v-if="stage.standardAnswer"
+              class=""
+            >
+              标准答案: {{ stage.standardAnswer.join('  /  ') }}
+            </div>
+
           </div>
+
         </div>
 
-        <div
-          class="flex gap-2 items-center"
-        >
-          <BaseButton
-            icon="admin-edit"
-            tooltip-content="编辑"
-          />
+        <el-divider
+          v-if="index < stages.length - 1"
+          class="my-4"
+        />
 
-          <BaseButton
-            icon="admin-preview"
-            tooltip-content="预览"
-          />
-        </div>
       </div>
+
     </div>
+
   </div>
 </template>
 
