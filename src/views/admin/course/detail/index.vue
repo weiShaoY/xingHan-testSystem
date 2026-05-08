@@ -20,6 +20,11 @@ const isShowAllocateCourseDialog = ref(false)
 const isShowChapterFormDialog = ref(false)
 
 /**
+ * 章节弹窗模式
+ */
+const chapterFormMode = ref<'add' | 'edit'>('add')
+
+/**
    *  是否显示新建小节弹窗
    */
 const isShowCreateSectionDialog = ref(false)
@@ -41,6 +46,8 @@ type Section = {
 type Chapter = {
   id: number
   name: string
+  description: string
+  isVisible: string
   sections: Section[]
   type: 'chapter'
 }
@@ -57,6 +64,8 @@ const courseItems = ref<CourseItem[]>([
   {
     id: 1,
     name: '章节1',
+    description: '章节1描述',
+    isVisible: '1',
     sections: [
       {
         id: 1,
@@ -78,6 +87,8 @@ const courseItems = ref<CourseItem[]>([
   {
     id: 2,
     name: '章节2',
+    description: '章节2描述',
+    isVisible: '1',
     sections: [
       {
         id: 3,
@@ -104,6 +115,11 @@ const courseItems = ref<CourseItem[]>([
     type: 'section',
   },
 ])
+
+/**
+ * 当前编辑的章节
+ */
+const currentEditChapter = ref<Chapter>()
 
 /**
    * 跳转到编辑页
@@ -166,7 +182,53 @@ const sectionTypeButtons: Array<{
    * 编辑章节
    */
 function editChapter(chapterId: number) {
-  console.log('编辑章节:', chapterId)
+  const chapter = courseItems.value.find(
+    (item): item is Chapter => item.type === 'chapter' && item.id === chapterId,
+  )
+
+  if (!chapter) {
+    return
+  }
+
+  currentEditChapter.value = chapter
+  chapterFormMode.value = 'edit'
+  isShowChapterFormDialog.value = true
+}
+
+/**
+ * 打开新增章节弹窗
+ */
+function openAddChapterDialog() {
+  currentEditChapter.value = undefined
+  chapterFormMode.value = 'add'
+  isShowChapterFormDialog.value = true
+}
+
+/**
+ * 新增章节
+ */
+function handleAddChapter(data: { name: string, description: string, isVisible: string }) {
+  courseItems.value.push({
+    id: Date.now(),
+    name: data.name,
+    description: data.description,
+    isVisible: data.isVisible,
+    sections: [],
+    type: 'chapter',
+  })
+}
+
+/**
+ * 更新章节
+ */
+function handleEditChapter(data: { name: string, description: string, isVisible: string }) {
+  if (!currentEditChapter.value) {
+    return
+  }
+
+  currentEditChapter.value.name = data.name
+  currentEditChapter.value.description = data.description
+  currentEditChapter.value.isVisible = data.isVisible
 }
 
 /**
@@ -191,6 +253,10 @@ function editSection(sectionId: number) {
     <ChapterFormDialog
       v-if="isShowChapterFormDialog"
       v-model="isShowChapterFormDialog"
+      :mode="chapterFormMode"
+      :edit-data="currentEditChapter"
+      @add="handleAddChapter"
+      @edit="handleEditChapter"
     />
 
     <!-- 新建小节弹窗 -->
@@ -259,7 +325,7 @@ function editSection(sectionId: number) {
           <ArtIconButton
             type="add"
             class="ml-3 max-sm:ml-[7px]"
-            @click="isShowChapterFormDialog = true"
+            @click="openAddChapterDialog"
           >
             添加章节
           </ArtIconButton>
