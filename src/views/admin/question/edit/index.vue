@@ -376,7 +376,7 @@ function importQuestions() {
         <div
           v-for="(stage, stageIndex) in stages"
           :key="stage.id"
-          class="art-card mb-5 p-6 flex flex-col gap-5"
+          class="art-card mb-5 p-6 flex flex-col gap-3"
         >
           <div
             class="flex gap-7 items-center"
@@ -441,7 +441,7 @@ function importQuestions() {
           </el-radio-group>
 
           <!-- 单选题和多选题 -->
-          <div
+          <template
             v-if="stage.type !== '开放式题'"
           >
             <!-- 选项 -->
@@ -524,8 +524,7 @@ function importQuestions() {
                 v-else
                 :model-value="getCorrectOptionContents(stage)"
                 multiple
-                collapse-tags
-                collapse-tags-tooltip
+
                 placeholder="请选择正确答案"
                 @update:model-value="value => setCorrectMultipleOptions(stage, value)"
               >
@@ -537,55 +536,64 @@ function importQuestions() {
                 />
               </el-select>
             </el-form-item>
-          </div>
+          </template>
 
-          <div
+          <template
             v-else
-            class="mt-4.5 w-[86%]"
           >
-            <div
-              class="color-[var(--art-gray-900)] mb-3"
+            <el-form-item
+              label="标准答案 (选填)"
+              required
             >
-              <div>
-                标准答案（选填）
-              </div>
-
               <p
-                class="text-3.25 color-[var(--art-gray-600)] leading-6.5 mb-0 mt-1"
+                class="text-3 color-info"
               >
                 设置一个或多个标准答案，学员提交的答案和任何一个标准答案一致则自动得分，否则不得分；不设置标准答案时，学员提交答案后不会立即得分，需您手动给学员评分。
               </p>
-            </div>
 
-            <div
-              v-for="(_, answerIndex) in stage.standardAnswer"
-              :key="answerIndex"
-              class="mb-3.5 flex gap-2.5 items-center"
-            >
-              <el-input
-                v-model="stage.standardAnswer![answerIndex]"
-                placeholder="请输入标准答案"
+              <div
+                class="flex flex-col gap-3 w-full items-center"
               >
-                <template
-                  v-if="answerIndex > 0"
-                  #prepend
+                <div
+                  v-for="(_, answerIndex) in stage.standardAnswer"
+                  :key="answerIndex"
+                  class="flex gap-3 w-full items-center"
                 >
-                  或
-                </template>
-              </el-input>
+                  <el-input
+                    v-model="stage.standardAnswer![answerIndex]"
+                    class="!flex-1"
+                    placeholder="请输入标准答案"
+                  >
+                    <template
+                      v-if="answerIndex > 0"
+                      #prepend
+                    >
+                      或
+                    </template>
+                  </el-input>
 
-              <el-button
-                icon="Plus"
-                @click="addStandardAnswer(stage, answerIndex)"
-              />
+                  <div
+                    class="flex gap-2 items-center"
+                  >
+                    <ArtIconButton
+                      type="add"
+                      @click="addStandardAnswer(stage, answerIndex)"
+                    />
 
-              <el-button
-                icon="Minus"
-                :disabled="(stage.standardAnswer?.length ?? 0) <= 1"
-                @click="removeStandardAnswer(stage, answerIndex)"
-              />
-            </div>
-          </div>
+                    <ArtIconButton
+                      type="delete"
+                      :disabled="(stage.standardAnswer?.length ?? 0) <= 1"
+                      @click="removeStandardAnswer(stage, answerIndex)"
+                    />
+                  </div>
+
+                </div>
+
+              </div>
+
+            </el-form-item>
+
+          </template>
 
           <!-- 分值和难度 -->
           <div
@@ -624,7 +632,7 @@ function importQuestions() {
 
           <!-- 答案说明 -->
           <el-form-item
-            label="答案说明（选填）"
+            label="答案说明(选填)"
             required
           >
             <p
