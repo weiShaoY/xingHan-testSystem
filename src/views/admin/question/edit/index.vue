@@ -148,6 +148,8 @@ const questionTools = [
   'ri:superscript',
 ]
 
+const movingStageId = ref('')
+
 function createOption(content = ''): QuestionOption {
   return {
     content,
@@ -273,7 +275,33 @@ function deleteQuestion(stageIndex: number) {
 }
 
 function moveQuestion(stageIndex: number) {
+  movingStageId.value = stages.value[stageIndex]?.id ?? ''
+  console.log('🚀 ~ file: index.vue:279 ~ movingStageId.value:', movingStageId.value)
+}
 
+function cancelMoveQuestion() {
+  movingStageId.value = ''
+}
+
+function moveQuestionTo(targetIndex: number) {
+  if (!movingStageId.value) {
+    return
+  }
+
+  const sourceIndex = stages.value.findIndex(stage => stage.id === movingStageId.value)
+
+  if (sourceIndex === -1) {
+    cancelMoveQuestion()
+    return
+  }
+
+  const [stage] = stages.value.splice(sourceIndex, 1)
+
+  const insertIndex = sourceIndex < targetIndex ? targetIndex : targetIndex + 1
+
+  stages.value.splice(insertIndex, 0, stage)
+
+  cancelMoveQuestion()
 }
 
 function handleStageAction(action: string, stage: Stage, stageIndex: number) {
@@ -369,9 +397,15 @@ function importQuestions() {
         <div
           v-for="(stage, stageIndex) in stages"
           :key="stage.id"
+          class="mb-10"
         >
           <div
             class="art-card p-6 flex flex-col gap-3"
+            :class="[
+              movingStageId === stage.id
+                ? '!bg-primary/10'
+                : '',
+            ]"
           >
             <div
               class="flex gap-7 items-center"
@@ -647,16 +681,20 @@ function importQuestions() {
           </div>
 
           <div
+            v-if="movingStageId"
             class="my-3 flex gap-3 items-center justify-center"
           >
             <art-icon-button
               type="warning"
+              :disabled="movingStageId === stage.id"
+              @click="moveQuestionTo(stageIndex)"
             >
-              移动到此
+              移动到此后
             </art-icon-button>
 
             <art-icon-button
               type="error"
+              @click="cancelMoveQuestion"
             >
               取消
             </art-icon-button>
