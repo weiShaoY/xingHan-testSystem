@@ -22,7 +22,7 @@ type Props = {
   circle?: boolean
 
   /** 按钮类型 */
-  type?: 'default' | 'view' | 'more' | 'add' | 'edit' | 'delete' | 'import' | 'export' | 'success' | 'link'
+  type?: 'default' | 'view' | 'more' | 'add' | 'edit' | 'delete' | 'import' | 'export' | 'link' | 'primary' | 'success' | 'warning' | 'error'
 
   /** icon 颜色 */
   iconColor?: string
@@ -103,13 +103,23 @@ const defaultButtons: Record<NonNullable<Props['type']>, ButtonPreset> = {
     tooltip: '导出',
   },
 
+  link: {
+    class: 'text-primary hover:text-primary/80 hover:underline underline-offset-6',
+  },
+
+  primary: {
+    class: 'bg-theme/12 text-theme',
+  },
   success: {
-    icon: 'ri:check-line',
     class: 'bg-primary/12 text-primary',
   },
 
-  link: {
-    class: 'text-primary hover:text-primary/80 hover:underline underline-offset-6',
+  warning: {
+    class: 'bg-warning/12 text-warning',
+  },
+
+  error: {
+    class: 'bg-error/12 text-error',
   },
 }
 

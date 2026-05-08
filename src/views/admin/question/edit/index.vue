@@ -273,18 +273,11 @@ function deleteQuestion(stageIndex: number) {
 }
 
 function moveQuestion(stageIndex: number) {
-  if (stages.value.length <= 1) {
-    return
-  }
 
-  const targetIndex = stageIndex === 0 ? 1 : stageIndex - 1
-
-  const [stage] = stages.value.splice(stageIndex, 1)
-
-  stages.value.splice(targetIndex, 0, stage)
 }
 
 function handleStageAction(action: string, stage: Stage, stageIndex: number) {
+  //  移动
   if (action === 'move') {
     moveQuestion(stageIndex)
   }
@@ -376,285 +369,305 @@ function importQuestions() {
         <div
           v-for="(stage, stageIndex) in stages"
           :key="stage.id"
-          class="art-card mb-5 p-6 flex flex-col gap-3"
         >
           <div
-            class="flex gap-7 items-center"
+            class="art-card p-6 flex flex-col gap-3"
           >
-            <el-input
-              v-model="stage.name"
-              placeholder="请输入题目"
-              class="flex-1"
-            >
-              <template
-                #prefix
-              >
-                <div
-                  class="color-primary pr-5"
-                >
-                  Q{{ stageIndex + 1 }}.
-                </div>
-              </template>
-
-              <template
-                #append
-              >
-                <div
-                  class="text-5 color-[var(--art-gray-800)] flex gap-3.5 items-center"
-                >
-                  <ArtSvgIcon
-                    v-for="tool in questionTools"
-                    :key="tool"
-                    :icon="tool"
-                  />
-                </div>
-              </template>
-            </el-input>
-
             <div
-              class="flex flex-shrink-0 gap-2 items-center"
-            >
-              <ArtIconButton
-                v-for="item in stageActions"
-                :key="item.action"
-                type="link"
-                @click="handleStageAction(item.action, stage, stageIndex)"
-              >
-                {{ item.label }}
-              </ArtIconButton>
-            </div>
-          </div>
-
-          <!-- 题目类型选择 -->
-          <el-radio-group
-            v-model="stage.type"
-            class="mt-5.5 gap-12"
-            @change="handleQuestionTypeChange(stage)"
-          >
-            <el-radio
-              v-for="item in questionTypes"
-              :key="item.value"
-              :value="item.value"
-            >
-              {{ item.label }}
-            </el-radio>
-          </el-radio-group>
-
-          <!-- 单选题和多选题 -->
-          <template
-            v-if="stage.type !== '开放式题'"
-          >
-            <!-- 选项 -->
-            <div
-              v-for="(option, optionIndex) in stage.answerOptions"
-              :key="optionIndex"
-              class="mb-2 flex gap-2 items-center justify-between"
+              class="flex gap-7 items-center"
             >
               <el-input
-                v-model="option.content"
-                placeholder="请输入选项内容"
+                v-model="stage.name"
+                placeholder="请输入题目"
+                class="flex-1"
               >
                 <template
-                  #prepend
+                  #prefix
                 >
-                  {{ getOptionLabel(optionIndex) }}.
+                  <div
+                    class="color-primary pr-5"
+                  >
+                    Q{{ stageIndex + 1 }}.
+                  </div>
                 </template>
 
                 <template
-                  #suffix
+                  #append
                 >
                   <div
-                    class="text-4.5 inline-flex gap-3"
+                    class="text-5 color-[var(--art-gray-800)] flex gap-3.5 items-center"
                   >
                     <ArtSvgIcon
-                      icon="ri:image-line"
-                    />
-
-                    <ArtSvgIcon
-                      icon="ri:superscript"
+                      v-for="tool in questionTools"
+                      :key="tool"
+                      :icon="tool"
                     />
                   </div>
                 </template>
               </el-input>
 
               <div
-                class="flex gap-1 items-center justify-between"
+                class="flex flex-shrink-0 gap-2 items-center"
               >
                 <ArtIconButton
-                  type="add"
-                  @click="addOption(stage, optionIndex)"
-                />
-
-                <ArtIconButton
-                  type="delete"
-                  :disabled="(stage.answerOptions?.length ?? 0) <= 1"
-                  @click="removeOption(stage, optionIndex)"
-                />
-
+                  v-for="item in stageActions"
+                  :key="item.action"
+                  type="link"
+                  @click="handleStageAction(item.action, stage, stageIndex)"
+                >
+                  {{ item.label }}
+                </ArtIconButton>
               </div>
-
             </div>
 
-            <el-form-item
-              label="正确答案"
-              required
-              class="mt-4.5 [&_.el-select]:w-full"
+            <!-- 题目类型选择 -->
+            <el-radio-group
+              v-model="stage.type"
+              class="mt-5.5 gap-12"
+              @change="handleQuestionTypeChange(stage)"
             >
-              <!-- 单选题 -->
-              <el-select
-                v-if="stage.type === '单选题'"
-                :model-value="getCorrectSingleOption(stage)"
-                placeholder="请选择正确答案"
-                @update:model-value="value => setCorrectSingleOption(stage, value)"
+              <el-radio
+                v-for="item in questionTypes"
+                :key="item.value"
+                :value="item.value"
               >
-                <el-option
-                  v-for="option in stage.answerOptions"
-                  :key="option.content"
-                  :label="option.content"
-                  :value="option.content"
-                />
+                {{ item.label }}
+              </el-radio>
+            </el-radio-group>
 
-                <template
-                  #header
-                />
-              </el-select>
-
-              <!-- 多选题 -->
-              <el-select
-                v-else
-                :model-value="getCorrectOptionContents(stage)"
-                multiple
-
-                placeholder="请选择正确答案"
-                @update:model-value="value => setCorrectMultipleOptions(stage, value)"
-              >
-                <el-option
-                  v-for="option in stage.answerOptions"
-                  :key="option.content"
-                  :label="option.content"
-                  :value="option.content"
-                />
-              </el-select>
-            </el-form-item>
-          </template>
-
-          <template
-            v-else
-          >
-            <el-form-item
-              label="标准答案 (选填)"
-              required
+            <!-- 单选题和多选题 -->
+            <template
+              v-if="stage.type !== '开放式题'"
             >
-              <p
-                class="text-3 color-info"
-              >
-                设置一个或多个标准答案，学员提交的答案和任何一个标准答案一致则自动得分，否则不得分；不设置标准答案时，学员提交答案后不会立即得分，需您手动给学员评分。
-              </p>
-
+              <!-- 选项 -->
               <div
-                class="flex flex-col gap-3 w-full items-center"
+                v-for="(option, optionIndex) in stage.answerOptions"
+                :key="optionIndex"
+                class="mb-2 flex gap-2 items-center justify-between"
               >
-                <div
-                  v-for="(_, answerIndex) in stage.standardAnswer"
-                  :key="answerIndex"
-                  class="flex gap-3 w-full items-center"
+                <el-input
+                  v-model="option.content"
+                  placeholder="请输入选项内容"
                 >
-                  <el-input
-                    v-model="stage.standardAnswer![answerIndex]"
-                    class="!flex-1"
-                    placeholder="请输入标准答案"
+                  <template
+                    #prepend
                   >
-                    <template
-                      v-if="answerIndex > 0"
-                      #prepend
+                    {{ getOptionLabel(optionIndex) }}.
+                  </template>
+
+                  <template
+                    #suffix
+                  >
+                    <div
+                      class="text-4.5 inline-flex gap-3"
                     >
-                      或
-                    </template>
-                  </el-input>
+                      <ArtSvgIcon
+                        icon="ri:image-line"
+                      />
 
-                  <div
-                    class="flex gap-2 items-center"
-                  >
-                    <ArtIconButton
-                      type="add"
-                      @click="addStandardAnswer(stage, answerIndex)"
-                    />
+                      <ArtSvgIcon
+                        icon="ri:superscript"
+                      />
+                    </div>
+                  </template>
+                </el-input>
 
-                    <ArtIconButton
-                      type="delete"
-                      :disabled="(stage.standardAnswer?.length ?? 0) <= 1"
-                      @click="removeStandardAnswer(stage, answerIndex)"
-                    />
-                  </div>
+                <div
+                  class="flex gap-1 items-center justify-between"
+                >
+                  <ArtIconButton
+                    type="add"
+                    @click="addOption(stage, optionIndex)"
+                  />
+
+                  <ArtIconButton
+                    type="delete"
+                    :disabled="(stage.answerOptions?.length ?? 0) <= 1"
+                    @click="removeOption(stage, optionIndex)"
+                  />
 
                 </div>
 
               </div>
 
-            </el-form-item>
+              <el-form-item
+                label="正确答案"
+                required
+                class="mt-4.5 [&_.el-select]:w-full"
+              >
+                <!-- 单选题 -->
+                <el-select
+                  v-if="stage.type === '单选题'"
+                  :model-value="getCorrectSingleOption(stage)"
+                  placeholder="请选择正确答案"
+                  @update:model-value="value => setCorrectSingleOption(stage, value)"
+                >
+                  <el-option
+                    v-for="option in stage.answerOptions"
+                    :key="option.content"
+                    :label="option.content"
+                    :value="option.content"
+                  />
 
-          </template>
+                  <template
+                    #header
+                  />
+                </el-select>
 
-          <!-- 分值和难度 -->
-          <div
-            class="flex gap-5 items-center"
-          >
+                <!-- 多选题 -->
+                <el-select
+                  v-else
+                  :model-value="getCorrectOptionContents(stage)"
+                  multiple
+
+                  placeholder="请选择正确答案"
+                  @update:model-value="value => setCorrectMultipleOptions(stage, value)"
+                >
+                  <el-option
+                    v-for="option in stage.answerOptions"
+                    :key="option.content"
+                    :label="option.content"
+                    :value="option.content"
+                  />
+                </el-select>
+              </el-form-item>
+            </template>
+
+            <template
+              v-else
+            >
+              <el-form-item
+                label="标准答案 (选填)"
+                required
+              >
+                <p
+                  class="text-3 color-info"
+                >
+                  设置一个或多个标准答案，学员提交的答案和任何一个标准答案一致则自动得分，否则不得分；不设置标准答案时，学员提交答案后不会立即得分，需您手动给学员评分。
+                </p>
+
+                <div
+                  class="flex flex-col gap-3 w-full items-center"
+                >
+                  <div
+                    v-for="(_, answerIndex) in stage.standardAnswer"
+                    :key="answerIndex"
+                    class="flex gap-3 w-full items-center"
+                  >
+                    <el-input
+                      v-model="stage.standardAnswer![answerIndex]"
+                      class="!flex-1"
+                      placeholder="请输入标准答案"
+                    >
+                      <template
+                        v-if="answerIndex > 0"
+                        #prepend
+                      >
+                        或
+                      </template>
+                    </el-input>
+
+                    <div
+                      class="flex gap-2 items-center"
+                    >
+                      <ArtIconButton
+                        type="add"
+                        @click="addStandardAnswer(stage, answerIndex)"
+                      />
+
+                      <ArtIconButton
+                        type="delete"
+                        :disabled="(stage.standardAnswer?.length ?? 0) <= 1"
+                        @click="removeStandardAnswer(stage, answerIndex)"
+                      />
+                    </div>
+
+                  </div>
+
+                </div>
+
+              </el-form-item>
+
+            </template>
+
+            <!-- 分值和难度 -->
+            <div
+              class="flex gap-5 items-center"
+            >
+              <el-form-item
+                label="分值"
+                class="!w-40"
+                required
+              >
+                <el-input-number
+                  v-model="stage.score"
+                  :min="0"
+                  :controls="true"
+                  placeholder="本题分值"
+                />
+              </el-form-item>
+
+              <el-form-item
+                label="难度"
+                class="!w-40"
+                required
+              >
+                <el-select
+                  v-model="stage.difficulty"
+                >
+                  <el-option
+                    v-for="item in difficultyOptions"
+                    :key="item"
+                    :label="item"
+                    :value="item"
+                  />
+                </el-select>
+              </el-form-item>
+            </div>
+
+            <!-- 答案说明 -->
             <el-form-item
-              label="分值"
-              class="!w-40"
+              label="答案说明(选填)"
               required
             >
-              <el-input-number
-                v-model="stage.score"
-                :min="0"
-                :controls="true"
-                placeholder="本题分值"
+              <p
+                class="text-3 color-info"
+              >
+                填写答题思路，帮助学员理解考试内容，提升考试成绩。
+              </p>
+
+              <el-input
+                v-model="stage.answerExplanation"
+                type="textarea"
+                :rows="3"
+                placeholder="请输入答案说明"
               />
             </el-form-item>
 
-            <el-form-item
-              label="难度"
-              class="!w-40"
-              required
-            >
-              <el-select
-                v-model="stage.difficulty"
-              >
-                <el-option
-                  v-for="item in difficultyOptions"
-                  :key="item"
-                  :label="item"
-                  :value="item"
-                />
-              </el-select>
-            </el-form-item>
           </div>
 
-          <!-- 答案说明 -->
-          <el-form-item
-            label="答案说明(选填)"
-            required
+          <div
+            class="my-3 flex gap-3 items-center justify-center"
           >
-            <p
-              class="text-3 color-info"
+            <art-icon-button
+              type="warning"
             >
-              填写答题思路，帮助学员理解考试内容，提升考试成绩。
-            </p>
+              移动到此
+            </art-icon-button>
 
-            <el-input
-              v-model="stage.answerExplanation"
-              type="textarea"
-              :rows="3"
-              placeholder="请输入答案说明"
-            />
-          </el-form-item>
+            <art-icon-button
+              type="error"
+            >
+              取消
+            </art-icon-button>
 
+          </div>
         </div>
 
+        <!-- 底部 -->
         <div
           class="p-8 border flex gap-5 items-center !border-[var(--art-card-border)] !bg-[var(--art-gray-100)]"
         >
-
           <art-icon-button
             type="import"
             @click="importQuestions"
