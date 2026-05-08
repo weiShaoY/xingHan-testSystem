@@ -130,7 +130,7 @@ function goToEdit() {
 
 <template>
   <div
-    class="flex flex-col gap-4"
+    class="mb-10 flex flex-col gap-4"
   >
     <el-page-header
       class="art-card z-10"
