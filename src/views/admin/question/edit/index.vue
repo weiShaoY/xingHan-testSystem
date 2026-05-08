@@ -3,6 +3,9 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 
+/**
+ * 题目选项数据
+ */
 type QuestionOption = {
 
   /** 选项内容 */
@@ -12,13 +15,19 @@ type QuestionOption = {
   isCorrect: boolean
 }
 
+/**
+ * 题目类型
+ */
 type QuestionType = '单选题' | '多选题' | '开放式题'
 
+/**
+ * 题目难度
+ */
 type Difficulty = '易' | '中' | '难'
 
 /**
-   * 阶段类型定义
-   */
+ * 题目数据
+ */
 type Stage = {
 
   /** 阶段ID */
@@ -27,6 +36,7 @@ type Stage = {
   /** 阶段名称 */
   name: string
 
+  /** 题目类型 */
   type: QuestionType
 
   /** 分值 */
@@ -46,8 +56,8 @@ type Stage = {
 }
 
 /**
-   * 阶段列表数据
-   */
+ * 题目列表数据
+ */
 const stages = ref<Stage[]>([
   {
     id: '1',
@@ -105,8 +115,14 @@ const stages = ref<Stage[]>([
   },
 ])
 
+/**
+ * 题库标题
+ */
 const questionBankTitle = ref('未命名题库')
 
+/**
+ * 题目类型选项
+ */
 const questionTypes: { label: string, value: QuestionType }[] = [
   {
     label: '单选题',
@@ -122,10 +138,19 @@ const questionTypes: { label: string, value: QuestionType }[] = [
   },
 ]
 
+/**
+ * 难度选项
+ */
 const difficultyOptions: Difficulty[] = ['易', '中', '难']
 
+/**
+ * 选项序号标签
+ */
 const optionLabels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
 
+/**
+ * 题目操作按钮配置
+ */
 const stageActions = [
   {
     label: '移动',
@@ -141,6 +166,9 @@ const stageActions = [
   },
 ]
 
+/**
+ * 题干右侧工具图标
+ */
 const questionTools = [
   'ri:mic-line',
   'ri:video-line',
@@ -148,8 +176,17 @@ const questionTools = [
   'ri:superscript',
 ]
 
+/**
+ * 当前正在移动的题目 ID
+ */
 const movingStageId = ref('')
 
+/**
+ * 创建题目选项
+ *
+ * @param content 选项内容
+ * @returns 题目选项数据
+ */
 function createOption(content = ''): QuestionOption {
   return {
     content,
@@ -157,6 +194,12 @@ function createOption(content = ''): QuestionOption {
   }
 }
 
+/**
+ * 创建题目
+ *
+ * @param type 题目类型
+ * @returns 题目数据
+ */
 function createStage(type: QuestionType = '单选题'): Stage {
   const id = `${Date.now()}`
 
@@ -179,10 +222,22 @@ function createStage(type: QuestionType = '单选题'): Stage {
   }
 }
 
+/**
+ * 获取选项展示序号
+ *
+ * @param index 选项索引
+ * @returns 选项标签
+ */
 function getOptionLabel(index: number) {
   return optionLabels[index] ?? `${index + 1}`
 }
 
+/**
+ * 获取题目的所有正确选项内容
+ *
+ * @param stage 题目数据
+ * @returns 正确选项内容列表
+ */
 function getCorrectOptionContents(stage: Stage) {
   return stage.answerOptions
     ?.filter(option => option.isCorrect)
@@ -190,22 +245,45 @@ function getCorrectOptionContents(stage: Stage) {
     .filter(Boolean) ?? []
 }
 
+/**
+ * 获取单选题的正确选项内容
+ *
+ * @param stage 题目数据
+ * @returns 正确选项内容
+ */
 function getCorrectSingleOption(stage: Stage) {
   return getCorrectOptionContents(stage)[0] ?? ''
 }
 
+/**
+ * 设置单选题正确答案
+ *
+ * @param stage 题目数据
+ * @param value 正确选项内容
+ */
 function setCorrectSingleOption(stage: Stage, value: string) {
   stage.answerOptions?.forEach((option) => {
     option.isCorrect = option.content === value
   })
 }
 
+/**
+ * 设置多选题正确答案
+ *
+ * @param stage 题目数据
+ * @param values 正确选项内容列表
+ */
 function setCorrectMultipleOptions(stage: Stage, values: string[]) {
   stage.answerOptions?.forEach((option) => {
     option.isCorrect = values.includes(option.content)
   })
 }
 
+/**
+ * 处理题目类型切换
+ *
+ * @param stage 题目数据
+ */
 function handleQuestionTypeChange(stage: Stage) {
   if (stage.type === '开放式题') {
     stage.answerOptions = undefined
@@ -219,6 +297,12 @@ function handleQuestionTypeChange(stage: Stage) {
     : [createOption(''), createOption(''), createOption(''), createOption('')]
 }
 
+/**
+ * 添加选项
+ *
+ * @param stage 题目数据
+ * @param index 当前选项索引，不传则添加到末尾
+ */
 function addOption(stage: Stage, index?: number) {
   if (!stage.answerOptions) {
     stage.answerOptions = []
@@ -229,6 +313,12 @@ function addOption(stage: Stage, index?: number) {
   stage.answerOptions.splice(insertIndex, 0, createOption(''))
 }
 
+/**
+ * 删除选项
+ *
+ * @param stage 题目数据
+ * @param index 选项索引
+ */
 function removeOption(stage: Stage, index: number) {
   if (!stage.answerOptions || stage.answerOptions.length <= 1) {
     return
@@ -237,6 +327,12 @@ function removeOption(stage: Stage, index: number) {
   stage.answerOptions.splice(index, 1)
 }
 
+/**
+ * 添加开放式题标准答案
+ *
+ * @param stage 题目数据
+ * @param index 当前答案索引，不传则添加到末尾
+ */
 function addStandardAnswer(stage: Stage, index?: number) {
   if (!stage.standardAnswer) {
     stage.standardAnswer = []
@@ -247,6 +343,12 @@ function addStandardAnswer(stage: Stage, index?: number) {
   stage.standardAnswer.splice(insertIndex, 0, '')
 }
 
+/**
+ * 删除开放式题标准答案
+ *
+ * @param stage 题目数据
+ * @param index 答案索引
+ */
 function removeStandardAnswer(stage: Stage, index: number) {
   if (!stage.standardAnswer || stage.standardAnswer.length <= 1) {
     return
@@ -255,10 +357,18 @@ function removeStandardAnswer(stage: Stage, index: number) {
   stage.standardAnswer.splice(index, 1)
 }
 
+/**
+ * 添加新题目
+ */
 function addQuestion() {
   stages.value.push(createStage())
 }
 
+/**
+ * 复制题目
+ *
+ * @param stage 被复制的题目数据
+ */
 function copyQuestion(stage: Stage) {
   stages.value.push({
     ...structuredClone(stage),
@@ -266,6 +376,11 @@ function copyQuestion(stage: Stage) {
   })
 }
 
+/**
+ * 删除题目
+ *
+ * @param stageIndex 题目索引
+ */
 function deleteQuestion(stageIndex: number) {
   if (stages.value.length <= 1) {
     return
@@ -274,15 +389,27 @@ function deleteQuestion(stageIndex: number) {
   stages.value.splice(stageIndex, 1)
 }
 
+/**
+ * 进入题目移动模式
+ *
+ * @param stageIndex 要移动的题目索引
+ */
 function moveQuestion(stageIndex: number) {
   movingStageId.value = stages.value[stageIndex]?.id ?? ''
-  console.log('🚀 ~ file: index.vue:279 ~ movingStageId.value:', movingStageId.value)
 }
 
+/**
+ * 取消题目移动模式
+ */
 function cancelMoveQuestion() {
   movingStageId.value = ''
 }
 
+/**
+ * 将当前移动题目插入到目标题目之后
+ *
+ * @param targetIndex 目标题目索引
+ */
 function moveQuestionTo(targetIndex: number) {
   if (!movingStageId.value) {
     return
@@ -304,6 +431,13 @@ function moveQuestionTo(targetIndex: number) {
   cancelMoveQuestion()
 }
 
+/**
+ * 处理题目操作按钮点击
+ *
+ * @param action 操作类型
+ * @param stage 当前题目数据
+ * @param stageIndex 当前题目索引
+ */
 function handleStageAction(action: string, stage: Stage, stageIndex: number) {
   //  移动
   if (action === 'move') {
@@ -319,6 +453,9 @@ function handleStageAction(action: string, stage: Stage, stageIndex: number) {
   }
 }
 
+/**
+ * 批量导入题目示例
+ */
 function importQuestions() {
   stages.value.push(createStage('单选题'))
   stages.value.push(createStage('多选题'))
