@@ -5,7 +5,9 @@ export default antfu(
   {
     unocss: false,
     formatters: true,
-
+    stylistic: {
+      indent: 2,
+    },
     ignores: [
       '**/components.d.ts',
       '**/dist/**',
