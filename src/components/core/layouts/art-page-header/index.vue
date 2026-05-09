@@ -44,15 +44,16 @@ function handleBack() {
 <template>
 
   <div
-    class="sticky shrink-0 top-30 mb-5  flex items-center justify-between p-4 bg-[var(--default-box-color)] border border-[var(--art-gray-200)]  rounded-xl"
+    class="mb-5 flex shrink-0 gap-4 rounded-xl border border-[var(--art-gray-200)] bg-[var(--default-box-color)] p-4 items-center justify-between max-md:flex-col max-md:items-stretch max-sm:gap-5 max-sm:p-5"
+    :class="props.sticky ? 'sticky top-30 z-10' : ''"
   >
     <!-- 左侧 -->
     <div
-      class="flex items-center gap-6"
+      class="flex min-w-0 flex-1 items-center gap-6 max-sm:items-start max-sm:gap-4"
     >
       <!-- 返回按钮 -->
       <div
-        class="flex items-center gap-2 cursor-pointer text-primary"
+        class="flex flex-shrink-0 cursor-pointer items-center gap-2 text-primary"
         @click="handleBack"
       >
         <art-svg-icon
@@ -64,7 +65,7 @@ function handleBack() {
       </div>
 
       <div
-        class="w-1 h-4 bg-[var(--art-card-border)] "
+        class="h-4 w-1 flex-shrink-0 bg-[var(--art-card-border)] max-sm:hidden"
       >
         <!-- 分割线 -->
       </div>
@@ -73,13 +74,17 @@ function handleBack() {
         name="content"
       >
         <div
-          class="flex gap-5 items-center"
+          class="flex min-w-0 flex-wrap gap-x-5 gap-y-2 items-center max-sm:flex-col max-sm:items-start max-sm:gap-y-2.5"
         >
-          <span>{{ props.title }}</span>
+          <span
+            class="truncate font-medium"
+          >
+            {{ props.title }}
+          </span>
 
           <div
             v-if="props.stats.length"
-            class="text-sm text-info font-normal flex gap-2"
+            class="flex flex-wrap gap-x-3 gap-y-1 text-sm font-normal text-info"
           >
             <span
               v-for="item in props.stats"
@@ -95,7 +100,7 @@ function handleBack() {
 
     <!-- 右侧 -->
     <div
-      class="flex gap-5 items-center"
+      class="flex flex-shrink-0 flex-wrap gap-2 items-center justify-end max-md:w-full max-sm:gap-3 max-sm:justify-start"
     >
       <slot
         name="extra"
