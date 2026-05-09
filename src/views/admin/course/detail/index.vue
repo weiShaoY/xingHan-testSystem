@@ -221,24 +221,24 @@ const sectionTypeIconList: Array<{
   {
     sectionTypeName: '文档',
     sectionIcon: 'ri:article-line',
-    sectionIconBgColor: 'rgba(64, 158, 255, 0.12)',
+    sectionIconBgColor: '#fcbd2c',
   },
   {
     sectionTypeName: '视频',
     sectionIcon: 'ri:vidicon-line',
-    sectionIconBgColor: 'rgba(103, 194, 58, 0.12)',
+    sectionIconBgColor: '#ff2814',
 
   },
   {
     sectionTypeName: '考试',
     sectionIcon: 'ri:medal-line',
-    sectionIconBgColor: 'rgba(230, 162, 60, 0.12)',
+    sectionIconBgColor: '#673ab8',
 
   },
   {
     sectionTypeName: '问卷',
     sectionIcon: 'ri:survey-line',
-    sectionIconBgColor: 'rgba(245, 108, 108, 0.12)',
+    sectionIconBgColor: '#2cb870',
   },
 ]
 
@@ -468,20 +468,16 @@ function editSection(sectionId: number) {
             class="flex w-full items-center justify-between"
           >
             <div
-              class="flex gap-5 items-center"
+              class="flex gap-10 items-center"
             >
-              <div
-                class=""
-              >
-                {{ section.name }}
-              </div>
-
               <!-- 小节的类型图标 -->
               <div
                 class="flex  items-center flex-col justify-center"
               >
                 <ArtIconButton
                   :icon="getSectionTypeIcon(section.sectionType).sectionIcon"
+                  icon-color="#ffffff"
+                  :bg-color="getSectionTypeIcon(section.sectionType).sectionIconBgColor"
                 />
 
                 <div
@@ -492,13 +488,19 @@ function editSection(sectionId: number) {
               </div>
 
               <div
-                class=""
+                class="font-bold text-sm text-info"
+              >
+                {{ section.name }}
+              </div>
+
+              <div
+                class="text-xs"
               >
                 {{ section.participantCount }}人参与
               </div>
 
               <div
-                class=""
+                class="text-xs"
               >
                 {{ section.description }}
               </div>
@@ -532,20 +534,16 @@ function editSection(sectionId: number) {
           class="flex w-full items-center justify-between"
         >
           <div
-            class="flex gap-5 items-center"
+            class="flex gap-10 items-center"
           >
-            <div
-              class=""
-            >
-              {{ item.name }}
-            </div>
-
             <!-- 小节的类型图标 -->
             <div
               class="flex  items-center flex-col justify-center"
             >
               <ArtIconButton
                 :icon="getSectionTypeIcon(item.sectionType).sectionIcon"
+                icon-color="#ffffff"
+                :bg-color="getSectionTypeIcon(item.sectionType).sectionIconBgColor"
               />
 
               <div
@@ -556,13 +554,19 @@ function editSection(sectionId: number) {
             </div>
 
             <div
-              class=""
+              class="font-bold text-sm text-info"
+            >
+              {{ item.name }}
+            </div>
+
+            <div
+              class="text-xs"
             >
               {{ item.participantCount }}人参与
             </div>
 
             <div
-              class=""
+              class="text-xs"
             >
               {{ item.description }}
             </div>

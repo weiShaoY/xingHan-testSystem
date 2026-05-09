@@ -15,37 +15,81 @@ const emit = defineEmits<{
 
 type Props = {
 
-  /** 图标名称 */
+  /**
+   * 图标名称
+   * @description 支持 Iconify 图标名称
+   * @example "ri:add-line"
+   */
   icon?: string
 
-  /** 圆角按钮 */
+  /**
+   * 是否为圆形按钮
+   * @description 开启后按钮会显示为圆形
+   */
   circle?: boolean
 
-  /** 按钮类型 */
+  /**
+   * 按钮预设类型
+   * @description 内置不同的图标、颜色和 tooltip 配置
+   */
   type?: 'default' | 'view' | 'more' | 'add' | 'edit' | 'delete' | 'import' | 'export' | 'link' | 'primary' | 'success' | 'warning' | 'error' | 'allocate'
 
-  /** icon 颜色 */
+  /**
+   * 图标颜色
+   * @description 仅作用于图标颜色
+   * @example "#ffffff"
+   */
   iconColor?: string
 
-  /** 按钮背景色 */
-  buttonBgColor?: string
+  /**
+   * 文字颜色
+   * @description 仅作用于按钮文字颜色
+   * @example "#ffffff"
+   */
+  textColor?: string
 
-  /** 按钮样式类 */
+  /**
+   * 按钮背景颜色
+   * @description 用于覆盖默认背景色
+   * @example "#279275"
+   */
+  bgColor?: string
+
+  /**
+   * 按钮自定义类名
+   * @description 用于扩展按钮样式
+   */
   iconClass?: string
 
-  /** 提示信息 */
+  /**
+   * 提示内容
+   * @description 鼠标悬停时显示的 tooltip 文本
+   */
   tooltip?: string
 
-  /** 提示信息位置顶部 */
+  /**
+   * 提示框位置
+   * @description 等同于 Element Plus Tooltip placement
+   * @example "top"
+   */
   tooltipPlacement?: string
 
-  /** 加载状态 */
+  /**
+   * Tooltip 层级
+   * @description 用于控制 tooltip 的 z-index
+   */
+  tooltipZIndex?: number
+
+  /**
+   * 加载状态
+   * @description 开启后会显示 loading 图标
+   */
   loading?: boolean
 
-  /** 层级 z-index */
-  zIndex?: number
-
-  /** 是否禁用 */
+  /**
+   * 是否禁用按钮
+   * @description 禁用后按钮不可点击
+   */
   disabled?: boolean
 }
 
@@ -56,8 +100,8 @@ type ButtonPreset = {
 }
 
 /**
-   *  默认按钮配置
-   */
+ * 默认按钮配置
+ */
 const defaultButtons: Record<NonNullable<Props['type']>, ButtonPreset> = {
   default: {
     icon: '',
@@ -110,6 +154,7 @@ const defaultButtons: Record<NonNullable<Props['type']>, ButtonPreset> = {
   primary: {
     class: 'bg-theme/12 text-theme',
   },
+
   success: {
     class: 'bg-primary/12 text-primary',
   },
@@ -129,26 +174,68 @@ const defaultButtons: Record<NonNullable<Props['type']>, ButtonPreset> = {
   },
 }
 
-// 获取图标内容
+/**
+ * 图标内容
+ */
 const iconContent = computed(() => {
-  return props.icon || (props.type ? defaultButtons[props.type]?.icon : '') || ''
+  return props.icon || defaultButtons[props.type]?.icon || ''
 })
 
-// 获取按钮样式类
+/**
+ * 按钮样式类
+ */
 const buttonClass = computed(() => {
-  return props.iconClass || (props.type ? defaultButtons[props.type]?.class : '') || ''
+  return props.iconClass || defaultButtons[props.type]?.class || ''
 })
 
+/**
+ * 按钮状态类
+ */
 const buttonStateClass = computed(() => ({
   'c-p hover:bg-hover-color': !props.disabled,
   'cursor-not-allowed opacity-50': props.disabled,
 }))
 
-// 获取 tooltip 内容
+/**
+ * Tooltip 内容
+ */
 const tooltipContent = computed(() => {
-  return props.tooltip || (props.type ? defaultButtons[props.type]?.tooltip || '' : '') || ''
+  return props.tooltip || defaultButtons[props.type]?.tooltip || ''
 })
 
+/**
+ * 按钮内联样式
+ */
+const buttonStyle = computed(() => {
+  return {
+    ...(props.bgColor
+      ? {
+          backgroundColor: props.bgColor,
+        }
+      : {
+        }),
+  }
+})
+
+/**
+ * 文字颜色样式
+ */
+const textStyle = computed(() => {
+  return {
+    ...(props.textColor
+      ? {
+          color: props.textColor,
+        }
+      : {
+        }),
+  }
+})
+
+/**
+ * 处理点击事件
+ *
+ * @param event 鼠标事件
+ */
 function handleClick(event: MouseEvent) {
   event.stopPropagation()
 
@@ -162,52 +249,62 @@ function handleClick(event: MouseEvent) {
 </script>
 
 <template>
-  <!-- 👇 关键优化：有 tooltip 才渲染，没有就直接显示按钮 -->
   <ElTooltip
     v-if="tooltipContent"
     :content="tooltipContent"
     :disabled="!tooltipContent"
     :placement="tooltipPlacement"
-    :z-index="zIndex"
+    :z-index="tooltipZIndex"
   >
     <div
-      class="text-sm  px-2.5 align-middle rounded-md inline-flex gap-2 h-8 min-w-8 items-center justify-center"
+      class="text-sm px-2.5 align-middle rounded-md inline-flex gap-2 h-8 min-w-8 items-center justify-center"
       :class="[buttonClass, buttonStateClass, { 'rounded-full': circle }]"
-      :style="{ backgroundColor: buttonBgColor, color: iconColor }"
+      :style="buttonStyle"
       :aria-disabled="disabled"
       @click="handleClick"
     >
       <ArtSvgIcon
         v-if="!loading"
         :icon="iconContent"
+        :color="iconColor"
       />
 
       <IconLoading
         v-else
       />
 
-      <slot />
+      <span
+        v-if="$slots.default"
+        :style="textStyle"
+      >
+        <slot />
+      </span>
     </div>
   </ElTooltip>
 
   <div
     v-else
-    class="text-sm  px-2.5 align-middle rounded-md inline-flex gap-2 h-8 min-w-8 items-center justify-center"
+    class="text-sm px-2.5 align-middle rounded-md inline-flex gap-2 h-8 min-w-8 items-center justify-center"
     :class="[buttonClass, buttonStateClass, { 'rounded-full': circle }]"
-    :style="{ backgroundColor: buttonBgColor, color: iconColor }"
+    :style="buttonStyle"
     :aria-disabled="disabled"
     @click="handleClick"
   >
     <ArtSvgIcon
       v-if="!loading"
       :icon="iconContent"
+      :color="iconColor"
     />
 
     <IconLoading
       v-else
     />
 
-    <slot />
+    <span
+      v-if="$slots.default"
+      :style="textStyle"
+    >
+      <slot />
+    </span>
   </div>
-
 </template>
