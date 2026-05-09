@@ -1,3 +1,5 @@
+@reference '@styles/core/tailwind.css';
+
 /* 授权页右侧区域 */
 .auth-right-wrap {
   @apply absolute inset-0 w-[440px] h-[650px] py-[5px] m-auto overflow-hidden

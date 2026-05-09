@@ -2,6 +2,8 @@ import path from 'node:path'
 
 import { fileURLToPath } from 'node:url'
 
+import TailwindCSS from '@tailwindcss/vite'
+
 import vue from '@vitejs/plugin-vue'
 
 import UnoCSS from 'unocss/vite'
@@ -91,7 +93,7 @@ export default ({ mode }: { mode: string }) => {
     plugins: [
       vue(),
 
-      UnoCSS(),
+      TailwindCSS(),
 
       // 自动按需导入 API
       AutoImport({

@@ -718,6 +718,8 @@ onMounted(() => {
 </template>
 
 <style scoped>
+  @reference '@styles/core/tailwind.css';
+
 .message-container {
   @apply max-h-96 overflow-y-auto space-y-3;
 }

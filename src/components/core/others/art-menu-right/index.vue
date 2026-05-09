@@ -313,7 +313,7 @@ defineExpose({
       <div
         v-show="visible"
         :style="menuStyle"
-        class="context-menu art-card-xs !shadow-xl min-w-[var(--menu-width)] w-[var(--menu-width)]"
+        class="context-menu art-card-xs !p-0 !shadow-xl min-w-[var(--menu-width)] w-[var(--menu-width)]"
       >
         <ul
           class="menu-list m-0 list-none"

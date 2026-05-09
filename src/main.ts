@@ -14,9 +14,7 @@ import { initStore } from './store' // Store
 
 import { setupErrorHandle } from './utils/sys/error-handle'
 
-import 'virtual:uno.css'
-
-import '@styles/core/unocss.css' // unocss
+import '@styles/core/tailwind.css' // tailwind
 
 import '@styles/index.scss' // 样式
 

@@ -56,6 +56,7 @@ type WatermarkProps = {
 
   /** 水印层级 */
   zIndex?: number
+
 }
 
 </script>

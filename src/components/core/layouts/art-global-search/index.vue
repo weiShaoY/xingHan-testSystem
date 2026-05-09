@@ -535,6 +535,8 @@ function highlightOnHoverHistory(index: number) {
 </style>
 
 <style scoped>
+  @reference '@styles/core/tailwind.css';
+
 .keyboard {
   @apply mr-2
     box-border

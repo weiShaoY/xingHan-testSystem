@@ -3,8 +3,9 @@ import antfu from '@antfu/eslint-config'
 
 export default antfu(
   {
-    unocss: true,
+    unocss: false,
     formatters: true,
+
     ignores: [
       '**/components.d.ts',
       '**/dist/**',
@@ -14,7 +15,7 @@ export default antfu(
 
     vue: {
       overrides: {
-      // 强制执行第一个属性的位置
+        // 强制执行第一个属性的位置
         'vue/first-attribute-linebreak': [
           'warn',
           {
@@ -86,7 +87,7 @@ export default antfu(
 
     typescript: {
       overrides: {
-      // 禁止使用 alert
+        // 禁止使用 alert
         'no-alert': 'off',
 
         // 禁止使用 console

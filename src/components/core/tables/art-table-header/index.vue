@@ -434,6 +434,8 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
+  @reference '@styles/core/tailwind.css';
+
 .button {
   @apply ml-2
     size-8

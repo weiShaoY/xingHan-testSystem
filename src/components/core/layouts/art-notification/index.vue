@@ -526,6 +526,8 @@ watch(
 </template>
 
 <style scoped>
+  @reference '@styles/core/tailwind.css';
+
 .art-notification-panel {
   @apply absolute
     top-14.5

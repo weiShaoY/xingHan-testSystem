@@ -570,6 +570,8 @@ const stackXAxisData = ref(['产品A', '产品B', '产品C', '产品D', '产品E
 </template>
 
 <style scoped>
+  @reference '@styles/core/tailwind.css';
+
 .page-title {
   @apply my-5 text-xl font-medium first:mt-0;
 }
