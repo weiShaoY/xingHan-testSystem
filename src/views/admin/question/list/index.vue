@@ -6,23 +6,23 @@ import { ref } from 'vue'
 const router = useRouter()
 
 /**
-   * 题库类型定义
-   */
+ * 题库类型定义
+ */
 type QuestionBank = {
   id: number
 
   name: string
 
-  // 单选题数量
+  /** 单选题数量 */
   singleChoiceCount: number
 
-  // 多选题数量
+  /** 多选题数量 */
   multipleChoiceCount: number
 
-  // 开放式题数量
+  /** 开放式题数量 */
   openEndedCount: number
 
-  // 图标
+  /** 图标 */
   icon: string
 
   time: {
@@ -35,8 +35,8 @@ type QuestionBank = {
 }
 
 /**
-   * 题库列表
-   */
+ * 题库列表
+ */
 const sourceList = ref<QuestionBank[]>([
   {
     id: 1,
@@ -86,8 +86,24 @@ const sourceList = ref<QuestionBank[]>([
 ])
 
 /**
-   * 跳转到创建题库
-   */
+ * 获取题库题目总数
+ */
+function getQuestionTotal(item: QuestionBank) {
+  return item.singleChoiceCount + item.multipleChoiceCount + item.openEndedCount
+}
+
+/**
+ * 获取题库创建时间文本
+ */
+function getCreateTimeText(item: QuestionBank) {
+  const minute = item.time.minute < 10 ? `0${item.time.minute}` : item.time.minute
+
+  return `${item.time.hour}:${minute}`
+}
+
+/**
+ * 跳转到创建题库
+ */
 function goToCreateQuestion() {
   router.push({
     name: 'AdminQuestionCreate',
@@ -98,8 +114,8 @@ function goToCreateQuestion() {
 }
 
 /**
-   * 跳转到编辑页
-   */
+ * 跳转到编辑页
+ */
 function goToEdit(item: QuestionBank) {
   router.push({
     name: 'AdminQuestionEdit',
@@ -110,8 +126,8 @@ function goToEdit(item: QuestionBank) {
 }
 
 /**
-   * 跳转到详情页
-   */
+ * 跳转到详情页
+ */
 function goToDetail(item: QuestionBank) {
   router.push({
     name: 'AdminQuestionDetail',
@@ -122,8 +138,8 @@ function goToDetail(item: QuestionBank) {
 }
 
 /**
-   * 删除题库
-   */
+ * 删除题库
+ */
 function deleteQuestionBank(item: QuestionBank) {
   sourceList.value = sourceList.value.filter(i => i.id !== item.id)
 }
@@ -132,11 +148,25 @@ function deleteQuestionBank(item: QuestionBank) {
 
 <template>
   <div
-    class="mx-auto px-10 max-w-7xl relative max-sm:px-5"
+    class="mx-auto max-w-7xl px-10 relative max-lg:px-6 max-sm:px-4"
   >
     <div
-      class="my-5 flex w-full items-center justify-end"
+      class="my-5 flex w-full items-center justify-between gap-4 max-sm:items-start"
     >
+      <div>
+        <h2
+          class="text-xl font-semibold text-g-900 max-sm:text-lg"
+        >
+          题库列表
+        </h2>
+
+        <p
+          class="mt-1 text-sm text-g-600"
+        >
+          共 {{ sourceList.length }} 个题库
+        </p>
+      </div>
+
       <ArtIconButton
         type="add"
         @click="goToCreateQuestion"
@@ -146,94 +176,146 @@ function deleteQuestionBank(item: QuestionBank) {
     </div>
 
     <div
-      v-for="item in sourceList"
-      :key="item.id"
-      class="flex-c gap-5"
+      class="flex flex-col gap-4"
     >
       <div
-        class="flex flex-col items-end"
+        v-for="item in sourceList"
+        :key="item.id"
+        class="grid grid-cols-[150px_8px_minmax(0,1fr)] gap-5 items-center max-md:grid-cols-1 max-md:gap-3"
       >
         <div
-          class="text-primary"
-        >
-          {{ item.time.year }} 年
-        </div>
-
-        <div
-          class="text-primary"
-        >
-          {{ item.time.month }} 月 {{ item.time.day }} 日
-        </div>
-
-        <div
-          class=""
-        >
-          创建时间   {{ item.time.hour }}:{{ item.time.minute < 10 ? `0${item.time.minute}` : item.time.minute }}
-        </div>
-      </div>
-
-      <div
-        class="bg-primary h-10 w-2"
-      >
-        <!-- 分隔符 -->
-      </div>
-
-      <div
-        class="art-card mb-5 flex flex-1 flex-col h-35 cursor-cell justify-center relative max-sm:mb-4"
-        @click="goToDetail(item)"
-      >
-        <div
-          class="flex items-center justify-between"
+          class="flex flex-col items-end text-sm text-g-600 max-md:flex-row max-md:items-center max-md:justify-between max-md:rounded-custom-sm max-md:bg-box max-md:border-full-d max-md:px-4 max-md:py-3"
         >
           <div
-            class=""
+            class="max-md:flex max-md:items-center max-md:gap-1"
           >
-            {{ item.name }}
+            <span
+              class="font-medium text-primary"
+            >
+              {{ item.time.year }} 年
+            </span>
+
+            <span
+              class="font-medium text-primary"
+            >
+              {{ item.time.month }} 月 {{ item.time.day }} 日
+            </span>
           </div>
 
           <div
-            class="flex gap-2 items-center justify-center"
+            class="mt-1 max-md:mt-0"
           >
-            <ArtIconButton
-              type="delete"
-
-              @click="deleteQuestionBank(item)"
-            />
-
-            <ArtIconButton
-              type="export"
-            />
-
-            <ArtIconButton
-              type="edit"
-
-              @click="goToEdit(item)"
-            />
-
-            <ArtIconButton
-              :loading="true"
-            />
+            创建时间 {{ getCreateTimeText(item) }}
           </div>
         </div>
-
-        <el-divider />
 
         <div
-          class="text-primary flex gap-3"
+          class="h-10 w-2 rounded-full bg-primary max-md:hidden"
         >
-          <div>
-            {{ item.singleChoiceCount }} 单选题
-          </div>
-
-          <div>
-            {{ item.multipleChoiceCount }} 多选题
-          </div>
-
-          <div>
-            {{ item.openEndedCount }} 开放式题
-          </div>
+          <!-- 分隔符 -->
         </div>
 
+        <div
+          class="art-card flex flex-1 flex-col cursor-pointer justify-center relative transition hover:border-primary/30 max-sm:p-4"
+          @click="goToDetail(item)"
+        >
+          <div
+            class="flex items-start justify-between gap-4 max-sm:flex-col"
+          >
+            <div
+              class="min-w-0"
+            >
+              <h3
+                class="truncate text-base font-semibold text-g-900"
+              >
+                {{ item.name }}
+              </h3>
+
+              <p
+                class="mt-2 text-sm text-g-600"
+              >
+                共 {{ getQuestionTotal(item) }} 道题
+              </p>
+            </div>
+
+            <div
+              class="flex flex-shrink-0 gap-2 items-center justify-center max-sm:w-full max-sm:justify-end"
+              @click.stop
+            >
+              <ArtIconButton
+                type="delete"
+                @click="deleteQuestionBank(item)"
+              />
+
+              <ArtIconButton
+                type="export"
+              />
+
+              <ArtIconButton
+                type="edit"
+                @click="goToEdit(item)"
+              />
+
+              <ArtIconButton
+                :loading="true"
+              />
+            </div>
+          </div>
+
+          <el-divider />
+
+          <div
+            class="grid grid-cols-3 gap-4 text-primary max-sm:grid-cols-1"
+          >
+            <div
+              class="rounded-custom-sm bg-primary/10 px-4 py-3"
+            >
+              <p
+                class="text-lg font-semibold"
+              >
+                {{ item.singleChoiceCount }}
+              </p>
+
+              <p
+                class="mt-1 text-sm text-g-600"
+              >
+                单选题
+              </p>
+            </div>
+
+            <div
+              class="rounded-custom-sm bg-primary/10 px-4 py-3"
+            >
+              <p
+                class="text-lg font-semibold"
+              >
+                {{ item.multipleChoiceCount }}
+              </p>
+
+              <p
+                class="mt-1 text-sm text-g-600"
+              >
+                多选题
+              </p>
+            </div>
+
+            <div
+              class="rounded-custom-sm bg-primary/10 px-4 py-3"
+            >
+              <p
+                class="text-lg font-semibold"
+              >
+                {{ item.openEndedCount }}
+              </p>
+
+              <p
+                class="mt-1 text-sm text-g-600"
+              >
+                开放式题
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 

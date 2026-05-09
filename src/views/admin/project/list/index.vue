@@ -8,13 +8,18 @@ import CreateProjectDialog from './CreateProjectDialog.vue'
 const inputVModel = ref('')
 
 /**
-   *  是否显示创建学习项目弹窗
-   */
+ * 是否显示创建学习项目弹窗
+ */
 const isShowCreateProjectDialog = ref(false)
 
 /**
-   * 学习项目类型定义
-   */
+ * 是否显示分配弹窗
+ */
+const isShowAllocateDialog = ref(false)
+
+/**
+ * 学习项目类型定义
+ */
 type StudyProject = {
 
   /** 唯一标识 */
@@ -40,8 +45,8 @@ type StudyProject = {
 }
 
 /**
-   * 学习项目列表
-   */
+ * 学习项目列表
+ */
 const projectList = ref<StudyProject[]>([
   {
     id: '1',
@@ -73,19 +78,15 @@ const projectList = ref<StudyProject[]>([
 ])
 
 /**
-   * 获取课程描述文本
-   * @param item 学习项目
-   * @returns 文本描述
-   */
+ * 获取课程描述文本
+ */
 function getCourseText(item: StudyProject): string {
   return `${item.stageCount} 个学习阶段，${item.courseCount} 门课程`
 }
 
-const isShowAllocateDialog = ref(false)
-
 /**
-   *  打开分配弹窗
-   */
+ * 打开分配弹窗
+ */
 function openAllocateDialog(item: StudyProject) {
   console.log('🚀 ~ file: index.vue:83 ~ item:', item)
   isShowAllocateDialog.value = true
@@ -94,8 +95,8 @@ function openAllocateDialog(item: StudyProject) {
 const router = useRouter()
 
 /**
-   *  跳转到详情页
-   */
+ * 跳转到详情页
+ */
 function goToDetail(item: StudyProject) {
   router.push({
     name: 'AdminProjectDetail',
@@ -106,8 +107,8 @@ function goToDetail(item: StudyProject) {
 }
 
 /**
-   *  跳转到编辑页
-   */
+ * 跳转到编辑页
+ */
 function goToEdit(item: StudyProject) {
   router.push({
     name: 'AdminProjectEdit',
@@ -120,7 +121,7 @@ function goToEdit(item: StudyProject) {
 
 <template>
   <div
-    class="relative mx-auto max-w-7xl px-10 max-sm:px-5"
+    class="relative mx-auto max-w-7xl px-10 max-lg:px-6 max-sm:px-4"
   >
     <CreateProjectDialog
       v-if="isShowCreateProjectDialog"
@@ -128,103 +129,177 @@ function goToEdit(item: StudyProject) {
     />
 
     <div
-      class="flex items-center justify-between"
+      class="my-5 flex w-full items-center justify-between gap-4 max-md:flex-col max-md:items-stretch"
     >
-      <el-input
-        v-model="inputVModel"
-        placeholder="学习项目名称、描述、标签或访问码"
+      <div
+        class="flex-1"
       >
-        <template
-          #append
+        <h2
+          class="text-xl font-semibold text-g-900 max-sm:text-lg"
         >
-          <el-button
-            class="flex items-center justify-center"
-          >
-            <SvgIcon
-              icon="search"
-            />
-          </el-button>
-        </template>
-      </el-input>
+          学习项目
+        </h2>
 
-      <el-button
-        class="ml-20"
-        type="primary"
-        @click="isShowCreateProjectDialog = true"
+        <p
+          class="mt-1 text-sm text-g-600"
+        >
+          共 {{ projectList.length }} 个项目
+        </p>
+      </div>
+
+      <div
+        class="flex flex-1 items-center justify-end gap-3 max-md:w-full max-md:justify-start max-sm:flex-col"
       >
-        创建学习项目
-      </el-button>
+        <el-input
+          v-model="inputVModel"
+          class="max-w-110 max-md:max-w-none max-sm:w-full"
+          placeholder="学习项目名称、描述、标签或访问码"
+        >
+          <template
+            #append
+          >
+            <el-button
+              class="flex items-center justify-center"
+            >
+              <SvgIcon
+                icon="search"
+              />
+            </el-button>
+          </template>
+        </el-input>
+
+        <ArtIconButton
+          type="add"
+          class="max-sm:w-full"
+          @click="isShowCreateProjectDialog = true"
+        >
+          创建学习项目
+        </ArtIconButton>
+      </div>
     </div>
 
     <div
-      class="mt-10"
+      class="flex flex-col gap-4"
     >
       <AllocateDialog
         v-if="isShowAllocateDialog"
         v-model="isShowAllocateDialog"
       />
 
-      <el-timeline>
-        <el-timeline-item
-          v-for="item in projectList"
-          :key="item.id"
-          center
-          :timestamp="item.date"
-          placement="top"
+      <div
+        v-for="item in projectList"
+        :key="item.id"
+        class="grid grid-cols-[150px_8px_minmax(0,1fr)] gap-5 items-center max-md:grid-cols-1 max-md:gap-3"
+      >
+        <div
+          class="flex flex-col items-end text-sm text-g-600 max-md:flex-row max-md:items-center max-md:justify-between max-md:rounded-custom-sm max-md:bg-box max-md:border-full-d max-md:px-4 max-md:py-3"
+        >
+          <span
+            class="font-medium text-primary"
+          >
+            {{ item.date }}
+          </span>
+
+          <span>
+            创建时间
+          </span>
+        </div>
+
+        <div
+          class="h-10 w-2 rounded-full bg-primary max-md:hidden"
+        >
+          <!-- 分隔符 -->
+        </div>
+
+        <div
+          class="art-card flex flex-1 flex-col cursor-pointer justify-center relative transition hover:border-primary/30 max-sm:p-4"
           @click="goToDetail(item)"
         >
-          <el-card>
-            <template
-              #header
+          <div
+            class="flex items-start justify-between gap-4 max-sm:flex-col"
+          >
+            <div
+              class="min-w-0"
             >
-              <div
-                class="flex items-center justify-between"
+              <h3
+                class="truncate text-base font-semibold text-g-900"
               >
-                <span>
-                  {{ item.title }}
-                </span>
+                {{ item.title }}
+              </h3>
 
-                <div
-                  class="flex items-center gap-2"
-                >
-                  <el-button
-                    class="flex items-center justify-center"
-                    @click.stop="goToEdit(item)"
-                  >
-                    <SvgIcon
-                      icon="admin-edit"
-                    />
-                  </el-button>
+              <p
+                class="mt-2 line-clamp-2 text-sm text-g-600"
+              >
+                {{ item.description }}
+              </p>
+            </div>
 
-                  <!-- 分配 -->
-                  <el-button
-                    class="flex items-center justify-center"
-                    @click.stop="openAllocateDialog(item)"
-                  >
-                    <SvgIcon
-                      icon="admin-allocate"
-                    />
-                  </el-button>
-                </div>
-              </div>
-            </template>
+            <div
+              class="flex flex-shrink-0 gap-2 items-center justify-center max-sm:w-full max-sm:justify-end"
+              @click.stop
+            >
+              <ArtIconButton
+                type="edit"
+                @click="goToEdit(item)"
+              />
 
-            <h4>
-              {{ item.description }}
-            </h4>
+              <ArtIconButton
+                type="allocate"
+                @click="openAllocateDialog(item)"
+              />
+            </div>
+          </div>
+
+          <el-divider />
+
+          <div
+            class="grid grid-cols-[1fr_1fr_1.5fr] gap-4 items-center max-sm:grid-cols-1"
+          >
+            <div
+              class="rounded-custom-sm bg-primary/10 px-4 py-3 text-primary"
+            >
+              <p
+                class="text-lg font-semibold"
+              >
+                {{ item.stageCount }}
+              </p>
+
+              <p
+                class="mt-1 text-sm text-g-600"
+              >
+                学习阶段
+              </p>
+            </div>
+
+            <div
+              class="rounded-custom-sm bg-primary/10 px-4 py-3 text-primary"
+            >
+              <p
+                class="text-lg font-semibold"
+              >
+                {{ item.courseCount }}
+              </p>
+
+              <p
+                class="mt-1 text-sm text-g-600"
+              >
+                课程
+              </p>
+            </div>
 
             <el-link
               :href="item.link"
               type="primary"
-              class="mt-10"
+              class="justify-self-end max-sm:justify-self-start"
+              @click.stop
             >
               {{ getCourseText(item) }} >
             </el-link>
-          </el-card>
-        </el-timeline-item>
-      </el-timeline>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
-<style></style>
+<style lang="scss" scoped></style>

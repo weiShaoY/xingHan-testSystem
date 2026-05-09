@@ -8,13 +8,13 @@ import AllocateCourseDialog from './AllocateCourseDialog.vue'
 const router = useRouter()
 
 /**
-   * 是否显示分配学习任务弹窗
-   */
+ * 是否显示分配学习任务弹窗
+ */
 const isShowAllocateCourseDialog = ref(false)
 
 /**
-   * 课程类型定义
-   */
+ * 课程类型定义
+ */
 type Course = {
   id: number
   name: string
@@ -38,8 +38,8 @@ type Course = {
 }
 
 /**
-   * 课程列表
-   */
+ * 课程列表
+ */
 const sourceList = ref<Course[]>([
   {
     id: 1,
@@ -66,8 +66,28 @@ const sourceList = ref<Course[]>([
 ])
 
 /**
-   *  跳转到创建页
-   */
+ * 获取课程完成进度
+ */
+function getCourseProgress(item: Course) {
+  if (!item.lessons) {
+    return 0
+  }
+
+  return Math.round((item.completedLessons / item.lessons) * 100)
+}
+
+/**
+ * 获取课程创建时间文本
+ */
+function getCreateTimeText(item: Course) {
+  const minute = item.time.minute < 10 ? `0${item.time.minute}` : item.time.minute
+
+  return `${item.time.hour}:${minute}`
+}
+
+/**
+ * 跳转到创建页
+ */
 function goToCreate() {
   router.push({
     name: 'AdminCourseCreate',
@@ -75,8 +95,8 @@ function goToCreate() {
 }
 
 /**
-   * 跳转到编辑页
-   */
+ * 跳转到编辑页
+ */
 function goToEdit(item: Course) {
   router.push({
     name: 'AdminCourseEdit',
@@ -87,8 +107,8 @@ function goToEdit(item: Course) {
 }
 
 /**
-   * 跳转到详情页
-   */
+ * 跳转到详情页
+ */
 function goToDetail(item: Course) {
   router.push({
     name: 'AdminCourseDetail',
@@ -101,7 +121,7 @@ function goToDetail(item: Course) {
 
 <template>
   <div
-    class="mx-auto px-10 max-w-7xl relative max-sm:px-5"
+    class="mx-auto max-w-7xl px-10 relative max-lg:px-6 max-sm:px-4"
   >
     <!-- 分配学习任务弹窗 -->
     <AllocateCourseDialog
@@ -110,8 +130,21 @@ function goToDetail(item: Course) {
     />
 
     <div
-      class="my-5 flex w-full items-center justify-end"
+      class="my-5 flex w-full items-center justify-between gap-4 max-sm:items-start"
     >
+      <div>
+        <h2
+          class="text-xl font-semibold text-g-900 max-sm:text-lg"
+        >
+          课程列表
+        </h2>
+
+        <p
+          class="mt-1 text-sm text-g-600"
+        >
+          共 {{ sourceList.length }} 门课程
+        </p>
+      </div>
 
       <ArtIconButton
         type="add"
@@ -122,135 +155,154 @@ function goToDetail(item: Course) {
     </div>
 
     <div
-      v-for="item in sourceList"
-      :key="item.id"
-      class="flex-c gap-5"
+      class="flex flex-col gap-4"
     >
       <div
-        class="flex flex-col items-end"
+        v-for="item in sourceList"
+        :key="item.id"
+        class="grid grid-cols-[150px_8px_minmax(0,1fr)] gap-5 items-center max-md:grid-cols-1 max-md:gap-3"
       >
         <div
-          class="text-primary"
-        >
-          {{ item.time.year }} 年
-        </div>
-
-        <div
-          class="text-primary"
-        >
-          {{ item.time.month }} 月 {{ item.time.day }} 日
-        </div>
-
-        <div
-          class=""
-        >
-          创建时间   {{ item.time.hour }}:{{ item.time.minute < 10 ? `0${item.time.minute}` : item.time.minute }}
-        </div>
-      </div>
-
-      <div
-        class="bg-primary h-10 w-2"
-      >
-        <!-- 分隔符 -->
-      </div>
-
-      <div
-        class="art-card mb-5 flex flex-1 flex-col cursor-cell justify-center relative max-sm:mb-4"
-        @click="goToDetail(item)"
-      >
-        <div
-          class="flex items-center justify-between"
+          class="flex flex-col items-end text-sm text-g-600 max-md:flex-row max-md:items-center max-md:justify-between max-md:rounded-custom-sm max-md:bg-box max-md:border-full-d max-md:px-4 max-md:py-3"
         >
           <div
-            class=""
+            class="max-md:flex max-md:items-center max-md:gap-1"
           >
-            {{ item.name }}
+            <span
+              class="font-medium text-primary"
+            >
+              {{ item.time.year }} 年
+            </span>
+
+            <span
+              class="font-medium text-primary"
+            >
+              {{ item.time.month }} 月 {{ item.time.day }} 日
+            </span>
           </div>
 
           <div
-            class="flex gap-2 items-center justify-center"
+            class="mt-1 max-md:mt-0"
           >
-            <ArtIconButton
-              type="edit"
-              @click="goToEdit(item)"
-            />
-
-            <ArtIconButton
-              type="allocate"
-              @click="isShowAllocateCourseDialog = true"
-            />
+            创建时间 {{ getCreateTimeText(item) }}
           </div>
         </div>
 
-        <el-divider />
+        <div
+          class="h-10 w-2 rounded-full bg-primary max-md:hidden"
+        >
+          <!-- 分隔符 -->
+        </div>
 
         <div
-          class="flex gap-5 items-start justify-between"
+          class="art-card flex flex-1 flex-col cursor-pointer justify-center relative transition hover:border-primary/30 max-sm:p-4"
+          @click="goToDetail(item)"
         >
-          <!-- 参与信息 -->
-          <div>
-            <p
-              class="font-medium mb-2"
-            >
-              参与信息
-            </p>
-
+          <div
+            class="flex items-start justify-between gap-4 max-sm:flex-col"
+          >
             <div
-              class="text-3 color-info flex gap-4 items-center"
+              class="min-w-0"
             >
-              <p>
-                总课时: {{ item.lessons }}节
-              </p>
-
-              <p>
-                已完成: {{ item.completedLessons }}节
-              </p>
-
-              <p>
-                进度: {{ Math.round((item.completedLessons / item.lessons) * 100) }}%
-              </p>
-            </div>
-          </div>
-
-          <!-- 课程标签 -->
-          <div>
-            <p
-              class="font-medium mb-2"
-            >
-              课程标签
-            </p>
-
-            <div
-              class="flex flex-wrap gap-2"
-            >
-              <el-tag
-                v-for="(tag, index) in item.tags"
-                :key="index"
-                size="small"
+              <h3
+                class="truncate text-base font-semibold text-g-900"
               >
-                {{ tag }}
-              </el-tag>
+                {{ item.name }}
+              </h3>
+
+              <p
+                class="mt-2 line-clamp-2 max-w-3xl text-sm text-g-600"
+              >
+                {{ item.description }}
+              </p>
+            </div>
+
+            <div
+              class="flex flex-shrink-0 gap-2 items-center justify-center max-sm:w-full max-sm:justify-end"
+              @click.stop
+            >
+              <ArtIconButton
+                type="edit"
+                @click="goToEdit(item)"
+              />
+
+              <ArtIconButton
+                type="allocate"
+                @click="isShowAllocateCourseDialog = true"
+              />
             </div>
           </div>
 
-          <!-- 课程介绍 -->
-          <div
-            class="max-w-md"
-          >
-            <p
-              class="font-medium mb-2"
-            >
-              课程介绍
-            </p>
+          <el-divider />
 
-            <p
-              class="text-3 color-info"
+          <div
+            class="grid grid-cols-[1.2fr_1fr_1.4fr] gap-5 items-start max-lg:grid-cols-2 max-sm:grid-cols-1"
+          >
+            <!-- 参与信息 -->
+            <section>
+              <p
+                class="font-medium mb-2 text-g-900"
+              >
+                参与信息
+              </p>
+
+              <div
+                class="text-sm text-g-600 flex flex-wrap gap-x-4 gap-y-2 items-center"
+              >
+                <span>
+                  总课时: {{ item.lessons }} 节
+                </span>
+
+                <span>
+                  已完成: {{ item.completedLessons }} 节
+                </span>
+
+                <span>
+                  进度: {{ getCourseProgress(item) }}%
+                </span>
+              </div>
+            </section>
+
+            <!-- 课程标签 -->
+            <section>
+              <p
+                class="font-medium mb-2 text-g-900"
+              >
+                课程标签
+              </p>
+
+              <div
+                class="flex flex-wrap gap-2"
+              >
+                <el-tag
+                  v-for="(tag, index) in item.tags"
+                  :key="index"
+                  size="small"
+                >
+                  {{ tag }}
+                </el-tag>
+              </div>
+            </section>
+
+            <!-- 更新时间 -->
+            <section
+              class="max-lg:col-span-2 max-sm:col-span-1"
             >
-              {{ item.description }}
-            </p>
+              <p
+                class="font-medium mb-2 text-g-900"
+              >
+                更新时间
+              </p>
+
+              <p
+                class="text-sm text-g-600"
+              >
+                {{ item.updateTime }}
+              </p>
+            </section>
+
           </div>
         </div>
-
       </div>
     </div>
 

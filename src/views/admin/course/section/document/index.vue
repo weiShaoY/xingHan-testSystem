@@ -7,10 +7,10 @@ import { UploadFilled } from '@element-plus/icons-vue'
 
 <template>
   <div
-    class="h-full"
+    class="mb-10 flex flex-col gap-4 "
   >
     <ArtPageHeader
-      title="创建小节页"
+      title="添加文档"
     >
       <template
         #extra
@@ -25,7 +25,7 @@ import { UploadFilled } from '@element-plus/icons-vue'
 
     <!-- // 文件 或者 视频 -->
     <div
-      class=""
+      class="max-w-1/2 w-1/2 mx-auto"
     >
       <el-upload
         class="upload-demo"
@@ -38,6 +38,12 @@ import { UploadFilled } from '@element-plus/icons-vue'
         >
           <UploadFilled />
         </el-icon>
+
+        <div
+          class="el-upload__text"
+        >
+          上传文档
+        </div>
 
         <div
           class="el-upload__text"
