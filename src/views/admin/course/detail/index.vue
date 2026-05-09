@@ -540,6 +540,7 @@ function editSection(section: Section) {
           <CourseSectionItem
             v-for="section in item.sectionList"
             :key="section.id"
+            inner
             :section="section"
             :section-index="getSectionIndex(section)"
             :type-config="getSectionTypeIcon(section.sectionType)"
@@ -551,7 +552,7 @@ function editSection(section: Section) {
 
         <div
           v-else
-          class="rounded-custom-sm border-full-d "
+          class="rounded-custom-sm border-full-d"
         >
           <el-empty
             description="暂无小节"

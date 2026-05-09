@@ -35,6 +35,9 @@ defineProps<{
 
   /** 小节类型配置 */
   typeConfig: SectionTypeConfig
+
+  /** 是否展示在章节内部 */
+  inner?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -52,7 +55,8 @@ const emit = defineEmits<{
 
 <template>
   <div
-    class="rounded-custom-sm border-full-d bg-box px-5 py-4 transition-colors hover:border-primary/40 max-sm:px-4"
+    class="rounded-custom-sm border-full-d bg-box py-4 transition-colors hover:border-primary/40"
+    :class="inner ? 'px-5 max-sm:px-4' : 'px-10 max-sm:px-4'"
   >
     <div
       class="grid grid-cols-[48px_96px_minmax(0,1fr)_auto] gap-5 items-center max-md:grid-cols-[40px_80px_minmax(0,1fr)] max-md:gap-4 max-sm:grid-cols-1 max-sm:items-start"
