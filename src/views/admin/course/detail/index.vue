@@ -468,12 +468,18 @@ function editSection(sectionId: number) {
             class="flex w-full items-center justify-between"
           >
             <div
-              class="flex gap-2 items-center"
+              class="flex gap-5 items-center"
             >
               <div
                 class=""
               >
                 {{ item.name }}
+              </div>
+
+              <div
+                class="text-sm text-info"
+              >
+                ({{ item.sectionList.length }}) 个小节
               </div>
             </div>
 
@@ -494,6 +500,13 @@ function editSection(sectionId: number) {
                 @click="editChapter(item.id)"
               />
             </div>
+          </div>
+
+          <div
+            class="text-sm text-info"
+          >
+            {{ item.description }}
+
           </div>
         </template>
 
