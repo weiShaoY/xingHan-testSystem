@@ -30,26 +30,56 @@ const chapterFormMode = ref<'add' | 'edit'>('add')
 const isShowCreateSectionDialog = ref(false)
 
 /**
+   * 小节内容类型：0 文档，1 视频，2 考试，3 问卷
+   */
+type SectionType = 0 | 1 | 2 | 3
+
+/**
    * 小节类型定义
    */
 type Section = {
+
+  /** 小节 ID */
   id: number
+
+  /** 小节名称 */
   name: string
-  participants: number
+
+  /** 小节描述 */
   description: string
-  type: 'section'
+
+  /** 内容项类型标识  区分是 小节 或 章节 */
+  itemType: 'section'
+
+  /** 小节内容类型 */
+  sectionType: SectionType
+
+  /** 参与小节学习的人数 */
+  participantCount: number
 }
 
 /**
    * 章节类型定义
    */
 type Chapter = {
+
+  /** 章节 ID */
   id: number
+
+  /** 章节名称 */
   name: string
+
+  /** 章节描述 */
   description: string
+
+  /** 内容项类型标识  区分是 小节 或 章节 */
+  itemType: 'chapter'
+
+  /** 章节是否对学员可见 */
   isVisible: string
-  sections: Section[]
-  type: 'chapter'
+
+  /** 章节下的小节列表 */
+  sectionList: Section[]
 }
 
 /**
@@ -65,54 +95,59 @@ const courseItems = ref<CourseItem[]>([
     id: 1,
     name: '章节1',
     description: '章节1描述',
+    itemType: 'chapter',
     isVisible: '1',
-    sections: [
+    sectionList: [
       {
         id: 1,
         name: '章节1的小节1',
-        participants: 6,
         description: '小节1描述',
-        type: 'section',
+        itemType: 'section',
+        sectionType: 0,
+        participantCount: 6,
       },
       {
         id: 2,
         name: '章节1的小节2',
-        participants: 4,
         description: '小节2描述',
-        type: 'section',
+        itemType: 'section',
+        sectionType: 1,
+        participantCount: 4,
       },
     ],
-    type: 'chapter',
   },
   {
     id: 2,
     name: '章节2',
     description: '章节2描述',
+    itemType: 'chapter',
     isVisible: '1',
-    sections: [
+    sectionList: [
       {
         id: 3,
         name: '章节2的小节1',
-        participants: 8,
         description: '小节3描述',
-        type: 'section',
+        itemType: 'section',
+        sectionType: 2,
+        participantCount: 8,
       },
     ],
-    type: 'chapter',
   },
   {
     id: 4,
     name: '小节1',
-    participants: 5,
     description: '小节1描述',
-    type: 'section',
+    itemType: 'section',
+    sectionType: 3,
+    participantCount: 5,
   },
   {
     id: 5,
     name: '小节2',
-    participants: 3,
     description: '小节2描述',
-    type: 'section',
+    itemType: 'section',
+    sectionType: 0,
+    participantCount: 3,
   },
 ])
 
@@ -136,15 +171,15 @@ function goToEdit() {
 /**
  * 跳转到添加小节（根据类型）
  */
-function goToAddSection(type: 'video' | 'document' | 'exam' | 'question') {
+function goToAddSection(type: SectionType) {
   const routeMap = {
-    video: 'AdminCourseSectionVideo',
+    0: 'AdminCourseSectionDocument',
 
-    document: 'AdminCourseSectionDocument',
+    1: 'AdminCourseSectionVideo',
 
-    exam: 'AdminCourseSectionExam',
+    2: 'AdminCourseSectionExam',
 
-    question: 'AdminCourseSectionQuestion',
+    3: 'AdminCourseSectionQuestion',
   }
 
   router.push({
@@ -157,33 +192,66 @@ function goToAddSection(type: 'video' | 'document' | 'exam' | 'question') {
 }
 
 const sectionTypeButtons: Array<{
-  type: 'video' | 'document' | 'exam' | 'question'
+  type: SectionType
   label: string
 }> = [
   {
-    type: 'document',
+    type: 0,
     label: '文档',
   },
   {
-    type: 'video',
+    type: 1,
     label: '视频',
   },
   {
-    type: 'exam',
+    type: 2,
     label: '考试',
   },
   {
-    type: 'question',
+    type: 3,
     label: '问卷',
   },
 ]
+
+const sectionTypeIconList: Array<{
+  sectionTypeName: string
+  sectionIcon: string
+  sectionIconBgColor: string
+}> = [
+  {
+    sectionTypeName: '文档',
+    sectionIcon: 'ri:article-line',
+    sectionIconBgColor: 'rgba(64, 158, 255, 0.12)',
+  },
+  {
+    sectionTypeName: '视频',
+    sectionIcon: 'ri:vidicon-line',
+    sectionIconBgColor: 'rgba(103, 194, 58, 0.12)',
+
+  },
+  {
+    sectionTypeName: '考试',
+    sectionIcon: 'ri:medal-line',
+    sectionIconBgColor: 'rgba(230, 162, 60, 0.12)',
+
+  },
+  {
+    sectionTypeName: '问卷',
+    sectionIcon: 'ri:survey-line',
+    sectionIconBgColor: 'rgba(245, 108, 108, 0.12)',
+  },
+]
+
+function getSectionTypeIcon(sectionType: SectionType) {
+  return sectionTypeIconList[sectionType]
+}
 
 /**
    * 编辑章节
    */
 function editChapter(chapterId: number) {
   const chapter = courseItems.value.find(
-    (item): item is Chapter => item.type === 'chapter' && item.id === chapterId,
+    (item): item is Chapter => item.itemType === 'chapter' && item.id === chapterId,
   )
 
   if (!chapter) {
@@ -212,9 +280,9 @@ function handleAddChapter(data: { name: string, description: string, isVisible: 
     id: Date.now(),
     name: data.name,
     description: data.description,
+    itemType: 'chapter',
     isVisible: data.isVisible,
-    sections: [],
-    type: 'chapter',
+    sectionList: [],
   })
 }
 
@@ -298,7 +366,7 @@ function editSection(sectionId: number) {
             class="text-sm color-info font-normal flex gap-2"
           >
             <span>
-              小节数量: {{ courseItems.filter(stage => stage.type === 'section').length }}
+              小节数量: {{ courseItems.filter(stage => stage.itemType === 'section').length }}
             </span>
           </div>
         </div>
@@ -352,7 +420,7 @@ function editSection(sectionId: number) {
     >
       <!-- 章节 -->
       <el-card
-        v-if="item.type === 'chapter'"
+        v-if="item.itemType === 'chapter'"
       >
         <template
           #header
@@ -392,7 +460,7 @@ function editSection(sectionId: number) {
 
         <!-- 章节下的小节列表 -->
         <el-card
-          v-for="section in item.sections"
+          v-for="section in item.sectionList"
           :key="section.id"
           class="mb-2"
         >
@@ -408,10 +476,25 @@ function editSection(sectionId: number) {
                 {{ section.name }}
               </div>
 
+              <!-- 小节的类型图标 -->
+              <div
+                class="flex  items-center flex-col justify-center"
+              >
+                <ArtIconButton
+                  :icon="getSectionTypeIcon(section.sectionType).sectionIcon"
+                />
+
+                <div
+                  class="text-xs text-info"
+                >
+                  {{ getSectionTypeIcon(section.sectionType).sectionTypeName }}
+                </div>
+              </div>
+
               <div
                 class=""
               >
-                {{ section.participants }}人参与
+                {{ section.participantCount }}人参与
               </div>
 
               <div
@@ -434,7 +517,7 @@ function editSection(sectionId: number) {
               <ArtIconButton
                 type="edit"
                 class="ml-3 max-sm:ml-[7px]"
-                @click="editSection(item.id)"
+                @click="editSection(section.id)"
               />
             </div>
           </div>
@@ -443,7 +526,7 @@ function editSection(sectionId: number) {
 
       <!-- 独立小节 -->
       <el-card
-        v-else-if="item.type === 'section'"
+        v-else-if="item.itemType === 'section'"
       >
         <div
           class="flex w-full items-center justify-between"
@@ -457,10 +540,25 @@ function editSection(sectionId: number) {
               {{ item.name }}
             </div>
 
+            <!-- 小节的类型图标 -->
+            <div
+              class="flex  items-center flex-col justify-center"
+            >
+              <ArtIconButton
+                :icon="getSectionTypeIcon(item.sectionType).sectionIcon"
+              />
+
+              <div
+                class="text-xs text-info"
+              >
+                {{ getSectionTypeIcon(item.sectionType).sectionTypeName }}
+              </div>
+            </div>
+
             <div
               class=""
             >
-              {{ item.participants }}人参与
+              {{ item.participantCount }}人参与
             </div>
 
             <div

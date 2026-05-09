@@ -171,7 +171,7 @@ function handleClick(event: MouseEvent) {
     :z-index="zIndex"
   >
     <div
-      class="text-sm mr-2 px-2.5 align-middle rounded-md inline-flex gap-2 h-8 min-w-8 items-center justify-center"
+      class="text-sm  px-2.5 align-middle rounded-md inline-flex gap-2 h-8 min-w-8 items-center justify-center"
       :class="[buttonClass, buttonStateClass, { 'rounded-full': circle }]"
       :style="{ backgroundColor: buttonBgColor, color: iconColor }"
       :aria-disabled="disabled"
@@ -192,7 +192,7 @@ function handleClick(event: MouseEvent) {
 
   <div
     v-else
-    class="text-sm mr-2 px-2.5 align-middle rounded-md inline-flex gap-2 h-8 min-w-8 items-center justify-center"
+    class="text-sm  px-2.5 align-middle rounded-md inline-flex gap-2 h-8 min-w-8 items-center justify-center"
     :class="[buttonClass, buttonStateClass, { 'rounded-full': circle }]"
     :style="{ backgroundColor: buttonBgColor, color: iconColor }"
     :aria-disabled="disabled"

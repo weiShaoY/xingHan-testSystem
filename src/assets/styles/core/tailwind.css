@@ -101,7 +101,18 @@
   --color-el-active-color: var(--art-active-color);
 
   /* ElementPlus Theme Colors */
-  --color-primary: var(--art-primary);
+  --color-primary: var(--el-color-primary);
+  --color-primary-light-1: var(--el-color-primary-light-1);
+  --color-primary-light-2: var(--el-color-primary-light-2);
+  --color-primary-light-3: var(--el-color-primary-light-3);
+  --color-primary-light-4: var(--el-color-primary-light-4);
+  --color-primary-light-5: var(--el-color-primary-light-5);
+  --color-primary-light-6: var(--el-color-primary-light-6);
+  --color-primary-light-7: var(--el-color-primary-light-7);
+  --color-primary-light-8: var(--el-color-primary-light-8);
+  --color-primary-light-9: var(--el-color-primary-light-9);
+  --color-primary-dark-2: var(--el-color-primary-dark-2);
+
   --color-secondary: var(--art-secondary);
   --color-error: var(--art-error);
   --color-info: var(--art-info);
