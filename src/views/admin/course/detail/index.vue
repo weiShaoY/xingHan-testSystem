@@ -512,7 +512,7 @@ function editSection(section: Section) {
           </div>
 
           <div
-            class="flex flex-wrap gap-2 items-center justify-end max-md:w-full max-md:justify-start"
+            class="flex flex-wrap gap-2 items-center justify-end pr-5 max-md:w-full max-md:justify-start max-sm:pr-0"
             @click.stop
           >
             <ArtIconButton

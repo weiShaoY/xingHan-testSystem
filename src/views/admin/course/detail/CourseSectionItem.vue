@@ -93,11 +93,15 @@ const emit = defineEmits<{
         </div>
 
         <div
-          class="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-xs text-g-600"
+          class="mt-2 flex flex-col gap-1 text-xs text-g-600"
         >
           <span>{{ section.participantCount }} 人参与</span>
 
-          <span>{{ section.description }}</span>
+          <span
+            class="wrap-break-word leading-relaxed"
+          >
+            {{ section.description }}
+          </span>
         </div>
       </div>
 
