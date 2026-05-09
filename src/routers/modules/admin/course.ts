@@ -41,6 +41,8 @@ const createSectionRoutes: AppRouteRecord[] = sectionRouteConfigs.map((item, ind
     keepAlive: true,
     sort: 4 + index,
     isHide: true,
+    activePath: '/admin/course/list',
+
   },
 }))
 
@@ -54,6 +56,8 @@ const editSectionRoutes: AppRouteRecord[] = sectionRouteConfigs.map((item, index
     keepAlive: true,
     sort: 8 + index,
     isHide: true,
+    activePath: '/admin/course/list',
+
   },
 }))
 
@@ -90,6 +94,7 @@ export const Course: AppRouteRecord = {
         keepAlive: true,
         sort: 1,
         isHide: true,
+        activePath: '/admin/course/list',
       },
     },
     {
@@ -102,6 +107,8 @@ export const Course: AppRouteRecord = {
         keepAlive: true,
         sort: 2,
         isHide: true,
+        activePath: '/admin/course/list',
+
       },
     },
     {
@@ -114,6 +121,8 @@ export const Course: AppRouteRecord = {
         keepAlive: true,
         sort: 3,
         isHide: true,
+        activePath: '/admin/course/list',
+
       },
     },
 

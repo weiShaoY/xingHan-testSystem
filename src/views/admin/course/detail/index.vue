@@ -91,23 +91,23 @@ const editSectionRouteMap: Record<SectionType, string> = {
  * 添加小节类型按钮配置
  */
 const sectionTypeButtons: Array<{
-  type: SectionType
+  sectionType: SectionType
   label: string
 }> = [
   {
-    type: 0,
+    sectionType: 0,
     label: '文档',
   },
   {
-    type: 1,
+    sectionType: 1,
     label: '视频',
   },
   {
-    type: 2,
+    sectionType: 2,
     label: '考试',
   },
   {
-    type: 3,
+    sectionType: 3,
     label: '问卷',
   },
 ]
@@ -418,16 +418,27 @@ function editSection(section: Section) {
       :show-close="false"
     >
       <div
-        class="flex gap-2 w-full items-center justify-center"
+        class="flex gap-5 w-full items-center justify-center"
       >
-        <el-button
+        <div
           v-for="item in sectionTypeButtons"
-          :key="item.type"
-          type="primary"
-          @click="goToAddSection(item.type)"
+          :key="item.sectionType"
+          class="flex  items-center flex-col gap-1 justify-center"
         >
-          {{ item.label }}
-        </el-button>
+          <ArtIconButton
+            :icon="getSectionTypeIcon(item.sectionType).sectionIcon"
+            icon-color="#ffffff"
+            :bg-color="getSectionTypeIcon(item.sectionType).sectionIconBgColor"
+            @click="goToAddSection(item.sectionType)"
+          />
+
+          <div
+            class="text-xs text-info"
+          >
+            {{ getSectionTypeIcon(item.sectionType).sectionTypeName }}
+          </div>
+        </div>
+
       </div>
     </el-dialog>
 
