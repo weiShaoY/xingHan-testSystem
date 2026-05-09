@@ -197,34 +197,20 @@ function removeCourse(stageIndex: number, courseIndex: number) {
       @add-course="addCourseToStage"
     />
 
-    <el-page-header
-      @back="$router.back()"
+    <ArtPageHeader
+      title="学习项目1 详情页"
     >
-      <template
-        #content
-      >
-        <div
-          class="flex items-center"
-        >
-          学习项目1 详情页
-        </div>
-      </template>
-
       <template
         #extra
       >
-        <div
-          class="flex items-center"
+        <el-button
+          type="primary"
+          class="ml-2"
         >
-          <el-button
-            type="primary"
-            class="ml-2"
-          >
-            完成
-          </el-button>
-        </div>
+          完成
+        </el-button>
       </template>
-    </el-page-header>
+    </ArtPageHeader>
 
     <!-- 标签页 -->
     <div

@@ -78,35 +78,21 @@ function goToEdit() {
   <div
     class="w-full"
   >
-    <el-page-header
-      @back="$router.back()"
+    <ArtPageHeader
+      title="学习项目1 详情页"
     >
-      <template
-        #content
-      >
-        <div
-          class="flex items-center"
-        >
-          学习项目1 详情页
-        </div>
-      </template>
-
       <template
         #extra
       >
-        <div
-          class="flex items-center"
+        <el-button
+          type="primary"
+          class="ml-2"
+          @click="goToEdit()"
         >
-          <el-button
-            type="primary"
-            class="ml-2"
-            @click="goToEdit()"
-          >
-            编辑内容
-          </el-button>
-        </div>
+          编辑内容
+        </el-button>
       </template>
-    </el-page-header>
+    </ArtPageHeader>
 
     <div
       v-for="(stage, index) in stages"

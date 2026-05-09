@@ -229,35 +229,20 @@ onMounted(() => {
   <div
     class="mb-10 flex flex-col gap-4"
   >
-    <el-page-header
-      class="art-card z-10"
-      @back="$router.back()"
+    <ArtPageHeader
+      :title="pageTitle"
     >
-      <template
-        #content
-      >
-        <div
-          class="flex items-center"
-        >
-          {{ pageTitle }}
-        </div>
-      </template>
-
       <template
         #extra
       >
-        <div
-          class="flex items-center"
+        <ArtIconButton
+          type="success"
+          @click="handleSubmitCourse"
         >
-          <ArtIconButton
-            type="success"
-            @click="handleSubmitCourse"
-          >
-            {{ submitButtonText }}
-          </ArtIconButton>
-        </div>
+          {{ submitButtonText }}
+        </ArtIconButton>
       </template>
-    </el-page-header>
+    </ArtPageHeader>
 
     <el-tabs
       v-model="activeTab"

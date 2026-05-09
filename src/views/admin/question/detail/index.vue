@@ -132,53 +132,31 @@ function goToEdit() {
   <div
     class="mb-10 flex flex-col gap-4"
   >
-    <el-page-header
-      class="art-card z-10"
-      @back="$router.back()"
+    <ArtPageHeader
+      title="题库1 详情页"
+      :stats="[
+        `单选题数量: ${stages.filter(stage => stage.type === '单选题').length}`,
+        `多选题数量: ${stages.filter(stage => stage.type === '多选题').length}`,
+        `开放式题数量: ${stages.filter(stage => stage.type === '开放式题').length}`,
+      ]"
     >
-      <template
-        #content
-      >
-        <div
-          class="flex gap-5 items-center"
-        >
-          <span>题库1 详情页</span>
-
-          <div
-            class="text-sm color-info font-normal flex gap-2"
-          >
-            <span>单选题数量: {{ stages.filter(stage => stage.type === '单选题').length }}</span>
-
-            <span>多选题数量: {{ stages.filter(stage => stage.type === '多选题').length }}</span>
-
-            <span>开放式题数量: {{ stages.filter(stage => stage.type === '开放式题').length }}</span>
-
-          </div>
-
-        </div>
-      </template>
-
       <template
         #extra
       >
-        <div
-          class="flex items-center"
-        >
-          <ArtIconButton
-            type="edit"
-            @click="goToEdit()"
-          />
+        <ArtIconButton
+          type="edit"
+          @click="goToEdit()"
+        />
 
-          <ArtIconButton
-            type="export"
-          />
+        <ArtIconButton
+          type="export"
+        />
 
-          <ArtIconButton
-            type="delete"
-          />
-        </div>
+        <ArtIconButton
+          type="delete"
+        />
       </template>
-    </el-page-header>
+    </ArtPageHeader>
 
     <div
       class="art-card flex flex-col gap-5"

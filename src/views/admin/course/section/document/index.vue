@@ -9,35 +9,19 @@ import { UploadFilled } from '@element-plus/icons-vue'
   <div
     class="h-full"
   >
-    <el-page-header
-      @back="$router.back()"
+    <ArtPageHeader
+      title="创建小节页"
     >
-      <template
-        #content
-      >
-        <div
-          class="flex items-center"
-        >
-          创建小节页
-        </div>
-      </template>
-
       <template
         #extra
       >
-        <div
-          class="flex items-center gap-2"
+        <el-button
+          class="flex items-center justify-center"
         >
-
-          <!-- 分配 -->
-          <el-button
-            class="flex items-center justify-center"
-          >
-            完成
-          </el-button>
-        </div>
+          完成
+        </el-button>
       </template>
-    </el-page-header>
+    </ArtPageHeader>
 
     <!-- // 文件 或者 视频 -->
     <div

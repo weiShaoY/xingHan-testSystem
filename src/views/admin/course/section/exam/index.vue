@@ -400,35 +400,21 @@ function handleDateRangeChange(val: [string, string] | null) {
       v-model="isShowSelectFromQuestionBankDialog"
     />
 
-    <el-page-header
-      @back="$router.back()"
+    <ArtPageHeader
+      title="创建考试"
     >
-      <template
-        #content
-      >
-        <div
-          class="flex items-center"
-        >
-          创建考试
-        </div>
-      </template>
-
       <template
         #extra
       >
-        <div
-          class="flex items-center gap-2"
+        <el-button
+          type="primary"
+          class="flex items-center justify-center"
+          @click="completeExam"
         >
-          <el-button
-            type="primary"
-            class="flex items-center justify-center"
-            @click="completeExam"
-          >
-            完成
-          </el-button>
-        </div>
+          完成
+        </el-button>
       </template>
-    </el-page-header>
+    </ArtPageHeader>
 
     <el-tabs
       v-model="activeTab"

@@ -364,62 +364,38 @@ function editSection(section: Section) {
       @select="goToAddSection"
     />
 
-    <el-page-header
-      class="art-card z-10"
-      @back="$router.back()"
+    <ArtPageHeader
+      title="学习课程1 详情页"
+      :stats="[`小节数量: ${sectionIndexMap.size}`]"
     >
-      <template
-        #content
-      >
-
-        <div
-          class="flex gap-5 items-center"
-        >
-          <span>学习课程1 详情页</span>
-
-          <div
-            class="text-sm color-info font-normal flex gap-2"
-          >
-            <span>
-              小节数量: {{ sectionIndexMap.size }}
-            </span>
-          </div>
-        </div>
-      </template>
-
       <template
         #extra
       >
-        <div
-          class="flex gap-5 items-center"
+        <ArtIconButton
+          type="allocate"
+          @click="isShowAllocateCourseDialog = true"
+        />
+
+        <ArtIconButton
+          type="edit"
+          @click="goToEdit()"
+        />
+
+        <ArtIconButton
+          type="add"
+          @click="openAddChapterDialog"
         >
-          <ArtIconButton
-            type="allocate"
-            @click="isShowAllocateCourseDialog = true"
-          />
+          添加章节
+        </ArtIconButton>
 
-          <ArtIconButton
-            type="edit"
-            @click="goToEdit()"
-          />
-
-          <ArtIconButton
-            type="add"
-            @click="openAddChapterDialog"
-          >
-            添加章节
-          </ArtIconButton>
-
-          <ArtIconButton
-            type="add"
-            @click="openAddCourseSectionDialog"
-          >
-            添加课程小节
-          </ArtIconButton>
-
-        </div>
+        <ArtIconButton
+          type="add"
+          @click="openAddCourseSectionDialog"
+        >
+          添加课程小节
+        </ArtIconButton>
       </template>
-    </el-page-header>
+    </ArtPageHeader>
 
     <!-- // 分两种 1 章节, 2 小节  章节可以包含小节  章节是 二级数组 -->
 

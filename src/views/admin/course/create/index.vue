@@ -142,37 +142,20 @@ function addEnrollmentField() {
   <div
     class="mb-10 flex flex-col gap-4"
   >
-    <el-page-header
-      class="art-card z-10"
-      @back="$router.back()"
+    <ArtPageHeader
+      title="创建课程"
     >
-      <template
-        #content
-      >
-        <div
-          class="flex items-center"
-        >
-          创建课程
-        </div>
-      </template>
-
       <template
         #extra
       >
-        <div
-          class="flex items-center"
+        <ArtIconButton
+          type="success"
+          @click="$router.back()"
         >
-
-          <ArtIconButton
-            type="success"
-            @click="$router.back()"
-          >
-            完成
-          </ArtIconButton>
-
-        </div>
+          完成
+        </ArtIconButton>
       </template>
-    </el-page-header>
+    </ArtPageHeader>
 
     <el-tabs
       v-model="activeTab"
