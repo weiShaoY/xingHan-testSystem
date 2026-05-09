@@ -1,5 +1,62 @@
 import type { AppRouteRecord } from '@/types/router'
 
+const sectionRouteConfigs = [
+  {
+    type: 'document',
+    name: 'Document',
+    title: '文档',
+    icon: 'ri:file-word-line',
+    component: '/admin/course/section/document',
+  },
+  {
+    type: 'video',
+    name: 'Video',
+    title: '视频',
+    icon: 'ri:file-video-line',
+    component: '/admin/course/section/video',
+  },
+  {
+    type: 'exam',
+    name: 'Exam',
+    title: '考试',
+    icon: 'ri:file-text-line',
+    component: '/admin/course/section/exam',
+  },
+  {
+    type: 'survey',
+    name: 'Survey',
+    title: '问卷',
+    icon: 'ri:file-text-line',
+    component: '/admin/course/section/survey',
+  },
+]
+
+const createSectionRoutes: AppRouteRecord[] = sectionRouteConfigs.map((item, index) => ({
+  path: `:courseId/section/${item.type}/create`,
+  name: `AdminCourseSection${item.name}Create`,
+  component: item.component,
+  meta: {
+    title: `添加${item.title}小节`,
+    icon: item.icon,
+    keepAlive: true,
+    sort: 4 + index,
+    isHide: true,
+  },
+}))
+
+const editSectionRoutes: AppRouteRecord[] = sectionRouteConfigs.map((item, index) => ({
+  path: `:courseId/section/${item.type}/:sectionId/edit`,
+  name: `AdminCourseSection${item.name}Edit`,
+  component: item.component,
+  meta: {
+    title: `编辑${item.title}小节`,
+    icon: item.icon,
+    keepAlive: true,
+    sort: 8 + index,
+    isHide: true,
+  },
+}))
+
 export const Course: AppRouteRecord = {
   path: 'course',
   name: 'Course',
@@ -60,55 +117,7 @@ export const Course: AppRouteRecord = {
       },
     },
 
-    // 添加课程小节 ( 文档 视频 考试 问卷 四种类型)
-    // 添加小节（四种类型）
-    {
-      path: 'section-video',
-      name: 'AdminCourseSectionVideo',
-      component: '/admin/course/section-video',
-      meta: {
-        title: '添加视频小节',
-        icon: 'ri:file-video-line',
-        keepAlive: true,
-        sort: 4,
-        isHide: true,
-      },
-    },
-    {
-      path: 'section-document',
-      name: 'AdminCourseSectionDocument',
-      component: '/admin/course/section-document',
-      meta: {
-        title: '添加文档小节',
-        icon: 'ri:file-word-line',
-        keepAlive: true,
-        sort: 5,
-        isHide: true,
-      },
-    },
-    {
-      path: 'section-exam',
-      name: 'AdminCourseSectionExam',
-      component: '/admin/course/section-exam',
-      meta: {
-        title: '添加考试小节',
-        icon: 'ri:file-text-line',
-        keepAlive: true,
-        sort: 6,
-        isHide: true,
-      },
-    },
-    {
-      path: 'section-question',
-      name: 'AdminCourseSectionQuestion',
-      component: '/admin/course/section-question',
-      meta: {
-        title: '添加问卷小节',
-        icon: 'ri:file-text-line',
-        keepAlive: true,
-        sort: 7,
-        isHide: true,
-      },
-    },
+    ...createSectionRoutes,
+    ...editSectionRoutes,
   ],
 }

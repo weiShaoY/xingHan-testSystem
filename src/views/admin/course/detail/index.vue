@@ -68,13 +68,23 @@ type Chapter = {
 type CourseItem = Chapter | Section
 
 /**
- * 添加小节路由映射
+ * 创建小节路由映射
  */
-const sectionRouteMap: Record<SectionType, string> = {
-  0: 'AdminCourseSectionDocument',
-  1: 'AdminCourseSectionVideo',
-  2: 'AdminCourseSectionExam',
-  3: 'AdminCourseSectionQuestion',
+const createSectionRouteMap: Record<SectionType, string> = {
+  0: 'AdminCourseSectionDocumentCreate',
+  1: 'AdminCourseSectionVideoCreate',
+  2: 'AdminCourseSectionExamCreate',
+  3: 'AdminCourseSectionSurveyCreate',
+}
+
+/**
+ * 编辑小节路由映射
+ */
+const editSectionRouteMap: Record<SectionType, string> = {
+  0: 'AdminCourseSectionDocumentEdit',
+  1: 'AdminCourseSectionVideoEdit',
+  2: 'AdminCourseSectionExamEdit',
+  3: 'AdminCourseSectionSurveyEdit',
 }
 
 /**
@@ -156,6 +166,11 @@ const chapterFormMode = ref<'add' | 'edit'>('add')
  * 当前编辑的章节
  */
 const currentEditChapter = ref<Chapter>()
+
+/**
+ * 当前要添加小节的章节 ID，空值表示添加课程直属小节
+ */
+const currentCreateSectionChapterId = ref<number>()
 
 /**
  * 课程内容数据
@@ -277,12 +292,34 @@ function goToEdit() {
  */
 function goToAddSection(type: SectionType) {
   router.push({
-    name: sectionRouteMap[type],
+    name: createSectionRouteMap[type],
 
     params: {
-      id: router.currentRoute.value.params.id,
+      courseId: router.currentRoute.value.params.id,
     },
+
+    query: currentCreateSectionChapterId.value
+      ? {
+          chapterId: currentCreateSectionChapterId.value,
+        }
+      : undefined,
   })
+}
+
+/**
+ * 打开新增课程直属小节弹窗
+ */
+function openAddCourseSectionDialog() {
+  currentCreateSectionChapterId.value = undefined
+  isShowCreateSectionDialog.value = true
+}
+
+/**
+ * 打开新增章节小节弹窗
+ */
+function openAddChapterSectionDialog(chapterId: number) {
+  currentCreateSectionChapterId.value = chapterId
+  isShowCreateSectionDialog.value = true
 }
 
 /**
@@ -341,8 +378,14 @@ function handleEditChapter(data: { name: string, description: string, isVisible:
 /**
  * 编辑小节
  */
-function editSection(sectionId: number) {
-  console.log('编辑小节:', sectionId)
+function editSection(section: Section) {
+  router.push({
+    name: editSectionRouteMap[section.sectionType],
+    params: {
+      courseId: router.currentRoute.value.params.id,
+      sectionId: section.id,
+    },
+  })
 }
 </script>
 
@@ -440,7 +483,7 @@ function editSection(sectionId: number) {
           <ArtIconButton
             type="add"
             class="ml-3 max-sm:ml-[7px]"
-            @click="isShowCreateSectionDialog = true"
+            @click="openAddCourseSectionDialog"
           >
             添加课程小节
           </ArtIconButton>
@@ -489,7 +532,7 @@ function editSection(sectionId: number) {
               <ArtIconButton
                 type="add"
                 class="ml-3 max-sm:ml-[7px]"
-                @click="isShowCreateSectionDialog = true"
+                @click="openAddChapterSectionDialog(item.id)"
               >
                 添加课程小节
               </ArtIconButton>
@@ -588,7 +631,7 @@ function editSection(sectionId: number) {
               <ArtIconButton
                 type="edit"
                 class="ml-3 max-sm:ml-[7px]"
-                @click="editSection(section.id)"
+                @click="editSection(section)"
               />
             </div>
           </div>
@@ -665,7 +708,7 @@ function editSection(sectionId: number) {
             <ArtIconButton
               type="edit"
               class="ml-3 max-sm:ml-[7px]"
-              @click="editSection(item.id)"
+              @click="editSection(item)"
             />
 
           </div>
