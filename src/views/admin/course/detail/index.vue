@@ -472,7 +472,7 @@ function editSection(sectionId: number) {
             >
               <!-- 小节的类型图标 -->
               <div
-                class="flex  items-center flex-col justify-center"
+                class="flex  items-center flex-col gap-1 justify-center"
               >
                 <ArtIconButton
                   :icon="getSectionTypeIcon(section.sectionType).sectionIcon"
@@ -488,22 +488,33 @@ function editSection(sectionId: number) {
               </div>
 
               <div
-                class="font-bold text-sm text-info"
+                class="flex flex-col  gap-2"
               >
-                {{ section.name }}
+                <div
+                  class="font-bold text-sm text-info"
+                >
+                  {{ section.name }}
+
+                </div>
+
+                <div
+                  class="flex gap-5 justify-center"
+                >
+                  <div
+                    class="text-xs"
+                  >
+                    {{ section.participantCount }}人参与
+                  </div>
+
+                  <div
+                    class="text-xs"
+                  >
+                    {{ section.description }}
+                  </div>
+
+                </div>
               </div>
 
-              <div
-                class="text-xs"
-              >
-                {{ section.participantCount }}人参与
-              </div>
-
-              <div
-                class="text-xs"
-              >
-                {{ section.description }}
-              </div>
             </div>
 
             <div
@@ -534,11 +545,11 @@ function editSection(sectionId: number) {
           class="flex w-full items-center justify-between"
         >
           <div
-            class="flex gap-10 items-center"
+            class="flex gap-20 items-center"
           >
             <!-- 小节的类型图标 -->
             <div
-              class="flex  items-center flex-col justify-center"
+              class="flex  gap-1 items-center flex-col justify-center"
             >
               <ArtIconButton
                 :icon="getSectionTypeIcon(item.sectionType).sectionIcon"
@@ -554,22 +565,33 @@ function editSection(sectionId: number) {
             </div>
 
             <div
-              class="font-bold text-sm text-info"
+              class="flex flex-col  gap-2"
             >
-              {{ item.name }}
+              <div
+                class="font-bold text-sm text-info"
+              >
+                {{ item.name }}
+
+              </div>
+
+              <div
+                class="flex gap-5 justify-center"
+              >
+                <div
+                  class="text-xs"
+                >
+                  {{ item.participantCount }}人参与
+                </div>
+
+                <div
+                  class="text-xs"
+                >
+                  {{ item.description }}
+                </div>
+
+              </div>
             </div>
 
-            <div
-              class="text-xs"
-            >
-              {{ item.participantCount }}人参与
-            </div>
-
-            <div
-              class="text-xs"
-            >
-              {{ item.description }}
-            </div>
           </div>
 
           <div
