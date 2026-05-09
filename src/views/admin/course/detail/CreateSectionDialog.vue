@@ -37,7 +37,7 @@ function handleSelect(sectionType: SectionType) {
     :show-close="false"
   >
     <div
-      class="flex gap-5 w-full items-center justify-center"
+      class="flex gap-15 w-full items-center justify-center"
     >
       <div
         v-for="item in sectionTypeOptions"
