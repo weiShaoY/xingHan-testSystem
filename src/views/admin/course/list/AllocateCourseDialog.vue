@@ -1,38 +1,108 @@
 <!------  2026-04-15---16:52---星期三  ------>
 <!------------------------------------    ------------------------------------------------->
 <script lang="ts" setup>
-const visible = defineModel({
-  type: Boolean,
-})
-
-const textarea = ref('')
-
-const value1 = ref('')
-
-const value2 = ref('')
 
 /**
-   *  是否显示选择部门弹窗
-   */
-const isShowSelectDepartmentDialog = ref(false)
+ * 穿梭框选项
+ */
+type TransferOption = {
 
-function generateData() {
-  const data = []
+  /** 选项值 */
+  key: number
 
-  for (let i = 1; i <= 15; i++) {
-    data.push({
-      key: i,
-      label: `Option ${i}`,
-      disabled: i % 4 === 0,
-    })
-  }
+  /** 选项名称 */
+  label: string
 
-  return data
+  /** 是否禁用 */
+  disabled: boolean
 }
 
-const selectedDepartmentIds = ref([])
+const visible = defineModel<boolean>()
 
-const selectedDepartmentData = ref(generateData())
+/**
+ * 学习者输入内容
+ */
+const learnerKeyword = ref('')
+
+/**
+ * 分配说明
+ */
+const assignmentContent = ref('')
+
+/**
+ * 备注内容
+ */
+const assignmentRemark = ref('')
+
+/**
+ * 分配时间
+ */
+const assignTime = ref('')
+
+/**
+ * 到期时间
+ */
+const expireTime = ref('')
+
+/**
+ * 是否显示选择部门弹窗
+ */
+const isShowSelectDepartmentDialog = ref(false)
+
+/**
+ * 已选部门 ID
+ */
+const selectedDepartmentIds = ref<number[]>([])
+
+/**
+ * 部门列表数据
+ */
+const departmentOptions = ref<TransferOption[]>(generateDepartmentOptions())
+
+/**
+ * 生成部门选项
+ */
+function generateDepartmentOptions() {
+  return Array.from({
+    length: 15,
+  }, (_, index) => {
+    const key = index + 1
+
+    return {
+      key,
+      label: `部门 ${key}`,
+      disabled: key % 4 === 0,
+    }
+  })
+}
+
+/**
+ * 打开选择部门弹窗
+ */
+function openSelectDepartmentDialog() {
+  isShowSelectDepartmentDialog.value = true
+}
+
+/**
+ * 关闭选择部门弹窗
+ */
+function closeSelectDepartmentDialog() {
+  isShowSelectDepartmentDialog.value = false
+}
+
+/**
+ * 关闭分配学习任务弹窗
+ */
+function closeDialog() {
+  visible.value = false
+}
+
+/**
+ * 提交分配学习任务
+ */
+function submitAllocateTask() {
+  closeDialog()
+}
 </script>
 
 <template>
@@ -40,151 +110,158 @@ const selectedDepartmentData = ref(generateData())
     v-if="isShowSelectDepartmentDialog"
     v-model="isShowSelectDepartmentDialog"
     title="选择部门"
-    width="50%"
-    :show-close="false"
+    width="720px"
   >
     <el-transfer
       v-model="selectedDepartmentIds"
-      :data="selectedDepartmentData"
+      :data="departmentOptions"
       :titles="['待选', '已选']"
       filterable
-    >
-      1
-    </el-transfer>
+      class="w-full"
+    />
 
     <template
       #footer
     >
-      <el-button
-        @click="isShowSelectDepartmentDialog = false"
+      <div
+        class="flex justify-end gap-2"
       >
-        取消
-      </el-button>
+        <el-button
+          @click="closeSelectDepartmentDialog"
+        >
+          取消
+        </el-button>
 
-      <el-button
-        type="primary"
-      >
-        分配任务
-      </el-button>
+        <el-button
+          type="primary"
+          @click="closeSelectDepartmentDialog"
+        >
+          确定
+        </el-button>
+      </div>
     </template>
   </el-dialog>
 
   <el-dialog
     v-model="visible"
     title="分配学习任务 "
-    width="70%"
-    :show-close="false"
+    width="760px"
   >
     <div
-      class="flex items-center gap-2"
+      class="flex flex-wrap items-center gap-2 text-sm"
     >
-      <span>学习者</span>
+      <span
+        class="text-g-600"
+      >学习者</span>
 
       <span
-        class="color-primary"
+        class="text-primary"
       >
         张三
       </span>
     </div>
 
     <div
-      class="mt-3 flex items-center gap-2"
+      class="mt-4"
     >
       <el-input
-        v-model="textarea"
+        v-model="learnerKeyword"
         placeholder="请输入账户信息、分组名、部门名、班级名称或班级访问码，用逗号分隔"
       >
-
         <template
           #append
         >
-
           <el-button
             type="primary"
-            @click="isShowSelectDepartmentDialog = true"
+            @click="openSelectDepartmentDialog"
           >
             选择部门
           </el-button>
         </template>
       </el-input>
-
     </div>
 
     <div
-      class="mt-3 flex items-center gap-2"
+      class="mt-4"
     >
       <el-input
-        v-model="textarea"
+        v-model="assignmentContent"
         type="textarea"
         :rows="5"
-        placeholder="请输入内容"
+        placeholder="请输入分配说明"
       />
-
     </div>
 
     <div
-      class="mt-3 flex items-center gap-2"
+      class="mt-4 grid grid-cols-2 gap-4 max-sm:grid-cols-1"
     >
       <div
-        class=""
+        class="flex flex-col gap-2"
       >
-        <p>
+        <p
+          class="text-sm text-g-700"
+        >
           分配时间
         </p>
 
         <el-date-picker
-          v-model="value1"
+          v-model="assignTime"
           type="date"
           placeholder="请选择分配时间"
+          class="w-full!"
         />
-
       </div>
 
       <div
-        class=""
+        class="flex flex-col gap-2"
       >
-        <p>
+        <p
+          class="text-sm text-g-700"
+        >
           到期时间
         </p>
 
         <el-date-picker
-          v-model="value2"
+          v-model="expireTime"
           type="date"
           placeholder="请选择到期时间"
+          class="w-full!"
         />
       </div>
     </div>
 
     <div
-      class="mt-3 flex items-center gap-2"
+      class="mt-4"
     >
       <el-input
-        v-model="textarea"
+        v-model="assignmentRemark"
         type="textarea"
         :rows="5"
-        placeholder="请输入内容"
+        placeholder="请输入备注"
       />
-
     </div>
 
     <template
       #footer
     >
-      <el-button
-        @click="visible = false"
+      <div
+        class="flex justify-end gap-2"
       >
-        取消
-      </el-button>
+        <el-button
+          @click="closeDialog"
+        >
+          取消
+        </el-button>
 
-      <el-button
-        type="primary"
-      >
-        分配任务
-      </el-button>
+        <el-button
+          type="primary"
+          @click="submitAllocateTask"
+        >
+          分配任务
+        </el-button>
+      </div>
     </template>
   </el-dialog>
 </template>
 
-<style lang="scss" scoped>
-
-</style>
+<style lang="scss" scoped></style>

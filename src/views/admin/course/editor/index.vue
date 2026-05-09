@@ -137,6 +137,32 @@ const categoryOptions = [
 ]
 
 /**
+ * 报名信息字段 key
+ */
+type EnrollmentFieldKey = 'name' | 'phone' | 'company'
+
+/**
+ * 报名信息字段配置
+ */
+const enrollmentFieldOptions: Array<{
+  key: EnrollmentFieldKey
+  label: string
+}> = [
+  {
+    key: 'name',
+    label: '姓名',
+  },
+  {
+    key: 'phone',
+    label: '手机号',
+  },
+  {
+    key: 'company',
+    label: '公司',
+  },
+]
+
+/**
  * 获取课程详情
  */
 async function getCourseDetail() {
@@ -182,13 +208,6 @@ function customCover() {
 }
 
 /**
- * 添加报名字段
- */
-function addEnrollmentField() {
-  console.log('添加报名字段')
-}
-
-/**
  * 创建课程
  */
 async function createCourse() {
@@ -227,7 +246,7 @@ onMounted(() => {
 
 <template>
   <div
-    class="mb-10 flex flex-col gap-4"
+    class="mx-auto mb-10 flex w-full max-w-7xl flex-col gap-4 px-10 max-lg:px-6 max-sm:px-4"
   >
     <ArtPageHeader
       :title="pageTitle"
@@ -246,6 +265,7 @@ onMounted(() => {
 
     <el-tabs
       v-model="activeTab"
+      class="course-editor-tabs"
     >
       <el-tab-pane
         label="基本信息"
@@ -273,6 +293,7 @@ onMounted(() => {
           >
             <el-radio-group
               v-model="formData.courseForm"
+              class="flex flex-wrap gap-x-6 gap-y-2"
             >
               <el-radio
                 value="online"
@@ -333,23 +354,23 @@ onMounted(() => {
             label="课程展示图片设置"
           >
             <div
-              class="flex gap-8"
+              class="grid w-full grid-cols-2 gap-8 max-md:grid-cols-1"
             >
               <div
-                class="flex flex-col items-center"
+                class="flex flex-col items-start"
               >
                 <div
-                  class="mb-4"
+                  class="mb-4 w-full"
                 >
                   <img
                     :src="formData.coverImage"
                     alt="课程封面图"
-                    class="rounded h-40 w-64 object-cover"
+                    class="h-40 w-64 rounded object-cover max-sm:h-auto max-sm:w-full max-sm:aspect-[16/10]"
                   >
                 </div>
 
                 <div
-                  class="flex gap-2"
+                  class="flex flex-wrap gap-2"
                 >
                   <el-button
                     type="primary"
@@ -368,20 +389,20 @@ onMounted(() => {
               </div>
 
               <div
-                class="flex flex-col items-center"
+                class="flex flex-col items-start"
               >
                 <div
-                  class="mb-4"
+                  class="mb-4 w-full"
                 >
                   <img
                     :src="formData.backgroundImage"
                     alt="课程背景图"
-                    class="rounded h-40 w-64 object-cover"
+                    class="h-40 w-64 rounded object-cover max-sm:h-auto max-sm:w-full max-sm:aspect-[16/10]"
                   >
                 </div>
 
                 <div
-                  class="flex gap-2"
+                  class="flex flex-wrap gap-2"
                 >
                   <el-button
                     type="primary"
@@ -454,155 +475,177 @@ onMounted(() => {
           <el-form-item
             label="报名名额"
           >
-            <el-radio-group
-              v-model="formData.enrollmentQuotaType"
+            <div
+              class="flex w-full flex-wrap gap-x-4 gap-y-2 items-center"
             >
-              <el-radio
-                value="unlimited"
+              <el-radio-group
+                v-model="formData.enrollmentQuotaType"
+                class="flex flex-wrap gap-x-6 gap-y-2"
               >
-                不限制
-              </el-radio>
+                <el-radio
+                  value="unlimited"
+                >
+                  不限制
+                </el-radio>
 
-              <el-radio
-                value="limited"
+                <el-radio
+                  value="limited"
+                >
+                  限制
+                </el-radio>
+              </el-radio-group>
+
+              <template
+                v-if="formData.enrollmentQuotaType === 'limited'"
               >
-                限制
-              </el-radio>
-            </el-radio-group>
+                <el-input
+                  v-model="formData.enrollmentLimit"
+                  type="number"
+                  placeholder="请输入限制人数"
+                  class="w-40 max-sm:w-full"
+                />
 
-            <el-input
-              v-if="formData.enrollmentQuotaType === 'limited'"
-              v-model="formData.enrollmentLimit"
-              type="number"
-              placeholder="请输入限制人数"
-              class="ml-6 mt-2 w-40"
-            />
+                <span>个</span>
 
-            <span
-              v-if="formData.enrollmentQuotaType === 'limited'"
-              class="ml-2"
-            >
-              个
-            </span>
-
-            <el-tooltip
-              v-if="formData.enrollmentQuotaType === 'limited'"
-              content="设置报名总名额"
-            >
-              <el-icon
-                class="ml-1 cursor-help"
-              >
-                <QuestionFilled />
-              </el-icon>
-            </el-tooltip>
+                <el-tooltip
+                  content="设置报名总名额"
+                >
+                  <el-icon
+                    class="cursor-help"
+                  >
+                    <QuestionFilled />
+                  </el-icon>
+                </el-tooltip>
+              </template>
+            </div>
           </el-form-item>
 
           <el-form-item
             label="报名开放时间"
           >
-            <el-radio-group
-              v-model="formData.enrollmentTimeType"
-            >
-              <el-radio
-                value="unlimited"
-              >
-                不限制
-              </el-radio>
-
-              <el-radio
-                value="limited"
-              >
-                限制
-              </el-radio>
-            </el-radio-group>
-
             <div
-              v-if="formData.enrollmentTimeType === 'limited'"
-              class="ml-6 mt-2"
+              class="flex w-full flex-col gap-3"
             >
-              <el-date-picker
-                v-model="formData.enrollmentStart"
-                type="datetime"
-                placeholder="开始时间"
-                class="mr-4"
-              />
-
-              <el-date-picker
-                v-model="formData.enrollmentEnd"
-                type="datetime"
-                placeholder="结束时间"
-              />
-            </div>
-
-            <el-tooltip
-              content="设置报名开始和结束时间"
-            >
-              <el-icon
-                class="ml-1 cursor-help"
+              <div
+                class="flex flex-wrap gap-x-4 gap-y-2 items-center"
               >
-                <QuestionFilled />
-              </el-icon>
-            </el-tooltip>
+                <el-radio-group
+                  v-model="formData.enrollmentTimeType"
+                  class="flex flex-wrap gap-x-6 gap-y-2"
+                >
+                  <el-radio
+                    value="unlimited"
+                  >
+                    不限制
+                  </el-radio>
+
+                  <el-radio
+                    value="limited"
+                  >
+                    限制
+                  </el-radio>
+                </el-radio-group>
+
+                <el-tooltip
+                  content="设置报名开始和结束时间"
+                >
+                  <el-icon
+                    class="cursor-help"
+                  >
+                    <QuestionFilled />
+                  </el-icon>
+                </el-tooltip>
+              </div>
+
+              <div
+                v-if="formData.enrollmentTimeType === 'limited'"
+                class="grid grid-cols-2 gap-4 max-md:grid-cols-1"
+              >
+                <el-date-picker
+                  v-model="formData.enrollmentStart"
+                  type="datetime"
+                  placeholder="开始时间"
+                  class="w-full!"
+                />
+
+                <el-date-picker
+                  v-model="formData.enrollmentEnd"
+                  type="datetime"
+                  placeholder="结束时间"
+                  class="w-full!"
+                />
+              </div>
+            </div>
           </el-form-item>
 
           <el-form-item
             label="审核方式"
           >
-            <el-radio-group
-              v-model="formData.enrollmentAuditType"
+            <div
+              class="flex flex-wrap gap-x-4 gap-y-2 items-center"
             >
-              <el-radio
-                value="auto"
+              <el-radio-group
+                v-model="formData.enrollmentAuditType"
+                class="flex flex-wrap gap-x-6 gap-y-2"
               >
-                自动审核
-              </el-radio>
+                <el-radio
+                  value="auto"
+                >
+                  自动审核
+                </el-radio>
 
-              <el-radio
-                value="manual"
-              >
-                手动审核
-              </el-radio>
-            </el-radio-group>
+                <el-radio
+                  value="manual"
+                >
+                  手动审核
+                </el-radio>
+              </el-radio-group>
 
-            <el-tooltip
-              content="设置报名审核方式"
-            >
-              <el-icon
-                class="ml-1 cursor-help"
+              <el-tooltip
+                content="设置报名审核方式"
               >
-                <QuestionFilled />
-              </el-icon>
-            </el-tooltip>
+                <el-icon
+                  class="cursor-help"
+                >
+                  <QuestionFilled />
+                </el-icon>
+              </el-tooltip>
+            </div>
           </el-form-item>
 
           <el-form-item
             label="允许学员取消报名"
           >
-            <el-radio-group
-              v-model="formData.allowCancelEnrollment"
+            <div
+              class="flex flex-wrap gap-x-4 gap-y-2 items-center"
             >
-              <el-radio
-                value="no"
+              <el-radio-group
+                v-model="formData.allowCancelEnrollment"
+                class="flex flex-wrap gap-x-6 gap-y-2"
               >
-                不允许
-              </el-radio>
+                <el-radio
+                  value="no"
+                >
+                  不允许
+                </el-radio>
 
-              <el-radio
-                value="yes"
-              >
-                允许
-              </el-radio>
-            </el-radio-group>
+                <el-radio
+                  value="yes"
+                >
+                  允许
+                </el-radio>
+              </el-radio-group>
 
-            <el-tooltip
-              content="设置是否允许学员取消报名"
-            >
-              <el-icon
-                class="ml-1 cursor-help"
+              <el-tooltip
+                content="设置是否允许学员取消报名"
               >
-                <QuestionFilled />
-              </el-icon>
-            </el-tooltip>
+                <el-icon
+                  class="cursor-help"
+                >
+                  <QuestionFilled />
+                </el-icon>
+              </el-tooltip>
+            </div>
           </el-form-item>
 
           <el-form-item
@@ -620,89 +663,36 @@ onMounted(() => {
           <el-form-item
             label="报名信息"
           >
-            <div>
+            <div
+              class="flex w-full flex-col gap-3"
+            >
               <div
-                class="mb-3 flex gap-2 items-center"
+                v-for="item in enrollmentFieldOptions"
+                :key="item.key"
+                class="grid grid-cols-[auto_64px_minmax(0,1fr)_auto] gap-3 items-center max-sm:grid-cols-[auto_1fr] max-sm:items-start"
               >
                 <el-checkbox
-                  v-model="formData.enrollmentFields.name"
+                  v-model="formData.enrollmentFields[item.key]"
                 />
 
-                <span>姓名</span>
+                <span
+                  class="text-sm leading-8"
+                >
+                  {{ item.label }}
+                </span>
 
                 <el-input
-                  v-model="formData.enrollmentFieldLabels.name"
-                  placeholder="输入真实姓名"
-                  class="ml-2 flex-1"
+                  v-model="formData.enrollmentFieldLabels[item.key]"
+                  placeholder="请输入字段提示"
+                  class="max-sm:col-span-2"
                 />
 
                 <el-checkbox
-                  v-model="formData.enrollmentFieldRequired.name"
+                  v-model="formData.enrollmentFieldRequired[item.key]"
+                  class="max-sm:col-span-2"
                 >
                   必填
                 </el-checkbox>
-
-                <el-button
-                  @click="addEnrollmentField"
-                >
-                  +
-                </el-button>
-              </div>
-
-              <div
-                class="mb-3 flex gap-2 items-center"
-              >
-                <el-checkbox
-                  v-model="formData.enrollmentFields.phone"
-                />
-
-                <span>手机号</span>
-
-                <el-input
-                  v-model="formData.enrollmentFieldLabels.phone"
-                  placeholder="输入手机号码"
-                  class="ml-2 flex-1"
-                />
-
-                <el-checkbox
-                  v-model="formData.enrollmentFieldRequired.phone"
-                >
-                  必填
-                </el-checkbox>
-
-                <el-button
-                  @click="addEnrollmentField"
-                >
-                  +
-                </el-button>
-              </div>
-
-              <div
-                class="mb-3 flex gap-2 items-center"
-              >
-                <el-checkbox
-                  v-model="formData.enrollmentFields.company"
-                />
-
-                <span>公司</span>
-
-                <el-input
-                  v-model="formData.enrollmentFieldLabels.company"
-                  placeholder="您的公司"
-                  class="ml-2 flex-1"
-                />
-
-                <el-checkbox
-                  v-model="formData.enrollmentFieldRequired.company"
-                >
-                  必填
-                </el-checkbox>
-
-                <el-button
-                  @click="addEnrollmentField"
-                >
-                  +
-                </el-button>
               </div>
             </div>
           </el-form-item>
@@ -719,7 +709,7 @@ onMounted(() => {
             class="mb-6"
           >
             <p
-              class="color-textSecondary text-4"
+              class="text-4 text-g-600"
             >
               课程在您的个人主页默认为隐藏状态。您可以设置个人主页是否展示该课程。
             </p>
@@ -739,7 +729,7 @@ onMounted(() => {
                 </el-checkbox>
 
                 <div
-                  class="color-textSecondary text-sm ml-6 mt-2"
+                  class="ml-6 mt-2 text-sm text-g-600 max-sm:ml-0"
                 >
                   闯关模式下，学员需完成上一必修小节，才会解锁下一必修小节。两个必修小节间的选修小节将自动解锁。<br>
                   课程拥有者和协作者不受闯关模式影响，始终可以查看所有小节。
@@ -749,7 +739,7 @@ onMounted(() => {
 
             <el-form-item>
               <div
-                class="pl-10 flex flex-col"
+                class="flex flex-col pl-10 max-sm:pl-0"
               >
                 <div>
                   选修小节解锁条件
@@ -757,6 +747,7 @@ onMounted(() => {
 
                 <el-radio-group
                   v-model="formData.electiveUnlockCondition"
+                  class="flex flex-wrap gap-x-6 gap-y-2"
                 >
                   <el-radio
                     value="previous_section"
@@ -782,7 +773,7 @@ onMounted(() => {
                 </el-checkbox>
 
                 <div
-                  class="color-textSecondary text-sm ml-6 mt-2"
+                  class="ml-6 mt-2 text-sm text-g-600 max-sm:ml-0"
                 >
                   单节模式下，学员参与小节时，将无法从当前小节跳转至上一节或下一节课程。
                 </div>
@@ -798,7 +789,7 @@ onMounted(() => {
                 </el-checkbox>
 
                 <div
-                  class="color-textSecondary text-sm ml-6 mt-2"
+                  class="ml-6 mt-2 text-sm text-g-600 max-sm:ml-0"
                 >
                   开启时，在学员学完视频和微课小节时，会自动弹出课程评价弹窗。关闭时，弹窗不会自动弹出。
                 </div>
@@ -814,7 +805,7 @@ onMounted(() => {
                 </el-checkbox>
 
                 <div
-                  class="color-textSecondary text-sm ml-6 mt-2"
+                  class="ml-6 mt-2 text-sm text-g-600 max-sm:ml-0"
                 >
                   开启时，在学员学完视频和微课小节时，会自动进入下一个小节。关闭时，学完不会自动进入下一个小节。该设置项仅在"学完视频和微课自动弹出课程评价弹窗"为"关闭"时生效。
                 </div>
@@ -830,7 +821,7 @@ onMounted(() => {
                 </el-checkbox>
 
                 <div
-                  class="color-textSecondary text-sm ml-6 mt-2"
+                  class="ml-6 mt-2 text-sm text-g-600 max-sm:ml-0"
                 >
                   开启时，学员可在视频和微课小节详情中查看"正在学习"与"已经学完"的学员。关闭时，"正在学习"与"已经学完"的学员将会被隐藏。
                 </div>
@@ -846,7 +837,7 @@ onMounted(() => {
                 </el-checkbox>
 
                 <div
-                  class="color-textSecondary text-sm ml-6 mt-2"
+                  class="ml-6 mt-2 text-sm text-g-600 max-sm:ml-0"
                 >
                   设置学习时长上限后，学员在本课程有效学习时长的最大值为讲师设置值。实际学习时长会始终被记录。
                 </div>
@@ -862,7 +853,7 @@ onMounted(() => {
                 </el-checkbox>
 
                 <div
-                  class="color-textSecondary text-sm ml-6 mt-2"
+                  class="ml-6 mt-2 text-sm text-g-600 max-sm:ml-0"
                 >
                   开启时，从第一个小节开始显示默认序号，小节顺序调整后序号会自动更新。<br>
                   关闭后，小节不再显示默认序号，您可以在小节标题中加入自定义序号。

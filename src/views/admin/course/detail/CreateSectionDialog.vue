@@ -26,6 +26,13 @@ const visible = defineModel<boolean>()
 function handleSelect(sectionType: SectionType) {
   emit('select', sectionType)
 }
+
+/**
+ * 关闭弹窗
+ */
+function handleClose() {
+  visible.value = false
+}
 </script>
 
 <template>
@@ -33,32 +40,49 @@ function handleSelect(sectionType: SectionType) {
     v-if="visible"
     v-model="visible"
     title="添加课程小节"
-    width="30%"
-    :show-close="false"
+    width="420px"
+    :show-close="true"
   >
     <div
-      class="flex gap-15 w-full items-center justify-center"
+      class="grid grid-cols-4 gap-4 max-sm:grid-cols-2"
     >
-      <div
+      <button
         v-for="item in sectionTypeOptions"
         :key="item.sectionType"
-        class="flex items-center flex-col gap-1 justify-center"
+        type="button"
+        class="aspect-square w-full flex flex-col items-center justify-center gap-2 rounded-lg border border-[var(--art-card-border)] bg-[var(--default-box-color)] transition-colors hover:border-primary hover:bg-primary/5"
+        @click="handleSelect(item.sectionType)"
       >
         <ArtIconButton
           :icon="item.sectionIcon"
           icon-color="#ffffff"
           :bg-color="item.sectionIconBgColor"
-          @click="handleSelect(item.sectionType)"
         />
 
         <div
-          class="text-xs text-info"
+          class="text-sm text-g-700"
         >
           {{ item.sectionTypeName }}
         </div>
-      </div>
+      </button>
     </div>
+
+    <template
+      #footer
+    >
+      <div
+        class="flex justify-end pt-1"
+      >
+        <el-button
+          @click="handleClose"
+        >
+          取消
+        </el-button>
+      </div>
+    </template>
   </el-dialog>
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+
+</style>
