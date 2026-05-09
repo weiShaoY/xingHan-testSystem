@@ -527,7 +527,7 @@ function importQuestions() {
                   #prefix
                 >
                   <div
-                    class="color-primary pr-5"
+                    class="text-primary pr-5"
                   >
                     Q{{ stageIndex + 1 }}.
                   </div>

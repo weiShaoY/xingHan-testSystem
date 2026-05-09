@@ -130,13 +130,13 @@ function goToDetail(item: Course) {
         class="flex flex-col items-end"
       >
         <div
-          class="color-primary"
+          class="text-primary"
         >
           {{ item.time.year }} 年
         </div>
 
         <div
-          class="color-primary"
+          class="text-primary"
         >
           {{ item.time.month }} 月 {{ item.time.day }} 日
         </div>

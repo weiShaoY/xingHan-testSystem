@@ -1,7 +1,7 @@
 <!------  2026-04-15---16:08---星期三  ------>
 <!------------------------------------    ------------------------------------------------->
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 
 import AllocateCourseDialog from '../list/AllocateCourseDialog.vue'
 
@@ -10,33 +10,13 @@ import ChapterFormDialog from './ChapterFormDialog.vue'
 const router = useRouter()
 
 /**
-   * 是否显示分配学习任务弹窗
-   */
-const isShowAllocateCourseDialog = ref(false)
-
-/**
-   * 是否显示新建章节弹窗
-   */
-const isShowChapterFormDialog = ref(false)
-
-/**
- * 章节弹窗模式
+ * 小节内容类型：0 文档，1 视频，2 考试，3 问卷
  */
-const chapterFormMode = ref<'add' | 'edit'>('add')
-
-/**
-   *  是否显示新建小节弹窗
-   */
-const isShowCreateSectionDialog = ref(false)
-
-/**
-   * 小节内容类型：0 文档，1 视频，2 考试，3 问卷
-   */
 type SectionType = 0 | 1 | 2 | 3
 
 /**
-   * 小节类型定义
-   */
+ * 小节类型定义
+ */
 type Section = {
 
   /** 小节 ID */
@@ -59,8 +39,8 @@ type Section = {
 }
 
 /**
-   * 章节类型定义
-   */
+ * 章节类型定义
+ */
 type Chapter = {
 
   /** 章节 ID */
@@ -83,13 +63,103 @@ type Chapter = {
 }
 
 /**
-   * 课程内容项类型（章节或小节）
-   */
+ * 课程内容项类型（章节或小节）
+ */
 type CourseItem = Chapter | Section
 
 /**
-   * 课程内容数据
-   */
+ * 添加小节路由映射
+ */
+const sectionRouteMap: Record<SectionType, string> = {
+  0: 'AdminCourseSectionDocument',
+  1: 'AdminCourseSectionVideo',
+  2: 'AdminCourseSectionExam',
+  3: 'AdminCourseSectionQuestion',
+}
+
+/**
+ * 添加小节类型按钮配置
+ */
+const sectionTypeButtons: Array<{
+  type: SectionType
+  label: string
+}> = [
+  {
+    type: 0,
+    label: '文档',
+  },
+  {
+    type: 1,
+    label: '视频',
+  },
+  {
+    type: 2,
+    label: '考试',
+  },
+  {
+    type: 3,
+    label: '问卷',
+  },
+]
+
+/**
+ * 小节类型图标配置
+ */
+const sectionTypeIconList: Array<{
+  sectionTypeName: string
+  sectionIcon: string
+  sectionIconBgColor: string
+}> = [
+  {
+    sectionTypeName: '文档',
+    sectionIcon: 'ri:article-line',
+    sectionIconBgColor: '#fcbd2c',
+  },
+  {
+    sectionTypeName: '视频',
+    sectionIcon: 'ri:vidicon-line',
+    sectionIconBgColor: '#ff2814',
+  },
+  {
+    sectionTypeName: '考试',
+    sectionIcon: 'ri:medal-line',
+    sectionIconBgColor: '#673ab8',
+  },
+  {
+    sectionTypeName: '问卷',
+    sectionIcon: 'ri:survey-line',
+    sectionIconBgColor: '#2cb870',
+  },
+]
+
+/**
+ * 是否显示分配学习任务弹窗
+ */
+const isShowAllocateCourseDialog = ref(false)
+
+/**
+ * 是否显示新建章节弹窗
+ */
+const isShowChapterFormDialog = ref(false)
+
+/**
+ * 是否显示新建小节弹窗
+ */
+const isShowCreateSectionDialog = ref(false)
+
+/**
+ * 章节弹窗模式
+ */
+const chapterFormMode = ref<'add' | 'edit'>('add')
+
+/**
+ * 当前编辑的章节
+ */
+const currentEditChapter = ref<Chapter>()
+
+/**
+ * 课程内容数据
+ */
 const courseItems = ref<CourseItem[]>([
   {
     id: 1,
@@ -152,13 +222,47 @@ const courseItems = ref<CourseItem[]>([
 ])
 
 /**
- * 当前编辑的章节
+ * 页面从上到下的小节序号映射
  */
-const currentEditChapter = ref<Chapter>()
+const sectionIndexMap = computed(() => {
+  const map = new Map<Section, number>()
+
+  let index = 1
+
+  courseItems.value.forEach((item) => {
+    if (item.itemType === 'chapter') {
+      item.sectionList.forEach((section) => {
+        map.set(section, index)
+        index += 1
+      })
+
+      return
+    }
+
+    map.set(item, index)
+    index += 1
+  })
+
+  return map
+})
 
 /**
-   * 跳转到编辑页
-   */
+ * 获取当前小节在整个页面中的序号
+ */
+function getSectionIndex(section: Section) {
+  return sectionIndexMap.value.get(section) ?? 0
+}
+
+/**
+ * 获取小节类型对应的图标配置
+ */
+function getSectionTypeIcon(sectionType: SectionType) {
+  return sectionTypeIconList[sectionType]
+}
+
+/**
+ * 跳转到编辑页
+ */
 function goToEdit() {
   router.push({
     name: 'AdminCourseEdit',
@@ -172,95 +276,13 @@ function goToEdit() {
  * 跳转到添加小节（根据类型）
  */
 function goToAddSection(type: SectionType) {
-  const routeMap = {
-    0: 'AdminCourseSectionDocument',
-
-    1: 'AdminCourseSectionVideo',
-
-    2: 'AdminCourseSectionExam',
-
-    3: 'AdminCourseSectionQuestion',
-  }
-
   router.push({
-    name: routeMap[type],
+    name: sectionRouteMap[type],
 
     params: {
       id: router.currentRoute.value.params.id,
     },
   })
-}
-
-const sectionTypeButtons: Array<{
-  type: SectionType
-  label: string
-}> = [
-  {
-    type: 0,
-    label: '文档',
-  },
-  {
-    type: 1,
-    label: '视频',
-  },
-  {
-    type: 2,
-    label: '考试',
-  },
-  {
-    type: 3,
-    label: '问卷',
-  },
-]
-
-const sectionTypeIconList: Array<{
-  sectionTypeName: string
-  sectionIcon: string
-  sectionIconBgColor: string
-}> = [
-  {
-    sectionTypeName: '文档',
-    sectionIcon: 'ri:article-line',
-    sectionIconBgColor: '#fcbd2c',
-  },
-  {
-    sectionTypeName: '视频',
-    sectionIcon: 'ri:vidicon-line',
-    sectionIconBgColor: '#ff2814',
-
-  },
-  {
-    sectionTypeName: '考试',
-    sectionIcon: 'ri:medal-line',
-    sectionIconBgColor: '#673ab8',
-
-  },
-  {
-    sectionTypeName: '问卷',
-    sectionIcon: 'ri:survey-line',
-    sectionIconBgColor: '#2cb870',
-  },
-]
-
-function getSectionTypeIcon(sectionType: SectionType) {
-  return sectionTypeIconList[sectionType]
-}
-
-/**
-   * 编辑章节
-   */
-function editChapter(chapterId: number) {
-  const chapter = courseItems.value.find(
-    (item): item is Chapter => item.itemType === 'chapter' && item.id === chapterId,
-  )
-
-  if (!chapter) {
-    return
-  }
-
-  currentEditChapter.value = chapter
-  chapterFormMode.value = 'edit'
-  isShowChapterFormDialog.value = true
 }
 
 /**
@@ -287,6 +309,23 @@ function handleAddChapter(data: { name: string, description: string, isVisible: 
 }
 
 /**
+ * 编辑章节
+ */
+function editChapter(chapterId: number) {
+  const chapter = courseItems.value.find(
+    (item): item is Chapter => item.itemType === 'chapter' && item.id === chapterId,
+  )
+
+  if (!chapter) {
+    return
+  }
+
+  currentEditChapter.value = chapter
+  chapterFormMode.value = 'edit'
+  isShowChapterFormDialog.value = true
+}
+
+/**
  * 更新章节
  */
 function handleEditChapter(data: { name: string, description: string, isVisible: string }) {
@@ -300,8 +339,8 @@ function handleEditChapter(data: { name: string, description: string, isVisible:
 }
 
 /**
-   * 编辑小节
-   */
+ * 编辑小节
+ */
 function editSection(sectionId: number) {
   console.log('编辑小节:', sectionId)
 }
@@ -366,7 +405,7 @@ function editSection(sectionId: number) {
             class="text-sm color-info font-normal flex gap-2"
           >
             <span>
-              小节数量: {{ courseItems.filter(stage => stage.itemType === 'section').length }}
+              小节数量: {{ sectionIndexMap.size }}
             </span>
           </div>
         </div>
@@ -470,6 +509,12 @@ function editSection(sectionId: number) {
             <div
               class="flex gap-10 items-center"
             >
+              <div
+                class="font-bold text-primary"
+              >
+                {{ getSectionIndex(section) }}
+              </div>
+
               <!-- 小节的类型图标 -->
               <div
                 class="flex  items-center flex-col gap-1 justify-center"
@@ -547,6 +592,12 @@ function editSection(sectionId: number) {
           <div
             class="flex gap-20 items-center"
           >
+            <div
+              class="font-bold text-primary"
+            >
+              {{ getSectionIndex(item) }}
+            </div>
+
             <!-- 小节的类型图标 -->
             <div
               class="flex  gap-1 items-center flex-col justify-center"

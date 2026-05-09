@@ -154,13 +154,13 @@ function deleteQuestionBank(item: QuestionBank) {
         class="flex flex-col items-end"
       >
         <div
-          class="color-primary"
+          class="text-primary"
         >
           {{ item.time.year }} 年
         </div>
 
         <div
-          class="color-primary"
+          class="text-primary"
         >
           {{ item.time.month }} 月 {{ item.time.day }} 日
         </div>
@@ -221,7 +221,7 @@ function deleteQuestionBank(item: QuestionBank) {
         <el-divider />
 
         <div
-          class="color-primary flex gap-3"
+          class="text-primary flex gap-3"
         >
           <div>
             {{ item.singleChoiceCount }} 单选题
