@@ -9,11 +9,20 @@ import AllocateCourseDialog from '../list/AllocateCourseDialog.vue'
 
 import ChapterFormDialog from './ChapterFormDialog.vue'
 
+import CourseSectionItem from './CourseSectionItem.vue'
+
 import CreateSectionDialog from './CreateSectionDialog.vue'
 
 import { sectionTypeConfigMap } from './sectionType'
 
+const route = useRoute()
+
 const router = useRouter()
+
+/**
+ * 当前课程 ID
+ */
+const courseId = computed(() => String(route.params.id ?? ''))
 
 /**
  * 小节类型定义
@@ -259,8 +268,8 @@ function getSectionTypeIcon(sectionType: SectionType) {
 function goToEdit() {
   router.push({
     name: 'AdminCourseEdit',
-    query: {
-      id: router.currentRoute.value.query.id,
+    params: {
+      id: courseId.value,
     },
   })
 }
@@ -275,7 +284,7 @@ function goToAddSection(type: SectionType) {
     name: createSectionRouteMap[type],
 
     params: {
-      courseId: router.currentRoute.value.params.id,
+      courseId: courseId.value,
     },
 
     query: currentCreateSectionChapterId.value
@@ -356,13 +365,46 @@ function handleEditChapter(data: { name: string, description: string, isVisible:
 }
 
 /**
+ * 打开小节分配学习任务弹窗
+ */
+function allocateSection() {
+  isShowAllocateCourseDialog.value = true
+}
+
+/**
+ * 删除小节
+ */
+function deleteSection(section: Section) {
+  const rootSectionIndex = courseItems.value.findIndex(
+    item => item.itemType === 'section' && item.id === section.id,
+  )
+
+  if (rootSectionIndex > -1) {
+    courseItems.value.splice(rootSectionIndex, 1)
+    return
+  }
+
+  courseItems.value.forEach((item) => {
+    if (item.itemType !== 'chapter') {
+      return
+    }
+
+    const sectionIndex = item.sectionList.findIndex(child => child.id === section.id)
+
+    if (sectionIndex > -1) {
+      item.sectionList.splice(sectionIndex, 1)
+    }
+  })
+}
+
+/**
  * 编辑小节
  */
 function editSection(section: Section) {
   router.push({
     name: editSectionRouteMap[section.sectionType],
     params: {
-      courseId: router.currentRoute.value.params.id,
+      courseId: courseId.value,
       sectionId: section.id,
     },
   })
@@ -371,7 +413,7 @@ function editSection(section: Section) {
 
 <template>
   <div
-    class="mb-10 flex flex-col gap-4 "
+    class="mx-auto mb-10 flex w-full max-w-7xl flex-col gap-4 px-10 max-lg:px-6 max-sm:px-4"
   >
     <!-- 分配学习任务弹窗 -->
     <AllocateCourseDialog
@@ -429,215 +471,56 @@ function editSection(section: Section) {
       </template>
     </ArtPageHeader>
 
-    <!-- // 分两种 1 章节, 2 小节  章节可以包含小节  章节是 二级数组 -->
-
     <!-- 课程内容列表 -->
     <div
       v-for="item in courseItems"
       :key="item.id"
-      class="mb-3"
     >
       <!-- 章节 -->
-      <el-card
+      <section
         v-if="item.itemType === 'chapter'"
+        class="art-card flex flex-col gap-4"
       >
-        <template
-          #header
+        <div
+          class="flex items-start justify-between gap-4 max-md:flex-col"
         >
           <div
-            class="flex w-full items-center justify-between pr-5"
+            class="min-w-0"
           >
             <div
-              class="flex gap-5 items-center"
+              class="flex flex-wrap gap-3 items-center"
             >
               <div
-                class=""
+                class="truncate text-base font-semibold text-g-900"
               >
                 {{ item.name }}
               </div>
 
-              <div
-                class="text-sm text-info"
+              <el-tag
+                type="info"
+                size="small"
               >
-                ({{ item.sectionList.length }}) 个小节
-              </div>
+                {{ item.sectionList.length }} 个小节
+              </el-tag>
             </div>
 
             <div
-              class="flex gap-5 items-center "
+              class="mt-2 text-sm text-g-600"
             >
-              <ArtIconButton
-                type="add"
-                @click="openAddChapterSectionDialog(item.id)"
-              >
-                添加课程小节
-              </ArtIconButton>
-
-              <ArtIconButton
-                type="delete"
-              />
-
-              <ArtIconButton
-                type="edit"
-                @click="editChapter(item.id)"
-              />
+              {{ item.description }}
             </div>
           </div>
 
           <div
-            class="text-sm text-info"
-          >
-            {{ item.description }}
-
-          </div>
-        </template>
-
-        <!-- 章节下的小节列表 -->
-        <div
-          v-for="section in item.sectionList"
-          :key="section.id"
-          class="mb-4 flex art-card items-center "
-        >
-          <div
-            class="font-bold text-primary w-20"
-          >
-            {{ getSectionIndex(section) }}
-          </div>
-
-          <!-- 小节的类型图标 -->
-          <div
-            class="flex  items-center flex-col gap-1 justify-center w-40"
+            class="flex flex-wrap gap-2 items-center justify-end max-md:w-full max-md:justify-start"
+            @click.stop
           >
             <ArtIconButton
-              :icon="getSectionTypeIcon(section.sectionType).sectionIcon"
-              icon-color="#ffffff"
-              :bg-color="getSectionTypeIcon(section.sectionType).sectionIconBgColor"
-            />
-
-            <div
-              class="text-xs text-info"
+              type="add"
+              @click="openAddChapterSectionDialog(item.id)"
             >
-              {{ getSectionTypeIcon(section.sectionType).sectionTypeName }}
-            </div>
-          </div>
-
-          <div
-            class="flex w-full items-center justify-between"
-          >
-            <div
-              class="flex flex-col  gap-2"
-            >
-              <div
-                class="font-bold text-sm text-info"
-              >
-                {{ section.name }}
-              </div>
-
-              <div
-                class="flex gap-5 justify-center"
-              >
-                <div
-                  class="text-xs"
-                >
-                  {{ section.participantCount }}人参与
-                </div>
-
-                <div
-                  class="text-xs"
-                >
-                  {{ section.description }}
-                </div>
-
-              </div>
-            </div>
-
-            <div
-              class="flex gap-5 items-center"
-            >
-
-              <ArtIconButton
-                type="allocate"
-                @click="isShowAllocateCourseDialog = true"
-              />
-
-              <ArtIconButton
-                type="delete"
-              />
-
-              <ArtIconButton
-                type="edit"
-                @click="editSection(section)"
-              />
-            </div>
-          </div>
-        </div>
-      </el-card>
-
-      <!-- 独立小节 -->
-      <div
-        v-else-if="item.itemType === 'section'"
-        class="art-card flex art-card items-center px-10!"
-      >
-        <div
-          class="font-bold text-primary w-20"
-        >
-          {{ getSectionIndex(item) }}
-        </div>
-        <!-- 小节的类型图标 -->
-        <div
-          class="flex  items-center flex-col gap-1 justify-center w-40"
-        >
-          <ArtIconButton
-            :icon="getSectionTypeIcon(item.sectionType).sectionIcon"
-            icon-color="#ffffff"
-            :bg-color="getSectionTypeIcon(item.sectionType).sectionIconBgColor"
-          />
-
-          <div
-            class="text-xs text-info"
-          >
-            {{ getSectionTypeIcon(item.sectionType).sectionTypeName }}
-          </div>
-        </div>
-
-        <div
-          class="flex w-full items-center justify-between "
-        >
-          <div
-            class="flex flex-col  gap-2"
-          >
-            <div
-              class="font-bold text-sm text-info"
-            >
-              {{ item.name }}
-
-            </div>
-
-            <div
-              class="flex gap-5 justify-center"
-            >
-              <div
-                class="text-xs"
-              >
-                {{ item.participantCount }}人参与
-              </div>
-
-              <div
-                class="text-xs"
-              >
-                {{ item.description }}
-              </div>
-
-            </div>
-          </div>
-
-          <div
-            class="flex gap-5 items-center"
-          >
-            <ArtIconButton
-              type="allocate"
-              @click="isShowAllocateCourseDialog = true"
-            />
+              添加课程小节
+            </ArtIconButton>
 
             <ArtIconButton
               type="delete"
@@ -645,12 +528,49 @@ function editSection(section: Section) {
 
             <ArtIconButton
               type="edit"
-              @click="editSection(item)"
+              @click="editChapter(item.id)"
             />
-
           </div>
         </div>
-      </div>
+
+        <div
+          v-if="item.sectionList.length"
+          class="flex flex-col gap-3"
+        >
+          <CourseSectionItem
+            v-for="section in item.sectionList"
+            :key="section.id"
+            :section="section"
+            :section-index="getSectionIndex(section)"
+            :type-config="getSectionTypeIcon(section.sectionType)"
+            @allocate="allocateSection"
+            @delete="deleteSection"
+            @edit="editSection"
+          />
+        </div>
+
+        <div
+          v-else
+          class="rounded-custom-sm border-full-d "
+        >
+          <el-empty
+            description="暂无小节"
+            :image-size="30"
+            class="py-2!"
+          />
+        </div>
+      </section>
+
+      <!-- 独立小节 -->
+      <CourseSectionItem
+        v-else-if="item.itemType === 'section'"
+        :section="item"
+        :section-index="getSectionIndex(item)"
+        :type-config="getSectionTypeIcon(item.sectionType)"
+        @allocate="allocateSection"
+        @delete="deleteSection"
+        @edit="editSection"
+      />
     </div>
   </div>
 </template>
