@@ -180,6 +180,38 @@ const courseItems = ref<CourseItem[]>([
     sectionType: 0,
     participantCount: 3,
   },
+  {
+    id: 6,
+    name: '小节3',
+    description: '小节3描述',
+    itemType: 'section',
+    sectionType: 2,
+    participantCount: 2,
+  },
+  {
+    id: 7,
+    name: '小节4',
+    description: '小节4描述',
+    itemType: 'section',
+    sectionType: 3,
+    participantCount: 1,
+  },
+  {
+    id: 8,
+    name: '小节5',
+    description: '小节5描述',
+    itemType: 'section',
+    sectionType: 0,
+    participantCount: 1,
+  },
+  {
+    id: 9,
+    name: '小节5',
+    description: '小节5描述',
+    itemType: 'section',
+    sectionType: 0,
+    participantCount: 3,
+  },
 ])
 
 /**
@@ -339,7 +371,7 @@ function editSection(section: Section) {
 
 <template>
   <div
-    class="mb-10 flex flex-col gap-4"
+    class="mb-10 flex flex-col gap-4 "
   >
     <!-- 分配学习任务弹窗 -->
     <AllocateCourseDialog

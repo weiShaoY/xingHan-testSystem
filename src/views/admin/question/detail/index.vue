@@ -130,7 +130,7 @@ function goToEdit() {
 
 <template>
   <div
-    class="mb-10 flex flex-col gap-4"
+    class="mb-10 flex flex-col gap-4 "
   >
     <ArtPageHeader
       title="题库1 详情页"
