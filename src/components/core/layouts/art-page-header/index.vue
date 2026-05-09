@@ -42,51 +42,9 @@ function handleBack() {
 </script>
 
 <template>
-  <el-page-header
-    class="!sticky shrink-0 top-30 !border-[var(--art-card-border)] p-4 mb-5"
-    @back="handleBack"
-  >
-    <template
-      #content
-    >
-      <slot
-        name="content"
-      >
-        <div
-          class="flex gap-5 items-center"
-        >
-          <span>{{ props.title }}</span>
-
-          <div
-            v-if="props.stats.length"
-            class="text-sm text-info font-normal flex gap-2"
-          >
-            <span
-              v-for="item in props.stats"
-              :key="item"
-            >
-              {{ item }}
-            </span>
-          </div>
-        </div>
-      </slot>
-    </template>
-
-    <template
-      #extra
-    >
-      <div
-        class="flex gap-2 items-center"
-      >
-        <slot
-          name="extra"
-        />
-      </div>
-    </template>
-  </el-page-header>
 
   <div
-    class="flex items-center justify-between py-4 bg-[var(--default-bg-color)]"
+    class="sticky shrink-0 top-30 mb-5  flex items-center justify-between p-4 bg-[var(--default-box-color)] border border-[var(--art-gray-200)]  rounded-xl"
   >
     <!-- 左侧 -->
     <div
