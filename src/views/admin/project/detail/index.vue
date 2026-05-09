@@ -3,7 +3,7 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 
-import BaseButton from '@/components/Button/base-button/index.vue'
+const route = useRoute()
 
 const router = useRouter()
 
@@ -68,7 +68,7 @@ function goToEdit() {
   router.push({
     name: 'AdminProjectEdit',
     params: {
-      id: router.currentRoute.value.params.id,
+      id: route.params.id,
     },
   })
 }
@@ -76,7 +76,7 @@ function goToEdit() {
 
 <template>
   <div
-    class="w-full"
+    class="mx-auto mb-10 flex w-full max-w-7xl flex-col gap-4 px-10 max-lg:px-6 max-sm:px-4"
   >
     <ArtPageHeader
       title="学习项目1 详情页"
@@ -84,62 +84,72 @@ function goToEdit() {
       <template
         #extra
       >
-        <el-button
-          type="primary"
-          class="ml-2"
+        <ArtIconButton
+          type="edit"
           @click="goToEdit()"
         >
           编辑内容
-        </el-button>
+        </ArtIconButton>
       </template>
     </ArtPageHeader>
 
     <div
-      v-for="(stage, index) in stages"
-      :key="stage.id"
-      class="mb-5 mt-10 border rounded-3 p-4"
+      class="flex flex-col gap-4"
     >
-      <p
-        class="text-5 font-bold"
-      >
-        阶段{{ index + 1 }}:{{ stage.name }}
-      </p>
-
       <div
-        class="h-30 color-[#b1b1b1]"
-      >
-        {{ stage.description }}
-      </div>
-
-      <div
-        class="flex items-center justify-between"
+        v-for="(stage, index) in stages"
+        :key="stage.id"
+        class="art-card"
       >
         <div
-          class="flex items-center gap-2"
+          class="flex items-start justify-between gap-4 max-sm:flex-col"
         >
-          <div>
-            {{ stage.required ? '必修' : '选修' }}
+          <div
+            class="min-w-0"
+          >
+            <div
+              class="flex flex-wrap gap-3 items-center"
+            >
+              <div
+                class="text-base font-semibold text-g-900"
+              >
+                阶段 {{ index + 1 }}：{{ stage.name }}
+              </div>
+
+              <el-tag
+                :type="stage.required ? 'danger' : 'info'"
+                size="small"
+              >
+                {{ stage.required ? '必修' : '选修' }}
+              </el-tag>
+            </div>
+
+            <p
+              class="mt-3 text-sm leading-relaxed text-g-600"
+            >
+              {{ stage.description }}
+            </p>
+
+            <div
+              class="mt-4 flex flex-wrap gap-3 text-sm text-g-700"
+            >
+              <span>{{ stage.courseType }}</span>
+
+              <span>{{ stage.courseName }}</span>
+            </div>
           </div>
 
           <div
-            class=""
+            class="flex flex-shrink-0 gap-2 items-center max-sm:w-full max-sm:justify-end"
           >
-            {{ stage.courseType }} {{ stage.courseName }}
+            <ArtIconButton
+              type="edit"
+            />
+
+            <ArtIconButton
+              type="view"
+            />
           </div>
-        </div>
-
-        <div
-          class="flex items-center gap-2"
-        >
-          <BaseButton
-            icon="admin-edit"
-            tooltip-content="编辑"
-          />
-
-          <BaseButton
-            icon="admin-preview"
-            tooltip-content="预览"
-          />
         </div>
       </div>
     </div>

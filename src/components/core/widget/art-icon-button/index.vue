@@ -2,6 +2,7 @@
 <script lang="ts" setup>
 defineOptions({
   name: 'ArtIconButton',
+  inheritAttrs: false,
 })
 
 const props = withDefaults(defineProps<Props>(), {
@@ -12,6 +13,8 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits<{
   (e: 'click', event: MouseEvent): void
 }>()
+
+const attrs = useAttrs()
 
 type Props = {
 
@@ -197,6 +200,31 @@ const buttonStateClass = computed(() => ({
 }))
 
 /**
+ * 按钮根节点类名
+ */
+const rootClass = computed(() => [
+  'text-sm px-2.5 align-middle rounded-md inline-flex gap-2 h-8 min-w-8 items-center justify-center',
+  buttonClass.value,
+  buttonStateClass.value,
+  {
+    'rounded-full': props.circle,
+  },
+  attrs.class,
+])
+
+/**
+ * 按钮根节点透传属性
+ */
+const rootAttrs = computed(() => {
+  const {
+    class: _class,
+    ...restAttrs
+  } = attrs
+
+  return restAttrs
+})
+
+/**
  * Tooltip 内容
  */
 const tooltipContent = computed(() => {
@@ -257,8 +285,8 @@ function handleClick(event: MouseEvent) {
     :z-index="tooltipZIndex"
   >
     <div
-      class="text-sm px-2.5 align-middle rounded-md inline-flex gap-2 h-8 min-w-8 items-center justify-center"
-      :class="[buttonClass, buttonStateClass, { 'rounded-full': circle }]"
+      v-bind="rootAttrs"
+      :class="rootClass"
       :style="buttonStyle"
       :aria-disabled="disabled"
       @click="handleClick"
@@ -284,8 +312,8 @@ function handleClick(event: MouseEvent) {
 
   <div
     v-else
-    class="text-sm px-2.5 align-middle rounded-md inline-flex gap-2 h-8 min-w-8 items-center justify-center"
-    :class="[buttonClass, buttonStateClass, { 'rounded-full': circle }]"
+    v-bind="rootAttrs"
+    :class="rootClass"
     :style="buttonStyle"
     :aria-disabled="disabled"
     @click="handleClick"

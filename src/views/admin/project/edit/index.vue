@@ -1,18 +1,20 @@
 <!------  2026-04-15---16:08---星期三  ------>
 <!------------------------------------    ------------------------------------------------->
 <script lang="ts" setup>
-import type { TabPaneName } from 'element-plus'
+import type {
+  FormInstance,
+  FormItemRule,
+  FormRules,
+  TabPaneName,
+} from 'element-plus'
+
+import { QuestionFilled } from '@element-plus/icons-vue'
 
 import {
-  Delete,
-  Folder,
-  QuestionFilled,
-  Select,
-  Top,
-  View,
-} from '@element-plus/icons-vue'
-
-import { ref } from 'vue'
+  nextTick,
+  onBeforeUpdate,
+  ref,
+} from 'vue'
 
 import AddCourseDialog from './AddCourseDialog.vue'
 
@@ -24,6 +26,18 @@ type Course = {
   name: string
   type: string
   required: boolean
+}
+
+/**
+ * 添加课程弹窗返回的课程数据
+ */
+type AddCoursePayload = {
+
+  /** 课程名称 */
+  name: string
+
+  /** 课程类型 */
+  type: string
 }
 
 /**
@@ -73,6 +87,11 @@ const isShowAddCourseDialog = ref(false)
 const currentStageIndex = ref(0)
 
 /**
+ * 阶段表单实例
+ */
+const stageFormRefs = ref<FormInstance[]>([])
+
+/**
    * 阶段列表
    */
 const stages = ref<Stage[]>([
@@ -98,6 +117,59 @@ const stages = ref<Stage[]>([
 ])
 
 /**
+ * 校验阶段课程
+ */
+const validateStageCourses: FormItemRule['validator'] = (_rule, value: Course[], callback) => {
+  if (!value?.length) {
+    callback(new Error('请至少添加一门课程'))
+    return
+  }
+
+  const hasInvalidCourse = value.some(course => !course.name.trim() || !course.type.trim())
+
+  if (hasInvalidCourse) {
+    callback(new Error('请完善课程信息'))
+    return
+  }
+
+  callback()
+}
+
+/**
+ * 阶段表单校验规则
+ */
+const stageRules: FormRules<Stage> = {
+  name: [
+    {
+      required: true,
+      message: '请输入阶段名称',
+      trigger: 'blur',
+    },
+  ],
+  courses: [
+    {
+      validator: validateStageCourses,
+      trigger: 'change',
+    },
+  ],
+}
+
+onBeforeUpdate(() => {
+  stageFormRefs.value = []
+})
+
+/**
+ * 设置阶段表单实例
+ */
+function setStageFormRef(formRef: FormInstance | undefined, index: number) {
+  if (!formRef) {
+    return
+  }
+
+  stageFormRefs.value[index] = formRef
+}
+
+/**
    * 处理标签页的编辑（添加/删除）
    */
 function handleTabsEdit(targetName: TabPaneName | undefined, action: 'remove' | 'add') {
@@ -114,32 +186,62 @@ function handleTabsEdit(targetName: TabPaneName | undefined, action: 'remove' | 
     activeStageId.value = newStage.id
   }
   else if (action === 'remove') {
-    // 删除学习阶段
-    const tabs = stages.value
-
-    let activeName = activeStageId.value
-
-    if (activeName === targetName) {
-      tabs.forEach((tab, index) => {
-        if (tab.id === targetName) {
-          const nextTab = tabs[index + 1] || tabs[index - 1]
-
-          if (nextTab) {
-            activeName = nextTab.id
-          }
-        }
-      })
+    if (!targetName || stages.value.length <= 1) {
+      return
     }
 
-    activeStageId.value = activeName
-    stages.value = tabs.filter(tab => tab.id !== targetName)
+    const targetIndex = stages.value.findIndex(stage => stage.id === targetName)
+
+    if (targetIndex === -1) {
+      return
+    }
+
+    stages.value.splice(targetIndex, 1)
 
     // 重新编号阶段ID
     stages.value.forEach((stage, i) => {
       stage.id = `${i + 1}`
     })
+
     stageIndex = stages.value.length
+    activeStageId.value = stages.value[Math.min(targetIndex, stages.value.length - 1)]?.id ?? ''
   }
+}
+
+/**
+ * 提交项目编辑
+ */
+async function handleSubmitProject() {
+  activeTab.value = 'basic'
+  await nextTick()
+
+  for (const [index, stage] of stages.value.entries()) {
+    activeStageId.value = stage.id
+    await nextTick()
+
+    try {
+      await stageFormRefs.value[index]?.validate()
+    }
+    catch {
+      ElMessage.warning(`请完善阶段 ${index + 1} 的信息`)
+      return
+    }
+  }
+
+  const formData = {
+    stages: stages.value.map(stage => ({
+      ...stage,
+      courses: stage.courses.map(course => ({
+        ...course,
+      })),
+    })),
+    advancedSettings: {
+      ...advancedSettings.value,
+    },
+  }
+
+  console.log('学习项目表单数据:', formData)
+  ElMessage.success('表单验证通过，请查看控制台数据')
 }
 
 /**
@@ -153,8 +255,12 @@ function addCourse(stageIndex: number) {
 /**
    * 添加课程到阶段
    */
-function addCourseToStage(course: any, stageIndex: number) {
+function addCourseToStage(course: AddCoursePayload, stageIndex: number) {
   const stage = stages.value[stageIndex]
+
+  if (!stage) {
+    return
+  }
 
   // 检查课程是否已添加
   const isExist = stage.courses.some((c: Course) => c.name === course.name)
@@ -166,7 +272,7 @@ function addCourseToStage(course: any, stageIndex: number) {
   const newCourse: Course = {
     id: (stage.courses.length + 1).toString(),
     name: course.name,
-    type: '在线课程',
+    type: course.type,
     required: true,
   }
 
@@ -184,11 +290,36 @@ function removeCourse(stageIndex: number, courseIndex: number) {
     course.id = `${i + 1}`
   })
 }
+
+/**
+ * 移动课程顺序
+ */
+function moveCourse(stageIndex: number, courseIndex: number, direction: 'up' | 'down') {
+  const courses = stages.value[stageIndex]?.courses
+
+  if (!courses) {
+    return
+  }
+
+  const targetIndex = direction === 'up' ? courseIndex - 1 : courseIndex + 1
+
+  if (targetIndex < 0 || targetIndex >= courses.length) {
+    return
+  }
+
+  const [course] = courses.splice(courseIndex, 1)
+
+  courses.splice(targetIndex, 0, course)
+
+  courses.forEach((item, index) => {
+    item.id = `${index + 1}`
+  })
+}
 </script>
 
 <template>
   <div
-    class="w-full"
+    class="mx-auto mb-10 flex w-full max-w-7xl flex-col gap-4 px-10 max-lg:px-6 max-sm:px-4"
   >
     <!-- 添加课程弹窗组件 -->
     <AddCourseDialog
@@ -198,53 +329,44 @@ function removeCourse(stageIndex: number, courseIndex: number) {
     />
 
     <ArtPageHeader
-      title="学习项目1 详情页"
+      title="编辑学习项目"
     >
       <template
         #extra
       >
-        <el-button
-          type="primary"
-          class="ml-2"
+        <ArtIconButton
+          type="success"
+          @click="handleSubmitProject"
         >
           完成
-        </el-button>
+        </ArtIconButton>
       </template>
     </ArtPageHeader>
 
     <!-- 标签页 -->
     <div
-      class="mt-10"
+      class="flex flex-col gap-4"
     >
       <el-tabs
         v-model="activeTab"
-        class=""
       >
         <el-tab-pane
           label="目录编辑"
           name="basic"
-          class="mt-5 border rounded-3 p-6"
+          class="art-card"
         >
           <!-- 阶段管理 -->
           <div
-            class="mt-5"
+            class="flex flex-col gap-4"
           >
             <!-- 阶段标签页 -->
             <el-tabs
               v-model="activeStageId"
-              class="mb-5"
+              class=""
               type="card"
               editable
               @edit="handleTabsEdit"
             >
-              <template
-                #add-icon
-              >
-                <el-icon>
-                  <Select />
-                </el-icon>
-              </template>
-
               <el-tab-pane
                 v-for="(stage, index) in stages"
                 :key="stage.id"
@@ -252,11 +374,14 @@ function removeCourse(stageIndex: number, courseIndex: number) {
                 :name="stage.id"
               >
                 <el-form
-                  label-position="left"
-                  label-width="120px"
+                  :ref="(formRef) => setStageFormRef(formRef as FormInstance | undefined, index)"
+                  :model="stage"
+                  :rules="stageRules"
+                  label-position="top"
                 >
                   <el-form-item
                     label="阶段名称"
+                    prop="name"
                     required
                   >
                     <el-input
@@ -280,104 +405,111 @@ function removeCourse(stageIndex: number, courseIndex: number) {
 
                   <el-form-item
                     label="课程"
+                    prop="courses"
                     required
                   >
                     <div
-                      class=""
+                      class="w-full"
                     >
                       <div
-                        class=""
+                        class="flex flex-col gap-3"
                       >
                         <!-- 课程列表 -->
                         <div
                           v-for="(course, courseIndex) in stage.courses"
                           :key="course.id"
-                          class="mb-3 flex items-center justify-between border rounded p-3"
+                          class="rounded-lg border border-[var(--art-card-border)] p-4"
                         >
                           <div
-                            class="flex items-center gap-3"
+                            class="flex items-center justify-between gap-4 max-sm:flex-col max-sm:items-stretch"
                           >
                             <div
-                              class="w-8 text-center"
+                              class="grid min-w-0 flex-1 grid-cols-[32px_minmax(0,1fr)_96px] gap-4 items-center max-sm:grid-cols-[32px_minmax(0,1fr)] max-sm:items-start"
                             >
-                              {{ course.id }}
+                              <div
+                                class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary"
+                              >
+                                {{ course.id }}
+                              </div>
+
+                              <div
+                                class="min-w-0"
+                              >
+                                <div
+                                  class="truncate text-sm font-medium text-g-900"
+                                >
+                                  {{ course.type }} {{ course.name }}
+                                </div>
+
+                                <div
+                                  class="mt-1 text-xs text-g-600"
+                                >
+                                  {{ course.required ? '必修课程' : '选修课程' }}
+                                </div>
+                              </div>
+
+                              <el-select
+                                v-model="course.required"
+                                placeholder="选择类型"
+                                class="w-24 max-sm:col-start-2"
+                              >
+                                <el-option
+                                  label="必修"
+                                  :value="true"
+                                />
+
+                                <el-option
+                                  label="选修"
+                                  :value="false"
+                                />
+                              </el-select>
                             </div>
-
-                            <el-select
-                              v-model="course.required"
-                              placeholder="选择类型"
-                              class="w-20"
-                            >
-                              <el-option
-                                label="必修"
-                                :value="true"
-                              />
-
-                              <el-option
-                                label="选修"
-                                :value="false"
-                              />
-                            </el-select>
 
                             <div
                               class="flex items-center gap-2"
                             >
-                              <el-button
-                                size="small"
-                              >
-                                <el-icon>
-                                  <Folder />
-                                </el-icon>
-                              </el-button>
+                              <ArtIconButton
+                                icon="ri:arrow-up-line"
+                                tooltip="上移"
+                                :disabled="courseIndex === 0"
+                                @click="moveCourse(index, courseIndex, 'up')"
+                              />
 
-                              <span>{{ course.type }} {{ course.name }}</span>
+                              <ArtIconButton
+                                icon="ri:arrow-down-line"
+                                tooltip="下移"
+                                :disabled="courseIndex === stage.courses.length - 1"
+                                @click="moveCourse(index, courseIndex, 'down')"
+                              />
+
+                              <ArtIconButton
+                                type="view"
+                              />
+
+                              <ArtIconButton
+                                type="delete"
+                                @click="removeCourse(index, courseIndex)"
+                              />
                             </div>
-                          </div>
-
-                          <div
-                            class="flex items-center gap-2"
-                          >
-                            <el-button
-                              size="small"
-                            >
-                              <el-icon>
-                                <Top />
-                              </el-icon>
-                            </el-button>
-
-                            <el-button
-                              size="small"
-                            >
-                              <el-icon>
-                                <View />
-                              </el-icon>
-                            </el-button>
-
-                            <el-button
-                              type="danger"
-                              link
-                              size="small"
-                              @click="removeCourse(index, courseIndex)"
-                            >
-                              <el-icon>
-                                <Delete />
-                              </el-icon>
-                            </el-button>
                           </div>
                         </div>
                       </div>
+
+                      <el-empty
+                        v-if="!stage.courses.length"
+                        description="暂无课程"
+                        :image-size="80"
+                      />
                     </div>
 
                     <el-divider />
 
-                    <el-button
-                      class="mt-2"
-                      type="primary"
-                      plain
+                    <ArtIconButton
+                      type="add"
                       @click="addCourse(index)"
                     >
-                      + 添加课程
-                    </el-button>
+                      添加课程
+                    </ArtIconButton>
                   </el-form-item>
                 </el-form>
               </el-tab-pane>
@@ -388,18 +520,18 @@ function removeCourse(stageIndex: number, courseIndex: number) {
         <el-tab-pane
           label="高级设置"
           name="advanced"
-          class="px-0"
+          class="art-card"
         >
           <!-- 高级设置内容 -->
           <div
-            class="mt-5 border rounded-3 p-6"
+            class="flex flex-col gap-6"
           >
             <!-- 设置多个学习阶段 -->
             <div
-              class="mb-6"
+              class="rounded-lg border border-[var(--art-card-border)] p-4"
             >
               <div
-                class="mb-2 flex items-center justify-between"
+                class="mb-3 flex items-center justify-between gap-4"
               >
                 <span
                   class="font-medium"
@@ -429,10 +561,10 @@ function removeCourse(stageIndex: number, courseIndex: number) {
 
             <!-- 解锁条件 -->
             <div
-              class="mb-6"
+              class="rounded-lg border border-[var(--art-card-border)] p-4"
             >
               <div
-                class="mb-2 flex items-center"
+                class="mb-3 flex items-center"
               >
                 <span
                   class="font-medium"
@@ -456,6 +588,7 @@ function removeCourse(stageIndex: number, courseIndex: number) {
 
               <el-radio-group
                 v-model="advancedSettings.unlockCondition"
+                class="flex flex-wrap gap-x-6 gap-y-2"
               >
                 <el-radio
                   value="stage"
@@ -479,10 +612,10 @@ function removeCourse(stageIndex: number, courseIndex: number) {
 
             <!-- 展示方式 -->
             <div
-              class="mb-6"
+              class="rounded-lg border border-[var(--art-card-border)] p-4"
             >
               <div
-                class="mb-2 flex items-center"
+                class="mb-3 flex items-center"
               >
                 <span
                   class="font-medium"
@@ -506,6 +639,7 @@ function removeCourse(stageIndex: number, courseIndex: number) {
 
               <el-radio-group
                 v-model="advancedSettings.displayMode"
+                class="flex flex-wrap gap-x-6 gap-y-2"
               >
                 <el-radio
                   value="expanded"
@@ -524,27 +658,20 @@ function removeCourse(stageIndex: number, courseIndex: number) {
         </el-tab-pane>
       </el-tabs>
 
-      <el-divider />
-
       <div
         class="flex justify-end"
       >
-        <el-button
-          type="primary"
+        <ArtIconButton
+          type="success"
+          class="px-10 py-5 text-2xl!"
+          @click="handleSubmitProject"
         >
           完成
-        </el-button>
+        </ArtIconButton>
+
       </div>
     </div>
   </div>
 </template>
 
-<style lang="scss" scoped>
-  .el-tag {
-  font-size: 14px;
-}
-
-.el-button + .el-button {
-  margin-left: 8px;
-}
-</style>
+<style lang="scss" scoped></style>
