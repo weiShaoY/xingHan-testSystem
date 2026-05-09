@@ -38,7 +38,7 @@ export const Course: AppRouteRecord = {
     {
       path: 'edit/:id',
       name: 'AdminCourseEdit',
-      component: '/admin/course/edit',
+      component: '/admin/course/editor',
       meta: {
         title: '课程编辑',
         icon: 'ri:edit-line',
@@ -50,7 +50,7 @@ export const Course: AppRouteRecord = {
     {
       path: 'create',
       name: 'AdminCourseCreate',
-      component: '/admin/course/create',
+      component: '/admin/course/editor',
       meta: {
         title: '课程创建',
         icon: 'ri:add-line',

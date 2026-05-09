@@ -66,9 +66,9 @@ const sourceList = ref<Course[]>([
 ])
 
 /**
-   *  跳转到创建课程
+   *  跳转到创建页
    */
-function goToCreateCourse() {
+function goToCreate() {
   router.push({
     name: 'AdminCourseCreate',
   })
@@ -115,7 +115,7 @@ function goToDetail(item: Course) {
 
       <ArtIconButton
         type="add"
-        @click="goToCreateCourse"
+        @click="goToCreate"
       >
         创建课程
       </ArtIconButton>

@@ -1,11 +1,47 @@
 <!------  2026-04-15---16:08---星期三  ------>
-<!------------------------------------    ------------------------------------------------->
+<!------------------------------------  课程编辑器  ------------------------------------------------->
 <script lang="ts" setup>
 import { QuestionFilled } from '@element-plus/icons-vue'
 
-import { ref } from 'vue'
+import {
+  computed,
+  onMounted,
+  ref,
+} from 'vue'
+
+const route = useRoute()
+
+const router = useRouter()
 
 const activeTab = ref('basic')
+
+/**
+ * 是否为编辑模式
+ */
+const isEditMode = computed(() => {
+  return Boolean(route.params.id)
+})
+
+/**
+ * 课程 ID
+ */
+const courseId = computed(() => {
+  return String(route.params.id || '')
+})
+
+/**
+ * 页面标题
+ */
+const pageTitle = computed(() => {
+  return isEditMode.value ? '编辑课程' : '创建课程'
+})
+
+/**
+ * 提交按钮文本
+ */
+const submitButtonText = computed(() => {
+  return isEditMode.value ? '保存' : '完成'
+})
 
 /**
  * 表单数据
@@ -13,7 +49,7 @@ const activeTab = ref('basic')
 const formData = ref({
   // 基本信息
   name: '未命名课程',
-  courseForm: 'online', // online, offline, hybrid, other
+  courseForm: 'online',
   category: '',
   tags: '',
 
@@ -24,24 +60,27 @@ const formData = ref({
   // 报名设置
   enableEnrollment: true,
   enrollmentTitle: '未命名课程',
-  enrollmentQuotaType: 'unlimited', // unlimited, limited
+  enrollmentQuotaType: 'unlimited',
   enrollmentLimit: '',
-  enrollmentTimeType: 'unlimited', // unlimited, limited
+  enrollmentTimeType: 'unlimited',
   enrollmentStart: '',
   enrollmentEnd: '',
-  enrollmentAuditType: 'auto', // auto, manual
-  allowCancelEnrollment: 'no', // yes, no
+  enrollmentAuditType: 'auto',
+  allowCancelEnrollment: 'no',
   enrollmentIntroduction: '',
+
   enrollmentFields: {
     name: false,
     phone: false,
     company: false,
   },
+
   enrollmentFieldLabels: {
     name: '输入真实姓名',
     phone: '输入手机号码',
     company: '您的公司',
   },
+
   enrollmentFieldRequired: {
     name: false,
     phone: false,
@@ -98,18 +137,40 @@ const categoryOptions = [
 ]
 
 /**
+ * 获取课程详情
+ */
+async function getCourseDetail() {
+  if (!courseId.value) {
+    return
+  }
+
+  // TODO: 替换成真实接口
+  console.log('获取课程详情:', courseId.value)
+
+  // 示例：接口返回后回填表单
+  // const res = await getCourseDetailApi(courseId.value)
+  //
+  // formData.value = {
+  //   ...formData.value,
+  //   ...res.data,
+  // }
+}
+
+/**
  * 上传图片
+ *
+ * @param type 图片类型
  */
 function uploadImage(type: string) {
-  // 这里可以添加图片上传逻辑
   console.log('上传图片:', type)
 }
 
 /**
- * AI生成图片
+ * AI 生成图片
+ *
+ * @param type 图片类型
  */
 function generateImage(type: string) {
-  // 这里可以添加AI生成图片逻辑
   console.log('AI生成图片:', type)
 }
 
@@ -117,7 +178,6 @@ function generateImage(type: string) {
  * 自定义封面
  */
 function customCover() {
-  // 这里可以添加自定义封面逻辑
   console.log('自定义封面')
 }
 
@@ -125,17 +185,44 @@ function customCover() {
  * 添加报名字段
  */
 function addEnrollmentField() {
-  // 这里可以添加添加报名字段的逻辑
   console.log('添加报名字段')
 }
 
 /**
- * 完成创建
+ * 创建课程
  */
-// function handleComplete() {
-//   // 这里可以添加表单提交逻辑
-//   console.log('完成创建:', formData.value)
-// }
+async function createCourse() {
+  // TODO: 替换成真实创建接口
+  console.log('创建课程:', formData.value)
+}
+
+/**
+ * 更新课程
+ */
+async function updateCourse() {
+  // TODO: 替换成真实更新接口
+  console.log('更新课程:', courseId.value, formData.value)
+}
+
+/**
+ * 提交课程
+ */
+async function handleSubmitCourse() {
+  if (isEditMode.value) {
+    await updateCourse()
+  }
+  else {
+    await createCourse()
+  }
+
+  router.back()
+}
+
+onMounted(() => {
+  if (isEditMode.value) {
+    getCourseDetail()
+  }
+})
 </script>
 
 <template>
@@ -152,7 +239,7 @@ function addEnrollmentField() {
         <div
           class="flex items-center"
         >
-          创建课程
+          {{ pageTitle }}
         </div>
       </template>
 
@@ -162,15 +249,13 @@ function addEnrollmentField() {
         <div
           class="flex items-center"
         >
-
           <ArtIconButton
             class="ml-3 max-sm:ml-[7px]"
             type="success"
-            @click="$router.back()"
+            @click="handleSubmitCourse"
           >
-            完成
+            {{ submitButtonText }}
           </ArtIconButton>
-
         </div>
       </template>
     </el-page-header>
@@ -266,7 +351,6 @@ function addEnrollmentField() {
             <div
               class="flex gap-8"
             >
-              <!-- 课程封面图 -->
               <div
                 class="flex flex-col items-center"
               >
@@ -299,7 +383,6 @@ function addEnrollmentField() {
                 </div>
               </div>
 
-              <!-- 课程背景图 -->
               <div
                 class="flex flex-col items-center"
               >
@@ -373,7 +456,6 @@ function addEnrollmentField() {
           label-position="top"
           label-width="120px"
         >
-          <!-- 报名页标题 -->
           <el-form-item
             label="报名页标题"
             required
@@ -385,7 +467,6 @@ function addEnrollmentField() {
             />
           </el-form-item>
 
-          <!-- 报名名额 -->
           <el-form-item
             label="报名名额"
           >
@@ -416,7 +497,9 @@ function addEnrollmentField() {
             <span
               v-if="formData.enrollmentQuotaType === 'limited'"
               class="ml-2"
-            >个</span>
+            >
+              个
+            </span>
 
             <el-tooltip
               v-if="formData.enrollmentQuotaType === 'limited'"
@@ -430,11 +513,9 @@ function addEnrollmentField() {
             </el-tooltip>
           </el-form-item>
 
-          <!-- 报名开放时间 -->
           <el-form-item
             label="报名开放时间"
           >
-
             <el-radio-group
               v-model="formData.enrollmentTimeType"
             >
@@ -480,7 +561,6 @@ function addEnrollmentField() {
             </el-tooltip>
           </el-form-item>
 
-          <!-- 审核方式 -->
           <el-form-item
             label="审核方式"
           >
@@ -511,7 +591,6 @@ function addEnrollmentField() {
             </el-tooltip>
           </el-form-item>
 
-          <!-- 允许学员取消报名 -->
           <el-form-item
             label="允许学员取消报名"
           >
@@ -542,7 +621,6 @@ function addEnrollmentField() {
             </el-tooltip>
           </el-form-item>
 
-          <!-- 报名介绍 -->
           <el-form-item
             label="报名介绍"
           >
@@ -555,15 +633,10 @@ function addEnrollmentField() {
             />
           </el-form-item>
 
-          <!-- 报名信息 -->
           <el-form-item
             label="报名信息"
           >
-
-            <div
-              class=""
-            >
-              <!-- 姓名 -->
+            <div>
               <div
                 class="mb-3 flex gap-2 items-center"
               >
@@ -591,7 +664,7 @@ function addEnrollmentField() {
                   +
                 </el-button>
               </div>
-              <!-- 手机号 -->
+
               <div
                 class="mb-3 flex gap-2 items-center"
               >
@@ -620,7 +693,6 @@ function addEnrollmentField() {
                 </el-button>
               </div>
 
-              <!-- 公司 -->
               <div
                 class="mb-3 flex gap-2 items-center"
               >
@@ -658,9 +730,7 @@ function addEnrollmentField() {
         name="advanced"
         class="art-card"
       >
-        <div
-          class=""
-        >
+        <div>
           <div
             class="mb-6"
           >
@@ -674,9 +744,7 @@ function addEnrollmentField() {
           <el-form
             label-position="left"
           >
-            <!-- 按课程小节解锁（闯关模式） -->
             <el-form-item>
-
               <div
                 class="flex flex-col"
               >
@@ -692,19 +760,14 @@ function addEnrollmentField() {
                   闯关模式下，学员需完成上一必修小节，才会解锁下一必修小节。两个必修小节间的选修小节将自动解锁。<br>
                   课程拥有者和协作者不受闯关模式影响，始终可以查看所有小节。
                 </div>
-
               </div>
-
             </el-form-item>
 
-            <!-- 选修小节解锁条件 -->
             <el-form-item>
               <div
                 class="pl-10 flex flex-col"
               >
-                <div
-                  class=""
-                >
+                <div>
                   选修小节解锁条件
                 </div>
 
@@ -724,14 +787,10 @@ function addEnrollmentField() {
                   </el-radio>
                 </el-radio-group>
               </div>
-
             </el-form-item>
 
-            <!-- 单节模式 -->
             <el-form-item>
-              <div
-                class=""
-              >
+              <div>
                 <el-checkbox
                   v-model="formData.singleSectionMode"
                 >
@@ -743,15 +802,11 @@ function addEnrollmentField() {
                 >
                   单节模式下，学员参与小节时，将无法从当前小节跳转至上一节或下一节课程。
                 </div>
-
               </div>
             </el-form-item>
 
-            <!-- 学完视频和微课自动弹出课程评价弹窗 -->
             <el-form-item>
-              <div
-                class=""
-              >
+              <div>
                 <el-checkbox
                   v-model="formData.enableAutoEvaluation"
                 >
@@ -762,16 +817,12 @@ function addEnrollmentField() {
                   class="color-textSecondary text-sm ml-6 mt-2"
                 >
                   开启时，在学员学完视频和微课小节时，会自动弹出课程评价弹窗。关闭时，弹窗不会自动弹出。
-
                 </div>
               </div>
             </el-form-item>
 
-            <!-- 学完视频和微课自动进入下一个小节 -->
             <el-form-item>
-              <div
-                class=""
-              >
+              <div>
                 <el-checkbox
                   v-model="formData.enableAutoNextSection"
                 >
@@ -786,11 +837,8 @@ function addEnrollmentField() {
               </div>
             </el-form-item>
 
-            <!-- 视频和微课详情中显示已经学完的学员 -->
             <el-form-item>
-              <div
-                class=""
-              >
+              <div>
                 <el-checkbox
                   v-model="formData.showCompletedLearners"
                 >
@@ -805,11 +853,8 @@ function addEnrollmentField() {
               </div>
             </el-form-item>
 
-            <!-- 课程学习时长统计上限 -->
             <el-form-item>
-              <div
-                class=""
-              >
+              <div>
                 <el-checkbox
                   v-model="formData.enableLearningTimeLimit"
                 >
@@ -824,11 +869,8 @@ function addEnrollmentField() {
               </div>
             </el-form-item>
 
-            <!-- 显示小节序号 -->
             <el-form-item>
-              <div
-                class=""
-              >
+              <div>
                 <el-checkbox
                   v-model="formData.showSectionNumbers"
                 >
@@ -845,9 +887,7 @@ function addEnrollmentField() {
             </el-form-item>
           </el-form>
         </div>
-
       </el-tab-pane>
-
     </el-tabs>
   </div>
 </template>
