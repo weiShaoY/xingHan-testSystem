@@ -466,6 +466,10 @@ function editSection(section: Section) {
               </ArtIconButton>
 
               <ArtIconButton
+                type="delete"
+              />
+
+              <ArtIconButton
                 type="edit"
                 @click="editChapter(item.id)"
               />
@@ -481,68 +485,62 @@ function editSection(section: Section) {
         </template>
 
         <!-- 章节下的小节列表 -->
-        <el-card
+        <div
           v-for="section in item.sectionList"
           :key="section.id"
-          class="mb-2"
+          class="mb-4 flex art-card items-center "
         >
+          <div
+            class="font-bold text-primary w-20"
+          >
+            {{ getSectionIndex(section) }}
+          </div>
+
+          <!-- 小节的类型图标 -->
+          <div
+            class="flex  items-center flex-col gap-1 justify-center w-40"
+          >
+            <ArtIconButton
+              :icon="getSectionTypeIcon(section.sectionType).sectionIcon"
+              icon-color="#ffffff"
+              :bg-color="getSectionTypeIcon(section.sectionType).sectionIconBgColor"
+            />
+
+            <div
+              class="text-xs text-info"
+            >
+              {{ getSectionTypeIcon(section.sectionType).sectionTypeName }}
+            </div>
+          </div>
+
           <div
             class="flex w-full items-center justify-between"
           >
             <div
-              class="flex gap-10 items-center"
+              class="flex flex-col  gap-2"
             >
               <div
-                class="font-bold text-primary"
+                class="font-bold text-sm text-info"
               >
-                {{ getSectionIndex(section) }}
-              </div>
-
-              <!-- 小节的类型图标 -->
-              <div
-                class="flex  items-center flex-col gap-1 justify-center"
-              >
-                <ArtIconButton
-                  :icon="getSectionTypeIcon(section.sectionType).sectionIcon"
-                  icon-color="#ffffff"
-                  :bg-color="getSectionTypeIcon(section.sectionType).sectionIconBgColor"
-                />
-
-                <div
-                  class="text-xs text-info"
-                >
-                  {{ getSectionTypeIcon(section.sectionType).sectionTypeName }}
-                </div>
+                {{ section.name }}
               </div>
 
               <div
-                class="flex flex-col  gap-2"
+                class="flex gap-5 justify-center"
               >
                 <div
-                  class="font-bold text-sm text-info"
+                  class="text-xs"
                 >
-                  {{ section.name }}
-
+                  {{ section.participantCount }}人参与
                 </div>
 
                 <div
-                  class="flex gap-5 justify-center"
+                  class="text-xs"
                 >
-                  <div
-                    class="text-xs"
-                  >
-                    {{ section.participantCount }}人参与
-                  </div>
-
-                  <div
-                    class="text-xs"
-                  >
-                    {{ section.description }}
-                  </div>
-
+                  {{ section.description }}
                 </div>
-              </div>
 
+              </div>
             </div>
 
             <div
@@ -555,80 +553,87 @@ function editSection(section: Section) {
               />
 
               <ArtIconButton
+                type="delete"
+              />
+
+              <ArtIconButton
                 type="edit"
                 @click="editSection(section)"
               />
             </div>
           </div>
-        </el-card>
+        </div>
       </el-card>
 
       <!-- 独立小节 -->
-      <el-card
+      <div
         v-else-if="item.itemType === 'section'"
+        class="art-card flex art-card items-center px-10!"
       >
         <div
-          class="flex w-full items-center justify-between pr-5"
+          class="font-bold text-primary w-20"
+        >
+          {{ getSectionIndex(item) }}
+        </div>
+        <!-- 小节的类型图标 -->
+        <div
+          class="flex  items-center flex-col gap-1 justify-center w-40"
+        >
+          <ArtIconButton
+            :icon="getSectionTypeIcon(item.sectionType).sectionIcon"
+            icon-color="#ffffff"
+            :bg-color="getSectionTypeIcon(item.sectionType).sectionIconBgColor"
+          />
+
+          <div
+            class="text-xs text-info"
+          >
+            {{ getSectionTypeIcon(item.sectionType).sectionTypeName }}
+          </div>
+        </div>
+
+        <div
+          class="flex w-full items-center justify-between "
         >
           <div
-            class="flex gap-20 items-center"
+            class="flex flex-col  gap-2"
           >
             <div
-              class="font-bold text-primary"
+              class="font-bold text-sm text-info"
             >
-              {{ getSectionIndex(item) }}
-            </div>
+              {{ item.name }}
 
-            <!-- 小节的类型图标 -->
-            <div
-              class="flex  gap-1 items-center flex-col justify-center"
-            >
-              <ArtIconButton
-                :icon="getSectionTypeIcon(item.sectionType).sectionIcon"
-                icon-color="#ffffff"
-                :bg-color="getSectionTypeIcon(item.sectionType).sectionIconBgColor"
-              />
-
-              <div
-                class="text-xs text-info"
-              >
-                {{ getSectionTypeIcon(item.sectionType).sectionTypeName }}
-              </div>
             </div>
 
             <div
-              class="flex flex-col  gap-2"
+              class="flex gap-5 justify-center"
             >
               <div
-                class="font-bold text-sm text-info"
+                class="text-xs"
               >
-                {{ item.name }}
-
+                {{ item.participantCount }}人参与
               </div>
 
               <div
-                class="flex gap-5 justify-center"
+                class="text-xs"
               >
-                <div
-                  class="text-xs"
-                >
-                  {{ item.participantCount }}人参与
-                </div>
-
-                <div
-                  class="text-xs"
-                >
-                  {{ item.description }}
-                </div>
-
+                {{ item.description }}
               </div>
-            </div>
 
+            </div>
           </div>
 
           <div
             class="flex gap-5 items-center"
           >
+            <ArtIconButton
+              type="allocate"
+              @click="isShowAllocateCourseDialog = true"
+            />
+
+            <ArtIconButton
+              type="delete"
+            />
 
             <ArtIconButton
               type="edit"
@@ -637,7 +642,7 @@ function editSection(section: Section) {
 
           </div>
         </div>
-      </el-card>
+      </div>
     </div>
   </div>
 </template>
