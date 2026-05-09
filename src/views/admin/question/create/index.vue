@@ -472,7 +472,6 @@ function importQuestions() {
         >
 
           <ArtIconButton
-            class="ml-3 max-sm:ml-[7px]"
             type="success"
             @click="$router.back()"
           >

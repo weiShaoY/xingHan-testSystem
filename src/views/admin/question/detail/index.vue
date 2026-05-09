@@ -166,18 +166,15 @@ function goToEdit() {
         >
           <ArtIconButton
             type="edit"
-            class="ml-3 max-sm:ml-[7px]"
             @click="goToEdit()"
           />
 
           <ArtIconButton
             type="export"
-            class="ml-3 max-sm:ml-[7px]"
           />
 
           <ArtIconButton
             type="delete"
-            class="ml-3 max-sm:ml-[7px]"
           />
         </div>
       </template>

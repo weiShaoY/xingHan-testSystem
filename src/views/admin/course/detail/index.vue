@@ -1,18 +1,19 @@
 <!------  2026-04-15---16:08---星期三  ------>
 <!------------------------------------    ------------------------------------------------->
 <script lang="ts" setup>
+import type { SectionType } from './sectionType'
+
 import { computed, ref } from 'vue'
 
 import AllocateCourseDialog from '../list/AllocateCourseDialog.vue'
 
 import ChapterFormDialog from './ChapterFormDialog.vue'
 
-const router = useRouter()
+import CreateSectionDialog from './CreateSectionDialog.vue'
 
-/**
- * 小节内容类型：0 文档，1 视频，2 考试，3 问卷
- */
-type SectionType = 0 | 1 | 2 | 3
+import { sectionTypeConfigMap } from './sectionType'
+
+const router = useRouter()
 
 /**
  * 小节类型定义
@@ -86,61 +87,6 @@ const editSectionRouteMap: Record<SectionType, string> = {
   2: 'AdminCourseSectionExamEdit',
   3: 'AdminCourseSectionSurveyEdit',
 }
-
-/**
- * 添加小节类型按钮配置
- */
-const sectionTypeButtons: Array<{
-  sectionType: SectionType
-  label: string
-}> = [
-  {
-    sectionType: 0,
-    label: '文档',
-  },
-  {
-    sectionType: 1,
-    label: '视频',
-  },
-  {
-    sectionType: 2,
-    label: '考试',
-  },
-  {
-    sectionType: 3,
-    label: '问卷',
-  },
-]
-
-/**
- * 小节类型图标配置
- */
-const sectionTypeIconList: Array<{
-  sectionTypeName: string
-  sectionIcon: string
-  sectionIconBgColor: string
-}> = [
-  {
-    sectionTypeName: '文档',
-    sectionIcon: 'ri:article-line',
-    sectionIconBgColor: '#fcbd2c',
-  },
-  {
-    sectionTypeName: '视频',
-    sectionIcon: 'ri:vidicon-line',
-    sectionIconBgColor: '#ff2814',
-  },
-  {
-    sectionTypeName: '考试',
-    sectionIcon: 'ri:medal-line',
-    sectionIconBgColor: '#673ab8',
-  },
-  {
-    sectionTypeName: '问卷',
-    sectionIcon: 'ri:survey-line',
-    sectionIconBgColor: '#2cb870',
-  },
-]
 
 /**
  * 是否显示分配学习任务弹窗
@@ -272,7 +218,7 @@ function getSectionIndex(section: Section) {
  * 获取小节类型对应的图标配置
  */
 function getSectionTypeIcon(sectionType: SectionType) {
-  return sectionTypeIconList[sectionType]
+  return sectionTypeConfigMap[sectionType]
 }
 
 /**
@@ -291,6 +237,8 @@ function goToEdit() {
  * 跳转到添加小节（根据类型）
  */
 function goToAddSection(type: SectionType) {
+  isShowCreateSectionDialog.value = false
+
   router.push({
     name: createSectionRouteMap[type],
 
@@ -409,38 +357,12 @@ function editSection(section: Section) {
       @edit="handleEditChapter"
     />
 
-    <!-- 新建小节弹窗 -->
-    <el-dialog
+    <!-- 创建小节类型选择弹窗 -->
+    <CreateSectionDialog
       v-if="isShowCreateSectionDialog"
       v-model="isShowCreateSectionDialog"
-      title="添加课程小节"
-      width="30%"
-      :show-close="false"
-    >
-      <div
-        class="flex gap-5 w-full items-center justify-center"
-      >
-        <div
-          v-for="item in sectionTypeButtons"
-          :key="item.sectionType"
-          class="flex  items-center flex-col gap-1 justify-center"
-        >
-          <ArtIconButton
-            :icon="getSectionTypeIcon(item.sectionType).sectionIcon"
-            icon-color="#ffffff"
-            :bg-color="getSectionTypeIcon(item.sectionType).sectionIconBgColor"
-            @click="goToAddSection(item.sectionType)"
-          />
-
-          <div
-            class="text-xs text-info"
-          >
-            {{ getSectionTypeIcon(item.sectionType).sectionTypeName }}
-          </div>
-        </div>
-
-      </div>
-    </el-dialog>
+      @select="goToAddSection"
+    />
 
     <el-page-header
       class="art-card z-10"
@@ -469,23 +391,20 @@ function editSection(section: Section) {
         #extra
       >
         <div
-          class="flex gap-2 items-center"
+          class="flex gap-5 items-center"
         >
           <ArtIconButton
             type="allocate"
-            class="ml-3 max-sm:ml-[7px]"
             @click="isShowAllocateCourseDialog = true"
           />
 
           <ArtIconButton
             type="edit"
-            class="ml-3 max-sm:ml-[7px]"
             @click="goToEdit()"
           />
 
           <ArtIconButton
             type="add"
-            class="ml-3 max-sm:ml-[7px]"
             @click="openAddChapterDialog"
           >
             添加章节
@@ -493,7 +412,6 @@ function editSection(section: Section) {
 
           <ArtIconButton
             type="add"
-            class="ml-3 max-sm:ml-[7px]"
             @click="openAddCourseSectionDialog"
           >
             添加课程小节
@@ -519,7 +437,7 @@ function editSection(section: Section) {
           #header
         >
           <div
-            class="flex w-full items-center justify-between"
+            class="flex w-full items-center justify-between pr-5"
           >
             <div
               class="flex gap-5 items-center"
@@ -538,11 +456,10 @@ function editSection(section: Section) {
             </div>
 
             <div
-              class="flex gap-2 items-center"
+              class="flex gap-5 items-center "
             >
               <ArtIconButton
                 type="add"
-                class="ml-3 max-sm:ml-[7px]"
                 @click="openAddChapterSectionDialog(item.id)"
               >
                 添加课程小节
@@ -550,7 +467,6 @@ function editSection(section: Section) {
 
               <ArtIconButton
                 type="edit"
-                class="ml-3 max-sm:ml-[7px]"
                 @click="editChapter(item.id)"
               />
             </div>
@@ -630,18 +546,16 @@ function editSection(section: Section) {
             </div>
 
             <div
-              class="flex gap-2 items-center"
+              class="flex gap-5 items-center"
             >
 
               <ArtIconButton
                 type="allocate"
-                class="ml-3 max-sm:ml-[7px]"
                 @click="isShowAllocateCourseDialog = true"
               />
 
               <ArtIconButton
                 type="edit"
-                class="ml-3 max-sm:ml-[7px]"
                 @click="editSection(section)"
               />
             </div>
@@ -654,7 +568,7 @@ function editSection(section: Section) {
         v-else-if="item.itemType === 'section'"
       >
         <div
-          class="flex w-full items-center justify-between"
+          class="flex w-full items-center justify-between pr-5"
         >
           <div
             class="flex gap-20 items-center"
@@ -713,12 +627,11 @@ function editSection(section: Section) {
           </div>
 
           <div
-            class="flex gap-2 items-center"
+            class="flex gap-5 items-center"
           >
 
             <ArtIconButton
               type="edit"
-              class="ml-3 max-sm:ml-[7px]"
               @click="editSection(item)"
             />
 

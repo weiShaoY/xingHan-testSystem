@@ -196,24 +196,22 @@ function deleteQuestionBank(item: QuestionBank) {
           >
             <ArtIconButton
               type="delete"
-              class="ml-3 max-sm:ml-[7px]"
+
               @click="deleteQuestionBank(item)"
             />
 
             <ArtIconButton
               type="export"
-              class="ml-3 max-sm:ml-[7px]"
             />
 
             <ArtIconButton
               type="edit"
-              class="ml-3 max-sm:ml-[7px]"
+
               @click="goToEdit(item)"
             />
 
             <ArtIconButton
               :loading="true"
-              class="ml-3 max-sm:ml-[7px]"
             />
           </div>
         </div>

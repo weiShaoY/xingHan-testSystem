@@ -250,7 +250,6 @@ onMounted(() => {
           class="flex items-center"
         >
           <ArtIconButton
-            class="ml-3 max-sm:ml-[7px]"
             type="success"
             @click="handleSubmitCourse"
           >

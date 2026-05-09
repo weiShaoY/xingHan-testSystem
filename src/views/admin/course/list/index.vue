@@ -172,13 +172,11 @@ function goToDetail(item: Course) {
           >
             <ArtIconButton
               type="edit"
-              class="ml-3 max-sm:ml-[7px]"
               @click="goToEdit(item)"
             />
 
             <ArtIconButton
               type="allocate"
-              class="ml-3 max-sm:ml-[7px]"
               @click="isShowAllocateCourseDialog = true"
             />
           </div>
