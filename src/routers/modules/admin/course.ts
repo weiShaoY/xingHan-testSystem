@@ -85,16 +85,17 @@ export const Course: AppRouteRecord = {
       },
     },
     {
-      path: 'detail/:id',
-      name: 'AdminCourseDetail',
-      component: '/admin/course/detail',
+      path: 'create',
+      name: 'AdminCourseCreate',
+      component: '/admin/course/editor',
       meta: {
-        title: '课程详情',
-        icon: 'ri:eye-line',
+        title: '课程创建',
+        icon: 'ri:add-line',
         keepAlive: true,
-        sort: 1,
+        sort: 3,
         isHide: true,
         activePath: '/admin/course/list',
+
       },
     },
     {
@@ -111,21 +112,20 @@ export const Course: AppRouteRecord = {
 
       },
     },
+
     {
-      path: 'create',
-      name: 'AdminCourseCreate',
-      component: '/admin/course/editor',
+      path: 'detail/:id',
+      name: 'AdminCourseDetail',
+      component: '/admin/course/detail',
       meta: {
-        title: '课程创建',
-        icon: 'ri:add-line',
+        title: '课程详情',
+        icon: 'ri:eye-line',
         keepAlive: true,
-        sort: 3,
+        sort: 1,
         isHide: true,
         activePath: '/admin/course/list',
-
       },
     },
-
     ...createSectionRoutes,
     ...editSectionRoutes,
   ],

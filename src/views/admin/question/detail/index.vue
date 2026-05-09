@@ -3,6 +3,7 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 
+const route = useRoute()
 const router = useRouter()
 
 type QuestionOption = {
@@ -25,6 +26,7 @@ type Stage = {
   /** 阶段名称 */
   name: string
 
+  /** 题目类型 */
   type: '单选题' | '多选题' | '开放式题'
 
   /** 分值 */
@@ -38,6 +40,47 @@ type Stage = {
 
   /** 单选或多选选项和答案 */
   answerOptions?: QuestionOption[]
+}
+
+/**
+ * 获取题目类型标签颜色
+ */
+function getQuestionTypeTagType(type: Stage['type']) {
+  const tagTypeMap: Record<Stage['type'], 'primary' | 'success' | 'warning'> = {
+    单选题: 'primary',
+    多选题: 'success',
+    开放式题: 'warning',
+  }
+
+  return tagTypeMap[type]
+}
+
+/**
+ * 获取题目分值标签颜色
+ */
+function getScoreTagType(score: number) {
+  if (score >= 20) {
+    return 'danger'
+  }
+
+  if (score >= 10) {
+    return 'success'
+  }
+
+  return 'info'
+}
+
+/**
+ * 获取题目难度标签颜色
+ */
+function getDifficultyTagType(difficulty: Stage['difficulty']) {
+  const tagTypeMap: Record<Stage['difficulty'], 'success' | 'warning' | 'danger'> = {
+    简单: 'success',
+    中等: 'warning',
+    困难: 'danger',
+  }
+
+  return tagTypeMap[difficulty]
 }
 
 /**
@@ -105,12 +148,18 @@ const stages = ref<Stage[]>([
   },
 ])
 
+/**
+ * 获取正确选项内容列表
+ */
 function getCorrectOptionContents(stage: Stage) {
   return stage.answerOptions
     ?.filter(option => option.isCorrect)
     .map(option => option.content) ?? []
 }
 
+/**
+ * 获取单选题正确选项内容
+ */
 function getCorrectSingleOption(stage: Stage) {
   return getCorrectOptionContents(stage)[0] ?? ''
 }
@@ -122,7 +171,7 @@ function goToEdit() {
   router.push({
     name: 'AdminQuestionEdit',
     params: {
-      id: router.currentRoute.value.params.id,
+      id: route.params.id,
     },
   })
 }
@@ -130,7 +179,7 @@ function goToEdit() {
 
 <template>
   <div
-    class="mb-10 flex flex-col gap-4 "
+    class="mx-auto mb-10 flex w-full max-w-7xl flex-col gap-4 px-10 max-lg:px-6 max-sm:px-4"
   >
     <ArtPageHeader
       title="题库1 详情页"
@@ -159,53 +208,67 @@ function goToEdit() {
     </ArtPageHeader>
 
     <div
-      class="art-card flex flex-col gap-5"
+      class="flex flex-col gap-4"
     >
       <div
         v-for="(stage, index) in stages"
         :key="stage.id"
-        class=""
+        class="art-card"
       >
         <div
-          class="flex gap-10"
+          class="flex gap-6 items-start max-sm:flex-col"
         >
           <div
-            class="color-primary"
+            class="flex h-9 w-12 flex-shrink-0 items-center justify-center rounded-lg bg-primary/10 font-semibold text-primary"
           >
             Q{{ index + 1 }}
           </div>
 
           <div
-            class="flex flex-col gap-3"
+            class="flex min-w-0 flex-1 flex-col gap-4"
           >
-            <!-- 上面 -->
-
             <div
-              class="flex gap-10 items-center"
+              class="flex flex-wrap gap-3 items-center"
             >
-
               <div
-                class="flex gap-2 items-center"
+                class="text-base font-semibold text-g-900"
               >
-                <span
-                  class=""
-                >
-                  ({{ stage.type }})  {{ stage.score }}分
-                </span>
-
+                {{ stage.name }}
               </div>
 
+              <el-tag
+                :type="getQuestionTypeTagType(stage.type)"
+                size="small"
+              >
+                {{ stage.type }}
+              </el-tag>
+
+              <el-tag
+                :type="getScoreTagType(stage.score)"
+                size="small"
+              >
+                {{ stage.score }} 分
+              </el-tag>
+
+              <el-tag
+                :type="getDifficultyTagType(stage.difficulty)"
+                size="small"
+              >
+                {{ stage.difficulty }}
+              </el-tag>
             </div>
 
             <!-- 选项 -->
             <div
-              class="s"
+              v-if="stage.type !== '开放式题'"
+              class="rounded-lg bg-[var(--art-gray-100)] p-4"
             >
               <!-- 单选题 -->
               <el-radio-group
                 v-if="stage.type === '单选题'"
                 :model-value="getCorrectSingleOption(stage)"
                 disabled
+                class="flex flex-col gap-2"
               >
                 <el-radio
                   v-for="option in stage.answerOptions"
@@ -222,6 +285,7 @@ function goToEdit() {
                 v-if="stage.type === '多选题'"
                 :model-value="getCorrectOptionContents(stage)"
                 disabled
+                class="flex flex-col gap-2"
               >
                 <el-checkbox
                   v-for="option in stage.answerOptions"
@@ -237,32 +301,30 @@ function goToEdit() {
 
             <div
               v-if="stage.standardAnswer"
-              class=""
+              class="rounded-lg bg-[var(--art-gray-100)] p-4"
             >
-              难度: {{ stage.difficulty }}
-            </div>
+              <div
+                class="mb-2 text-sm font-medium text-g-900"
+              >
+                标准答案
+              </div>
 
-            <!-- 下面 -->
-            <div
-              v-if="stage.standardAnswer"
-              class=""
-            >
-              标准答案: {{ stage.standardAnswer.join('  /  ') }}
+              <div
+                class="flex flex-col gap-2 text-sm text-g-700"
+              >
+                <span
+                  v-for="answer in stage.standardAnswer"
+                  :key="answer"
+                >
+                  {{ answer }}
+                </span>
+              </div>
             </div>
-
           </div>
 
         </div>
-
-        <el-divider
-          v-if="index < stages.length - 1"
-          class="my-4"
-        />
-
       </div>
-
     </div>
-
   </div>
 </template>
 

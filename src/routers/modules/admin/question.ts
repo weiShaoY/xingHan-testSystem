@@ -27,12 +27,26 @@ export const Question: AppRouteRecord = {
       },
     },
     {
+      path: 'create',
+      name: 'AdminQuestionCreate',
+      component: '/admin/question/editor',
+      meta: {
+        title: '创建题库',
+        icon: 'ri:add-line',
+        keepAlive: true,
+        sort: 1,
+        isHide: true,
+        activePath: '/admin/question/list',
+
+      },
+    },
+    {
       path: 'edit/:id',
       name: 'AdminQuestionEdit',
-      component: '/admin/question/edit',
+      component: '/admin/question/editor',
       meta: {
         title: '题库编辑',
-        icon: 'ri:add-line',
+        icon: 'ri:edit-line',
         keepAlive: true,
         sort: 1,
         isHide: true,
@@ -47,19 +61,6 @@ export const Question: AppRouteRecord = {
         title: '题库详情',
         icon: 'ri:eye-line',
         keepAlive: true,
-        sort: 1,
-        isHide: true,
-        activePath: '/admin/question/list',
-
-      },
-    },
-    {
-      path: 'create',
-      name: 'AdminQuestionCreate',
-      component: '/admin/question/create',
-      meta: {
-        title: '创建题库',
-        icon: 'ri:add-line',
         sort: 1,
         isHide: true,
         activePath: '/admin/question/list',

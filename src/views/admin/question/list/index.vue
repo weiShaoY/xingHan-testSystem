@@ -107,9 +107,6 @@ function getCreateTimeText(item: QuestionBank) {
 function goToCreateQuestion() {
   router.push({
     name: 'AdminQuestionCreate',
-    params: {
-      id: 'create',
-    },
   })
 }
 

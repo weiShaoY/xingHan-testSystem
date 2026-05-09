@@ -1,7 +1,23 @@
 <!------  2026-04-15---16:08---星期三  ------>
 <!------------------------------------    ------------------------------------------------->
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
+
+const route = useRoute()
+
+/**
+ * 是否为编辑模式
+ */
+const isEditMode = computed(() => {
+  return Boolean(route.params.id)
+})
+
+/**
+ * 页面标题
+ */
+const pageTitle = computed(() => {
+  return isEditMode.value ? '题库1 编辑页' : '创建题库'
+})
 
 /**
  * 题目选项数据
@@ -118,7 +134,7 @@ const stages = ref<Stage[]>([
 /**
  * 题库标题
  */
-const questionBankTitle = ref('未命名题库')
+const questionBankTitle = ref(isEditMode.value ? '题库1' : '未命名题库')
 
 /**
  * 题目类型选项
@@ -220,6 +236,10 @@ function createStage(type: QuestionType = '单选题'): Stage {
     standardAnswer: type === '开放式题' ? [''] : undefined,
     answerExplanation: '',
   }
+}
+
+if (!isEditMode.value) {
+  stages.value = [createStage()]
 }
 
 /**
@@ -465,10 +485,10 @@ function importQuestions() {
 
 <template>
   <div
-    class="mb-10 flex flex-col gap-4"
+    class="mx-auto mb-10 flex w-full max-w-7xl flex-col gap-4 px-10 max-lg:px-6 max-sm:px-4"
   >
     <ArtPageHeader
-      title="题库1 编辑页"
+      :title="pageTitle"
       :stats="[
         `单选题数量: ${stages.filter(stage => stage.type === '单选题').length}`,
         `多选题数量: ${stages.filter(stage => stage.type === '多选题').length}`,
@@ -520,18 +540,18 @@ function importQuestions() {
             ]"
           >
             <div
-              class="flex gap-7 items-center"
+              class="flex gap-4 items-start max-md:flex-col"
             >
               <el-input
                 v-model="stage.name"
                 placeholder="请输入题目"
-                class="flex-1"
+                class="w-full flex-1"
               >
                 <template
                   #prefix
                 >
                   <div
-                    class="color-primary pr-5"
+                    class="text-primary pr-5"
                   >
                     Q{{ stageIndex + 1 }}.
                   </div>
@@ -541,7 +561,7 @@ function importQuestions() {
                   #append
                 >
                   <div
-                    class="text-5 color-[var(--art-gray-800)] flex gap-3.5 items-center"
+                    class="text-5 text-[var(--art-gray-800)] flex gap-3.5 items-center"
                   >
                     <ArtSvgIcon
                       v-for="tool in questionTools"
@@ -553,7 +573,7 @@ function importQuestions() {
               </el-input>
 
               <div
-                class="flex flex-shrink-0 gap-2 items-center"
+                class="flex flex-shrink-0 flex-wrap gap-2 items-center max-md:w-full max-md:justify-end"
               >
                 <ArtIconButton
                   v-for="item in stageActions"
@@ -569,7 +589,7 @@ function importQuestions() {
             <!-- 题目类型选择 -->
             <el-radio-group
               v-model="stage.type"
-              class="mt-5.5 gap-12"
+              class="mt-5.5 flex flex-wrap gap-x-12 gap-y-2"
               @change="handleQuestionTypeChange(stage)"
             >
               <el-radio
@@ -589,7 +609,7 @@ function importQuestions() {
               <div
                 v-for="(option, optionIndex) in stage.answerOptions"
                 :key="optionIndex"
-                class="mb-2 flex gap-2 items-center justify-between"
+                class="mb-2 flex gap-2 items-center justify-between max-sm:flex-col max-sm:items-stretch"
               >
                 <el-input
                   v-model="option.content"
@@ -619,7 +639,7 @@ function importQuestions() {
                 </el-input>
 
                 <div
-                  class="flex gap-1 items-center justify-between"
+                  class="flex gap-1 items-center justify-end"
                 >
                   <ArtIconButton
                     type="add"
@@ -687,7 +707,7 @@ function importQuestions() {
                 required
               >
                 <p
-                  class="text-3 color-info"
+                  class="text-3 text-g-600"
                 >
                   设置一个或多个标准答案，学员提交的答案和任何一个标准答案一致则自动得分，否则不得分；不设置标准答案时，学员提交答案后不会立即得分，需您手动给学员评分。
                 </p>
@@ -698,7 +718,7 @@ function importQuestions() {
                   <div
                     v-for="(_, answerIndex) in stage.standardAnswer"
                     :key="answerIndex"
-                    class="flex gap-3 w-full items-center"
+                    class="flex gap-3 w-full items-center max-sm:flex-col max-sm:items-stretch"
                   >
                     <el-input
                       v-model="stage.standardAnswer![answerIndex]"
@@ -714,7 +734,7 @@ function importQuestions() {
                     </el-input>
 
                     <div
-                      class="flex gap-2 items-center"
+                      class="flex gap-2 items-center justify-end"
                     >
                       <ArtIconButton
                         type="add"
@@ -738,11 +758,11 @@ function importQuestions() {
 
             <!-- 分值和难度 -->
             <div
-              class="flex gap-5 items-center"
+              class="grid grid-cols-2 gap-5 max-sm:grid-cols-1"
             >
               <el-form-item
                 label="分值"
-                class="!w-40"
+                class="!w-full"
                 required
               >
                 <el-input-number
@@ -750,12 +770,13 @@ function importQuestions() {
                   :min="0"
                   :controls="true"
                   placeholder="本题分值"
+                  class="w-full!"
                 />
               </el-form-item>
 
               <el-form-item
                 label="难度"
-                class="!w-40"
+                class="!w-full"
                 required
               >
                 <el-select
@@ -777,7 +798,7 @@ function importQuestions() {
               required
             >
               <p
-                class="text-3 color-info"
+                class="text-3 text-g-600"
               >
                 填写答题思路，帮助学员理解考试内容，提升考试成绩。
               </p>
@@ -794,7 +815,7 @@ function importQuestions() {
 
           <div
             v-if="movingStageId"
-            class="my-3 flex gap-3 items-center justify-center"
+            class="my-3 flex flex-wrap gap-3 items-center justify-center"
           >
             <art-icon-button
               type="warning"
@@ -816,7 +837,7 @@ function importQuestions() {
 
         <!-- 底部 -->
         <div
-          class="p-8 border flex gap-5 items-center !border-[var(--art-card-border)] !bg-[var(--art-gray-100)]"
+          class="rounded-lg border p-5 flex flex-wrap gap-3 items-center justify-end !border-[var(--art-card-border)] !bg-[var(--art-gray-100)] max-sm:flex-col max-sm:items-stretch"
         >
           <art-icon-button
             type="import"
