@@ -11,7 +11,7 @@ export const Project: AppRouteRecord = {
     title: '项目管理',
     icon: 'ri:armchair-line',
     keepAlive: true,
-    sort: 0,
+    sort: 2,
   },
   children: [
     {

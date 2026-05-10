@@ -35,7 +35,7 @@ type Props = {
    * 按钮预设类型
    * @description 内置不同的图标、颜色和 tooltip 配置
    */
-  type?: 'default' | 'view' | 'more' | 'add' | 'edit' | 'delete' | 'import' | 'export' | 'link' | 'primary' | 'success' | 'warning' | 'error' | 'allocate'
+  type?: 'default' | 'view' | 'more' | 'add' | 'edit' | 'delete' | 'import' | 'export' | 'link' | 'primary' | 'success' | 'warning' | 'error' | 'allocate' | 'download'
 
   /**
    * 图标颜色
@@ -174,6 +174,11 @@ const defaultButtons: Record<NonNullable<Props['type']>, ButtonPreset> = {
     icon: 'material-symbols:person-add-outline-rounded',
     class: 'bg-primary/12 text-primary',
     tooltip: '分配',
+  },
+  download: {
+    icon: 'ri:download-2-line',
+    class: 'bg-info/12 text-info',
+    tooltip: '下载',
   },
 }
 

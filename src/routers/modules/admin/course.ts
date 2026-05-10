@@ -67,10 +67,10 @@ export const Course: AppRouteRecord = {
   component: '',
   redirect: '/admin/course/list',
   meta: {
-    title: '我的课程',
+    title: '课程管理',
     icon: 'ri:ancient-pavilion-line',
     keepAlive: true,
-    sort: 0,
+    sort: 1,
   },
   children: [
     {
