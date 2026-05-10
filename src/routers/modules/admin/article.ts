@@ -8,6 +8,7 @@ export const articleRoutes: AppRouteRecord = {
     title: 'menus.article.title',
     icon: 'ri:book-2-line',
     roles: ['R_SUPER', 'R_ADMIN'],
+    sort: 1111,
   },
   children: [
     {

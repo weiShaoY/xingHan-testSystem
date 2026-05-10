@@ -40,8 +40,8 @@ export const widgetsRoutes: AppRouteRecord = {
       },
     },
     {
-      path: 'video',
-      name: 'Video',
+      path: 'video2',
+      name: 'Video2',
       component: '/admin/widgets/video',
       meta: {
         title: 'menus.widgets.video',

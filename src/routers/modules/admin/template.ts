@@ -69,16 +69,5 @@ export const templateRoutes: AppRouteRecord = {
         keepAlive: true,
       },
     },
-    {
-      path: 'pricing',
-      name: 'Pricing',
-      component: '/admin/template/pricing',
-      meta: {
-        title: 'menus.template.pricing',
-        icon: 'ri:money-cny-box-line',
-        keepAlive: true,
-        isFullPage: true,
-      },
-    },
   ],
 }

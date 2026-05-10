@@ -5,9 +5,7 @@ export const Question: AppRouteRecord = {
   path: 'question',
   name: 'Question',
   component: '',
-  redirect: {
-    name: 'AdminQuestionList',
-  },
+  redirect: '/admin/question/list',
   meta: {
     title: '题库管理',
     icon: 'ri:file-text-line',
