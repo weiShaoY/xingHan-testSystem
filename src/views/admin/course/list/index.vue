@@ -3,6 +3,8 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 
+import { getCourseList } from '@/api/course'
+
 import AllocateCourseDialog from './AllocateCourseDialog.vue'
 
 const router = useRouter()
@@ -64,6 +66,17 @@ const sourceList = ref<Course[]>([
   },
 
 ])
+
+/**
+ * 获取课程列表
+ */
+async function fetchCourseList() {
+  const a = await getCourseList()
+
+  console.log('🚀 ~ file: index.vue:75 ~ a:', a)
+}
+
+fetchCourseList()
 
 /**
  * 获取课程完成进度
