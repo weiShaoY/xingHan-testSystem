@@ -1,6 +1,10 @@
 <!------  2026-05-14---16:11---星期四  ------>
 <!------------------------------------    ------------------------------------------------->
 <script lang="ts" setup>
+import HeaderBar from './components/header-bar/index.vue'
+
+import PageContent from './components/page-content/index.vue'
+
 defineOptions({
   name: 'ClientLayout',
 })
@@ -8,15 +12,38 @@ defineOptions({
 
 <template>
   <div
-    class="client-layout"
+    class="app-layout"
   >
-    <RouterView />
+    <!-- <aside
+      id="app-sidebar"
+    >
+      <ArtSidebarMenu />
+    </aside> -->
+
+    <main
+      id="app-main"
+    >
+      <div
+        id="app-header"
+      >
+        <HeaderBar />
+      </div>
+
+      <div
+        id="app-content"
+      >
+        <PageContent />
+      </div>
+    </main>
+
+    <!-- <div
+      id="app-global"
+    >
+      <ArtGlobalComponent />
+    </div> -->
   </div>
 </template>
 
 <style lang="scss" scoped>
-.client-layout {
-  min-height: 100vh;
-  background: var(--default-bg-color);
-}
+  @use './style';
 </style>
