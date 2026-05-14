@@ -1,4 +1,4 @@
-import request from '@/utils/http'
+import request from './http'
 
 /**
  * 获取课程列表

@@ -3,7 +3,7 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 
-import { getCourseList } from '@/api/course'
+import { getCourseList } from '@/apis/course'
 
 import AllocateCourseDialog from './AllocateCourseDialog.vue'
 

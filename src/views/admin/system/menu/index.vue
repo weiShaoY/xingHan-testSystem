@@ -10,12 +10,12 @@ import type { AppRouteRecord } from '@/types/router'
 
 import MenuDialog from './modules/menu-dialog.vue'
 
-import { fetchGetMenuList } from '@/api/system-manage'
+import { fetchGetMenuList } from '@/apis/system-manage'
 
 import { ElMessageBox, ElTag } from 'element-plus'
 
 defineOptions({
- name: 'Menus' 
+ name: 'Menus'
 })
 
 // 状态管理
@@ -41,11 +41,11 @@ const initialSearchState = {
   }
 
 const formFilters = reactive({
- ...initialSearchState 
+ ...initialSearchState
 })
 
 const appliedFilters = reactive({
- ...initialSearchState 
+ ...initialSearchState
 })
 
 const formItems = computed(() => [
@@ -54,7 +54,7 @@ const formItems = computed(() => [
     key: 'name',
     type: 'input',
     props: {
- clearable: true 
+ clearable: true
 }
   },
   {
@@ -62,7 +62,7 @@ const formItems = computed(() => [
     key: 'route',
     type: 'input',
     props: {
- clearable: true 
+ clearable: true
 }
   }
 ])
@@ -98,15 +98,15 @@ const getMenuList = async (): Promise<void> => {
 const getMenuTypeTag = (
   row: AppRouteRecord,
   ): 'primary' | 'success' | 'warning' | 'info' | 'danger' => {
-  if (row.meta?.isAuthButton) 
+  if (row.meta?.isAuthButton)
 return 'danger'
-  if (row.children?.length) 
+  if (row.children?.length)
 return 'info'
-  if (row.meta?.link && row.meta?.isIframe) 
+  if (row.meta?.link && row.meta?.isIframe)
 return 'success'
-  if (row.path) 
+  if (row.path)
 return 'primary'
-  if (row.meta?.link) 
+  if (row.meta?.link)
 return 'warning'
   return 'info'
 }
@@ -117,15 +117,15 @@ return 'warning'
    * @returns 菜单类型文本
    */
 const getMenuTypeText = (row: AppRouteRecord): string => {
-  if (row.meta?.isAuthButton) 
+  if (row.meta?.isAuthButton)
 return '按钮'
-  if (row.children?.length) 
+  if (row.children?.length)
 return '目录'
-  if (row.meta?.link && row.meta?.isIframe) 
+  if (row.meta?.link && row.meta?.isIframe)
 return '内嵌'
-  if (row.path) 
+  if (row.path)
 return '菜单'
-  if (row.meta?.link) 
+  if (row.meta?.link)
 return '外链'
   return '未知'
 }
@@ -143,7 +143,7 @@ const { columnChecks, columns } = useTableColumns(() => [
     label: '菜单类型',
     formatter: (row: AppRouteRecord) => {
       return h(ElTag, {
- type: getMenuTypeTag(row) 
+ type: getMenuTypeTag(row)
 }, () => getMenuTypeText(row))
     }
   },
@@ -151,7 +151,7 @@ const { columnChecks, columns } = useTableColumns(() => [
     prop: 'path',
     label: '路由',
     formatter: (row: AppRouteRecord) => {
-      if (row.meta?.isAuthButton) 
+      if (row.meta?.isAuthButton)
 return ''
       return row.meta?.link || row.path || ''
     }
@@ -164,7 +164,7 @@ return ''
         return row.meta?.authMark || ''
       }
 
-      if (!row.meta?.authList?.length) 
+      if (!row.meta?.authList?.length)
 return ''
       return `${row.meta.authList.length} 个权限标识`
     }
@@ -178,7 +178,7 @@ return ''
     prop: 'status',
     label: '状态',
     formatter: () => h(ElTag, {
- type: 'success' 
+ type: 'success'
 }, () => '启用'),
     },
   {
@@ -188,7 +188,7 @@ return ''
     align: 'right',
     formatter: (row: AppRouteRecord) => {
       const buttonStyle = {
- style: 'text-align: right' 
+ style: 'text-align: right'
 }
 
       if (row.meta?.isAuthButton) {
@@ -231,10 +231,10 @@ const tableData = ref<AppRouteRecord[]>([])
    */
 const handleReset = (): void => {
   Object.assign(formFilters, {
- ...initialSearchState 
+ ...initialSearchState
 })
   Object.assign(appliedFilters, {
- ...initialSearchState 
+ ...initialSearchState
 })
   getMenuList()
 }
@@ -244,7 +244,7 @@ const handleReset = (): void => {
    */
 const handleSearch = (): void => {
   Object.assign(appliedFilters, {
- ...formFilters 
+ ...formFilters
 })
   getMenuList()
 }
@@ -262,11 +262,11 @@ const handleRefresh = (): void => {
    * @returns 克隆后的对象
    */
 const deepClone = <T>(obj: T): T => {
-  if (obj === null || typeof obj !== 'object') 
+  if (obj === null || typeof obj !== 'object')
 return obj
-  if (obj instanceof Date) 
+  if (obj instanceof Date)
 return new Date(obj) as T
-  if (Array.isArray(obj)) 
+  if (Array.isArray(obj))
 return obj.map(item => deepClone(item)) as T
 
   const cloned = {

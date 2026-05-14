@@ -9,7 +9,7 @@
 
 import type { AppRouteRecord } from '@/types/router'
 
-import { fetchGetMenuList } from '@/api/system-manage'
+import { fetchGetMenuList } from '@/apis/system-manage'
 
 import { useAppMode } from '@/hooks/core/useAppMode'
 

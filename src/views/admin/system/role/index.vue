@@ -4,7 +4,7 @@ import type { ButtonMoreItem } from '@/components/core/forms/art-button-more/ind
 
 import { ElMessageBox, ElTag } from 'element-plus'
 
-import { fetchGetRoleList } from '@/api/system-manage'
+import { fetchGetRoleList } from '@/apis/system-manage'
 
 import ArtButtonMore from '@/components/core/forms/art-button-more/index.vue'
 

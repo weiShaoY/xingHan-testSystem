@@ -471,7 +471,6 @@ declare module 'vue' {
     readonly handleMenuJump: UnwrapRef<typeof import('../../utils/navigation/jump')['handleMenuJump']>
     readonly hexToRgb: UnwrapRef<typeof import('../../utils/ui/colors')['hexToRgb']>
     readonly hexToRgba: UnwrapRef<typeof import('../../utils/ui/colors')['hexToRgba']>
-    readonly http: UnwrapRef<typeof import('../../utils/http/index')['default']>
     readonly ignorableWatch: UnwrapRef<typeof import('@vueuse/core')['ignorableWatch']>
     readonly inject: UnwrapRef<typeof import('vue')['inject']>
     readonly injectLocal: UnwrapRef<typeof import('@vueuse/core')['injectLocal']>

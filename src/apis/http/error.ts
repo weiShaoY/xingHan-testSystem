@@ -18,7 +18,7 @@
  * - 业务代码中捕获和处理特定错误
  * - 错误日志收集和上报
  *
- * @module utils/http/error
+ * @module apis/http/error
  * @author Art Design Pro Team
  */
 import type { AxiosError } from 'axios'

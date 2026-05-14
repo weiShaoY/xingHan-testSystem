@@ -20,7 +20,7 @@ import {
   watch,
 } from 'vue'
 
-import { fetchGetUserList } from '@/api/system-manage'
+import { fetchGetUserList } from '@/apis/system-manage'
 
 import { CacheInvalidationStrategy, useTable } from '@/hooks/core/useTable'
 

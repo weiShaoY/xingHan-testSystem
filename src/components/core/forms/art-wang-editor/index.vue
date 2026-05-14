@@ -15,11 +15,11 @@ import {
   shallowRef,
 } from 'vue'
 
+import request from '@/apis/http'
+
 import { useAdminUserStore } from '@/store/modules/adminUser'
 
 import { useClientUserStore } from '@/store/modules/clientUser'
-
-import request from '@/utils/http'
 
 import EmojiText from '@/utils/ui/emojo'
 

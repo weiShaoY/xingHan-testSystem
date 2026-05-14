@@ -1,6 +1,6 @@
 <!-- 基础表格 -->
 <script setup lang="ts">
-import { fetchGetUserList } from '@/api/system-manage'
+import { fetchGetUserList } from '@/apis/system-manage'
 
 import { useTable } from '@/hooks/core/useTable'
 

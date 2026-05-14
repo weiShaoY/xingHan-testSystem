@@ -6,15 +6,15 @@ import { ElNotification } from 'element-plus'
 
 import { useI18n } from 'vue-i18n'
 
-import { fetchLogin } from '@/api/auth'
+import { fetchLogin } from '@/apis/auth'
+
+import { HttpError } from '@/apis/http/error'
 
 import AppConfig from '@/config'
 
 import { useAdminUserStore } from '@/store/modules/adminUser'
 
 import { useSettingStore } from '@/store/modules/setting'
-
-import { HttpError } from '@/utils/http/error'
 
 defineOptions({
   name: 'Login',

@@ -12,9 +12,6 @@ export * from './constants'
 // 表单相关
 export * from './form'
 
-// HTTP 相关
-export * from './http'
-
 // 路由导航相关
 export * from './navigation'
 

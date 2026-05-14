@@ -45,7 +45,11 @@ import NProgress from 'nprogress'
 
 import { nextTick } from 'vue'
 
-import { fetchGetUserInfo } from '@/api/auth'
+import { fetchGetUserInfo } from '@/apis/auth'
+
+import { isHttpError } from '@/apis/http/error'
+
+import { ApiStatus } from '@/apis/http/status'
 
 import { useCommon } from '@/hooks/core/useCommon'
 
@@ -58,10 +62,6 @@ import { useMenuStore } from '@/store/modules/menu'
 import { useSettingStore } from '@/store/modules/setting'
 
 import { useWorktabStore } from '@/store/modules/worktab'
-
-import { isHttpError } from '@/utils/http/error'
-
-import { ApiStatus } from '@/utils/http/status'
 
 import { setWorktab } from '@/utils/navigation'
 

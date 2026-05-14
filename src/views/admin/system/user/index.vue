@@ -12,7 +12,7 @@ import {
   ElTag,
 } from 'element-plus'
 
-import { fetchGetUserList } from '@/api/system-manage'
+import { fetchGetUserList } from '@/apis/system-manage'
 
 import ArtButtonTable from '@/components/core/forms/art-button-table/index.vue'
 

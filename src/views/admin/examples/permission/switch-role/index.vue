@@ -4,7 +4,7 @@ import { computed, ref } from 'vue'
 
 import { useI18n } from 'vue-i18n'
 
-import { fetchGetUserInfo, fetchLogin } from '@/api/auth'
+import { fetchGetUserInfo, fetchLogin } from '@/apis/auth'
 
 import { useAdminUserStore } from '@/store/modules/adminUser'
 
