@@ -62,8 +62,7 @@ import { RoutesAlias } from '../../routesAlias'
 export const clientRoutes: AppRouteRecord = {
   path: '/client',
   name: 'Client',
-
-  // component: RoutesAlias.Layout,
+  component: RoutesAlias.ClientLayout,
   meta: {
     title: '客户端',
     icon: 'ri:user-line',

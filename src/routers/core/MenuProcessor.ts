@@ -128,7 +128,7 @@ export class MenuProcessor {
         }
 
         // 如果有有效的 component，保留
-        if (item.component && item.component !== '' && item.component !== RoutesAlias.Layout) {
+        if (item.component && item.component !== '' && item.component !== RoutesAlias.AdminLayout) {
           return true
         }
 

@@ -67,7 +67,7 @@ const adminModules: AppRouteRecord[] = loadAdminModules()
 export const adminRoutes: AppRouteRecord = {
   path: '/admin',
   name: 'Admin',
-  component: RoutesAlias.Layout,
+  component: RoutesAlias.AdminLayout,
   meta: {
     title: '管理端',
     icon: 'ri:shield-line',
