@@ -25,7 +25,7 @@ const logoStyle = computed(() => ({
   >
     <img
       :style="logoStyle"
-      src="@imgs/common/logo.webp"
+      src="@imgs/common/logo.png"
       alt="logo"
       class="w-full h-full"
     >

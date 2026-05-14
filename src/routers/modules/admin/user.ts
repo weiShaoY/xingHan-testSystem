@@ -1,13 +1,13 @@
-// 个人中心
+// 文件管理
 import type { AppRouteRecord } from '@/types/router'
 
-export const AdminUser: AppRouteRecord = {
-  path: 'user',
-  name: 'AdminUser',
+export const AdminUserFile: AppRouteRecord = {
+  path: 'file',
+  name: 'AdminFile',
   component: '',
-  redirect: '/admin/user/document',
+  redirect: '/admin/file/document',
   meta: {
-    title: '个人中心',
+    title: '文件管理',
     icon: 'ri:file-text-line',
     keepAlive: true,
     sort: 5,
@@ -15,10 +15,10 @@ export const AdminUser: AppRouteRecord = {
   children: [
     {
       path: 'document',
-      name: 'AdminUserDocument',
-      component: '/admin/user/document',
+      name: 'AdminFileDocument',
+      component: '/admin/file/document',
       meta: {
-        title: '我的文档',
+        title: '文档',
         icon: 'ri:align-item-left-fill',
         keepAlive: true,
         sort: 1,
@@ -26,10 +26,10 @@ export const AdminUser: AppRouteRecord = {
     },
     {
       path: 'video',
-      name: 'AdminUserVideo',
-      component: '/admin/user/video',
+      name: 'AdminFileVideo',
+      component: '/admin/file/video',
       meta: {
-        title: '我的视频',
+        title: '视频',
         icon: 'ri:align-item-left-fill',
         keepAlive: true,
         sort: 2,
@@ -37,8 +37,8 @@ export const AdminUser: AppRouteRecord = {
     },
     {
       path: 'trash',
-      name: 'AdminUserTrash',
-      component: '/admin/user/trash',
+      name: 'AdminFileTrash',
+      component: '/admin/file/trash',
       meta: {
         title: '回收站',
         icon: 'ri:align-item-left-fill',
