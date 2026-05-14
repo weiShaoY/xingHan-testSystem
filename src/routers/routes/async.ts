@@ -3,7 +3,7 @@ import type { AppRouteRecord } from '@/types/router'
 
 import { adminRoutes } from '../modules/admin'
 
-import { clientRouteModules, clientRoutes } from '../modules/client'
+import { clientRoutes } from '../modules/client'
 
 /**
  * 动态路由（需要权限才能访问的路由）
@@ -11,5 +11,6 @@ import { clientRouteModules, clientRoutes } from '../modules/client'
  */
 export const asyncRoutes: AppRouteRecord[] = [
   adminRoutes,
-  ...(clientRouteModules.length ? [clientRoutes] : []),
+
+  clientRoutes,
 ]

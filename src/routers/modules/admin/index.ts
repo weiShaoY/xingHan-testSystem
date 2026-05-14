@@ -71,7 +71,6 @@ export const adminRoutes: AppRouteRecord = {
   meta: {
     title: '管理端',
     icon: 'ri:shield-line',
-    isMenuRoot: true,
   },
   redirect: '/admin/course/list',
 

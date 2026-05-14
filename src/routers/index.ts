@@ -10,19 +10,33 @@ import { setupBeforeEachGuard } from './guards/beforeEach'
 
 import { staticRoutes } from './routes/static'
 
-// 创建路由实例
+/**
+ * 路由实例
+ */
 export const router = createRouter({
   history: createWebHashHistory(),
-  routes: staticRoutes, // 静态路由
+  routes: staticRoutes,
 })
 
-// 初始化路由
+/**
+ * 初始化路由
+ * @param app 应用实例
+ */
 export function initRouter(app: App<Element>): void {
-  configureNProgress() // 顶部进度条
-  setupBeforeEachGuard(router) // 路由前置守卫
-  setupAfterEachGuard(router) // 路由后置守卫
+  // 顶部进度条
+  configureNProgress()
+
+  // 路由前置守卫
+  setupBeforeEachGuard(router)
+
+  // 路由后置守卫
+  setupAfterEachGuard(router)
+
   app.use(router)
 }
 
-// 主页路径，默认使用菜单第一个有效路径，配置后使用此路径
+/**
+ * 主页路径
+ * @description 主页路径，默认使用菜单第一个有效路径，配置后使用此路径
+ */
 export const HOME_PAGE_PATH = ''
