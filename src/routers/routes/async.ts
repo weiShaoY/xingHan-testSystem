@@ -10,6 +10,7 @@ import { clientRoutes } from '../modules/client'
  * 用于渲染菜单以及根据菜单权限动态加载路由，如果没有权限无法访问
  */
 export const asyncRoutes: AppRouteRecord[] = [
+
   adminRoutes,
 
   clientRoutes,

@@ -50,6 +50,8 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => {
     ? [createBreadcrumbItem(currentRoute)]
     : matched.map(createBreadcrumbItem)
 
+  items = items.filter(item => !item.meta?.isMenuRoot)
+
   // 过滤包裹容器：如果有多个项目且第一个是容器路由（如 /outside），则移除它
   if (items.length > 1 && isWrapperContainer(items[0])) {
     items = items.slice(1)
