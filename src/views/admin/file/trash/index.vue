@@ -36,7 +36,14 @@ const trashList = ref<UserDocument[]>([
   },
 ])
 
+const selectedRows = ref<UserDocument[]>([])
+
+const hasSelectedRows = computed(() => selectedRows.value.length > 0)
+
 const columns: ColumnOption<UserDocument>[] = [
+  {
+    type: 'selection',
+  },
   {
     label: '文件名称',
     prop: 'name',
@@ -81,6 +88,18 @@ function getStatusText(status: DocumentStatus) {
   return statusMap[status]
 }
 
+function handleSelectionChange(selection: UserDocument[]) {
+  selectedRows.value = selection
+}
+
+function restoreSelectedFiles() {
+  console.log('恢复选中文件:', selectedRows.value)
+}
+
+function deleteSelectedForever() {
+  console.log('彻底删除选中文件:', selectedRows.value)
+}
+
 function restoreFile(item: UserDocument) {
   trashList.value = trashList.value.filter(file => file.id !== item.id)
   console.log('恢复文件:', item)
@@ -114,11 +133,32 @@ function deleteForever(item: UserDocument) {
       </div>
     </div>
 
+    <div
+      class="flex items-center gap-5"
+    >
+      <ArtIconButton
+        icon="ri:arrow-go-back-line"
+        :disabled="!hasSelectedRows"
+        @click="restoreSelectedFiles"
+      >
+        恢复选中文件
+      </ArtIconButton>
+
+      <ArtIconButton
+        type="delete"
+        :disabled="!hasSelectedRows"
+        @click="deleteSelectedForever"
+      >
+        彻底删除选中文件
+      </ArtIconButton>
+    </div>
+
     <!-- 回收站表格 -->
     <ArtTable
       :data="trashList"
       :columns="columns"
       row-key="id"
+      @selection-change="handleSelectionChange"
     >
       <template
         #name="{ row }"
