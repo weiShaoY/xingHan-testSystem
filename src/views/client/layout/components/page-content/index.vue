@@ -11,7 +11,7 @@ import { useSettingStore } from '@/store/modules/setting'
 import { useWorktabStore } from '@/store/modules/worktab'
 
 defineOptions({
-  name: 'ArtPageContent',
+  name: 'PageContent',
 })
 
 const route = useRoute()
@@ -129,7 +129,7 @@ onMounted(() => {
 
     <RouterView
       v-if="isRefresh"
-      v-slot="{ Component, route }"
+      v-slot="{ Component, route: viewRoute }"
       :style="contentStyle"
     >
       <!-- 缓存路由动画 -->
@@ -144,8 +144,8 @@ onMounted(() => {
         >
           <component
             :is="Component"
-            v-if="route.meta.keepAlive"
-            :key="route.path"
+            v-if="viewRoute.meta.keepAlive"
+            :key="viewRoute.path"
             class="art-page-view"
           />
         </KeepAlive>
@@ -159,8 +159,8 @@ onMounted(() => {
       >
         <component
           :is="Component"
-          v-if="!route.meta.keepAlive"
-          :key="route.path"
+          v-if="!viewRoute.meta.keepAlive"
+          :key="viewRoute.path"
           class="art-page-view"
         />
       </Transition>

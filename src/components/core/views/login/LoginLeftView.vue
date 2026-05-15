@@ -8,7 +8,11 @@ import { themeAnimation } from '@/utils/ui/animation'
 
 // 定义 props
 defineProps<{
-  hideContent?: boolean // 是否隐藏内容，只显示 logo
+
+  /**
+     *  是否隐藏内容，只显示 logo
+     */
+  hideContent?: boolean
 }>()
 </script>
 

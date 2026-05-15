@@ -215,16 +215,16 @@ function openChat(): void {
 
 <template>
   <div
-    class="bg-[var(--default-bg-color)] w-full"
+    class="bg-(--default-bg-color) w-full"
     :class="[
-      tabStyle === 'tab-card' || tabStyle === 'tab-google' ? 'mb-5 max-sm:mb-3 !bg-box' : '',
+      tabStyle === 'tab-card' || tabStyle === 'tab-google' ? 'mb-5 max-sm:mb-3 bg-box!' : '',
     ]"
   >
     <div
       class="leading-15 flex-b h-15 select-none box-border relative"
       :class="[
         tabStyle === 'tab-card' || tabStyle === 'tab-google'
-          ? 'border-b border-[var(--art-card-border)]'
+          ? 'border-b border-(--art-card-border)'
           : '',
       ]"
     >
@@ -238,8 +238,9 @@ function openChat(): void {
           class="flex-c c-p"
           @click="toHome"
         >
-          <ArtLogo
+          <!-- <ArtLogo
             class="pl-4.5"
+            type="full"
           />
 
           <p
@@ -247,11 +248,18 @@ function openChat(): void {
             class="text-lg mx-2 my-0 ml-2"
           >
             {{ AppConfig.systemInfo.name }}
-          </p>
+          </p> -->
+
+          <ArtLogo
+            class="pl-4.5"
+            :type="width >= 1400 ? 'full' : 'mark'"
+          />
+
         </div>
 
         <ArtLogo
-          class="pl-3.5 align-[-0.15em] overflow-hidden fill-current !hidden"
+          class="pl-3.5 align-[-0.15em] overflow-hidden fill-current hidden!"
+          type="full"
           @click="toHome"
         />
 
@@ -267,7 +275,7 @@ function openChat(): void {
         <ArtIconButton
           v-if="shouldShowRefreshButton"
           icon="ri:refresh-line"
-          class="refresh-btn !ml-3 max-sm:!hidden"
+          class="refresh-btn ml-3! max-sm:hidden!"
           :style="{ marginLeft: !isLeftMenu ? '10px' : '0' }"
           @click="() => reload()"
         />
@@ -306,7 +314,7 @@ function openChat(): void {
         <!-- 搜索 -->
         <div
           v-if="shouldShowGlobalSearch"
-          class="rounded-custom-sm px-2.5 border border-g-400 flex-cb h-9 w-40 c-p max-md:!hidden"
+          class="rounded-custom-sm px-2.5 border border-g-400 flex-cb h-9 w-40 c-p max-md:hidden!"
           @click="openSearchDialog"
         >
           <div
@@ -348,7 +356,7 @@ function openChat(): void {
           v-if="shouldShowFullscreen"
           :icon="isFullscreen ? 'ri:fullscreen-exit-line' : 'ri:fullscreen-fill'"
           :class="[!isFullscreen ? 'full-screen-btn' : 'exit-full-screen-btn']"
-          class="ml-3 max-md:!hidden"
+          class="ml-3! max-md:hidden!"
           @click="toggleFullScreen"
         />
 
@@ -398,7 +406,7 @@ function openChat(): void {
           @click="visibleNotice"
         >
           <div
-            class="rounded-full size-1.5 right-2 top-2 absolute !bg-danger"
+            class="rounded-full size-1.5 right-2 top-2 absolute bg-danger!"
           />
         </ArtIconButton>
 
@@ -410,7 +418,7 @@ function openChat(): void {
           @click="openChat"
         >
           <div
-            class="breathing-dot rounded-full size-1.5 right-2 top-2 absolute !bg-success"
+            class="breathing-dot rounded-full size-1.5 right-2 top-2 absolute bg-success!"
           />
         </ArtIconButton>
 

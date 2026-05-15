@@ -8,6 +8,14 @@
     class=""
   >
     首页
+    <div
+      v-for="item in 100"
+      :key="item"
+      class=""
+    >
+      {{ item }}
+
+    </div>
   </div>
 </template>
 

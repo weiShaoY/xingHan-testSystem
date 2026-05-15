@@ -59,6 +59,9 @@ const showLeftMenu = computed(
   () => menuType.value === MenuTypeEnum.LEFT || menuType.value === MenuTypeEnum.TOP_LEFT,
 )
 
+/**
+   * 是否为双列菜单
+   */
 const isDualMenu = computed(() => menuType.value === MenuTypeEnum.DUAL_MENU)
 
 // 移动端屏幕判断（使用 computed 避免重复计算）
@@ -334,20 +337,31 @@ watch(menuOpen, (isMenuOpen: boolean) => {
         }"
         @click="navigateToHome"
       >
-        <ArtLogo
-          v-if="!isDualMenu"
-          class="logo"
-        />
-
-        <p
-          :class="{ 'is-dual-menu-name': isDualMenu }"
-          :style="{
-            color: getMenuTheme.systemNameColor,
-            opacity: !menuOpen ? 0 : 1,
-          }"
+        <!-- 如果是双列菜单，则是右侧 显示系统名称 -->
+        <template
+          v-if="isDualMenu"
         >
-          {{ AppConfig.systemInfo.name }}
-        </p>
+          <p
+            :class="{ 'is-dual-menu-name': isDualMenu }"
+            :style="{
+              color: getMenuTheme.systemNameColor,
+              opacity: !menuOpen ? 0 : 1,
+            }"
+          >
+            {{ AppConfig.systemInfo.name }}
+          </p>
+        </template>
+
+        <!-- 如果不是双列菜单，显示Logo -->
+        <template
+          v-else
+        >
+          <ArtLogo
+            class="logo"
+            type="full"
+          />
+
+        </template>
       </div>
 
       <ElScrollbar
