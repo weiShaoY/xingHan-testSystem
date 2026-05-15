@@ -236,7 +236,7 @@ function deleteQuestionBank(item: QuestionBank) {
             </div>
 
             <div
-              class="flex flex-shrink-0 gap-2 items-center justify-center max-sm:w-full max-sm:justify-end"
+              class="flex shrink-0 gap-2 items-center justify-center max-sm:w-full max-sm:justify-end"
               @click.stop
             >
               <ArtIconButton
