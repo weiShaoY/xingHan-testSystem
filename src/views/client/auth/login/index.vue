@@ -1,4 +1,4 @@
-<!-- 登录页面 -->
+<!-- 客户端 登录页面 -->
 <script setup lang="ts">
 import type { FormInstance, FormRules } from 'element-plus'
 
@@ -20,76 +20,83 @@ defineOptions({
   name: 'Login',
 })
 
+/**
+ * 系统设置状态，用于读取当前主题等全局配置。
+ */
 const settingStore = useSettingStore()
 
-const { isDark } = storeToRefs(settingStore)
-
-const { t, locale } = useI18n()
-
-const formKey = ref(0)
-
-// 监听语言切换，重置表单
-watch(locale, () => {
-  formKey.value++
-})
-
-type AccountKey = 'super' | 'admin' | 'user'
-
-export type Account = {
-  key: AccountKey
-  label: string
-  userName: string
-  password: string
-  roles: string[]
-}
-
-const accounts = computed<Account[]>(() => [
-  {
-    key: 'super',
-    label: t('client.login.roles.super'),
-    userName: 'Super',
-    password: '123456',
-    roles: ['R_SUPER'],
-  },
-  {
-    key: 'admin',
-    label: t('client.login.roles.admin'),
-    userName: 'Admin',
-    password: '123456',
-    roles: ['R_ADMIN'],
-  },
-  {
-    key: 'user',
-    label: t('client.login.roles.user'),
-    userName: 'User',
-    password: '123456',
-    roles: ['R_USER'],
-  },
-])
-
-const dragVerify = ref()
-
+/**
+ * 客户端用户状态，用于保存 token 与登录状态。
+ */
 const userStore = useClientUserStore()
 
+/**
+ * 路由实例，用于登录成功后的页面跳转。
+ */
 const router = useRouter()
 
+/**
+ * 当前路由信息，用于读取 redirect 参数。
+ */
 const route = useRoute()
 
-const isPassing = ref(false)
+/**
+ * 当前是否为暗色主题。
+ */
+const { isDark } = storeToRefs(settingStore)
 
-const isClickPass = ref(false)
+/**
+ * 国际化方法与当前语言标识。
+ */
+const { t, locale } = useI18n()
 
+/**
+ * 系统名称，用于登录成功通知。
+ */
 const systemName = AppConfig.systemInfo.name
 
+/**
+ * 表单重渲染标识，语言切换后递增以刷新校验文案。
+ */
+const formKey = ref(0)
+
+/**
+ * 拖拽验证组件实例。
+ */
+const dragVerify = ref()
+
+/**
+ * 拖拽验证是否已通过。
+ */
+const isPassing = ref(false)
+
+/**
+ * 是否已经点击登录但未通过拖拽验证。
+ */
+const isClickPass = ref(false)
+
+/**
+ * 登录表单实例。
+ */
 const formRef = ref<FormInstance>()
 
+/**
+ * 登录按钮加载状态。
+ */
+const loading = ref(false)
+
+/**
+ * 登录表单数据。
+ */
 const formData = reactive({
-  account: '',
   username: '',
   password: '',
   rememberPassword: true,
 })
 
+/**
+ * 登录表单校验规则。
+ */
 const rules = computed<FormRules>(() => ({
   username: [{
     required: true,
@@ -103,22 +110,19 @@ const rules = computed<FormRules>(() => ({
   }],
 }))
 
-const loading = ref(false)
-
-onMounted(() => {
-  setupAccount('super')
+/**
+ * 监听语言切换，重置表单实例以更新表单校验文案。
+ */
+watch(locale, () => {
+  formKey.value++
 })
 
-// 设置账号
-function setupAccount(key: AccountKey) {
-  const selectedAccount = accounts.value.find((account: Account) => account.key === key)
-
-  formData.account = key
-  formData.username = selectedAccount?.userName ?? ''
-  formData.password = selectedAccount?.password ?? ''
-}
-
-// 登录
+/**
+ * 提交登录表单。
+ *
+ * 校验表单和拖拽验证后调用登录接口，成功后保存客户端 token 与登录状态，
+ * 并根据 redirect 参数跳转到目标页面或客户端首页。
+ */
 async function handleSubmit() {
   if (!formRef.value) { return }
 
@@ -178,12 +182,16 @@ async function handleSubmit() {
   }
 }
 
-// 重置拖拽验证
+/**
+ * 重置拖拽验证组件状态。
+ */
 function resetDragVerify() {
   dragVerify.value.reset()
 }
 
-// 登录成功提示
+/**
+ * 显示登录成功通知。
+ */
 function showLoginSuccessNotice() {
   setTimeout(() => {
     ElNotification({
@@ -243,24 +251,6 @@ function showLoginSuccessNotice() {
             @keyup.enter="handleSubmit"
           >
             <ElFormItem
-              prop="account"
-            >
-              <ElSelect
-                v-model="formData.account"
-                @change="setupAccount"
-              >
-                <ElOption
-                  v-for="account in accounts"
-                  :key="account.key"
-                  :label="account.label"
-                  :value="account.key"
-                >
-                  <span>{{ account.label }}</span>
-                </ElOption>
-              </ElSelect>
-            </ElFormItem>
-
-            <ElFormItem
               prop="username"
             >
               <ElInput
@@ -288,8 +278,8 @@ function showLoginSuccessNotice() {
               class="mt-6 pb-5 relative"
             >
               <div
-                class="border border-transparent rounded-lg select-none tad-300 relative z-[2] overflow-hidden"
-                :class="{ '!border-[#FF4E4F] border-solid border border-solid': !isPassing && isClickPass }"
+                class="border border-transparent rounded-lg select-none tad-300 relative z-2 overflow-hidden"
+                :class="{ 'border-[#FF4E4F]!  border border-solid': !isPassing && isClickPass }"
               >
                 <ArtDragVerify
                   ref="dragVerify"
@@ -304,7 +294,7 @@ function showLoginSuccessNotice() {
               </div>
 
               <p
-                class="text-xs text-[#f56c6c] mt-2 px-px tad-300 top-0 absolute z-[1]"
+                class="text-xs text-[#f56c6c] mt-2 px-px tad-300 top-0 absolute z-1"
                 :class="{ 'translate-y-10': !isPassing && isClickPass }"
               >
                 {{ $t('client.login.placeholder.slider') }}

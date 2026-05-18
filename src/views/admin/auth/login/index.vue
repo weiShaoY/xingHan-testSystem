@@ -1,4 +1,4 @@
-<!-- 登录页面 -->
+<!-- 管理端 登录页面 -->
 <script setup lang="ts">
 import type { FormInstance, FormRules } from 'element-plus'
 
@@ -20,105 +20,109 @@ defineOptions({
   name: 'Login',
 })
 
+/**
+ * 系统设置状态，用于读取当前主题等全局配置。
+ */
 const settingStore = useSettingStore()
 
-const { isDark } = storeToRefs(settingStore)
-
-const { t, locale } = useI18n()
-
-const formKey = ref(0)
-
-// 监听语言切换，重置表单
-watch(locale, () => {
-  formKey.value++
-})
-
-type AccountKey = 'super' | 'admin' | 'user'
-
-export type Account = {
-  key: AccountKey
-  label: string
-  userName: string
-  password: string
-  roles: string[]
-}
-
-const accounts = computed<Account[]>(() => [
-  {
-    key: 'super',
-    label: t('admin.login.roles.super'),
-    userName: 'Super',
-    password: '123456',
-    roles: ['R_SUPER'],
-  },
-  {
-    key: 'admin',
-    label: t('admin.login.roles.admin'),
-    userName: 'Admin',
-    password: '123456',
-    roles: ['R_ADMIN'],
-  },
-  {
-    key: 'user',
-    label: t('admin.login.roles.user'),
-    userName: 'User',
-    password: '123456',
-    roles: ['R_USER'],
-  },
-])
-
-const dragVerify = ref()
-
+/**
+ * 客户端用户状态，用于保存 token 与登录状态。
+ */
 const userStore = useAdminUserStore()
 
+/**
+ * 路由实例，用于登录成功后的页面跳转。
+ */
 const router = useRouter()
 
+/**
+ * 当前路由信息，用于读取 redirect 参数。
+ */
 const route = useRoute()
 
-const isPassing = ref(false)
+/**
+ * 当前是否为暗色主题。
+ */
+const { isDark } = storeToRefs(settingStore)
 
-const isClickPass = ref(false)
+/**
+ * 国际化方法与当前语言标识。
+ */
+const { t, locale } = useI18n()
 
+/**
+ * 系统名称，用于登录成功通知。
+ */
 const systemName = AppConfig.systemInfo.name
 
+/**
+ * 表单重渲染标识，语言切换后递增以刷新校验文案。
+ */
+const formKey = ref(0)
+
+/**
+ * 拖拽验证组件实例。
+ */
+const dragVerify = ref()
+
+/**
+ * 拖拽验证是否已通过。
+ */
+const isPassing = ref(false)
+
+/**
+ * 是否已经点击登录但未通过拖拽验证。
+ */
+const isClickPass = ref(false)
+
+/**
+ * 登录表单实例。
+ */
 const formRef = ref<FormInstance>()
 
+/**
+ * 登录按钮加载状态。
+ */
+const loading = ref(false)
+
+/**
+ * 登录表单数据。
+ */
 const formData = reactive({
-  account: '',
   username: '',
   password: '',
   rememberPassword: true,
 })
 
+/**
+ * 登录表单校验规则。
+ */
 const rules = computed<FormRules>(() => ({
   username: [{
     required: true,
-    message: t('admin.login.placeholder.username'),
+    message: t('client.login.placeholder.username'),
     trigger: 'blur',
   }],
   password: [{
     required: true,
-    message: t('admin.login.placeholder.password'),
+    message: t('client.login.placeholder.password'),
     trigger: 'blur',
   }],
 }))
 
-const loading = ref(false)
-
-onMounted(() => {
-  setupAccount('super')
+/**
+ * 监听语言切换，重置表单实例以更新表单校验文案。
+ */
+watch(locale, () => {
+  formKey.value++
 })
 
-// 设置账号
-function setupAccount(key: AccountKey) {
-  const selectedAccount = accounts.value.find((account: Account) => account.key === key)
-
-  formData.account = key
-  formData.username = selectedAccount?.userName ?? ''
-  formData.password = selectedAccount?.password ?? ''
-}
-
-// 登录
+/**
+ * 提交登录表单。
+ *
+ * 校验表单和拖拽验证后调用登录接口，成功后保存客户端 token 与登录状态，
+ * 并根据 redirect 参数跳转到目标页面或客户端首页。
+ */
 async function handleSubmit() {
   if (!formRef.value) { return }
 
@@ -156,10 +160,10 @@ async function handleSubmit() {
     // 登录成功处理
     showLoginSuccessNotice()
 
-    // 获取 redirect 参数，如果存在则跳转到指定页面，否则跳转到首页
+    // 获取 redirect 参数，如果存在则跳转到指定页面，否则跳转到客户端首页
     const redirect = route.query.redirect as string
 
-    router.push(redirect || '/')
+    router.push(redirect || '/client')
   }
   catch (error) {
     // 处理 HttpError
@@ -178,20 +182,24 @@ async function handleSubmit() {
   }
 }
 
-// 重置拖拽验证
+/**
+ * 重置拖拽验证组件状态。
+ */
 function resetDragVerify() {
   dragVerify.value.reset()
 }
 
-// 登录成功提示
+/**
+ * 显示登录成功通知。
+ */
 function showLoginSuccessNotice() {
   setTimeout(() => {
     ElNotification({
-      title: t('admin.login.success.title'),
+      title: t('client.login.success.title'),
       type: 'success',
       duration: 2500,
       zIndex: 10000,
-      message: `${t('admin.login.success.message')}, ${systemName}!`,
+      message: `${t('client.login.success.message')}, ${systemName}!`,
     })
   }, 1000)
 }
@@ -217,7 +225,7 @@ function showLoginSuccessNotice() {
           <h3
             class="title"
           >
-            考试系统 管理端
+            管理端
           </h3>
 
           <h3
@@ -240,23 +248,6 @@ function showLoginSuccessNotice() {
             style="margin-top: 25px"
             @keyup.enter="handleSubmit"
           >
-            <ElFormItem
-              prop="account"
-            >
-              <ElSelect
-                v-model="formData.account"
-                @change="setupAccount"
-              >
-                <ElOption
-                  v-for="account in accounts"
-                  :key="account.key"
-                  :label="account.label"
-                  :value="account.key"
-                >
-                  <span>{{ account.label }}</span>
-                </ElOption>
-              </ElSelect>
-            </ElFormItem>
 
             <ElFormItem
               prop="username"
@@ -286,8 +277,8 @@ function showLoginSuccessNotice() {
               class="relative pb-5 mt-6"
             >
               <div
-                class="relative z-[2] overflow-hidden select-none rounded-lg border border-transparent tad-300"
-                :class="{ '!border-[#FF4E4F]': !isPassing && isClickPass }"
+                class="border border-transparent rounded-lg select-none tad-300 relative z-2 overflow-hidden"
+                :class="{ 'border-[#FF4E4F]!  border border-solid': !isPassing && isClickPass }"
               >
                 <ArtDragVerify
                   ref="dragVerify"
@@ -302,7 +293,7 @@ function showLoginSuccessNotice() {
               </div>
 
               <p
-                class="absolute top-0 z-[1] px-px mt-2 text-xs text-[#f56c6c] tad-300"
+                class="text-xs text-[#f56c6c] mt-2 px-px tad-300 top-0 absolute z-1"
                 :class="{ 'translate-y-10': !isPassing && isClickPass }"
               >
                 {{ $t('admin.login.placeholder.slider') }}
