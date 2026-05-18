@@ -6,9 +6,11 @@
 // biome-ignore lint: disable
 export {}
 declare global {
+  const ApiStatus: typeof import('../../apis/http/status').ApiStatus
   const EffectScope: typeof import('vue').EffectScope
   const ElLoading: typeof import('element-plus/es').ElLoading
   const ElMessage: typeof import('element-plus/es').ElMessage
+  const HttpError: typeof import('../../apis/http/error').HttpError
   const PasswordStrength: typeof import('../../utils/form/validator').PasswordStrength
   const StorageConfig: typeof import('../../utils/storage/storage-config').StorageConfig
   const StorageKeyManager: typeof import('../../utils/storage/storage-key-manager').StorageKeyManager
@@ -52,6 +54,7 @@ declare global {
   const effectScope: typeof import('vue').effectScope
   const emojo: typeof import('../../utils/ui/emojo').default
   const extendRef: typeof import('@vueuse/core').extendRef
+  const fetchAdminLogin: typeof import('../../apis/admin/index').fetchAdminLogin
   const fetchGetMenuList: typeof import('../../apis/system-manage').fetchGetMenuList
   const fetchGetRoleList: typeof import('../../apis/system-manage').fetchGetRoleList
   const fetchGetUserInfo: typeof import('../../apis/auth').fetchGetUserInfo
@@ -76,14 +79,16 @@ declare global {
   const getTabConfig: typeof import('../../utils/ui/tabs').getTabConfig
   const h: typeof import('vue').h
   const handleElementThemeColor: typeof import('../../utils/ui/colors').handleElementThemeColor
+  const handleError: typeof import('../../apis/http/error').handleError
   const handleMenuJump: typeof import('../../utils/navigation/jump').handleMenuJump
   const hexToRgb: typeof import('../../utils/ui/colors').hexToRgb
   const hexToRgba: typeof import('../../utils/ui/colors').hexToRgba
-  const http: typeof import('../../utils/http/index').default
+  const http: typeof import('../../apis/http/index').default
   const ignorableWatch: typeof import('@vueuse/core').ignorableWatch
   const inject: typeof import('vue').inject
   const injectLocal: typeof import('@vueuse/core').injectLocal
   const isDefined: typeof import('@vueuse/core').isDefined
+  const isHttpError: typeof import('../../apis/http/error').isHttpError
   const isIframe: typeof import('../../utils/navigation/route').isIframe
   const isNavigableMenuItem: typeof import('../../utils/navigation/route').isNavigableMenuItem
   const isProxy: typeof import('vue').isProxy
@@ -153,6 +158,8 @@ declare global {
   const shallowReactive: typeof import('vue').shallowReactive
   const shallowReadonly: typeof import('vue').shallowReadonly
   const shallowRef: typeof import('vue').shallowRef
+  const showError: typeof import('../../apis/http/error').showError
+  const showSuccess: typeof import('../../apis/http/error').showSuccess
   const socket: typeof import('../../utils/socket/index').default
   const storeToRefs: typeof import('pinia').storeToRefs
   const subtractSize: typeof import('../../utils/size').subtractSize
@@ -403,6 +410,12 @@ declare global {
   // @ts-ignore
   export type { AuthDirective, HighlightDirective, RippleDirective, RolesDirective } from '../../directives/index'
   import('../../directives/index')
+  // @ts-ignore
+  export type { HttpError, ErrorResponse, ErrorLogData } from '../../apis/http/error'
+  import('../../apis/http/error')
+  // @ts-ignore
+  export type { ApiStatus } from '../../apis/http/status'
+  import('../../apis/http/status')
 }
 
 // for vue template auto import
@@ -410,9 +423,9 @@ import { UnwrapRef } from 'vue'
 declare module 'vue' {
   interface GlobalComponents {}
   interface ComponentCustomProperties {
+    readonly ApiStatus: UnwrapRef<typeof import('../../apis/http/status')['ApiStatus']>
     readonly EffectScope: UnwrapRef<typeof import('vue')['EffectScope']>
-    readonly ElLoading: UnwrapRef<typeof import('element-plus/es')['ElLoading']>
-    readonly ElMessage: UnwrapRef<typeof import('element-plus/es')['ElMessage']>
+    readonly HttpError: UnwrapRef<typeof import('../../apis/http/error')['HttpError']>
     readonly PasswordStrength: UnwrapRef<typeof import('../../utils/form/validator')['PasswordStrength']>
     readonly StorageConfig: UnwrapRef<typeof import('../../utils/storage/storage-config')['StorageConfig']>
     readonly StorageKeyManager: UnwrapRef<typeof import('../../utils/storage/storage-key-manager')['StorageKeyManager']>
@@ -456,6 +469,7 @@ declare module 'vue' {
     readonly effectScope: UnwrapRef<typeof import('vue')['effectScope']>
     readonly emojo: UnwrapRef<typeof import('../../utils/ui/emojo')['default']>
     readonly extendRef: UnwrapRef<typeof import('@vueuse/core')['extendRef']>
+    readonly fetchAdminLogin: UnwrapRef<typeof import('../../apis/admin/index')['fetchAdminLogin']>
     readonly fetchGetMenuList: UnwrapRef<typeof import('../../apis/system-manage')['fetchGetMenuList']>
     readonly fetchGetRoleList: UnwrapRef<typeof import('../../apis/system-manage')['fetchGetRoleList']>
     readonly fetchGetUserInfo: UnwrapRef<typeof import('../../apis/auth')['fetchGetUserInfo']>
@@ -480,13 +494,16 @@ declare module 'vue' {
     readonly getTabConfig: UnwrapRef<typeof import('../../utils/ui/tabs')['getTabConfig']>
     readonly h: UnwrapRef<typeof import('vue')['h']>
     readonly handleElementThemeColor: UnwrapRef<typeof import('../../utils/ui/colors')['handleElementThemeColor']>
+    readonly handleError: UnwrapRef<typeof import('../../apis/http/error')['handleError']>
     readonly handleMenuJump: UnwrapRef<typeof import('../../utils/navigation/jump')['handleMenuJump']>
     readonly hexToRgb: UnwrapRef<typeof import('../../utils/ui/colors')['hexToRgb']>
     readonly hexToRgba: UnwrapRef<typeof import('../../utils/ui/colors')['hexToRgba']>
+    readonly http: UnwrapRef<typeof import('../../apis/http/index')['default']>
     readonly ignorableWatch: UnwrapRef<typeof import('@vueuse/core')['ignorableWatch']>
     readonly inject: UnwrapRef<typeof import('vue')['inject']>
     readonly injectLocal: UnwrapRef<typeof import('@vueuse/core')['injectLocal']>
     readonly isDefined: UnwrapRef<typeof import('@vueuse/core')['isDefined']>
+    readonly isHttpError: UnwrapRef<typeof import('../../apis/http/error')['isHttpError']>
     readonly isIframe: UnwrapRef<typeof import('../../utils/navigation/route')['isIframe']>
     readonly isNavigableMenuItem: UnwrapRef<typeof import('../../utils/navigation/route')['isNavigableMenuItem']>
     readonly isProxy: UnwrapRef<typeof import('vue')['isProxy']>
@@ -555,6 +572,8 @@ declare module 'vue' {
     readonly shallowReactive: UnwrapRef<typeof import('vue')['shallowReactive']>
     readonly shallowReadonly: UnwrapRef<typeof import('vue')['shallowReadonly']>
     readonly shallowRef: UnwrapRef<typeof import('vue')['shallowRef']>
+    readonly showError: UnwrapRef<typeof import('../../apis/http/error')['showError']>
+    readonly showSuccess: UnwrapRef<typeof import('../../apis/http/error')['showSuccess']>
     readonly socket: UnwrapRef<typeof import('../../utils/socket/index')['default']>
     readonly storeToRefs: UnwrapRef<typeof import('pinia')['storeToRefs']>
     readonly subtractSize: UnwrapRef<typeof import('../../utils/size')['subtractSize']>
