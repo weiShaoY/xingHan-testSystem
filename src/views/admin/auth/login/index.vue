@@ -177,7 +177,7 @@ async function handleSubmit() {
     loading.value = true
 
     // 获取公钥
-    const { key, hash } = await fetchGetPublicKey()
+    const { key, hash } = await fetchAdminGetPublicKey()
 
     const { encryptData, smkey } = encryptLoginPayload(
       formData.value,

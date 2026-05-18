@@ -3,7 +3,7 @@ import request from '@/apis/http'
 /**
  *  获取公钥
  */
-export function fetchGetPublicKey() {
+export function fetchAdminGetPublicKey() {
   return request.get<AdminApi.Auth.PublicKey>({
     url: '/admin/auth/key',
   })
@@ -16,5 +16,21 @@ export function fetchAdminLogin(params: AdminApi.Auth.LoginParams) {
   return request.post<AdminApi.Auth.LoginResponse>({
     url: '/admin/auth/login',
     data: params,
+  })
+}
+
+/**
+ * 获取用户信息
+ * @returns 用户信息
+ */
+export function fetchAdminGetUserInfo(authPath?: string) {
+  return request.get<AdminApi.Auth.UserInfo>({
+    url: '/admin/auth/userinfo',
+    authPath,
+
+    // 自定义请求头
+    // headers: {
+    //   'X-Custom-Header': 'your-custom-value'
+    // }
   })
 }

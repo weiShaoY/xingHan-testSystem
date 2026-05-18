@@ -55,11 +55,13 @@ declare global {
   const effectScope: typeof import('vue').effectScope
   const emojo: typeof import('../../utils/ui/emojo').default
   const extendRef: typeof import('@vueuse/core').extendRef
+  const fetchAdminGetPublicKey: typeof import('../../apis/admin/index').fetchAdminGetPublicKey
+  const fetchAdminGetUserInfo: typeof import('../../apis/admin/index').fetchAdminGetUserInfo
   const fetchAdminLogin: typeof import('../../apis/admin/index').fetchAdminLogin
   const fetchGetMenuList: typeof import('../../apis/system-manage').fetchGetMenuList
-  const fetchGetPublicKey: typeof import('../../apis/admin/index').fetchGetPublicKey
+  const fetchGetPublicKey: typeof import('../../apis/admin/index').fetchAdminGetPublicKey
   const fetchGetRoleList: typeof import('../../apis/system-manage').fetchGetRoleList
-  const fetchGetUserInfo: typeof import('../../apis/auth').fetchGetUserInfo
+  const fetchGetUserInfo: typeof import('../../apis/admin/index').fetchGetUserInfo
   const fetchGetUserList: typeof import('../../apis/system-manage').fetchGetUserList
   const fetchLogin: typeof import('../../apis/auth').fetchLogin
   const formatMenuTitle: typeof import('../../utils/router').formatMenuTitle
@@ -474,11 +476,11 @@ declare module 'vue' {
     readonly effectScope: UnwrapRef<typeof import('vue')['effectScope']>
     readonly emojo: UnwrapRef<typeof import('../../utils/ui/emojo')['default']>
     readonly extendRef: UnwrapRef<typeof import('@vueuse/core')['extendRef']>
+    readonly fetchAdminGetPublicKey: UnwrapRef<typeof import('../../apis/admin/index')['fetchAdminGetPublicKey']>
+    readonly fetchAdminGetUserInfo: UnwrapRef<typeof import('../../apis/admin/index')['fetchAdminGetUserInfo']>
     readonly fetchAdminLogin: UnwrapRef<typeof import('../../apis/admin/index')['fetchAdminLogin']>
     readonly fetchGetMenuList: UnwrapRef<typeof import('../../apis/system-manage')['fetchGetMenuList']>
-    readonly fetchGetPublicKey: UnwrapRef<typeof import('../../apis/admin/index')['fetchGetPublicKey']>
     readonly fetchGetRoleList: UnwrapRef<typeof import('../../apis/system-manage')['fetchGetRoleList']>
-    readonly fetchGetUserInfo: UnwrapRef<typeof import('../../apis/auth')['fetchGetUserInfo']>
     readonly fetchGetUserList: UnwrapRef<typeof import('../../apis/system-manage')['fetchGetUserList']>
     readonly fetchLogin: UnwrapRef<typeof import('../../apis/auth')['fetchLogin']>
     readonly formatMenuTitle: UnwrapRef<typeof import('../../utils/router')['formatMenuTitle']>
