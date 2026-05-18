@@ -24,7 +24,9 @@ function toLogin() {
   <div
     class="flex w-full h-screen"
   >
-    <LoginLeftView />
+    <LoginLeftView
+      i18n-path="client.login"
+    />
 
     <div
       class="relative flex-1"

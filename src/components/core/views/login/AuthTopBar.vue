@@ -55,10 +55,10 @@ function changeThemeColor(color: string) {
 
 <template>
   <div
-    class="flex-c flex-cb w-full top-4.5 absolute z-10 !justify-end max-[1180px]:!justify-between"
+    class="flex-c flex-cb w-full top-4.5 absolute z-10 justify-end! max-[1180px]:justify-between!"
   >
     <div
-      class="ml-2 flex-cc max-sm:ml-6 !hidden max-[1180px]:!flex"
+      class="ml-2 flex-cc max-sm:ml-6 hidden! max-[1180px]:flex!"
     >
       <ArtLogo
         class="icon"
@@ -76,7 +76,7 @@ function changeThemeColor(color: string) {
       class="mr-2 flex-cc gap-1.5 max-sm:mr-5"
     >
       <div
-        class="color-picker-expandable flex-c relative max-sm:!hidden"
+        class="color-picker-expandable flex-c relative max-sm:hidden!"
       >
         <div
           class="color-dots px-2.5 py-2 pl-2.5 pr-9 rounded-5 rounded-full opacity-0 flex-c gap-2 right-0 absolute"
@@ -98,7 +98,7 @@ function changeThemeColor(color: string) {
         </div>
 
         <div
-          class="btn palette-btn flex-cc h-8 w-8 c-p tad-300 relative z-[2]"
+          class="btn palette-btn flex-cc h-8 w-8 c-p tad-300 relative z-2"
         >
           <ArtSvgIcon
             icon="ri:palette-line"

@@ -7,13 +7,20 @@ import AppConfig from '@/config'
 import { themeAnimation } from '@/utils/ui/animation'
 
 // 定义 props
-defineProps<{
+withDefaults(defineProps<{
 
   /**
      *  是否隐藏内容，只显示 logo
      */
   hideContent?: boolean
-}>()
+
+  /**
+     *  国际化路径
+     */
+  i18nPath?: string
+}>(), {
+  i18nPath: 'admin.login',
+})
 </script>
 
 <template>
@@ -48,11 +55,11 @@ defineProps<{
       class="text-wrap"
     >
       <h1>
-        {{ $t('login.leftView.title') }}
+        {{ $t(`${i18nPath}.leftView.title`) }}
       </h1>
 
       <p>
-        {{ $t('login.leftView.subTitle') }}
+        {{ $t(`${i18nPath}.leftView.subTitle`) }}
       </p>
     </div>
 

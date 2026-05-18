@@ -46,21 +46,21 @@ export type Account = {
 const accounts = computed<Account[]>(() => [
   {
     key: 'super',
-    label: t('login.roles.super'),
+    label: t('client.login.roles.super'),
     userName: 'Super',
     password: '123456',
     roles: ['R_SUPER'],
   },
   {
     key: 'admin',
-    label: t('login.roles.admin'),
+    label: t('client.login.roles.admin'),
     userName: 'Admin',
     password: '123456',
     roles: ['R_ADMIN'],
   },
   {
     key: 'user',
-    label: t('login.roles.user'),
+    label: t('client.login.roles.user'),
     userName: 'User',
     password: '123456',
     roles: ['R_USER'],
@@ -93,12 +93,12 @@ const formData = reactive({
 const rules = computed<FormRules>(() => ({
   username: [{
     required: true,
-    message: t('login.placeholder.username'),
+    message: t('client.login.placeholder.username'),
     trigger: 'blur',
   }],
   password: [{
     required: true,
-    message: t('login.placeholder.password'),
+    message: t('client.login.placeholder.password'),
     trigger: 'blur',
   }],
 }))
@@ -187,11 +187,11 @@ function resetDragVerify() {
 function showLoginSuccessNotice() {
   setTimeout(() => {
     ElNotification({
-      title: t('login.success.title'),
+      title: t('client.login.success.title'),
       type: 'success',
       duration: 2500,
       zIndex: 10000,
-      message: `${t('login.success.message')}, ${systemName}!`,
+      message: `${t('client.login.success.message')}, ${systemName}!`,
     })
   }, 1000)
 }
@@ -201,7 +201,9 @@ function showLoginSuccessNotice() {
   <div
     class="flex h-screen w-full"
   >
-    <LoginLeftView />
+    <LoginLeftView
+      i18n-path="client.login"
+    />
 
     <div
       class="flex-1 relative"
@@ -223,13 +225,13 @@ function showLoginSuccessNotice() {
           <h3
             class="title"
           >
-            {{ $t('login.title') }}
+            {{ $t('client.login.title') }}
           </h3>
 
           <p
             class="sub-title"
           >
-            {{ $t('login.subTitle') }}
+            {{ $t('client.login.subTitle') }}
           </p>
 
           <ElForm
@@ -264,7 +266,7 @@ function showLoginSuccessNotice() {
               <ElInput
                 v-model.trim="formData.username"
                 class="custom-height"
-                :placeholder="$t('login.placeholder.username')"
+                :placeholder="$t('client.login.placeholder.username')"
               />
             </ElFormItem>
 
@@ -274,7 +276,7 @@ function showLoginSuccessNotice() {
               <ElInput
                 v-model.trim="formData.password"
                 class="custom-height"
-                :placeholder="$t('login.placeholder.password')"
+                :placeholder="$t('client.login.placeholder.password')"
                 type="password"
                 autocomplete="off"
                 show-password
@@ -292,9 +294,9 @@ function showLoginSuccessNotice() {
                 <ArtDragVerify
                   ref="dragVerify"
                   v-model:value="isPassing"
-                  :text="$t('login.sliderText')"
+                  :text="$t('client.login.sliderText')"
                   text-color="var(--art-gray-700)"
-                  :success-text="$t('login.sliderSuccessText')"
+                  :success-text="$t('client.login.sliderSuccessText')"
                   progress-bar-bg="var(--main-color)"
                   :background="isDark ? '#26272F' : '#F1F1F4'"
                   handler-bg="var(--default-box-color)"
@@ -305,7 +307,7 @@ function showLoginSuccessNotice() {
                 class="text-xs text-[#f56c6c] mt-2 px-px tad-300 top-0 absolute z-[1]"
                 :class="{ 'translate-y-10': !isPassing && isClickPass }"
               >
-                {{ $t('login.placeholder.slider') }}
+                {{ $t('client.login.placeholder.slider') }}
               </p>
             </div>
 
@@ -316,7 +318,7 @@ function showLoginSuccessNotice() {
                 v-model="formData.rememberPassword"
               >
                 {{
-                  $t('login.rememberPwd')
+                  $t('client.login.rememberPwd')
                 }}
               </ElCheckbox>
 
@@ -325,7 +327,7 @@ function showLoginSuccessNotice() {
                 :to="{ name: 'ClientForgetPassword' }"
               >
                 {{
-                  $t('login.forgetPwd')
+                  $t('client.login.forgetPwd')
                 }}
               </RouterLink>
             </div>
@@ -340,21 +342,21 @@ function showLoginSuccessNotice() {
                 :loading="loading"
                 @click="handleSubmit"
               >
-                {{ $t('login.btnText') }}
+                {{ $t('client.login.btnText') }}
               </ElButton>
             </div>
 
             <div
               class="text-sm text-gray-600 mt-5"
             >
-              <span>{{ $t('login.noAccount') }}</span>
+              <span>{{ $t('client.login.noAccount') }}</span>
 
               <RouterLink
                 class="text-theme"
                 :to="{ name: 'ClientRegister' }"
               >
                 {{
-                  $t('login.register')
+                  $t('client.login.register')
                 }}
               </RouterLink>
             </div>

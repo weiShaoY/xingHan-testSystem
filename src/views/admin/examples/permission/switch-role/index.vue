@@ -26,7 +26,7 @@ const currentUser = computed(() => userStore.info)
 const accounts = computed(() => [
   {
     key: 'super',
-    label: t('login.roles.super'),
+    label: t('admin.login.roles.super'),
     userName: 'Super',
     password: '123456',
     roles: ['R_SUPER'],
@@ -35,7 +35,7 @@ const accounts = computed(() => [
   },
   {
     key: 'admin',
-    label: t('login.roles.admin'),
+    label: t('admin.login.roles.admin'),
     userName: 'Admin',
     password: '123456',
     roles: ['R_ADMIN'],
@@ -44,7 +44,7 @@ const accounts = computed(() => [
   },
   {
     key: 'user',
-    label: t('login.roles.user'),
+    label: t('admin.login.roles.user'),
     userName: 'User',
     password: '123456',
     roles: ['R_USER'],
