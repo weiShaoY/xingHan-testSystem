@@ -4,9 +4,9 @@ import type { FormInstance, FormRules } from 'element-plus'
 
 import { ElNotification } from 'element-plus'
 
-import { useI18n } from 'vue-i18n'
+import { sm2, sm3 } from 'sm-crypto'
 
-import { fetchLogin } from '@/apis/auth'
+import { useI18n } from 'vue-i18n'
 
 import { HttpError } from '@/apis/http/error'
 
@@ -88,7 +88,7 @@ const loading = ref(false)
 /**
  * 登录表单数据。
  */
-const formData = reactive({
+const formData = ref({
   username: 'qd_admin',
   password: '123456',
   rememberPassword: true,
@@ -103,11 +103,18 @@ const rules = computed<FormRules>(() => ({
     message: t('client.login.placeholder.username'),
     trigger: 'blur',
   }],
-  password: [{
-    required: true,
-    message: t('client.login.placeholder.password'),
-    trigger: 'blur',
-  }],
+  password: [
+    {
+      required: true,
+      message: t('client.login.placeholder.password'),
+      trigger: 'blur',
+    },
+    {
+      min: 6,
+      message: '密码不能少于6位',
+      trigger: 'blur',
+    },
+  ],
 }))
 
 /**
@@ -116,6 +123,22 @@ const rules = computed<FormRules>(() => ({
 watch(locale, () => {
   formKey.value++
 })
+
+function encryption(formData: any, publicKey: string, sm2key: string) {
+  let encryptData = ''
+
+  if (publicKey.startsWith('04')) {
+    encryptData += '04'
+  }
+
+  encryptData += sm2.doEncrypt(JSON.stringify(formData), publicKey, 0)
+  const smkey = sm3(sm2key)
+
+  return {
+    encryptData,
+    smkey,
+  }
+}
 
 /**
  * 提交登录表单。
@@ -140,40 +163,51 @@ async function handleSubmit() {
 
     loading.value = true
 
-    // 登录请求
-    const { username, password } = formData
+    // 获取公钥
+    const { key, hash } = await fetchGetPublicKey()
 
-    const { token, refreshToken } = await fetchAdminLogin({
-      userName: username,
-      password,
-    })
+    const { encryptData, smkey } = encryption(
+      formData.value,
+      key,
+      hash,
+    )
 
-    // 验证token
-    if (!token) {
-      throw new Error('Login failed - no token received')
+    const cipher = {
+      data: encryptData,
+      key: smkey,
     }
 
-    // 存储 token 和登录状态
-    userStore.setToken(token, refreshToken)
+    // 登录请求
+    const data = await fetchAdminLogin(cipher)
+
+    // // 验证token
+    if (!data.token) {
+      throw new Error('登录失败-未收到令牌')
+    }
+
+    // // 存储 token 和登录状态
+    userStore.setToken(data.token, '')
     userStore.setLoginStatus(true)
 
-    // 登录成功处理
+    // // 登录成功处理
     showLoginSuccessNotice()
 
-    // 获取 redirect 参数，如果存在则跳转到指定页面，否则跳转到客户端首页
+    // // 获取 redirect 参数，如果存在则跳转到指定页面，否则跳转到客户端首页
     const redirect = route.query.redirect as string
 
-    router.push(redirect || '/client')
+    router.push(redirect || '/admin')
   }
   catch (error) {
+    console.log('🚀 ~ file: index.vue:201 ~ error:', error)
+
     // 处理 HttpError
     if (error instanceof HttpError) {
-      // console.log(error.code)
+      console.log(error.code)
     }
     else {
       // 处理非 HttpError
-      // ElMessage.error('登录失败，请稍后重试')
-      console.error('[Login] Unexpected error:', error)
+      ElMessage.error('登录失败，请稍后重试')
+      console.error('[登录]意外错误：', error)
     }
   }
   finally {

@@ -65,32 +65,6 @@ declare namespace Api {
     type EnableStatus = '1' | '2'
   }
 
-  /** 认证类型 */
-  namespace Auth {
-
-    /** 登录参数 */
-    type LoginParams = {
-      userName: string
-      password: string
-    }
-
-    /** 登录响应 */
-    type LoginResponse = {
-      token: string
-      refreshToken: string
-    }
-
-    /** 用户信息 */
-    type UserInfo = {
-      buttons: string[]
-      roles: string[]
-      userId: number
-      userName: string
-      email: string
-      avatar?: string
-    }
-  }
-
   /** 系统管理类型 */
   namespace SystemManage {
 
@@ -262,5 +236,31 @@ declare namespace Api {
     /** 课程列表响应 */
     type CourseListResponse = Api.Common.PaginatedResponse<CourseListItem>
 
+  }
+
+  /** 认证类型 */
+  namespace Auth {
+
+    /** 登录参数 */
+    type LoginParams = {
+      userName: string
+      password: string
+    }
+
+    /** 登录响应 */
+    type LoginResponse = {
+      token: string
+      refreshToken: string
+    }
+
+    /** 用户信息 */
+    type UserInfo = {
+      buttons: string[]
+      roles: string[]
+      userId: number
+      userName: string
+      email: string
+      avatar?: string
+    }
   }
 }

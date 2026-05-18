@@ -56,6 +56,7 @@ declare global {
   const extendRef: typeof import('@vueuse/core').extendRef
   const fetchAdminLogin: typeof import('../../apis/admin/index').fetchAdminLogin
   const fetchGetMenuList: typeof import('../../apis/system-manage').fetchGetMenuList
+  const fetchGetPublicKey: typeof import('../../apis/admin/index').fetchGetPublicKey
   const fetchGetRoleList: typeof import('../../apis/system-manage').fetchGetRoleList
   const fetchGetUserInfo: typeof import('../../apis/auth').fetchGetUserInfo
   const fetchGetUserList: typeof import('../../apis/system-manage').fetchGetUserList
@@ -425,6 +426,8 @@ declare module 'vue' {
   interface ComponentCustomProperties {
     readonly ApiStatus: UnwrapRef<typeof import('../../apis/http/status')['ApiStatus']>
     readonly EffectScope: UnwrapRef<typeof import('vue')['EffectScope']>
+    readonly ElLoading: UnwrapRef<typeof import('element-plus/es')['ElLoading']>
+    readonly ElMessage: UnwrapRef<typeof import('element-plus/es')['ElMessage']>
     readonly HttpError: UnwrapRef<typeof import('../../apis/http/error')['HttpError']>
     readonly PasswordStrength: UnwrapRef<typeof import('../../utils/form/validator')['PasswordStrength']>
     readonly StorageConfig: UnwrapRef<typeof import('../../utils/storage/storage-config')['StorageConfig']>
@@ -471,6 +474,7 @@ declare module 'vue' {
     readonly extendRef: UnwrapRef<typeof import('@vueuse/core')['extendRef']>
     readonly fetchAdminLogin: UnwrapRef<typeof import('../../apis/admin/index')['fetchAdminLogin']>
     readonly fetchGetMenuList: UnwrapRef<typeof import('../../apis/system-manage')['fetchGetMenuList']>
+    readonly fetchGetPublicKey: UnwrapRef<typeof import('../../apis/admin/index')['fetchGetPublicKey']>
     readonly fetchGetRoleList: UnwrapRef<typeof import('../../apis/system-manage')['fetchGetRoleList']>
     readonly fetchGetUserInfo: UnwrapRef<typeof import('../../apis/auth')['fetchGetUserInfo']>
     readonly fetchGetUserList: UnwrapRef<typeof import('../../apis/system-manage')['fetchGetUserList']>
