@@ -111,23 +111,38 @@ const { VITE_APP_API_URL, VITE_APP_WITH_CREDENTIALS } = import.meta.env
  * 仅将 HTTP 2xx 视为网络层成功，业务层成功与失败由响应拦截器根据 `code` 判断。
  */
 const axiosInstance = axios.create({
+  // 设置全局请求超时时间。
   timeout: REQUEST_TIMEOUT,
+
+  // 设置接口基础地址。
   baseURL: VITE_APP_API_URL,
+
+  // 根据环境变量决定是否携带跨域凭证。
   withCredentials: VITE_APP_WITH_CREDENTIALS === 'true',
+
+  // 只把 HTTP 2xx 状态码视为网络层成功。
   validateStatus: status => status >= 200 && status < 300,
+
+  // 自定义响应转换器，保证 JSON 响应被解析成对象。
   transformResponse: [
+    // 读取原始响应内容和响应头。
     (data, headers) => {
+      // 获取响应内容类型。
       const contentType = headers['content-type']
 
+      // 仅在 JSON 响应时尝试解析。
       if (contentType?.includes('application/json')) {
         try {
+          // 将 JSON 字符串转换为 JavaScript 对象。
           return JSON.parse(data)
         }
         catch {
+          // JSON 解析失败时保留原始响应内容。
           return data
         }
       }
 
+      // 非 JSON 响应直接返回原始内容。
       return data
     },
   ],
@@ -141,22 +156,39 @@ const axiosInstance = axios.create({
  * - `FormData` 保持原样，避免破坏浏览器自动生成的 multipart boundary。
  */
 axiosInstance.interceptors.request.use(
+
+  // 请求发送前统一处理配置。
   (request: InternalAxiosRequestConfig) => {
+    // 从请求配置中读取业务扩展字段。
     const { authPath } = request as InternalAxiosRequestConfig & ExtendedAxiosRequestConfig
 
+    // 根据指定路径或当前路由选择对应用户状态。
     const { accessToken } = authPath ? getUserStoreByPath(authPath) : getCurrentUserStore()
 
+    console.log('🚀 ~ file: index.ts:167 ~ accessToken:', accessToken)
+
+    // 有 token 时写入 Authorization 请求头。
     if (accessToken) { request.headers.set('Authorization', accessToken) }
 
+    // 普通对象请求体默认按 JSON 发送，FormData 保持浏览器原生处理。
     if (request.data && !(request.data instanceof FormData) && !request.headers['Content-Type']) {
+      // 设置 JSON 请求头。
       request.headers.set('Content-Type', 'application/json')
+
+      // 将请求体序列化为 JSON 字符串。
       request.data = JSON.stringify(request.data)
     }
 
+    // 返回处理后的请求配置。
     return request
   },
+
+  // 请求配置阶段发生错误时统一提示。
   (error) => {
+    // 展示请求配置错误提示。
     showError(createHttpError($t('httpMsg.requestConfigError'), ApiStatus.error))
+
+    // 继续向调用方抛出原始错误。
     return Promise.reject(error)
   },
 )
@@ -173,22 +205,37 @@ axiosInstance.interceptors.request.use(
  * 网络层错误交给 `handleError` 标准化。
  */
 axiosInstance.interceptors.response.use(
+
+  // HTTP 2xx 响应会进入这里，再继续判断业务 code。
   (response: AxiosResponse<BaseResponse>) => {
+    // 解构后端统一响应中的业务状态码和消息。
     const { code, msg } = response.data
 
+    // 业务成功时返回完整响应，后续 request 函数会解包 data。
     if (code === ApiStatus.success) { return response }
 
+    // 未授权时走统一退出登录和防抖提示逻辑。
     if (code === ApiStatus.unauthorized) { handleUnauthorizedError(msg) }
 
+    // 其他业务错误统一转换成 HttpError。
     throw createHttpError(msg || $t('httpMsg.requestFailed'), code, {
+      // 保存完整业务响应，便于日志排查。
       data: response.data,
+
+      // 保存请求地址，便于定位出错接口。
       url: response.config.url,
+
+      // 保存请求方法，并统一转成大写。
       method: response.config.method?.toUpperCase(),
     })
   },
+
+  // 非 HTTP 2xx 或网络错误会进入这里。
   (error) => {
+    // HTTP 401 直接走未授权处理。
     if (error.response?.status === ApiStatus.unauthorized) { handleUnauthorizedError() }
 
+    // 将 Axios 错误标准化为 HttpError 后继续抛出。
     return Promise.reject(handleError(error))
   },
 )
