@@ -124,7 +124,20 @@ watch(locale, () => {
   formKey.value++
 })
 
-function encryption(formData: any, publicKey: string, sm2key: string) {
+/**
+ * 加密登录请求数据。
+ *
+ * 使用后端返回的 SM2 公钥加密登录表单，再使用 SM3 生成密钥摘要，
+ * 最终返回登录接口需要的密文数据和摘要密钥。
+ *
+ * @param formData 登录表单数据。
+ * @param publicKey 后端返回的 SM2 公钥。
+ * @param sm2key 后端返回的 SM3 摘要源字符串。
+ * @returns 登录接口需要的加密参数。
+ * @returns returns.encryptData SM2 加密后的表单密文。
+ * @returns returns.smkey SM3 计算后的密钥摘要。
+ */
+function encryptLoginPayload(formData: any, publicKey: string, sm2key: string) {
   let encryptData = ''
 
   if (publicKey.startsWith('04')) {
@@ -166,27 +179,28 @@ async function handleSubmit() {
     // 获取公钥
     const { key, hash } = await fetchGetPublicKey()
 
-    const { encryptData, smkey } = encryption(
+    const { encryptData, smkey } = encryptLoginPayload(
       formData.value,
       key,
       hash,
     )
 
-    const cipher = {
+    const encryptedLoginParams = {
       data: encryptData,
       key: smkey,
     }
 
     // 登录请求
-    const data = await fetchAdminLogin(cipher)
+    const loginResult = await fetchAdminLogin(encryptedLoginParams)
 
     // // 验证token
-    if (!data.token) {
+    if (!loginResult.token) {
       throw new Error('登录失败-未收到令牌')
     }
 
     // // 存储 token 和登录状态
-    userStore.setToken(data.token, '')
+    userStore.setToken(loginResult.token, '')
+
     userStore.setLoginStatus(true)
 
     // // 登录成功处理
