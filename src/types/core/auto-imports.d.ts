@@ -52,9 +52,15 @@ declare global {
   const effectScope: typeof import('vue').effectScope
   const emojo: typeof import('../../utils/ui/emojo').default
   const extendRef: typeof import('@vueuse/core').extendRef
+  const fetchGetMenuList: typeof import('../../apis/system-manage').fetchGetMenuList
+  const fetchGetRoleList: typeof import('../../apis/system-manage').fetchGetRoleList
+  const fetchGetUserInfo: typeof import('../../apis/auth').fetchGetUserInfo
+  const fetchGetUserList: typeof import('../../apis/system-manage').fetchGetUserList
+  const fetchLogin: typeof import('../../apis/auth').fetchLogin
   const formatMenuTitle: typeof import('../../utils/router').formatMenuTitle
   const formatTimestampToChineseDate: typeof import('../../utils/time').formatTimestampToChineseDate
   const getActivePinia: typeof import('pinia').getActivePinia
+  const getCourseList: typeof import('../../apis/course').getCourseList
   const getCssVar: typeof import('../../utils/ui/colors').getCssVar
   const getCurrentInstance: typeof import('vue').getCurrentInstance
   const getCurrentScope: typeof import('vue').getCurrentScope
@@ -450,9 +456,15 @@ declare module 'vue' {
     readonly effectScope: UnwrapRef<typeof import('vue')['effectScope']>
     readonly emojo: UnwrapRef<typeof import('../../utils/ui/emojo')['default']>
     readonly extendRef: UnwrapRef<typeof import('@vueuse/core')['extendRef']>
+    readonly fetchGetMenuList: UnwrapRef<typeof import('../../apis/system-manage')['fetchGetMenuList']>
+    readonly fetchGetRoleList: UnwrapRef<typeof import('../../apis/system-manage')['fetchGetRoleList']>
+    readonly fetchGetUserInfo: UnwrapRef<typeof import('../../apis/auth')['fetchGetUserInfo']>
+    readonly fetchGetUserList: UnwrapRef<typeof import('../../apis/system-manage')['fetchGetUserList']>
+    readonly fetchLogin: UnwrapRef<typeof import('../../apis/auth')['fetchLogin']>
     readonly formatMenuTitle: UnwrapRef<typeof import('../../utils/router')['formatMenuTitle']>
     readonly formatTimestampToChineseDate: UnwrapRef<typeof import('../../utils/time')['formatTimestampToChineseDate']>
     readonly getActivePinia: UnwrapRef<typeof import('pinia')['getActivePinia']>
+    readonly getCourseList: UnwrapRef<typeof import('../../apis/course')['getCourseList']>
     readonly getCssVar: UnwrapRef<typeof import('../../utils/ui/colors')['getCssVar']>
     readonly getCurrentInstance: UnwrapRef<typeof import('vue')['getCurrentInstance']>
     readonly getCurrentScope: UnwrapRef<typeof import('vue')['getCurrentScope']>

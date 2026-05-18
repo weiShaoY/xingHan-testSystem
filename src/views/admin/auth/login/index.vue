@@ -89,8 +89,8 @@ const loading = ref(false)
  * 登录表单数据。
  */
 const formData = reactive({
-  username: '',
-  password: '',
+  username: 'qd_admin',
+  password: '123456',
   rememberPassword: true,
 })
 
@@ -143,7 +143,7 @@ async function handleSubmit() {
     // 登录请求
     const { username, password } = formData
 
-    const { token, refreshToken } = await fetchLogin({
+    const { token, refreshToken } = await fetchAdminLogin({
       userName: username,
       password,
     })

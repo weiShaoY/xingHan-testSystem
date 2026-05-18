@@ -1,6 +1,6 @@
 import type { AppRouteRecord } from '@/types/router'
 
-import request from './http'
+import request from '@/apis/http'
 
 // 获取用户列表
 export function fetchGetUserList(params: Api.SystemManage.UserSearchParams) {
