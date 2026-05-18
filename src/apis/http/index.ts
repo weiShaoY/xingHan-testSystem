@@ -129,7 +129,11 @@ axiosInstance.interceptors.response.use(
 
     if (code === ApiStatus.unauthorized) { handleUnauthorizedError(msg) }
 
-    throw createHttpError(msg || $t('httpMsg.requestFailed'), code)
+    throw createHttpError(msg || $t('httpMsg.requestFailed'), code, {
+      data: response.data,
+      url: response.config.url,
+      method: response.config.method?.toUpperCase(),
+    })
   },
   (error) => {
     if (error.response?.status === ApiStatus.unauthorized) { handleUnauthorizedError() }
@@ -139,8 +143,16 @@ axiosInstance.interceptors.response.use(
 )
 
 /** 统一创建HttpError */
-function createHttpError(message: string, code: number) {
-  return new HttpError(message, code)
+function createHttpError(
+  message: string,
+  code: number,
+  options?: {
+    data?: unknown
+    url?: string
+    method?: string
+  },
+) {
+  return new HttpError(message, code, options)
 }
 
 /** 处理401错误（带防抖） */

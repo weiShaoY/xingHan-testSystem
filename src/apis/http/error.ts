@@ -139,7 +139,7 @@ export function handleError(error: AxiosError<ErrorResponse>): never {
 
   const statusCode = error.response?.status
 
-  const errorMessage = error.response?.data?.msg || error.message
+  const responseMessage = error.response?.data?.msg
 
   const requestConfig = error.config
 
@@ -152,9 +152,9 @@ export function handleError(error: AxiosError<ErrorResponse>): never {
   }
 
   // 处理 HTTP 状态码错误
-  const message = statusCode
+  const message = responseMessage || (statusCode
     ? getErrorMessage(statusCode)
-    : errorMessage || $t('httpMsg.requestFailed')
+    : error.message || $t('httpMsg.requestFailed'))
 
   throw new HttpError(message, statusCode || ApiStatus.error, {
     data: error.response.data,

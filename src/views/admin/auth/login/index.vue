@@ -198,17 +198,12 @@ async function handleSubmit() {
     router.push(redirect || '/admin')
   }
   catch (error) {
-    console.log('🚀 ~ file: index.vue:201 ~ error:', error)
-
-    // 处理 HttpError
     if (error instanceof HttpError) {
-      console.log(error.code)
+      return
     }
-    else {
-      // 处理非 HttpError
-      ElMessage.error('登录失败，请稍后重试')
-      console.error('[登录]意外错误：', error)
-    }
+
+    ElMessage.error('登录失败，请稍后重试')
+    console.error('[登录]意外错误：', error)
   }
   finally {
     loading.value = false
