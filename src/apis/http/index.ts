@@ -99,44 +99,44 @@ const axiosInstance = axios.create({
 })
 
 /** 请求拦截器 */
-// axiosInstance.interceptors.request.use(
-//   (request: InternalAxiosRequestConfig) => {
-//     const { authPath } = request as InternalAxiosRequestConfig & ExtendedAxiosRequestConfig
+axiosInstance.interceptors.request.use(
+  (request: InternalAxiosRequestConfig) => {
+    const { authPath } = request as InternalAxiosRequestConfig & ExtendedAxiosRequestConfig
 
-//     const { accessToken } = authPath ? getUserStoreByPath(authPath) : getCurrentUserStore()
+    const { accessToken } = authPath ? getUserStoreByPath(authPath) : getCurrentUserStore()
 
-//     if (accessToken) { request.headers.set('Authorization', accessToken) }
+    if (accessToken) { request.headers.set('Authorization', accessToken) }
 
-//     if (request.data && !(request.data instanceof FormData) && !request.headers['Content-Type']) {
-//       request.headers.set('Content-Type', 'application/json')
-//       request.data = JSON.stringify(request.data)
-//     }
+    if (request.data && !(request.data instanceof FormData) && !request.headers['Content-Type']) {
+      request.headers.set('Content-Type', 'application/json')
+      request.data = JSON.stringify(request.data)
+    }
 
-//     return request
-//   },
-//   (error) => {
-//     showError(createHttpError($t('httpMsg.requestConfigError'), ApiStatus.error))
-//     return Promise.reject(error)
-//   },
-// )
+    return request
+  },
+  (error) => {
+    showError(createHttpError($t('httpMsg.requestConfigError'), ApiStatus.error))
+    return Promise.reject(error)
+  },
+)
 
 /** 响应拦截器 */
-// axiosInstance.interceptors.response.use(
-//   (response: AxiosResponse<BaseResponse>) => {
-//     const { code, msg } = response.data
+axiosInstance.interceptors.response.use(
+  (response: AxiosResponse<BaseResponse>) => {
+    const { code, msg } = response.data
 
-//     if (code === ApiStatus.success) { return response }
+    if (code === ApiStatus.success) { return response }
 
-//     if (code === ApiStatus.unauthorized) { handleUnauthorizedError(msg) }
+    if (code === ApiStatus.unauthorized) { handleUnauthorizedError(msg) }
 
-//     throw createHttpError(msg || $t('httpMsg.requestFailed'), code)
-//   },
-//   (error) => {
-//     if (error.response?.status === ApiStatus.unauthorized) { handleUnauthorizedError() }
+    throw createHttpError(msg || $t('httpMsg.requestFailed'), code)
+  },
+  (error) => {
+    if (error.response?.status === ApiStatus.unauthorized) { handleUnauthorizedError() }
 
-//     return Promise.reject(handleError(error))
-//   },
-// )
+    return Promise.reject(handleError(error))
+  },
+)
 
 /** 统一创建HttpError */
 function createHttpError(message: string, code: number) {
