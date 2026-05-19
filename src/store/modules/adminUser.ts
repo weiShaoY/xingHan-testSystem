@@ -48,39 +48,39 @@ export const useAdminUserStore = defineStore(
 
     const getWorktabState = computed(() => useWorktabStore().$state)
 
-    const setUserInfo = (newInfo: Api.Auth.UserInfo) => {
+    function setUserInfo(newInfo: Api.Auth.UserInfo) {
       info.value = newInfo
     }
 
-    const setLoginStatus = (status: boolean) => {
+    function setLoginStatus(status: boolean) {
       isLogin.value = status
     }
 
-    const setLanguage = (lang: LanguageEnum) => {
+    function setLanguage(lang: LanguageEnum) {
       setPageTitle(router.currentRoute.value)
       language.value = lang
     }
 
-    const setSearchHistory = (list: AppRouteRecord[]) => {
+    function setSearchHistory(list: AppRouteRecord[]) {
       searchHistory.value = list
     }
 
-    const setLockStatus = (status: boolean) => {
+    function setLockStatus(status: boolean) {
       isLock.value = status
     }
 
-    const setLockPassword = (password: string) => {
+    function setLockPassword(password: string) {
       lockPassword.value = password
     }
 
-    const setToken = (newAccessToken: string, newRefreshToken?: string) => {
+    function setToken(newAccessToken: string, newRefreshToken?: string) {
       accessToken.value = newAccessToken
       if (newRefreshToken) {
         refreshToken.value = newRefreshToken
       }
     }
 
-    const logOut = () => {
+    function logOut() {
       const currentUserId = info.value.userId
 
       if (currentUserId) {
@@ -112,7 +112,7 @@ export const useAdminUserStore = defineStore(
       })
     }
 
-    const checkAndClearWorktabs = () => {
+    function checkAndClearWorktabs() {
       const lastUserId = localStorage.getItem(ADMIN_LAST_USER_ID_KEY)
 
       const currentUserId = info.value.userId

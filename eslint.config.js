@@ -184,10 +184,29 @@ export default antfu(
         ],
 
         // 限制每行的最大语句数
+        // 👉 允许一行存在多个语句（例如某些特殊写法或压缩代码）
+        // 默认 ESLint 不推荐一行写多个语句，因此这里关闭限制
         'max-statements-per-line': 'off',
+
+        // 关闭 @stylistic 插件中的同名规则
+        // 👉 防止与 ESLint 原生规则重复冲突
         'style/max-statements-per-line': 'off',
+
+        // 禁止要求正则表达式必须是静态常量
+        // 👉 允许动态创建 RegExp，例如 new RegExp(variable)
         'e18e/prefer-static-regex': 'off',
 
+        // 强制使用 function 声明函数
+        // 👉 不允许使用 const fn = () => {} 定义顶级函数
+        // 👉 统一团队函数风格，提升函数提升（hoist）能力与可读性
+        'func-style': [
+          'warn',
+          'declaration',
+          {
+            // 不允许使用箭头函数定义普通函数
+            allowArrowFunctions: false,
+          },
+        ],
       },
     },
   },

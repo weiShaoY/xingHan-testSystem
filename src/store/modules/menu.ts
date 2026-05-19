@@ -59,7 +59,7 @@ export const useMenuStore = defineStore('menuStore', () => {
    * 设置菜单列表
    * @param list 菜单路由记录数组
    */
-  const setMenuList = (list: AppRouteRecord[]) => {
+  function setMenuList(list: AppRouteRecord[]) {
     menuList.value = list
     setHomePath(HOME_PAGE_PATH || getFirstMenuPath(list))
   }
@@ -67,7 +67,7 @@ export const useMenuStore = defineStore('menuStore', () => {
   /**
    * 从路径提取一级前缀，例如 /admin/dashboard -> /admin
    */
-  const getPathRootPrefix = (path = ''): string => {
+  function getPathRootPrefix(path = ''): string {
     if (!path || !path.startsWith('/')) { return '' }
 
     const [firstSegment] = path.split('/').filter(Boolean)
@@ -78,7 +78,7 @@ export const useMenuStore = defineStore('menuStore', () => {
   /**
    * 根据当前路径过滤菜单（适配多端共存场景）
    */
-  const getScopedMenuList = (path = ''): AppRouteRecord[] => {
+  function getScopedMenuList(path = ''): AppRouteRecord[] {
     const allMenus = menuList.value
 
     const rootPrefix = getPathRootPrefix(path)
@@ -98,13 +98,13 @@ export const useMenuStore = defineStore('menuStore', () => {
    * 获取首页路径
    * @returns 首页路径字符串
    */
-  const getHomePath = () => homePath.value
+  function getHomePath() { return homePath.value }
 
   /**
    * 设置主页路径
    * @param path 主页路径
    */
-  const setHomePath = (path: string) => {
+  function setHomePath(path: string) {
     homePath.value = path
   }
 
@@ -112,7 +112,7 @@ export const useMenuStore = defineStore('menuStore', () => {
    * 添加路由移除函数
    * @param fns 要添加的路由移除函数数组
    */
-  const addRemoveRouteFns = (fns: (() => void)[]) => {
+  function addRemoveRouteFns(fns: (() => void)[]) {
     removeRouteFns.value.push(...fns)
   }
 
@@ -120,7 +120,7 @@ export const useMenuStore = defineStore('menuStore', () => {
    * 移除所有动态路由
    * 执行所有存储的路由移除函数并清空数组
    */
-  const removeAllDynamicRoutes = () => {
+  function removeAllDynamicRoutes() {
     removeRouteFns.value.forEach(fn => fn())
     removeRouteFns.value = []
   }
@@ -128,7 +128,7 @@ export const useMenuStore = defineStore('menuStore', () => {
   /**
    * 清空路由移除函数数组
    */
-  const clearRemoveRouteFns = () => {
+  function clearRemoveRouteFns() {
     removeRouteFns.value = []
   }
 

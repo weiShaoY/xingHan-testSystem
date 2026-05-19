@@ -155,6 +155,13 @@ export const useSettingStore = defineStore(
     const festivalDate = ref('')
 
     /**
+     * 判断是否为暗色模式
+     */
+    const isDark = computed((): boolean => {
+      return systemThemeType.value === SystemThemeEnum.DARK
+    })
+
+    /**
      * 获取菜单主题
      * 根据当前主题类型和暗色模式返回对应的主题配置
      */
@@ -167,13 +174,6 @@ export const useSettingStore = defineStore(
       else {
         return list[0]
       }
-    })
-
-    /**
-     * 判断是否为暗色模式
-     */
-    const isDark = computed((): boolean => {
-      return systemThemeType.value === SystemThemeEnum.DARK
     })
 
     /**
@@ -202,7 +202,7 @@ export const useSettingStore = defineStore(
      * 切换菜单布局
      * @param type 菜单类型
      */
-    const switchMenuLayouts = (type: MenuTypeEnum) => {
+    function switchMenuLayouts(type: MenuTypeEnum) {
       menuType.value = type
     }
 
@@ -210,7 +210,7 @@ export const useSettingStore = defineStore(
      * 设置菜单展开宽度
      * @param width 宽度值
      */
-    const setMenuOpenWidth = (width: number) => {
+    function setMenuOpenWidth(width: number) {
       menuOpenWidth.value = width
     }
 
@@ -219,7 +219,7 @@ export const useSettingStore = defineStore(
      * @param theme 主题类型
      * @param themeMode 主题模式
      */
-    const setGlopTheme = (theme: SystemThemeEnum, themeMode: SystemThemeEnum) => {
+    function setGlopTheme(theme: SystemThemeEnum, themeMode: SystemThemeEnum) {
       systemThemeType.value = theme
       systemThemeMode.value = themeMode
       localStorage.setItem(StorageConfig.THEME_KEY, theme)
@@ -229,7 +229,7 @@ export const useSettingStore = defineStore(
      * 切换菜单样式
      * @param theme 菜单主题
      */
-    const switchMenuStyles = (theme: MenuThemeEnum) => {
+    function switchMenuStyles(theme: MenuThemeEnum) {
       menuThemeType.value = theme
     }
 
@@ -237,7 +237,7 @@ export const useSettingStore = defineStore(
      * 设置Element Plus主题颜色
      * @param theme 主题颜色
      */
-    const setElementTheme = (theme: string) => {
+    function setElementTheme(theme: string) {
       systemThemeColor.value = theme
       setElementThemeColor(theme)
     }
@@ -245,7 +245,7 @@ export const useSettingStore = defineStore(
     /**
      * 切换边框模式
      */
-    const setBorderMode = () => {
+    function setBorderMode() {
       boxBorderMode.value = !boxBorderMode.value
     }
 
@@ -253,49 +253,49 @@ export const useSettingStore = defineStore(
      * 设置容器宽度
      * @param width 容器宽度枚举值
      */
-    const setContainerWidth = (width: ContainerWidthEnum) => {
+    function setContainerWidth(width: ContainerWidthEnum) {
       containerWidth.value = width
     }
 
     /**
      * 切换唯一展开模式
      */
-    const setUniqueOpened = () => {
+    function setUniqueOpened() {
       uniqueOpened.value = !uniqueOpened.value
     }
 
     /**
      * 切换菜单按钮显示
      */
-    const setButton = () => {
+    function setButton() {
       showMenuButton.value = !showMenuButton.value
     }
 
     /**
      * 切换快速入口显示
      */
-    const setFastEnter = () => {
+    function setFastEnter() {
       showFastEnter.value = !showFastEnter.value
     }
 
     /**
      * 切换自动关闭
      */
-    const setAutoClose = () => {
+    function setAutoClose() {
       autoClose.value = !autoClose.value
     }
 
     /**
      * 切换刷新按钮显示
      */
-    const setShowRefreshButton = () => {
+    function setShowRefreshButton() {
       showRefreshButton.value = !showRefreshButton.value
     }
 
     /**
      * 切换面包屑显示
      */
-    const setCrumbs = () => {
+    function setCrumbs() {
       showCrumbs.value = !showCrumbs.value
     }
 
@@ -303,42 +303,42 @@ export const useSettingStore = defineStore(
      * 设置工作台标签显示
      * @param show 是否显示
      */
-    const setWorkTab = (show: boolean) => {
+    function setWorkTab(show: boolean) {
       showWorkTab.value = show
     }
 
     /**
      * 切换语言切换显示
      */
-    const setLanguage = () => {
+    function setLanguage() {
       showLanguage.value = !showLanguage.value
     }
 
     /**
      * 切换进度条显示
      */
-    const setNprogress = () => {
+    function setNprogress() {
       showNprogress.value = !showNprogress.value
     }
 
     /**
      * 切换色弱模式
      */
-    const setColorWeak = () => {
+    function setColorWeak() {
       colorWeak.value = !colorWeak.value
     }
 
     /**
      * 隐藏设置引导
      */
-    const hideSettingGuide = () => {
+    function hideSettingGuide() {
       showSettingGuide.value = false
     }
 
     /**
      * 显示设置引导
      */
-    const openSettingGuide = () => {
+    function openSettingGuide() {
       showSettingGuide.value = true
     }
 
@@ -346,7 +346,7 @@ export const useSettingStore = defineStore(
      * 设置页面过渡效果
      * @param transition 过渡效果名称
      */
-    const setPageTransition = (transition: string) => {
+    function setPageTransition(transition: string) {
       pageTransition.value = transition
     }
 
@@ -354,7 +354,7 @@ export const useSettingStore = defineStore(
      * 设置标签页样式
      * @param style 样式名称
      */
-    const setTabStyle = (style: string) => {
+    function setTabStyle(style: string) {
       tabStyle.value = style
     }
 
@@ -362,14 +362,14 @@ export const useSettingStore = defineStore(
      * 设置菜单展开状态
      * @param open 是否展开
      */
-    const setMenuOpen = (open: boolean) => {
+    function setMenuOpen(open: boolean) {
       menuOpen.value = open
     }
 
     /**
      * 刷新页面
      */
-    const reload = () => {
+    function reload() {
       refresh.value = !refresh.value
     }
 
@@ -377,7 +377,7 @@ export const useSettingStore = defineStore(
      * 设置水印显示
      * @param visible 是否显示
      */
-    const setWatermarkVisible = (visible: boolean) => {
+    function setWatermarkVisible(visible: boolean) {
       watermarkVisible.value = visible
     }
 
@@ -385,7 +385,7 @@ export const useSettingStore = defineStore(
      * 设置自定义圆角
      * @param radius 圆角值
      */
-    const setCustomRadius = (radius: string) => {
+    function setCustomRadius(radius: string) {
       customRadius.value = radius
       document.documentElement.style.setProperty('--custom-radius', `${radius}rem`)
     }
@@ -394,7 +394,7 @@ export const useSettingStore = defineStore(
      * 设置节日烟花加载状态
      * @param isLoad 是否已加载
      */
-    const setholidayFireworksLoaded = (isLoad: boolean) => {
+    function setholidayFireworksLoaded(isLoad: boolean) {
       holidayFireworksLoaded.value = isLoad
     }
 
@@ -402,15 +402,15 @@ export const useSettingStore = defineStore(
      * 设置节日文本显示
      * @param show 是否显示
      */
-    const setShowFestivalText = (show: boolean) => {
+    function setShowFestivalText(show: boolean) {
       showFestivalText.value = show
     }
 
-    const setFestivalDate = (date: string) => {
+    function setFestivalDate(date: string) {
       festivalDate.value = date
     }
 
-    const setDualMenuShowText = (show: boolean) => {
+    function setDualMenuShowText(show: boolean) {
       dualMenuShowText.value = show
     }
 
