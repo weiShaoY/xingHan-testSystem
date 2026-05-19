@@ -157,7 +157,8 @@ declare global {
   const setElementThemeColor: typeof import('../../utils/ui/colors').setElementThemeColor
   const setMapStoreSuffix: typeof import('pinia').setMapStoreSuffix
   const setPageTitle: typeof import('../../utils/router').setPageTitle
-  const setWorktab: typeof import('../../utils/navigation/worktab').setWorktab
+  const setWorkTab: typeof import('../../utils/navigation/worktab').setWorkTab
+  const setWorktab: typeof import('../../utils/navigation/worktab').setWorkTab
   const setupGlobDirectives: typeof import('../../directives/index').setupGlobDirectives
   const shallowReactive: typeof import('vue').shallowReactive
   const shallowReadonly: typeof import('vue').shallowReadonly
@@ -570,7 +571,7 @@ declare module 'vue' {
     readonly setElementThemeColor: UnwrapRef<typeof import('../../utils/ui/colors')['setElementThemeColor']>
     readonly setMapStoreSuffix: UnwrapRef<typeof import('pinia')['setMapStoreSuffix']>
     readonly setPageTitle: UnwrapRef<typeof import('../../utils/router')['setPageTitle']>
-    readonly setWorktab: UnwrapRef<typeof import('../../utils/navigation/worktab')['setWorktab']>
+    readonly setWorkTab: UnwrapRef<typeof import('../../utils/navigation/worktab')['setWorkTab']>
     readonly setupGlobDirectives: UnwrapRef<typeof import('../../directives/index')['setupGlobDirectives']>
     readonly shallowReactive: UnwrapRef<typeof import('vue')['shallowReactive']>
     readonly shallowReadonly: UnwrapRef<typeof import('vue')['shallowReadonly']>

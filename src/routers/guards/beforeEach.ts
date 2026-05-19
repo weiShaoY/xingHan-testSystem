@@ -45,6 +45,10 @@ import NProgress from 'nprogress'
 
 import { nextTick } from 'vue'
 
+import { fetchAdminGetUserInfo } from '@/apis/admin'
+
+import { fetchClientGetUserInfo } from '@/apis/client'
+
 import { isHttpError } from '@/apis/http/error'
 
 import { ApiStatus } from '@/apis/http/status'
@@ -54,6 +58,7 @@ import { useCommon } from '@/hooks/core/useCommon'
 import {
   getLoginRouteNameByPath,
   getUserStoreByPath,
+  isClientPath,
 } from '@/store'
 
 import { useMenuStore } from '@/store/modules/menu'
@@ -62,7 +67,7 @@ import { useSettingStore } from '@/store/modules/setting'
 
 import { useWorkTabStore } from '@/store/modules/workTab'
 
-import { setWorktab } from '@/utils/navigation'
+import { setWorkTab } from '@/utils/navigation'
 
 import { setPageTitle } from '@/utils/router'
 
@@ -186,6 +191,7 @@ export function setupBeforeEachGuard(router: Router): void {
 export function resetRouterState(delay: number): void {
   setTimeout(() => {
     routeRegistry?.unregister()
+
     IframeRouteManager.getInstance().clear()
 
     const menuStore = useMenuStore()
@@ -253,6 +259,7 @@ async function handleRouteGuard(
     }
 
     await handleDynamicRoutes(to, next, router)
+
     return
   }
 
@@ -263,7 +270,7 @@ async function handleRouteGuard(
 
   // 5. 处理已匹配的路由
   if (to.matched.length > 0) {
-    setWorktab(to)
+    setWorkTab(to)
     setPageTitle(to)
     next()
     return
@@ -295,6 +302,7 @@ async function handleDynamicRoutes(
 
   // 显示 loading
   pendingLoading = true
+
   loadingService.showLoading()
 
   try {
@@ -516,11 +524,13 @@ function isStaticRoute(path: string): boolean {
 async function fetchUserInfo(path: string): Promise<void> {
   const userStore = getUserStoreByPath(path)
 
-  const data = await fetchAdminGetUserInfo(path)
+  const { userInfo } = isClientPath(path)
+    ? await fetchClientGetUserInfo(path)
+    : await fetchAdminGetUserInfo(path)
 
-  console.log('🚀 ~ file: beforeEach.ts:435 ~ data:', data)
+  console.log('🚀 ~ file: beforeEach.ts:435 ~ data:', userInfo)
 
-  userStore.setUserInfo(data)
+  userStore.setUserInfo(userInfo)
 
   // 检查并清理工作台标签页（如果是不同用户登录）
   userStore.checkAndClearWorkTabs()

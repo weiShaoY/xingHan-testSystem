@@ -28,6 +28,11 @@
  * @module utils/ui/loading
  * @author Art Design Pro Team
  */
+/**
+ * 四点旋转加载动画 SVG。
+ *
+ * 使用 CSS 变量 `--theme-color` 作为圆点颜色，使动画颜色跟随当前主题色。
+ */
 const fourDotsSpinnerSvg = `
   <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40">
     <style>
@@ -61,8 +66,9 @@ const fourDotsSpinnerSvg = `
 `
 
 /**
- * 获取当前主题对应的loading背景色
- * @returns 背景色字符串
+ * 获取当前主题对应的 loading 背景色。
+ *
+ * @returns 深色模式返回半透明黑色背景，浅色模式返回白色背景。
  */
 function getLoadingBackground(): string {
   const isDark = document.documentElement.classList.contains('dark')
@@ -70,6 +76,13 @@ function getLoadingBackground(): string {
   return isDark ? 'rgba(7, 7, 7, 0.85)' : '#fff'
 }
 
+/**
+ * 默认 Loading 配置。
+ *
+ * @remarks
+ * `background` 使用 getter，让外部直接读取默认配置时也能拿到当前主题对应的背景色。
+ * 实际调用 `ElLoading.service` 时仍会重新写入一次 `background`，确保主题刚切换后显示也准确。
+ */
 const DEFAULT_LOADING_CONFIG = {
   lock: true,
   get background() {
@@ -80,16 +93,36 @@ const DEFAULT_LOADING_CONFIG = {
   customClass: 'art-loading-fix',
 } as const
 
+/**
+ * Element Plus Loading 实例的最小接口。
+ */
 type LoadingInstance = {
+
+  /**
+   * 关闭当前 Loading 实例。
+   */
   close: () => void
 }
 
+/**
+ * 当前全局 Loading 实例。
+ *
+ * 为 `null` 表示当前没有显示中的全屏 Loading。
+ */
 let loadingInstance: LoadingInstance | null = null
 
+/**
+ * 全局 Loading 服务。
+ *
+ * 通过单例实例统一管理全屏 Loading，避免多次调用时重复创建遮罩。
+ */
 export const loadingService = {
   /**
-   * 显示 loading
-   * @returns 关闭 loading 的函数
+   * 显示全屏 Loading。
+   *
+   * 如果当前已有 Loading 实例，则复用现有实例，不会重复创建。
+   *
+   * @returns 一个用于关闭当前 Loading 的函数。
    */
   showLoading(): () => void {
     if (!loadingInstance) {
@@ -106,7 +139,9 @@ export const loadingService = {
   },
 
   /**
-   * 隐藏 loading
+   * 隐藏全屏 Loading。
+   *
+   * @remarks 关闭后会清空实例引用，下一次调用 `showLoading` 时会重新创建实例。
    */
   hideLoading(): void {
     if (loadingInstance) {

@@ -25,7 +25,7 @@
  *
  * ```typescript
  * const params: Api.Auth.LoginParams = { userName: 'admin', password: '123456' }
- * const response: Api.Auth.UserInfo = await fetchUserInfo()
+ * const response: Api.Auth.UserInfo = await fetchAdminGetUserInfo()
  * ```
  *
  * @module types/api/api

@@ -24,13 +24,11 @@ export function fetchAdminLogin(params: AdminApi.Auth.LoginParams) {
  * @returns 用户信息
  */
 export function fetchAdminGetUserInfo(authPath?: string) {
-  return request.get<AdminApi.Auth.UserInfo>({
+  return request.get<{
+    userInfo: AdminApi.Auth.UserInfo
+  }>({
     url: '/admin/auth/userinfo',
     authPath,
 
-    // 自定义请求头
-    // headers: {
-    //   'X-Custom-Header': 'your-custom-value'
-    // }
   })
 }

@@ -67,16 +67,7 @@ export const useAdminUserStore = defineStore(
     const getSettingState = computed(() => useSettingStore().$state)
 
     /** 获取工作台标签页状态。 */
-    const getWorktabState = computed(() => useWorkTabStore().$state)
-
-    /**
-     * 设置当前后台用户信息。
-     *
-     * @param newInfo 新的后台用户信息。
-     */
-    function setUserInfo(newInfo: Api.Auth.UserInfo) {
-      info.value = newInfo
-    }
+    const getWorkTabState = computed(() => useWorkTabStore().$state)
 
     /**
      * 设置后台用户登录状态。
@@ -85,6 +76,15 @@ export const useAdminUserStore = defineStore(
      */
     function setLoginStatus(status: boolean) {
       isLogin.value = status
+    }
+
+    /**
+     * 设置当前后台用户信息。
+     *
+     * @param newInfo 新的后台用户信息。
+     */
+    function setUserInfo(newInfo: Api.Auth.UserInfo) {
+      info.value = newInfo
     }
 
     /**
@@ -151,6 +151,7 @@ export const useAdminUserStore = defineStore(
       }
 
       info.value = {
+
       }
       isLogin.value = false
       isLock.value = false
@@ -159,6 +160,7 @@ export const useAdminUserStore = defineStore(
       refreshToken.value = ''
       sessionStorage.removeItem('iframeRoutes')
       useMenuStore().setHomePath('')
+
       resetRouterState(500)
 
       const currentRoute = router.currentRoute.value
@@ -231,7 +233,7 @@ export const useAdminUserStore = defineStore(
       getSettingState,
 
       /** 获取工作台标签页状态。 */
-      getWorktabState,
+      getWorkTabState,
 
       /** 设置当前后台用户信息。 */
       setUserInfo,

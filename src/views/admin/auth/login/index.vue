@@ -200,15 +200,15 @@ async function handleSubmit() {
       throw new Error('登录失败-未收到令牌')
     }
 
-    // // 存储 token 和登录状态
+    // 存储 token 和登录状态
     userStore.setToken(loginResult.token, '')
 
     userStore.setLoginStatus(true)
 
-    // // 登录成功处理
+    // 登录成功处理
     showLoginSuccessNotice()
 
-    // // 获取 redirect 参数，如果存在则跳转到指定页面，否则跳转到客户端首页
+    // 获取 redirect 参数，如果存在则跳转到指定页面，否则跳转到客户端首页
     const redirect = route.query.redirect as string
 
     router.push(redirect || '/admin')

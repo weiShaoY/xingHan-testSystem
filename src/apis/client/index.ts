@@ -24,7 +24,9 @@ export function fetchClientLogin(params: AdminApi.Auth.LoginParams) {
  * @returns 用户信息
  */
 export function fetchClientGetUserInfo(authPath?: string) {
-  return request.get<AdminApi.Auth.UserInfo>({
+  return request.get<{
+    userInfo: AdminApi.Auth.UserInfo
+  }>({
     url: '/client/auth/userinfo',
     authPath,
   })

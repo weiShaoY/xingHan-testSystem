@@ -37,7 +37,7 @@ import { isIframe } from './route'
  * 根据当前路由信息设置工作标签页（worktab）
  * @param to 当前路由对象
  */
-export function setWorktab(to: RouteLocationNormalized): void {
+export function setWorkTab(to: RouteLocationNormalized): void {
   const workTabStore = useWorkTabStore()
 
   const { meta, path, name, params, query } = to
