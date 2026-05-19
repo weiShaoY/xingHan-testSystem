@@ -93,19 +93,6 @@ let routeRegistry: RouteRegistry | null = null
 let menuProcessor: MenuProcessor | null = null
 
 /**
- * 获取菜单处理器实例。
- *
- * @returns 菜单处理器实例。
- */
-function getMenuProcessor(): MenuProcessor {
-  if (!menuProcessor) {
-    menuProcessor = new MenuProcessor()
-  }
-
-  return menuProcessor
-}
-
-/**
  * 是否存在由路由守卫打开、尚未关闭的全屏 loading。
  */
 let pendingLoading = false
@@ -192,17 +179,23 @@ export function setupBeforeEachGuard(router: Router): void {
 }
 
 /**
- * 关闭 loading 效果
+ * 重置路由相关状态
  *
- * @remarks 仅关闭由当前路由守卫打开的 loading，避免误关其他业务 loading。
+ * @param delay 延迟执行重置的毫秒数，常用于等待退出登录跳转完成。
  */
-function closeLoading(): void {
-  if (pendingLoading) {
-    nextTick(() => {
-      loadingService.hideLoading()
-      pendingLoading = false
-    })
-  }
+export function resetRouterState(delay: number): void {
+  setTimeout(() => {
+    routeRegistry?.unregister()
+    IframeRouteManager.getInstance().clear()
+
+    const menuStore = useMenuStore()
+
+    menuStore.removeAllDynamicRoutes()
+    menuStore.setMenuList([])
+
+    // 重置路由初始化状态，允许重新登录后再次初始化
+    resetRouteInitState()
+  }, delay)
 }
 
 /**
@@ -280,83 +273,6 @@ async function handleRouteGuard(
   next({
     name: 'Exception404',
   })
-}
-
-/**
- * 处理登录状态
- *
- * @param to 即将进入的目标路由。
- * @param userStore 当前目标端对应的用户状态 store。
- * @param next Vue Router 导航控制函数。
- * @returns true 表示可以继续，false 表示已处理跳转
- */
-function handleLoginStatus(
-  to: RouteLocationNormalized,
-  userStore: ReturnType<typeof getUserStoreByPath>,
-  next: NavigationGuardNext,
-): boolean {
-  // 已登录或访问登录页或静态路由，直接放行
-  if (userStore.isLogin || isStaticRoute(to.path)) {
-    return true
-  }
-
-  //  临时放行
-  // return true
-
-  // 未登录且访问需要权限的页面，跳转到登录页并携带 redirect 参数
-  next({
-    name: getLoginRouteNameByPath(to.path),
-    query: {
-      redirect: to.fullPath,
-    },
-  })
-  return false
-}
-
-/**
- * 检查路由是否为静态路由
- *
- * 静态路由不依赖登录态和动态菜单，例如登录页、注册页、错误页等。
- *
- * @param path 需要判断的完整访问路径。
- * @returns 是否命中静态路由配置。
- */
-function isStaticRoute(path: string): boolean {
-  /**
-   * 递归检查路由树中是否存在匹配的静态路由。
-   *
-   * @param routes 待检查的路由列表。
-   * @param targetPath 需要匹配的目标路径。
-   * @returns 是否匹配到允许匿名访问的静态路由。
-   */
-  function checkRoute(routes: any[], targetPath: string): boolean {
-    return routes.some((route) => {
-      // 404 catch-all 路由不应视为可匿名访问的静态页，
-      // 否则未登录时手动输入任意地址会直接落到 404，无法跳转登录页。
-      if (route.name === 'Exception404') {
-        return false
-      }
-
-      // 处理动态路由参数匹配
-      const routePath = route.path
-
-      const pattern = routePath.replace(/:[^/]+/g, '[^/]+').replace(/\*/g, '.*')
-
-      const regex = new RegExp(`^${pattern}$`)
-
-      if (regex.test(targetPath)) {
-        return true
-      }
-
-      if (route.children && route.children.length > 0) {
-        return checkRoute(route.children, targetPath)
-      }
-
-      return false
-    })
-  }
-
-  return checkRoute(staticRoutes, path)
 }
 
 /**
@@ -491,41 +407,34 @@ async function handleDynamicRoutes(
 }
 
 /**
- * 获取用户信息
+ * 处理登录状态
  *
- * @param path 当前访问路径，用于选择管理端或客户端对应的用户 store。
+ * @param to 即将进入的目标路由。
+ * @param userStore 当前目标端对应的用户状态 store。
+ * @param next Vue Router 导航控制函数。
+ * @returns true 表示可以继续，false 表示已处理跳转
  */
-async function fetchUserInfo(path: string): Promise<void> {
-  const userStore = getUserStoreByPath(path)
+function handleLoginStatus(
+  to: RouteLocationNormalized,
+  userStore: ReturnType<typeof getUserStoreByPath>,
+  next: NavigationGuardNext,
+): boolean {
+  // 已登录或访问登录页或静态路由，直接放行
+  if (userStore.isLogin || isStaticRoute(to.path)) {
+    return true
+  }
 
-  const data = await fetchAdminGetUserInfo(path)
+  //  临时放行
+  // return true
 
-  console.log('🚀 ~ file: beforeEach.ts:435 ~ data:', data)
-
-  userStore.setUserInfo(data)
-
-  // 检查并清理工作台标签页（如果是不同用户登录）
-  userStore.checkAndClearWorkTabs()
-}
-
-/**
- * 重置路由相关状态
- *
- * @param delay 延迟执行重置的毫秒数，常用于等待退出登录跳转完成。
- */
-export function resetRouterState(delay: number): void {
-  setTimeout(() => {
-    routeRegistry?.unregister()
-    IframeRouteManager.getInstance().clear()
-
-    const menuStore = useMenuStore()
-
-    menuStore.removeAllDynamicRoutes()
-    menuStore.setMenuList([])
-
-    // 重置路由初始化状态，允许重新登录后再次初始化
-    resetRouteInitState()
-  }, delay)
+  // 未登录且访问需要权限的页面，跳转到登录页并携带 redirect 参数
+  next({
+    name: getLoginRouteNameByPath(to.path),
+    query: {
+      redirect: to.fullPath,
+    },
+  })
+  return false
 }
 
 /**
@@ -551,6 +460,97 @@ function handleRootPathRedirect(to: RouteLocationNormalized, next: NavigationGua
   }
 
   return false
+}
+
+/**
+ * 检查路由是否为静态路由
+ *
+ * 静态路由不依赖登录态和动态菜单，例如登录页、注册页、错误页等。
+ *
+ * @param path 需要判断的完整访问路径。
+ * @returns 是否命中静态路由配置。
+ */
+function isStaticRoute(path: string): boolean {
+  /**
+   * 递归检查路由树中是否存在匹配的静态路由。
+   *
+   * @param routes 待检查的路由列表。
+   * @param targetPath 需要匹配的目标路径。
+   * @returns 是否匹配到允许匿名访问的静态路由。
+   */
+  function checkRoute(routes: any[], targetPath: string): boolean {
+    return routes.some((route) => {
+      // 404 catch-all 路由不应视为可匿名访问的静态页，
+      // 否则未登录时手动输入任意地址会直接落到 404，无法跳转登录页。
+      if (route.name === 'Exception404') {
+        return false
+      }
+
+      // 处理动态路由参数匹配
+      const routePath = route.path
+
+      const pattern = routePath.replace(/:[^/]+/g, '[^/]+').replace(/\*/g, '.*')
+
+      const regex = new RegExp(`^${pattern}$`)
+
+      if (regex.test(targetPath)) {
+        return true
+      }
+
+      if (route.children && route.children.length > 0) {
+        return checkRoute(route.children, targetPath)
+      }
+
+      return false
+    })
+  }
+
+  return checkRoute(staticRoutes, path)
+}
+
+/**
+ * 获取用户信息
+ *
+ * @param path 当前访问路径，用于选择管理端或客户端对应的用户 store。
+ */
+async function fetchUserInfo(path: string): Promise<void> {
+  const userStore = getUserStoreByPath(path)
+
+  const data = await fetchAdminGetUserInfo(path)
+
+  console.log('🚀 ~ file: beforeEach.ts:435 ~ data:', data)
+
+  userStore.setUserInfo(data)
+
+  // 检查并清理工作台标签页（如果是不同用户登录）
+  userStore.checkAndClearWorkTabs()
+}
+
+/**
+ * 获取菜单处理器实例。
+ *
+ * @returns 菜单处理器实例。
+ */
+function getMenuProcessor(): MenuProcessor {
+  if (!menuProcessor) {
+    menuProcessor = new MenuProcessor()
+  }
+
+  return menuProcessor
+}
+
+/**
+ * 关闭 loading 效果
+ *
+ * @remarks 仅关闭由当前路由守卫打开的 loading，避免误关其他业务 loading。
+ */
+function closeLoading(): void {
+  if (pendingLoading) {
+    nextTick(() => {
+      loadingService.hideLoading()
+      pendingLoading = false
+    })
+  }
 }
 
 /**
