@@ -4,9 +4,6 @@ import { useAdminUserStore } from './modules/adminUser'
 
 import { useClientUserStore } from './modules/clientUser'
 
-/** 客户端路由前缀。 */
-const CLIENT_PATH_PREFIX = '/client'
-
 /**
  * 判断指定路径是否属于客户端。
  *
@@ -14,7 +11,7 @@ const CLIENT_PATH_PREFIX = '/client'
  * @returns `true` 表示客户端路径，`false` 表示管理端路径。
  */
 export function isClientPath(path = ''): boolean {
-  return path.startsWith(CLIENT_PATH_PREFIX)
+  return path.startsWith('/client')
 }
 
 /**
