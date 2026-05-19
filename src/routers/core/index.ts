@@ -18,6 +18,11 @@ export {
 } from './MenuProcessor'
 
 export {
+  loadRouteModules,
+  sortRouteModules,
+} from './RouteLoader'
+
+export {
   RoutePermissionValidator,
 } from './RoutePermissionValidator'
 
