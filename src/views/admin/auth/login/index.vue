@@ -160,6 +160,8 @@ function encryptLoginPayload(formData: any, publicKey: string, sm2key: string) {
  * 并根据 redirect 参数跳转到目标页面或客户端首页。
  */
 async function handleSubmit() {
+  console.log('🚀 ~ file: index.vue:137 ~ window.$isDevelopment:', window.$isDevelopment)
+
   if (!formRef.value) { return }
 
   try {
@@ -169,7 +171,7 @@ async function handleSubmit() {
     if (!valid) { return }
 
     // 拖拽验证
-    if (!isPassing.value) {
+    if (!isPassing.value && !window.$isDevelopment) {
       isClickPass.value = true
       return
     }

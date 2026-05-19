@@ -133,7 +133,7 @@ async function handleSubmit() {
     if (!valid) { return }
 
     // 拖拽验证
-    if (!isPassing.value) {
+    if (!isPassing.value && !window.$isDevelopment) {
       isClickPass.value = true
       return
     }
