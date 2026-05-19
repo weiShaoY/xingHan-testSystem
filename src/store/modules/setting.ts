@@ -61,7 +61,7 @@ import { setElementThemeColor } from '@/utils/ui'
 export const useSettingStore = defineStore(
   'settingStore',
   () => {
-    // 菜单相关设置
+    // ==================== 菜单相关设置 ====================
     /** 菜单类型 */
     const menuType = ref(SETTING_DEFAULT_CONFIG.menuType)
 
@@ -74,7 +74,7 @@ export const useSettingStore = defineStore(
     /** 双菜单是否显示文本 */
     const dualMenuShowText = ref(SETTING_DEFAULT_CONFIG.dualMenuShowText)
 
-    // 主题相关设置
+    // ==================== 主题相关设置 ====================
     /** 系统主题类型 */
     const systemThemeType = ref(SETTING_DEFAULT_CONFIG.systemThemeType)
 
@@ -87,7 +87,7 @@ export const useSettingStore = defineStore(
     /** 系统主题颜色 */
     const systemThemeColor = ref(SETTING_DEFAULT_CONFIG.systemThemeColor)
 
-    // 界面显示设置
+    // ==================== 界面显示设置 ====================
     /** 是否显示菜单按钮 */
     const showMenuButton = ref(SETTING_DEFAULT_CONFIG.showMenuButton)
 
@@ -118,7 +118,7 @@ export const useSettingStore = defineStore(
     /** 是否显示水印 */
     const watermarkVisible = ref(SETTING_DEFAULT_CONFIG.watermarkVisible)
 
-    // 功能设置
+    // ==================== 功能设置 ====================
     /** 是否自动关闭 */
     const autoClose = ref(SETTING_DEFAULT_CONFIG.autoClose)
 
@@ -134,7 +134,7 @@ export const useSettingStore = defineStore(
     /** 是否加载节日烟花 */
     const holidayFireworksLoaded = ref(SETTING_DEFAULT_CONFIG.holidayFireworksLoaded)
 
-    // 样式设置
+    // ==================== 样式设置 ====================
     /** 边框模式 */
     const boxBorderMode = ref(SETTING_DEFAULT_CONFIG.boxBorderMode)
 
@@ -150,7 +150,7 @@ export const useSettingStore = defineStore(
     /** 容器宽度 */
     const containerWidth = ref(SETTING_DEFAULT_CONFIG.containerWidth)
 
-    // 节日相关
+    // ==================== 节日相关 ====================
     /** 节日日期 */
     const festivalDate = ref('')
 
@@ -406,77 +406,210 @@ export const useSettingStore = defineStore(
       showFestivalText.value = show
     }
 
+    /**
+     * 设置当前已展示节日效果的日期。
+     * @param date 节日日期
+     */
     function setFestivalDate(date: string) {
       festivalDate.value = date
     }
 
+    /**
+     * 设置双栏菜单是否显示文本。
+     * @param show 是否显示文本
+     */
     function setDualMenuShowText(show: boolean) {
       dualMenuShowText.value = show
     }
 
     return {
+      /** 菜单类型 */
       menuType,
+
+      /** 菜单展开宽度 */
       menuOpenWidth,
+
+      /** 系统主题类型 */
       systemThemeType,
+
+      /** 系统主题模式 */
       systemThemeMode,
+
+      /** 菜单主题类型 */
       menuThemeType,
+
+      /** 系统主题颜色 */
       systemThemeColor,
+
+      /** 边框模式 */
       boxBorderMode,
+
+      /** 是否唯一展开 */
       uniqueOpened,
+
+      /** 是否显示菜单按钮 */
       showMenuButton,
+
+      /** 是否显示快速入口 */
       showFastEnter,
+
+      /** 是否显示刷新按钮 */
       showRefreshButton,
+
+      /** 是否显示面包屑 */
       showCrumbs,
+
+      /** 是否自动关闭 */
       autoClose,
+
+      /** 是否显示工作台标签 */
       showWorkTab,
+
+      /** 是否显示语言切换 */
       showLanguage,
+
+      /** 是否显示进度条 */
       showNprogress,
+
+      /** 是否色弱模式 */
       colorWeak,
+
+      /** 是否显示设置引导 */
       showSettingGuide,
+
+      /** 页面过渡效果 */
       pageTransition,
+
+      /** 标签页样式 */
       tabStyle,
+
+      /** 菜单是否展开 */
       menuOpen,
+
+      /** 页面刷新标识 */
       refresh,
+
+      /** 是否显示水印 */
       watermarkVisible,
+
+      /** 自定义圆角 */
       customRadius,
+
+      /** 是否已加载节日烟花 */
       holidayFireworksLoaded,
+
+      /** 是否显示节日文本 */
       showFestivalText,
+
+      /** 节日日期 */
       festivalDate,
+
+      /** 双栏菜单是否显示文本 */
       dualMenuShowText,
+
+      /** 容器宽度 */
       containerWidth,
+
+      /** 获取菜单主题 */
       getMenuTheme,
+
+      /** 判断是否为暗色模式 */
       isDark,
+
+      /** 获取菜单展开宽度 */
       getMenuOpenWidth,
+
+      /** 获取自定义圆角 */
       getCustomRadius,
+
+      /** 是否显示烟花 */
       isShowFireworks,
+
+      /** 切换菜单布局 */
       switchMenuLayouts,
+
+      /** 设置菜单展开宽度 */
       setMenuOpenWidth,
+
+      /** 设置全局主题 */
       setGlopTheme,
+
+      /** 切换菜单样式 */
       switchMenuStyles,
+
+      /** 设置 Element Plus 主题颜色 */
       setElementTheme,
+
+      /** 切换边框模式 */
       setBorderMode,
+
+      /** 设置容器宽度 */
       setContainerWidth,
+
+      /** 切换唯一展开模式 */
       setUniqueOpened,
+
+      /** 切换菜单按钮显示 */
       setButton,
+
+      /** 切换快速入口显示 */
       setFastEnter,
+
+      /** 切换自动关闭 */
       setAutoClose,
+
+      /** 切换刷新按钮显示 */
       setShowRefreshButton,
+
+      /** 切换面包屑显示 */
       setCrumbs,
+
+      /** 设置工作台标签显示 */
       setWorkTab,
+
+      /** 切换语言切换显示 */
       setLanguage,
+
+      /** 切换进度条显示 */
       setNprogress,
+
+      /** 切换色弱模式 */
       setColorWeak,
+
+      /** 隐藏设置引导 */
       hideSettingGuide,
+
+      /** 显示设置引导 */
       openSettingGuide,
+
+      /** 设置页面过渡效果 */
       setPageTransition,
+
+      /** 设置标签页样式 */
       setTabStyle,
+
+      /** 设置菜单展开状态 */
       setMenuOpen,
+
+      /** 刷新页面 */
       reload,
+
+      /** 设置水印显示 */
       setWatermarkVisible,
+
+      /** 设置自定义圆角 */
       setCustomRadius,
+
+      /** 设置节日烟花加载状态 */
       setholidayFireworksLoaded,
+
+      /** 设置节日文本显示 */
       setShowFestivalText,
+
+      /** 设置当前已展示节日效果的日期 */
       setFestivalDate,
+
+      /** 设置双栏菜单是否显示文本 */
       setDualMenuShowText,
     }
   },

@@ -30,25 +30,51 @@ import { createPersistedState } from 'pinia-plugin-persistedstate'
 
 import { StorageKeyManager } from '@/utils/storage/storage-key-manager'
 
+/**
+ * 全局 Pinia Store 实例。
+ *
+ * 应用内所有 Pinia 模块都会挂载到该实例上。
+ */
 export const store = createPinia()
 
-// 创建存储键管理器实例
+/**
+ * 存储键管理器实例。
+ *
+ * 用于为持久化 Store 生成带系统版本号的 localStorage 键名，
+ * 并支持跨版本数据迁移。
+ */
 const storageKeyManager = new StorageKeyManager()
 
-// 配置持久化插件
+/**
+ * 注册 Pinia 持久化插件。
+ *
+ * 统一配置持久化键名、存储介质和 JSON 序列化方式。
+ */
 store.use(
   createPersistedState({
+    /** 根据 Store ID 生成版本化存储键。 */
     key: (storeId: string) => storageKeyManager.getStorageKey(storeId),
+
+    /** 使用 localStorage 保存持久化状态。 */
     storage: localStorage,
+
+    /** 配置 JSON 序列化器。 */
     serializer: {
+      /** 将 Store 状态序列化为字符串。 */
       serialize: JSON.stringify,
+
+      /** 将本地存储字符串反序列化为 Store 状态。 */
       deserialize: JSON.parse,
     },
   }),
 )
 
 /**
- * 初始化 Store
+ * 初始化 Store。
+ *
+ * 将全局 Pinia Store 实例注册到 Vue 应用中。
+ *
+ * @param app Vue 应用实例。
  */
 export function initStore(app: App<Element>): void {
   app.use(store)

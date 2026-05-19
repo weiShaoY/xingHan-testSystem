@@ -133,16 +133,37 @@ export const useMenuStore = defineStore('menuStore', () => {
   }
 
   return {
+    /** 菜单列表 */
     menuList,
+
+    /** 菜单宽度 */
     menuWidth,
+
+    /** 动态路由移除函数列表 */
     removeRouteFns,
+
+    /** 设置菜单列表并同步首页路径 */
     setMenuList,
+
+    /** 从路径提取一级根前缀 */
     getPathRootPrefix,
+
+    /** 根据当前路径获取对应作用域菜单 */
     getScopedMenuList,
+
+    /** 获取首页路径 */
     getHomePath,
+
+    /** 设置首页路径 */
     setHomePath,
+
+    /** 添加动态路由移除函数 */
     addRemoveRouteFns,
+
+    /** 移除所有动态路由 */
     removeAllDynamicRoutes,
+
+    /** 清空动态路由移除函数列表 */
     clearRemoveRouteFns,
   }
 })

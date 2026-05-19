@@ -35,19 +35,19 @@ import { TableSizeEnum } from '@/enums/formEnum'
 export const useTableStore = defineStore(
   'tableStore',
   () => {
-    // 表格大小
+    /** 表格大小 */
     const tableSize = ref(TableSizeEnum.DEFAULT)
 
-    // 斑马纹
+    /** 是否显示斑马纹 */
     const isZebra = ref(false)
 
-    // 边框
+    /** 是否显示边框 */
     const isBorder = ref(false)
 
-    // 表头背景
+    /** 是否显示表头背景 */
     const isHeaderBackground = ref(false)
 
-    // 是否全屏
+    /** 是否全屏 */
     const isFullScreen = ref(false)
 
     /**
@@ -91,15 +91,34 @@ export const useTableStore = defineStore(
     }
 
     return {
+      /** 表格大小 */
       tableSize,
+
+      /** 是否显示斑马纹 */
       isZebra,
+
+      /** 是否显示边框 */
       isBorder,
+
+      /** 是否显示表头背景 */
       isHeaderBackground,
+
+      /** 设置表格大小 */
       setTableSize,
+
+      /** 设置斑马纹显示状态 */
       setIsZebra,
+
+      /** 设置表格边框显示状态 */
       setIsBorder,
+
+      /** 设置表头背景显示状态 */
       setIsHeaderBackground,
+
+      /** 是否全屏 */
       isFullScreen,
+
+      /** 设置是否全屏 */
       setIsFullScreen,
     }
   },

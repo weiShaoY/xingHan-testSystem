@@ -180,7 +180,7 @@ export const useAdminUserStore = defineStore(
      *
      * 该方法依赖退出登录时记录的最后用户 ID，避免新用户看到上一个用户的标签页缓存。
      */
-    function checkAndClearWorktabs() {
+    function checkAndClearWorkTabs() {
       const lastUserId = localStorage.getItem(ADMIN_LAST_USER_ID_KEY)
 
       const currentUserId = info.value.userId
@@ -258,7 +258,7 @@ export const useAdminUserStore = defineStore(
       logOut,
 
       /** 检查后台端是否切换了登录用户，并在用户变化时清空工作台标签页。 */
-      checkAndClearWorktabs,
+      checkAndClearWorkTabs,
     }
   },
   {

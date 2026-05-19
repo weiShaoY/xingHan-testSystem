@@ -49,9 +49,17 @@ import { useCommon } from '@/hooks/core/useCommon'
 
 import { router } from '@/routers'
 
+/**
+ * 工作台标签页持久化状态结构。
+ */
 type WorktabState = {
+
+  /** 当前激活的标签页。 */
   current: Partial<WorkTab>
+
+  /** 已打开的标签页列表。 */
   opened: WorkTab[]
+  /** KeepAlive 缓存排除组件名称列表。 */
   keepAliveExclude: string[]
 }
 
@@ -61,19 +69,25 @@ type WorktabState = {
 export const useWorktabStore = defineStore(
   'worktabStore',
   () => {
-    // 状态定义
+    // ==================== 状态定义 ====================
+    /** 当前激活的标签页。 */
     const current = ref<Partial<WorkTab>>({
     })
 
+    /** 已打开的标签页列表。 */
     const opened = ref<WorkTab[]>([])
 
+    /** KeepAlive 缓存排除组件名称列表。 */
     const keepAliveExclude = ref<string[]>([])
 
-    // 计算属性
+    // ==================== 计算属性 ====================
+    /** 是否存在已打开标签页。 */
     const hasOpenedTabs = computed(() => opened.value.length > 0)
 
+    /** 是否存在多个已打开标签页。 */
     const hasMultipleTabs = computed(() => opened.value.length > 1)
 
+    /** 当前激活标签页在列表中的索引。 */
     const currentTabIndex = computed(() =>
       current.value.path ? opened.value.findIndex(tab => tab.path === current.value.path) : -1,
     )
@@ -584,37 +598,81 @@ export const useWorktabStore = defineStore(
     }
 
     return {
-      // 状态
+      // ==================== 状态 ====================
+      /** 当前激活的标签页。 */
       current,
+
+      /** 已打开的标签页列表。 */
       opened,
+      /** KeepAlive 缓存排除组件名称列表。 */
       keepAliveExclude,
 
-      // 计算属性
+      // ==================== 计算属性 ====================
+      /** 是否存在已打开标签页。 */
       hasOpenedTabs,
+
+      /** 是否存在多个已打开标签页。 */
       hasMultipleTabs,
+
+      /** 当前激活标签页在列表中的索引。 */
       currentTabIndex,
 
-      // 方法
+      // ==================== 方法 ====================
+      /** 打开或激活一个标签页。 */
       openTab,
+
+      /** 关闭指定标签页。 */
       removeTab,
+
+      /** 关闭指定标签页左侧的可关闭标签页。 */
       removeLeft,
+
+      /** 关闭指定标签页右侧的可关闭标签页。 */
       removeRight,
+
+      /** 关闭除指定标签页外的其他可关闭标签页。 */
       removeOthers,
+
+      /** 关闭所有可关闭标签页。 */
       removeAll,
+
+      /** 切换指定标签页的固定状态。 */
       toggleFixedTab,
+
+      /** 验证工作台标签页的路由有效性。 */
       validateWorktabs,
+
+      /** 清空所有工作台标签页状态。 */
       clearAll,
+
+      /** 获取工作台标签页状态快照。 */
       getStateSnapshot,
 
-      // 工具方法
+      // ==================== 工具方法 ====================
+      /** 查找标签页索引。 */
       findTabIndex,
+
+      /** 根据路径获取标签页。 */
       getTab,
+
+      /** 检查标签页是否可关闭。 */
       isTabClosable,
+
+      /** 将标签页加入 KeepAlive 缓存排除列表。 */
       addKeepAliveExclude,
+      /** 从 KeepAlive 缓存排除列表移除组件名称。 */
       removeKeepAliveExclude,
+
+      /** 将一组标签页标记为排除缓存。 */
       markTabsToRemove,
+
+      /** 获取标签页标题信息。 */
       getTabTitle,
+
+      /** 更新标签页自定义标题。 */
       updateTabTitle,
+
+      /** 重置标签页自定义标题。 */
       resetTabTitle,
     }
   },

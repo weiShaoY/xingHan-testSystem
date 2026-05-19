@@ -272,7 +272,7 @@ function handleLoginStatus(
  * 检查路由是否为静态路由
  */
 function isStaticRoute(path: string): boolean {
-  const checkRoute = (routes: any[], targetPath: string): boolean => {
+  function checkRoute(routes: any[], targetPath: string): boolean {
     return routes.some((route) => {
       // 404 catch-all 路由不应视为可匿名访问的静态页，
       // 否则未登录时手动输入任意地址会直接落到 404，无法跳转登录页。
@@ -438,7 +438,7 @@ async function fetchUserInfo(path: string): Promise<void> {
   userStore.setUserInfo(data)
 
   // 检查并清理工作台标签页（如果是不同用户登录）
-  userStore.checkAndClearWorktabs()
+  userStore.checkAndClearWorkTabs()
 }
 
 /**
