@@ -4,9 +4,9 @@ import type { FormInstance, FormRules } from 'element-plus'
 
 import { ElNotification } from 'element-plus'
 
-import { useI18n } from 'vue-i18n'
+import { sm2, sm3 } from 'sm-crypto'
 
-import { fetchLogin } from '@/apis/auth'
+import { useI18n } from 'vue-i18n'
 
 import { HttpError } from '@/apis/http/error'
 
@@ -88,7 +88,7 @@ const loading = ref(false)
 /**
  * 登录表单数据。
  */
-const formData = reactive({
+const formData = ref({
   username: '',
   password: '',
   rememberPassword: true,
@@ -118,12 +118,43 @@ watch(locale, () => {
 })
 
 /**
+ * 加密登录请求数据。
+ *
+ * 使用后端返回的 SM2 公钥加密登录表单，再使用 SM3 生成密钥摘要，
+ * 最终返回登录接口需要的密文数据和摘要密钥。
+ *
+ * @param formData 登录表单数据。
+ * @param publicKey 后端返回的 SM2 公钥。
+ * @param sm2key 后端返回的 SM3 摘要源字符串。
+ * @returns 登录接口需要的加密参数。
+ * @returns returns.encryptData SM2 加密后的表单密文。
+ * @returns returns.smkey SM3 计算后的密钥摘要。
+ */
+function encryptLoginPayload(formData: any, publicKey: string, sm2key: string) {
+  let encryptData = ''
+
+  if (publicKey.startsWith('04')) {
+    encryptData += '04'
+  }
+
+  encryptData += sm2.doEncrypt(JSON.stringify(formData), publicKey, 0)
+  const smkey = sm3(sm2key)
+
+  return {
+    encryptData,
+    smkey,
+  }
+}
+
+/**
  * 提交登录表单。
  *
  * 校验表单和拖拽验证后调用登录接口，成功后保存客户端 token 与登录状态，
  * 并根据 redirect 参数跳转到目标页面或客户端首页。
  */
 async function handleSubmit() {
+  console.log('🚀 ~ file: index.vue:137 ~ window.$isDevelopment:', window.$isDevelopment)
+
   if (!formRef.value) { return }
 
   try {
@@ -140,41 +171,48 @@ async function handleSubmit() {
 
     loading.value = true
 
-    // 登录请求
-    const { username, password } = formData
+    // 获取公钥
+    const { key, hash } = await fetchClientGetPublicKey()
 
-    const { token, refreshToken } = await fetchLogin({
-      userName: username,
-      password,
-    })
+    const { encryptData, smkey } = encryptLoginPayload(
+      formData.value,
+      key,
+      hash,
+    )
 
-    // 验证token
-    if (!token) {
-      throw new Error('Login failed - no token received')
+    const encryptedLoginParams = {
+      data: encryptData,
+      key: smkey,
     }
 
-    // 存储 token 和登录状态
-    userStore.setToken(token, refreshToken)
+    // 登录请求
+    const loginResult = await fetchClientLogin(encryptedLoginParams)
+
+    // // 验证token
+    if (!loginResult.token) {
+      throw new Error('登录失败-未收到令牌')
+    }
+
+    // // 存储 token 和登录状态
+    userStore.setToken(loginResult.token, '')
+
     userStore.setLoginStatus(true)
 
-    // 登录成功处理
+    // // 登录成功处理
     showLoginSuccessNotice()
 
-    // 获取 redirect 参数，如果存在则跳转到指定页面，否则跳转到客户端首页
+    // // 获取 redirect 参数，如果存在则跳转到指定页面，否则跳转到客户端首页
     const redirect = route.query.redirect as string
 
     router.push(redirect || '/client')
   }
   catch (error) {
-    // 处理 HttpError
     if (error instanceof HttpError) {
-      // console.log(error.code)
+      return
     }
-    else {
-      // 处理非 HttpError
-      // ElMessage.error('登录失败，请稍后重试')
-      console.error('[Login] Unexpected error:', error)
-    }
+
+    ElMessage.error('登录失败，请稍后重试')
+    console.error('[登录]意外错误：', error)
   }
   finally {
     loading.value = false

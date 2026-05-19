@@ -1,7 +1,7 @@
 import request from '@/apis/http'
 
 /**
- *  获取公钥
+ *  获取管理端公钥
  */
 export function fetchAdminGetPublicKey() {
   return request.get<AdminApi.Auth.PublicKey>({
@@ -20,7 +20,7 @@ export function fetchAdminLogin(params: AdminApi.Auth.LoginParams) {
 }
 
 /**
- * 获取用户信息
+ * 获取管理端用户信息
  * @returns 用户信息
  */
 export function fetchAdminGetUserInfo(authPath?: string) {

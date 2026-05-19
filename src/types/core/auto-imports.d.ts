@@ -58,6 +58,9 @@ declare global {
   const fetchAdminGetPublicKey: typeof import('../../apis/admin/index').fetchAdminGetPublicKey
   const fetchAdminGetUserInfo: typeof import('../../apis/admin/index').fetchAdminGetUserInfo
   const fetchAdminLogin: typeof import('../../apis/admin/index').fetchAdminLogin
+  const fetchClientGetPublicKey: typeof import('../../apis/client/index').fetchClientGetPublicKey
+  const fetchClientGetUserInfo: typeof import('../../apis/client/index').fetchClientGetUserInfo
+  const fetchClientLogin: typeof import('../../apis/client/index').fetchClientLogin
   const fetchGetMenuList: typeof import('../../apis/system-manage').fetchGetMenuList
   const fetchGetPublicKey: typeof import('../../apis/admin/index').fetchAdminGetPublicKey
   const fetchGetRoleList: typeof import('../../apis/system-manage').fetchGetRoleList
@@ -479,6 +482,9 @@ declare module 'vue' {
     readonly fetchAdminGetPublicKey: UnwrapRef<typeof import('../../apis/admin/index')['fetchAdminGetPublicKey']>
     readonly fetchAdminGetUserInfo: UnwrapRef<typeof import('../../apis/admin/index')['fetchAdminGetUserInfo']>
     readonly fetchAdminLogin: UnwrapRef<typeof import('../../apis/admin/index')['fetchAdminLogin']>
+    readonly fetchClientGetPublicKey: UnwrapRef<typeof import('../../apis/client/index')['fetchClientGetPublicKey']>
+    readonly fetchClientGetUserInfo: UnwrapRef<typeof import('../../apis/client/index')['fetchClientGetUserInfo']>
+    readonly fetchClientLogin: UnwrapRef<typeof import('../../apis/client/index')['fetchClientLogin']>
     readonly fetchGetMenuList: UnwrapRef<typeof import('../../apis/system-manage')['fetchGetMenuList']>
     readonly fetchGetRoleList: UnwrapRef<typeof import('../../apis/system-manage')['fetchGetRoleList']>
     readonly fetchGetUserList: UnwrapRef<typeof import('../../apis/system-manage')['fetchGetUserList']>
