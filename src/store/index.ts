@@ -43,7 +43,7 @@ export const store = createPinia()
  * 用于为持久化 Store 生成带系统版本号的 localStorage 键名，
  * 并支持跨版本数据迁移。
  */
-const storageKeyManager = new StorageKeyManager()
+// const storageKeyManager = new StorageKeyManager()
 
 /**
  * 注册 Pinia 持久化插件。
@@ -53,7 +53,7 @@ const storageKeyManager = new StorageKeyManager()
 store.use(
   createPersistedState({
     /** 根据 Store ID 生成版本化存储键。 */
-    key: (storeId: string) => storageKeyManager.getStorageKey(storeId),
+    // key: (storeId: string) => storageKeyManager.getStorageKey(storeId),
 
     /** 使用 localStorage 保存持久化状态。 */
     storage: localStorage,
