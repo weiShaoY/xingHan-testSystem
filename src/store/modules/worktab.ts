@@ -38,7 +38,7 @@ import type { WorkTab } from '@/types'
  * - 存储键：sys-v{version}-worktab
  * - 刷新页面保持标签状态
  *
- * @module store/modules/worktab
+ * @module store/modules/workTab
  * @author Art Design Pro Team
  */
 import { defineStore } from 'pinia'
@@ -52,7 +52,7 @@ import { router } from '@/routers'
 /**
  * 工作台标签页持久化状态结构。
  */
-type WorktabState = {
+type WorkTabStateType = {
 
   /** 当前激活的标签页。 */
   current: Partial<WorkTab>
@@ -66,8 +66,8 @@ type WorktabState = {
 /**
  * 工作台标签页管理 Store
  */
-export const useWorktabStore = defineStore(
-  'worktabStore',
+export const useWorkTabStore = defineStore(
+  'workTabStore',
   () => {
     // ==================== 状态定义 ====================
     /** 当前激活的标签页。 */
@@ -491,7 +491,7 @@ export const useWorktabStore = defineStore(
     /**
      * 验证工作台标签页的路由有效性
      */
-    function validateWorktabs(routerInstance: Router) {
+    function validateWorkTabs(routerInstance: Router) {
       try {
         // 动态路由校验：优先使用路由 name 判断有效性；否则用 resolve 匹配参数化路径
         function isTabRouteValid(tab: Partial<WorkTab>): boolean {
@@ -556,7 +556,7 @@ export const useWorktabStore = defineStore(
     /**
      * 获取状态快照（用于持久化存储）
      */
-    function getStateSnapshot(): WorktabState {
+    function getStateSnapshot(): WorkTabStateType {
       return {
         current: {
           ...current.value,
@@ -640,7 +640,7 @@ export const useWorktabStore = defineStore(
       toggleFixedTab,
 
       /** 验证工作台标签页的路由有效性。 */
-      validateWorktabs,
+      validateWorkTabs,
 
       /** 清空所有工作台标签页状态。 */
       clearAll,

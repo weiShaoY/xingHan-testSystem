@@ -13,7 +13,7 @@ function loadAdminModules(): AppRouteRecord[] {
 
   const routeModules: AppRouteRecord[] = []
 
-  const isRouteRecord = (value: unknown): value is AppRouteRecord => {
+  function isRouteRecord(value: unknown): value is AppRouteRecord {
     if (!value || typeof value !== 'object') { return false }
 
     const route = value as Partial<AppRouteRecord>

@@ -8,7 +8,7 @@ import { useAutoLayoutHeight } from '@/hooks/core/useLayoutHeight'
 
 import { useSettingStore } from '@/store/modules/setting'
 
-import { useWorktabStore } from '@/store/modules/worktab'
+import { useWorkTabStore } from '@/store/modules/workTab'
 
 defineOptions({
   name: 'PageContent',
@@ -20,7 +20,7 @@ const { containerMinHeight } = useAutoLayoutHeight()
 
 const { pageTransition, containerWidth, refresh } = storeToRefs(useSettingStore())
 
-const { keepAliveExclude } = storeToRefs(useWorktabStore())
+const { keepAliveExclude } = storeToRefs(useWorkTabStore())
 
 const isRefresh = shallowRef(true)
 

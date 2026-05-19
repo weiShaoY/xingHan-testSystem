@@ -2,13 +2,13 @@
 <script setup lang="ts">
 import type { WorkTab } from '@/types'
 
-import { useWorktabStore } from '@/store/modules/worktab'
+import { useWorkTabStore } from '@/store/modules/workTab'
 
 defineOptions({
   name: 'TabsExample',
 })
 
-const worktabStore = useWorktabStore()
+const workTabStore = useWorkTabStore()
 
 const currentTab = ref<WorkTab | null>(null)
 
@@ -24,7 +24,7 @@ function handleUpdateTabTitle(): void {
   const trimmedTitle = newTabTitle.value.trim()
 
   if (trimmedTitle) {
-    worktabStore.updateTabTitle(routePath, trimmedTitle)
+    workTabStore.updateTabTitle(routePath, trimmedTitle)
     ElMessage.success('标签页标题已更新')
   }
 }
@@ -34,7 +34,7 @@ function handleUpdateTabTitle(): void {
    * 将标题重置为默认值并清空输入框
    */
 function handleResetTabTitle(): void {
-  worktabStore.resetTabTitle(routePath)
+  workTabStore.resetTabTitle(routePath)
   newTabTitle.value = ''
   ElMessage.success('标签页标题已重置')
 }
@@ -44,7 +44,7 @@ function handleResetTabTitle(): void {
    * @param path 标签页路径
    */
 function handleGetCurrentTabTitle(path: string): void {
-  const tab = worktabStore.getTabTitle(path)
+  const tab = workTabStore.getTabTitle(path)
 
   if (tab) {
     currentTab.value = tab
@@ -60,7 +60,7 @@ function handleGetCurrentTabTitle(path: string): void {
    * @param path 要关闭的标签页路径
    */
 function handleCloseTab(path: string): void {
-  worktabStore.removeTab(path)
+  workTabStore.removeTab(path)
 }
 
 /**
@@ -68,14 +68,14 @@ function handleCloseTab(path: string): void {
    * @param path 要保留的标签页路径
    */
 function handleCloseOthersTab(path: string): void {
-  worktabStore.removeOthers(path)
+  workTabStore.removeOthers(path)
 }
 
 /**
    * 关闭所有标签页
    */
 function handleCloseAllTab(): void {
-  worktabStore.removeAll()
+  workTabStore.removeAll()
 }
 </script>
 

@@ -29,7 +29,7 @@ import { useSettingStore } from '@/store/modules/setting'
  * @module utils/navigation/worktab
  * @author Art Design Pro Team
  */
-import { useWorktabStore } from '@/store/modules/worktab'
+import { useWorkTabStore } from '@/store/modules/workTab'
 
 import { isIframe } from './route'
 
@@ -38,7 +38,7 @@ import { isIframe } from './route'
  * @param to 当前路由对象
  */
 export function setWorktab(to: RouteLocationNormalized): void {
-  const worktabStore = useWorktabStore()
+  const workTabStore = useWorkTabStore()
 
   const { meta, path, name, params, query } = to
 
@@ -48,7 +48,7 @@ export function setWorktab(to: RouteLocationNormalized): void {
       const iframeRoute = IframeRouteManager.getInstance().findByPath(to.path)
 
       if (iframeRoute?.meta) {
-        worktabStore.openTab({
+        workTabStore.openTab({
           title: iframeRoute.meta.title,
           icon: meta.icon as string,
           path,
@@ -60,7 +60,7 @@ export function setWorktab(to: RouteLocationNormalized): void {
       }
     }
     else if (useSettingStore().showWorkTab || path === useCommon().homePath.value) {
-      worktabStore.openTab({
+      workTabStore.openTab({
         title: meta.title as string,
         icon: meta.icon as string,
         path,

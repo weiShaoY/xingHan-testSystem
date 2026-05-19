@@ -59,7 +59,7 @@ import { useMenuStore } from '@/store/modules/menu'
 
 import { useSettingStore } from '@/store/modules/setting'
 
-import { useWorktabStore } from '@/store/modules/worktab'
+import { useWorkTabStore } from '@/store/modules/workTab'
 
 import { setWorktab } from '@/utils/navigation'
 
@@ -258,6 +258,9 @@ function handleLoginStatus(
     return true
   }
 
+  //  临时放行
+  // return true
+
   // 未登录且访问需要权限的页面，跳转到登录页并携带 redirect 参数
   next({
     name: to.path.startsWith('/client') ? 'ClientLogin' : 'Login',
@@ -338,13 +341,14 @@ async function handleDynamicRoutes(
     const menuStore = useMenuStore()
 
     menuStore.setMenuList(menuProcessor.getSidebarMenuList(menuList))
+
     menuStore.addRemoveRouteFns(routeRegistry?.getRemoveRouteFns() || [])
 
     // 6. 保存 iframe 路由
     IframeRouteManager.getInstance().save()
 
     // 7. 验证工作标签页
-    useWorktabStore().validateWorktabs(router)
+    useWorkTabStore().validateWorkTabs(router)
 
     // 8. 静态路由不依赖菜单权限，初始化后直接恢复目标地址。
     if (isStaticRoute(to.path)) {

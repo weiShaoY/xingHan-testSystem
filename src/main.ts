@@ -18,7 +18,7 @@ import '@styles/core/tailwind.css' // tailwind
 
 import '@styles/index.scss' // 样式
 
-import '@utils/sys/console.ts' // 控制台输出内容
+import '@utils/sys/console' // 控制台输出内容
 
 document.addEventListener(
   'touchstart',

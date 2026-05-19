@@ -32,7 +32,7 @@ import { useClientUserStore } from '@/store/modules/clientUser'
 
 import { useSettingStore } from '@/store/modules/setting'
 
-import { useWorktabStore } from '@/store/modules/worktab'
+import { useWorkTabStore } from '@/store/modules/workTab'
 
 import { formatMenuTitle } from '@/utils/router'
 
@@ -56,7 +56,7 @@ type TabCloseType = 'current' | 'left' | 'right' | 'other' | 'all'
 // 基础设置
 const { t } = useI18n()
 
-const store = useWorktabStore()
+const store = useWorkTabStore()
 
 const userStore = useRoute().path.startsWith('/client')
   ? useClientUserStore()
@@ -390,7 +390,7 @@ function useTabOperations(adjustPositionAfterClose: () => void) {
     }
 
     if (key === 'fixed') {
-      useWorktabStore().toggleFixedTab(clickedPath.value)
+      useWorkTabStore().toggleFixedTab(clickedPath.value)
       return
     }
 

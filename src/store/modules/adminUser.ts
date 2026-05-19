@@ -18,7 +18,7 @@ import { useMenuStore } from './menu'
 
 import { useSettingStore } from './setting'
 
-import { useWorktabStore } from './worktab'
+import { useWorkTabStore } from './workTab'
 
 /**
  * 后台端最后一次登录用户 ID 的本地存储键。
@@ -67,7 +67,7 @@ export const useAdminUserStore = defineStore(
     const getSettingState = computed(() => useSettingStore().$state)
 
     /** 获取工作台标签页状态。 */
-    const getWorktabState = computed(() => useWorktabStore().$state)
+    const getWorktabState = computed(() => useWorkTabStore().$state)
 
     /**
      * 设置当前后台用户信息。
@@ -190,10 +190,10 @@ export const useAdminUserStore = defineStore(
       if (!lastUserId) { return }
 
       if (String(currentUserId) !== lastUserId) {
-        const worktabStore = useWorktabStore()
+        const workTabStore = useWorkTabStore()
 
-        worktabStore.opened = []
-        worktabStore.keepAliveExclude = []
+        workTabStore.opened = []
+        workTabStore.keepAliveExclude = []
       }
 
       localStorage.removeItem(ADMIN_LAST_USER_ID_KEY)
