@@ -2,13 +2,13 @@ import type { AppRouteRecord } from '@/types/router'
 
 import { loadRouteModules } from '@/routers/core'
 
-import { RoutesAlias } from '../../routesAlias'
+import { RoutesAlias } from '../../constants/route-alias'
 
 /**
  * 管理端功能模块
  */
 function loadAdminModules(): AppRouteRecord[] {
-  const modules = import.meta.glob('./*.ts', {
+  const modules = import.meta.glob('./*.route.ts', {
     eager: true,
     import: '*',
   }) as Record<string, Record<string, unknown>>

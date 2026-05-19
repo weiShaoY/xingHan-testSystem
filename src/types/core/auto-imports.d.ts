@@ -514,7 +514,6 @@ declare module 'vue' {
     readonly isReadonly: UnwrapRef<typeof import('vue')['isReadonly']>
     readonly isRef: UnwrapRef<typeof import('vue')['isRef']>
     readonly isShallow: UnwrapRef<typeof import('vue')['isShallow']>
-    readonly loadRouteModules: UnwrapRef<typeof import('../../routers/core/RouteLoader')['loadRouteModules']>
     readonly loadingService: UnwrapRef<typeof import('../../utils/ui/loading')['loadingService']>
     readonly makeDestructurable: UnwrapRef<typeof import('@vueuse/core')['makeDestructurable']>
     readonly mapActions: UnwrapRef<typeof import('pinia')['mapActions']>
@@ -579,7 +578,6 @@ declare module 'vue' {
     readonly showError: UnwrapRef<typeof import('../../apis/http/error')['showError']>
     readonly showSuccess: UnwrapRef<typeof import('../../apis/http/error')['showSuccess']>
     readonly socket: UnwrapRef<typeof import('../../utils/socket/index')['default']>
-    readonly sortRouteModules: UnwrapRef<typeof import('../../routers/core/RouteLoader')['sortRouteModules']>
     readonly storeToRefs: UnwrapRef<typeof import('pinia')['storeToRefs']>
     readonly subtractSize: UnwrapRef<typeof import('../../utils/size')['subtractSize']>
     readonly syncRef: UnwrapRef<typeof import('@vueuse/core')['syncRef']>

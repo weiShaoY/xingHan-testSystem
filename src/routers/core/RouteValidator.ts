@@ -9,7 +9,7 @@
 
 import type { AppRouteRecord } from '@/types/router'
 
-import { RoutesAlias } from '../routesAlias'
+import { RoutesAlias } from '../constants/route-alias'
 
 export type ValidationResult = {
   valid: boolean

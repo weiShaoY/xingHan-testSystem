@@ -51,14 +51,14 @@ import { ApiStatus } from '@/apis/http/status'
 
 import { useCommon } from '@/hooks/core/useCommon'
 
-import { useMenuStore } from '@/store/modules/menu'
-
-import { useSettingStore } from '@/store/modules/setting'
-
 import {
   getLoginRouteNameByPath,
   getUserStoreByPath,
 } from '@/store'
+
+import { useMenuStore } from '@/store/modules/menu'
+
+import { useSettingStore } from '@/store/modules/setting'
 
 import { useWorkTabStore } from '@/store/modules/workTab'
 
@@ -75,14 +75,28 @@ import {
   RouteRegistry,
 } from '../core'
 
-import { staticRoutes } from '../routes/static'
+import { staticRoutes } from '../entries/static-routes'
 
-// 路由注册器实例
+/**
+ * 动态路由注册器实例。
+ *
+ * 在初始化前置守卫时创建，用于判断动态路由是否已注册、
+ * 注册菜单生成的路由，以及退出登录时移除动态路由。
+ */
 let routeRegistry: RouteRegistry | null = null
 
-// 菜单处理器实例
+/**
+ * 菜单处理器单例。
+ *
+ * 延迟创建，避免在路由守卫注册阶段提前触发菜单相关逻辑。
+ */
 let menuProcessor: MenuProcessor | null = null
 
+/**
+ * 获取菜单处理器实例。
+ *
+ * @returns 菜单处理器实例。
+ */
 function getMenuProcessor(): MenuProcessor {
   if (!menuProcessor) {
     menuProcessor = new MenuProcessor()
@@ -91,18 +105,30 @@ function getMenuProcessor(): MenuProcessor {
   return menuProcessor
 }
 
-// 跟踪是否需要关闭 loading
+/**
+ * 是否存在由路由守卫打开、尚未关闭的全屏 loading。
+ */
 let pendingLoading = false
 
-// 路由初始化失败标记，防止死循环
-// 一旦设置为 true，只有刷新页面或重新登录才能重置
+/**
+ * 路由初始化失败标记。
+ *
+ * 用于防止动态路由初始化失败后，继续在前置守卫中反复重试形成死循环。
+ * 一旦设置为 `true`，只有刷新页面或重新登录后才会被重置。
+ */
 let routeInitFailed = false
 
-// 路由初始化进行中标记，防止并发请求
+/**
+ * 动态路由初始化进行中标记。
+ *
+ * 用于拦截快速连续导航造成的并发菜单请求和重复注册。
+ */
 let routeInitInProgress = false
 
 /**
  * 获取 pendingLoading 状态
+ *
+ * @returns 当前是否有待关闭的路由 loading。
  */
 export function getPendingLoading(): boolean {
   return pendingLoading
@@ -110,6 +136,8 @@ export function getPendingLoading(): boolean {
 
 /**
  * 重置 pendingLoading 状态
+ *
+ * @remarks 仅重置状态标记，不主动调用 loading 组件的关闭方法。
  */
 export function resetPendingLoading(): void {
   pendingLoading = false
@@ -117,6 +145,8 @@ export function resetPendingLoading(): void {
 
 /**
  * 获取路由初始化失败状态
+ *
+ * @returns 动态路由初始化是否已经失败。
  */
 export function getRouteInitFailed(): boolean {
   return routeInitFailed
@@ -124,6 +154,8 @@ export function getRouteInitFailed(): boolean {
 
 /**
  * 重置路由初始化状态（用于重新登录场景）
+ *
+ * @remarks 重新登录后需要允许系统再次拉取用户信息和菜单，并重新注册动态路由。
  */
 export function resetRouteInitState(): void {
   routeInitFailed = false
@@ -132,6 +164,8 @@ export function resetRouteInitState(): void {
 
 /**
  * 设置路由全局前置守卫
+ *
+ * @param router Vue Router 实例。
  */
 export function setupBeforeEachGuard(router: Router): void {
   // 初始化路由注册器
@@ -159,6 +193,8 @@ export function setupBeforeEachGuard(router: Router): void {
 
 /**
  * 关闭 loading 效果
+ *
+ * @remarks 仅关闭由当前路由守卫打开的 loading，避免误关其他业务 loading。
  */
 function closeLoading(): void {
   if (pendingLoading) {
@@ -171,6 +207,11 @@ function closeLoading(): void {
 
 /**
  * 处理路由守卫逻辑
+ *
+ * @param to 即将进入的目标路由。
+ * @param from 当前导航离开的来源路由。
+ * @param next Vue Router 导航控制函数。
+ * @param router Vue Router 实例。
  */
 async function handleRouteGuard(
   to: RouteLocationNormalized,
@@ -243,6 +284,10 @@ async function handleRouteGuard(
 
 /**
  * 处理登录状态
+ *
+ * @param to 即将进入的目标路由。
+ * @param userStore 当前目标端对应的用户状态 store。
+ * @param next Vue Router 导航控制函数。
  * @returns true 表示可以继续，false 表示已处理跳转
  */
 function handleLoginStatus(
@@ -270,8 +315,20 @@ function handleLoginStatus(
 
 /**
  * 检查路由是否为静态路由
+ *
+ * 静态路由不依赖登录态和动态菜单，例如登录页、注册页、错误页等。
+ *
+ * @param path 需要判断的完整访问路径。
+ * @returns 是否命中静态路由配置。
  */
 function isStaticRoute(path: string): boolean {
+  /**
+   * 递归检查路由树中是否存在匹配的静态路由。
+   *
+   * @param routes 待检查的路由列表。
+   * @param targetPath 需要匹配的目标路径。
+   * @returns 是否匹配到允许匿名访问的静态路由。
+   */
   function checkRoute(routes: any[], targetPath: string): boolean {
     return routes.some((route) => {
       // 404 catch-all 路由不应视为可匿名访问的静态页，
@@ -304,6 +361,13 @@ function isStaticRoute(path: string): boolean {
 
 /**
  * 处理动态路由注册
+ *
+ * 首次进入需要权限的页面时，会依次获取用户信息、获取菜单、注册动态路由、
+ * 保存菜单到 store，并根据权限校验结果恢复或重定向导航。
+ *
+ * @param to 即将进入的目标路由。
+ * @param next Vue Router 导航控制函数。
+ * @param router Vue Router 实例。
  */
 async function handleDynamicRoutes(
   to: RouteLocationNormalized,
@@ -428,6 +492,8 @@ async function handleDynamicRoutes(
 
 /**
  * 获取用户信息
+ *
+ * @param path 当前访问路径，用于选择管理端或客户端对应的用户 store。
  */
 async function fetchUserInfo(path: string): Promise<void> {
   const userStore = getUserStoreByPath(path)
@@ -444,6 +510,8 @@ async function fetchUserInfo(path: string): Promise<void> {
 
 /**
  * 重置路由相关状态
+ *
+ * @param delay 延迟执行重置的毫秒数，常用于等待退出登录跳转完成。
  */
 export function resetRouterState(delay: number): void {
   setTimeout(() => {
@@ -462,6 +530,9 @@ export function resetRouterState(delay: number): void {
 
 /**
  * 处理根路径重定向到首页
+ *
+ * @param to 即将进入的目标路由。
+ * @param next Vue Router 导航控制函数。
  * @returns true 表示已处理跳转，false 表示无需跳转
  */
 function handleRootPathRedirect(to: RouteLocationNormalized, next: NavigationGuardNext): boolean {
@@ -484,6 +555,9 @@ function handleRootPathRedirect(to: RouteLocationNormalized, next: NavigationGua
 
 /**
  * 判断是否为未授权错误（401）
+ *
+ * @param error 待判断的异常对象。
+ * @returns 是否为 HTTP 401 未授权错误。
  */
 function isUnauthorizedError(error: unknown): boolean {
   return isHttpError(error) && error.code === ApiStatus.unauthorized

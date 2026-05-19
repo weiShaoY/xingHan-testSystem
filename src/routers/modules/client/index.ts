@@ -1,6 +1,6 @@
 import type { AppRouteRecord } from '@/types/router'
 
-import { RoutesAlias } from '../../routesAlias'
+import { RoutesAlias } from '../../constants/route-alias'
 
 /**
  * 客户端根路由

@@ -17,9 +17,9 @@ import { getUserStoreByPath } from '@/store'
 
 import { formatMenuTitle } from '@/utils'
 
-import { asyncRoutes } from '../routes/async'
+import { RoutesAlias } from '../constants/route-alias'
 
-import { RoutesAlias } from '../routesAlias'
+import { dynamicRoutes } from '../entries/dynamic-routes'
 
 export class MenuProcessor {
   /**
@@ -52,7 +52,7 @@ export class MenuProcessor {
 
     const roles = userStore.info?.roles
 
-    let menuList = [...asyncRoutes]
+    let menuList = [...dynamicRoutes]
 
     // 根据角色过滤菜单
     if (roles && roles.length > 0) {

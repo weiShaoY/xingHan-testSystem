@@ -4,11 +4,11 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 
 import { configureNProgress } from '@/utils/router'
 
+import { staticRoutes } from './entries/static-routes'
+
 import { setupAfterEachGuard } from './guards/afterEach'
 
 import { setupBeforeEachGuard } from './guards/beforeEach'
-
-import { staticRoutes } from './routes/static'
 
 /**
  * 路由实例
