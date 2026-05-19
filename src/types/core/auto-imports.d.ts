@@ -14,7 +14,6 @@ declare global {
   const HttpError: typeof import('../../apis/http/error').HttpError
   const PasswordStrength: typeof import('../../utils/form/validator').PasswordStrength
   const StorageConfig: typeof import('../../utils/storage/storage-config').StorageConfig
-  const StorageKeyManager: typeof import('../../utils/storage/storage-key-manager').StorageKeyManager
   const TAB_CONFIG: typeof import('../../utils/ui/tabs').TAB_CONFIG
   const WEB_LINKS: typeof import('../../utils/constants/links').WEB_LINKS
   const WebSocketClient: typeof import('../../utils/socket/index').WebSocketClient
@@ -22,7 +21,6 @@ declare global {
   const asyncComputed: typeof import('@vueuse/core').asyncComputed
   const autoResetRef: typeof import('@vueuse/core').autoResetRef
   const calculateResponsiveSpan: typeof import('../../utils/form/responsive').calculateResponsiveSpan
-  const checkStorageCompatibility: typeof import('../../utils/storage/storage').checkStorageCompatibility
   const colourBlend: typeof import('../../utils/ui/colors').colourBlend
   const computed: typeof import('vue').computed
   const computedAsync: typeof import('@vueuse/core').computedAsync
@@ -81,8 +79,6 @@ declare global {
   const getFirstMenuPath: typeof import('../../utils/navigation/route').getFirstMenuPath
   const getLightColor: typeof import('../../utils/ui/colors').getLightColor
   const getPasswordStrength: typeof import('../../utils/form/validator').getPasswordStrength
-  const getSysVersion: typeof import('../../utils/storage/storage').getSysVersion
-  const getSystemStorage: typeof import('../../utils/storage/storage').getSystemStorage
   const getTabConfig: typeof import('../../utils/ui/tabs').getTabConfig
   const h: typeof import('vue').h
   const handleElementThemeColor: typeof import('../../utils/ui/colors').handleElementThemeColor
@@ -172,7 +168,6 @@ declare global {
   const subtractSize: typeof import('../../utils/size').subtractSize
   const syncRef: typeof import('@vueuse/core').syncRef
   const syncRefs: typeof import('@vueuse/core').syncRefs
-  const systemUpgrade: typeof import('../../utils/sys/upgrade').systemUpgrade
   const templateRef: typeof import('@vueuse/core').templateRef
   const throttledRef: typeof import('@vueuse/core').throttledRef
   const throttledWatch: typeof import('@vueuse/core').throttledWatch
@@ -367,7 +362,6 @@ declare global {
   const validateIPv4Address: typeof import('../../utils/form/validator').validateIPv4Address
   const validatePassword: typeof import('../../utils/form/validator').validatePassword
   const validatePhone: typeof import('../../utils/form/validator').validatePhone
-  const validateStorageData: typeof import('../../utils/storage/storage').validateStorageData
   const validateStrongPassword: typeof import('../../utils/form/validator').validateStrongPassword
   const validateTelPhone: typeof import('../../utils/form/validator').validateTelPhone
   const validateURL: typeof import('../../utils/form/validator').validateURL
@@ -409,9 +403,6 @@ declare global {
   export type { StorageConfig } from '../../utils/storage/storage-config'
   import('../../utils/storage/storage-config')
   // @ts-ignore
-  export type { StorageKeyManager } from '../../utils/storage/storage-key-manager'
-  import('../../utils/storage/storage-key-manager')
-  // @ts-ignore
   export type { SizeValue } from '../../utils/size'
   import('../../utils/size')
   // @ts-ignore
@@ -438,7 +429,6 @@ declare module 'vue' {
     readonly HttpError: UnwrapRef<typeof import('../../apis/http/error')['HttpError']>
     readonly PasswordStrength: UnwrapRef<typeof import('../../utils/form/validator')['PasswordStrength']>
     readonly StorageConfig: UnwrapRef<typeof import('../../utils/storage/storage-config')['StorageConfig']>
-    readonly StorageKeyManager: UnwrapRef<typeof import('../../utils/storage/storage-key-manager')['StorageKeyManager']>
     readonly TAB_CONFIG: UnwrapRef<typeof import('../../utils/ui/tabs')['TAB_CONFIG']>
     readonly WEB_LINKS: UnwrapRef<typeof import('../../utils/constants/links')['WEB_LINKS']>
     readonly WebSocketClient: UnwrapRef<typeof import('../../utils/socket/index')['WebSocketClient']>
@@ -446,7 +436,6 @@ declare module 'vue' {
     readonly asyncComputed: UnwrapRef<typeof import('@vueuse/core')['asyncComputed']>
     readonly autoResetRef: UnwrapRef<typeof import('@vueuse/core')['autoResetRef']>
     readonly calculateResponsiveSpan: UnwrapRef<typeof import('../../utils/form/responsive')['calculateResponsiveSpan']>
-    readonly checkStorageCompatibility: UnwrapRef<typeof import('../../utils/storage/storage')['checkStorageCompatibility']>
     readonly colourBlend: UnwrapRef<typeof import('../../utils/ui/colors')['colourBlend']>
     readonly computed: UnwrapRef<typeof import('vue')['computed']>
     readonly computedAsync: UnwrapRef<typeof import('@vueuse/core')['computedAsync']>
@@ -503,8 +492,6 @@ declare module 'vue' {
     readonly getFirstMenuPath: UnwrapRef<typeof import('../../utils/navigation/route')['getFirstMenuPath']>
     readonly getLightColor: UnwrapRef<typeof import('../../utils/ui/colors')['getLightColor']>
     readonly getPasswordStrength: UnwrapRef<typeof import('../../utils/form/validator')['getPasswordStrength']>
-    readonly getSysVersion: UnwrapRef<typeof import('../../utils/storage/storage')['getSysVersion']>
-    readonly getSystemStorage: UnwrapRef<typeof import('../../utils/storage/storage')['getSystemStorage']>
     readonly getTabConfig: UnwrapRef<typeof import('../../utils/ui/tabs')['getTabConfig']>
     readonly h: UnwrapRef<typeof import('vue')['h']>
     readonly handleElementThemeColor: UnwrapRef<typeof import('../../utils/ui/colors')['handleElementThemeColor']>
@@ -593,7 +580,6 @@ declare module 'vue' {
     readonly subtractSize: UnwrapRef<typeof import('../../utils/size')['subtractSize']>
     readonly syncRef: UnwrapRef<typeof import('@vueuse/core')['syncRef']>
     readonly syncRefs: UnwrapRef<typeof import('@vueuse/core')['syncRefs']>
-    readonly systemUpgrade: UnwrapRef<typeof import('../../utils/sys/upgrade')['systemUpgrade']>
     readonly templateRef: UnwrapRef<typeof import('@vueuse/core')['templateRef']>
     readonly throttledRef: UnwrapRef<typeof import('@vueuse/core')['throttledRef']>
     readonly throttledWatch: UnwrapRef<typeof import('@vueuse/core')['throttledWatch']>
@@ -788,7 +774,6 @@ declare module 'vue' {
     readonly validateIPv4Address: UnwrapRef<typeof import('../../utils/form/validator')['validateIPv4Address']>
     readonly validatePassword: UnwrapRef<typeof import('../../utils/form/validator')['validatePassword']>
     readonly validatePhone: UnwrapRef<typeof import('../../utils/form/validator')['validatePhone']>
-    readonly validateStorageData: UnwrapRef<typeof import('../../utils/storage/storage')['validateStorageData']>
     readonly validateStrongPassword: UnwrapRef<typeof import('../../utils/form/validator')['validateStrongPassword']>
     readonly validateTelPhone: UnwrapRef<typeof import('../../utils/form/validator')['validateTelPhone']>
     readonly validateURL: UnwrapRef<typeof import('../../utils/form/validator')['validateURL']>

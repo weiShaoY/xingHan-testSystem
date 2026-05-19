@@ -7,16 +7,12 @@
  *
  * - Pinia Store 实例创建
  * - 持久化插件配置（pinia-plugin-persistedstate）
- * - 版本化存储键管理
- * - 自动数据迁移（跨版本）
  * - LocalStorage 序列化配置
  * - Store 初始化函数
  *
  * ## 持久化策略
  *
- * - 使用 StorageKeyManager 生成版本化的存储键
- * - 格式：sys-v{version}-{storeId}
- * - 自动迁移旧版本数据到当前版本
+ * - 使用各 Store 自身配置的持久化键
  * - 使用 localStorage 作为存储介质
  *
  * @module store/index
@@ -28,8 +24,6 @@ import { createPinia } from 'pinia'
 
 import { createPersistedState } from 'pinia-plugin-persistedstate'
 
-import { StorageKeyManager } from '@/utils/storage/storage-key-manager'
-
 /**
  * 全局 Pinia Store 实例。
  *
@@ -38,23 +32,12 @@ import { StorageKeyManager } from '@/utils/storage/storage-key-manager'
 export const store = createPinia()
 
 /**
- * 存储键管理器实例。
- *
- * 用于为持久化 Store 生成带系统版本号的 localStorage 键名，
- * 并支持跨版本数据迁移。
- */
-// const storageKeyManager = new StorageKeyManager()
-
-/**
  * 注册 Pinia 持久化插件。
  *
  * 统一配置持久化键名、存储介质和 JSON 序列化方式。
  */
 store.use(
   createPersistedState({
-    /** 根据 Store ID 生成版本化存储键。 */
-    // key: (storeId: string) => storageKeyManager.getStorageKey(storeId),
-
     /** 使用 localStorage 保存持久化状态。 */
     storage: localStorage,
 

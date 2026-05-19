@@ -19,10 +19,6 @@ import { useAdminUserStore } from './store/modules/adminUser'
 
 import { useClientUserStore } from './store/modules/clientUser'
 
-import { checkStorageCompatibility } from './utils/storage'
-
-import { systemUpgrade } from './utils/sys'
-
 import { toggleTransition } from './utils/ui/animation'
 
 const route = useRoute()
@@ -87,9 +83,7 @@ onBeforeMount(() => {
 })
 
 onMounted(() => {
-  checkStorageCompatibility()
   toggleTransition(false)
-  systemUpgrade()
 })
 </script>
 

@@ -35,7 +35,7 @@ import type { WorkTab } from '@/types'
  *
  * ## 持久化
  * - 使用 localStorage 存储
- * - 存储键：sys-v{version}-worktab
+ * - 存储键：worktab
  * - 刷新页面保持标签状态
  *
  * @module store/modules/workTab

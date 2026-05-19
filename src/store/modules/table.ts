@@ -19,7 +19,7 @@
  * ## 持久化
  *
  * - 使用 localStorage 存储
- * - 存储键：sys-v{version}-table
+ * - 存储键：table
  * - 用户配置跨页面保持
  *
  * @module store/modules/table

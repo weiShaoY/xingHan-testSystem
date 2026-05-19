@@ -32,8 +32,7 @@ import type { MenuThemeType } from '@/types/store'
  * ## 持久化
  *
  * - 使用 localStorage 存储
- * - 存储键：sys-v{version}-setting
- * - 支持跨版本数据迁移
+ * - 存储键：setting
  *
  * @module store/modules/setting
  * @author Art Design Pro Team
