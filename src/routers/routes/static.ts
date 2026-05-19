@@ -20,7 +20,7 @@ export const staticRoutes: AppRouteRecordRaw[] = [
   // },
   {
     path: '/admin/auth/login',
-    name: 'Login',
+    name: 'AdminLogin',
     component: () => import('@views/admin/auth/login/index.vue'),
     meta: {
       title: 'menus.login.title',

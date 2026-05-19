@@ -13,9 +13,7 @@ import { fetchGetMenuList } from '@/apis/system-manage'
 
 import { useAppMode } from '@/hooks/core/useAppMode'
 
-import { useAdminUserStore } from '@/store/modules/adminUser'
-
-import { useClientUserStore } from '@/store/modules/clientUser'
+import { getUserStoreByPath } from '@/store'
 
 import { formatMenuTitle } from '@/utils'
 
@@ -50,7 +48,7 @@ export class MenuProcessor {
    * 处理前端控制模式的菜单
    */
   private async processFrontendMenu(path?: string): Promise<AppRouteRecord[]> {
-    const userStore = path?.startsWith('/client') ? useClientUserStore() : useAdminUserStore()
+    const userStore = getUserStoreByPath(path)
 
     const roles = userStore.info?.roles
 

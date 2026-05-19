@@ -8,9 +8,7 @@ import CryptoJS from 'crypto-js'
 
 import { useI18n } from 'vue-i18n'
 
-import { useAdminUserStore } from '@/store/modules/adminUser'
-
-import { useClientUserStore } from '@/store/modules/clientUser'
+import { useCurrentUserStore } from '@/store'
 
 import { mittBus } from '@/utils/sys'
 
@@ -21,9 +19,7 @@ const { t } = useI18n()
 const ENCRYPT_KEY = import.meta.env.VITE_APP_LOCK_ENCRYPT_KEY
 
 // Store
-const userStore = useRoute().path.startsWith('/client')
-  ? useClientUserStore()
-  : useAdminUserStore()
+const userStore = useCurrentUserStore()
 
 const { info: userInfo, lockPassword, isLock } = storeToRefs(userStore)
 

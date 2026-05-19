@@ -163,10 +163,10 @@ export const useAdminUserStore = defineStore(
 
       const currentRoute = router.currentRoute.value
 
-      const redirect = currentRoute.name !== 'Login' ? currentRoute.fullPath : undefined
+      const redirect = currentRoute.name !== 'AdminLogin' ? currentRoute.fullPath : undefined
 
       router.push({
-        name: 'Login',
+        name: 'AdminLogin',
         query: redirect
           ? {
               redirect,

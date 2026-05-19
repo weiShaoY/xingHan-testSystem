@@ -28,9 +28,7 @@ import { $t } from '@/locales'
 
 import { router } from '@/routers'
 
-import { useAdminUserStore } from '@/store/modules/adminUser'
-
-import { useClientUserStore } from '@/store/modules/clientUser'
+import { getUserStoreByPath } from '@/store'
 
 import {
   handleError,
@@ -71,17 +69,7 @@ let unauthorizedTimer: NodeJS.Timeout | null = null
  * @returns 当前路由所属端的用户状态 store。
  */
 function getCurrentUserStore() {
-  return router.currentRoute.value.path.startsWith('/client') ? useClientUserStore() : useAdminUserStore()
-}
-
-/**
- * 根据指定路径获取对应端的用户状态。
- *
- * @param path 用于判断用户端类型的路由路径。
- * @returns 指定路径所属端的用户状态 store。
- */
-function getUserStoreByPath(path: string) {
-  return path.startsWith('/client') ? useClientUserStore() : useAdminUserStore()
+  return getUserStoreByPath(router.currentRoute.value.path)
 }
 
 /**

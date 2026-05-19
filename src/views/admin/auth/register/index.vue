@@ -171,7 +171,7 @@ async function register() {
 function toLogin() {
   setTimeout(() => {
     router.push({
-      name: 'Login',
+      name: 'AdminLogin',
     })
   }, REDIRECT_DELAY)
 }
@@ -288,7 +288,7 @@ function toLogin() {
 
               <RouterLink
                 class="text-theme"
-                :to="{ name: 'Login' }"
+                :to="{ name: 'AdminLogin' }"
               >
                 {{
                   $t('register.toLogin')

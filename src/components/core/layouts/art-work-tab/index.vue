@@ -26,11 +26,9 @@ import {
 
 import { useCommon } from '@/hooks/core/useCommon'
 
-import { useAdminUserStore } from '@/store/modules/adminUser'
-
-import { useClientUserStore } from '@/store/modules/clientUser'
-
 import { useSettingStore } from '@/store/modules/setting'
+
+import { useCurrentUserStore } from '@/store'
 
 import { useWorkTabStore } from '@/store/modules/workTab'
 
@@ -58,11 +56,9 @@ const { t } = useI18n()
 
 const store = useWorkTabStore()
 
-const userStore = useRoute().path.startsWith('/client')
-  ? useClientUserStore()
-  : useAdminUserStore()
-
 const route = useRoute()
+
+const userStore = useCurrentUserStore()
 
 const router = useRouter()
 

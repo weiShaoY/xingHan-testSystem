@@ -18,13 +18,11 @@ import { useHeaderBar } from '@/hooks/core/useHeaderBar'
 
 import { languageOptions } from '@/locales'
 
-import { useAdminUserStore } from '@/store/modules/adminUser'
-
-import { useClientUserStore } from '@/store/modules/clientUser'
-
 import { useMenuStore } from '@/store/modules/menu'
 
 import { useSettingStore } from '@/store/modules/setting'
+
+import { useCurrentUserStore } from '@/store'
 
 import { mittBus } from '@/utils/sys'
 
@@ -49,9 +47,7 @@ const { width } = useWindowSize()
 
 const settingStore = useSettingStore()
 
-const userStore = useRoute().path.startsWith('/client')
-  ? useClientUserStore()
-  : useAdminUserStore()
+const userStore = useCurrentUserStore()
 
 const menuStore = useMenuStore()
 

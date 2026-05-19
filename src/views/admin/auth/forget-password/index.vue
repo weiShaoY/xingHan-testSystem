@@ -15,7 +15,7 @@ async function register() {}
 
 function toLogin() {
   router.push({
-    name: 'Login',
+    name: 'AdminLogin',
   })
 }
 </script>

@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { useCommon } from '@/hooks/core/useCommon'
 
-import { useAdminUserStore } from '@/store/modules/adminUser'
-
-import { useClientUserStore } from '@/store/modules/clientUser'
+import {
+  useCurrentLoginRouteName,
+  useCurrentUserStore,
+} from '@/store'
 
 withDefaults(
   defineProps<{
@@ -15,9 +16,9 @@ withDefaults(
 
 const router = useRouter()
 
-const userStore = useRoute().path.startsWith('/client')
-  ? useClientUserStore()
-  : useAdminUserStore()
+const userStore = useCurrentUserStore()
+
+const loginRouteName = useCurrentLoginRouteName()
 
 type ExceptionData = {
 
@@ -41,7 +42,7 @@ function backHome() {
 
   if (!userStore.isLogin) {
     router.push({
-      name: 'Login',
+      name: loginRouteName,
       query: {
         redirect: targetHomePath,
       },

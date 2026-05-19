@@ -38,16 +38,14 @@ import { useRoute } from 'vue-router'
 
 import { useAppMode } from '@/hooks/core/useAppMode'
 
-import { useAdminUserStore } from '@/store/modules/adminUser'
-
-import { useClientUserStore } from '@/store/modules/clientUser'
+import { useCurrentUserStore } from '@/store'
 
 type AuthItem = NonNullable<AppRouteRecord['meta']['authList']>[number]
 
 export function useAuth() {
   const route = useRoute()
 
-  const userStore = route.path.startsWith('/client') ? useClientUserStore() : useAdminUserStore()
+  const userStore = useCurrentUserStore()
 
   const { isFrontendMode } = useAppMode()
 

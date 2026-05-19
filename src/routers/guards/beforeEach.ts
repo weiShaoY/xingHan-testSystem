@@ -51,13 +51,14 @@ import { ApiStatus } from '@/apis/http/status'
 
 import { useCommon } from '@/hooks/core/useCommon'
 
-import { useAdminUserStore } from '@/store/modules/adminUser'
-
-import { useClientUserStore } from '@/store/modules/clientUser'
-
 import { useMenuStore } from '@/store/modules/menu'
 
 import { useSettingStore } from '@/store/modules/setting'
+
+import {
+  getLoginRouteNameByPath,
+  getUserStoreByPath,
+} from '@/store'
 
 import { useWorkTabStore } from '@/store/modules/workTab'
 
@@ -88,10 +89,6 @@ function getMenuProcessor(): MenuProcessor {
   }
 
   return menuProcessor
-}
-
-function getRouteUserStore(path: string) {
-  return path.startsWith('/client') ? useClientUserStore() : useAdminUserStore()
 }
 
 // 跟踪是否需要关闭 loading
@@ -183,7 +180,7 @@ async function handleRouteGuard(
 ): Promise<void> {
   const settingStore = useSettingStore()
 
-  const userStore = getRouteUserStore(to.path)
+  const userStore = getUserStoreByPath(to.path)
 
   // 启动进度条
   if (settingStore.showNprogress) {
@@ -250,7 +247,7 @@ async function handleRouteGuard(
  */
 function handleLoginStatus(
   to: RouteLocationNormalized,
-  userStore: ReturnType<typeof getRouteUserStore>,
+  userStore: ReturnType<typeof getUserStoreByPath>,
   next: NavigationGuardNext,
 ): boolean {
   // 已登录或访问登录页或静态路由，直接放行
@@ -263,7 +260,7 @@ function handleLoginStatus(
 
   // 未登录且访问需要权限的页面，跳转到登录页并携带 redirect 参数
   next({
-    name: to.path.startsWith('/client') ? 'ClientLogin' : 'Login',
+    name: getLoginRouteNameByPath(to.path),
     query: {
       redirect: to.fullPath,
     },
@@ -433,7 +430,7 @@ async function handleDynamicRoutes(
  * 获取用户信息
  */
 async function fetchUserInfo(path: string): Promise<void> {
-  const userStore = getRouteUserStore(path)
+  const userStore = getUserStoreByPath(path)
 
   const data = await fetchAdminGetUserInfo(path)
 

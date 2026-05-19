@@ -92,7 +92,7 @@ const fastEnterConfig: FastEnterConfig = {
       name: '登录',
       enabled: true,
       order: 1,
-      routeName: 'Login',
+      routeName: 'AdminLogin',
     },
     {
       name: '注册',

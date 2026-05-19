@@ -52,16 +52,12 @@ import type {
 
 import { router } from '@/routers'
 
-import { useAdminUserStore } from '@/store/modules/adminUser'
-
-import { useClientUserStore } from '@/store/modules/clientUser'
+import { getUserStoreByPath } from '@/store'
 
 export type RolesDirective = Directive<HTMLElement, string | string[]>
 
 function checkRolePermission(el: HTMLElement, binding: DirectiveBinding<string | string[]>): void {
-  const userStore = router.currentRoute.value.path.startsWith('/client')
-    ? useClientUserStore()
-    : useAdminUserStore()
+  const userStore = getUserStoreByPath(router.currentRoute.value.path)
 
   const userRoles = userStore.getUserInfo.roles
 

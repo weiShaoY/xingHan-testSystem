@@ -6,9 +6,7 @@ import { useI18n } from 'vue-i18n'
 
 import { useRouter } from 'vue-router'
 
-import { useAdminUserStore } from '@/store/modules/adminUser'
-
-import { useClientUserStore } from '@/store/modules/clientUser'
+import { useCurrentUserStore } from '@/store'
 
 import { WEB_LINKS } from '@/utils/constants'
 
@@ -22,9 +20,7 @@ const router = useRouter()
 
 const { t } = useI18n()
 
-const userStore = useRoute().path.startsWith('/client')
-  ? useClientUserStore()
-  : useAdminUserStore()
+const userStore = useCurrentUserStore()
 
 const { getUserInfo: userInfo } = storeToRefs(userStore)
 

@@ -6,9 +6,7 @@ import type { AppRouteRecord } from '@/types/router'
 
 import { Search } from '@element-plus/icons-vue'
 
-import { useAdminUserStore } from '@/store/modules/adminUser'
-
-import { useClientUserStore } from '@/store/modules/clientUser'
+import { useCurrentUserStore } from '@/store'
 
 import { useMenuStore } from '@/store/modules/menu'
 
@@ -22,9 +20,7 @@ defineOptions({
   name: 'ArtGlobalSearch',
 })
 
-const userStore = useRoute().path.startsWith('/client')
-  ? useClientUserStore()
-  : useAdminUserStore()
+const userStore = useCurrentUserStore()
 
 const { menuList } = storeToRefs(useMenuStore())
 

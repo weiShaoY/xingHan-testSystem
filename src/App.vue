@@ -13,23 +13,15 @@ import { createTextVNode } from 'vue'
 
 import { useRoute } from 'vue-router'
 
+import { getUserStoreByPath } from '@/store'
+
 import { initializeTheme } from './hooks/core/useTheme'
-
-import { useAdminUserStore } from './store/modules/adminUser'
-
-import { useClientUserStore } from './store/modules/clientUser'
 
 import { toggleTransition } from './utils/ui/animation'
 
 const route = useRoute()
 
-const adminUserStore = useAdminUserStore()
-
-const clientUserStore = useClientUserStore()
-
-const language = computed(() =>
-  route.path.startsWith('/client') ? clientUserStore.language : adminUserStore.language,
-)
+const language = computed(() => getUserStoreByPath(route.path).language)
 
 const locales = {
   zh,

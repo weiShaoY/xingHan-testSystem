@@ -27,6 +27,8 @@ import { createI18n } from 'vue-i18n'
 
 import { LanguageEnum } from '@/enums/appEnum'
 
+import { getUserStorageKeyByPath } from '@/store'
+
 // 同步导入语言文件
 import enMessages from './langs/en.json'
 
@@ -62,7 +64,7 @@ export const languageOptions = [
 function getDefaultLanguage(): LanguageEnum {
   const hashPath = window.location.hash.replace(/^#/, '')
 
-  const storeKey = hashPath.startsWith('/client') ? 'clientUser' : 'adminUser'
+  const storeKey = getUserStorageKeyByPath(hashPath)
 
   try {
     const userStore = localStorage.getItem(storeKey)

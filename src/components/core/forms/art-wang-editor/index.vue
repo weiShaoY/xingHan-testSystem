@@ -17,9 +17,7 @@ import {
 
 import request from '@/apis/http'
 
-import { useAdminUserStore } from '@/store/modules/adminUser'
-
-import { useClientUserStore } from '@/store/modules/clientUser'
+import { useCurrentUserStore } from '@/store'
 
 import EmojiText from '@/utils/ui/emojo'
 
@@ -80,9 +78,7 @@ const modelValue = defineModel<string>({
 // 编辑器实例
 const editorRef = shallowRef<IDomEditor>()
 
-const userStore = useRoute().path.startsWith('/client')
-  ? useClientUserStore()
-  : useAdminUserStore()
+const userStore = useCurrentUserStore()
 
 // 常量配置
 const DEFAULT_UPLOAD_CONFIG = {
