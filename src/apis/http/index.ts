@@ -165,10 +165,8 @@ axiosInstance.interceptors.request.use(
     // 根据指定路径或当前路由选择对应用户状态。
     const { accessToken } = authPath ? getUserStoreByPath(authPath) : getCurrentUserStore()
 
-    console.log('🚀 ~ file: index.ts:167 ~ accessToken:', accessToken)
-
     // 有 token 时写入 Authorization 请求头。
-    if (accessToken) { request.headers.set('Authorization', accessToken) }
+    if (accessToken) { request.headers.set('Authorization', `Bearer ${accessToken}`) }
 
     // 普通对象请求体默认按 JSON 发送，FormData 保持浏览器原生处理。
     if (request.data && !(request.data instanceof FormData) && !request.headers['Content-Type']) {
