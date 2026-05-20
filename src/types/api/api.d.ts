@@ -55,9 +55,17 @@ declare namespace Api {
 
     /** 分页响应基础结构 */
     type PaginatedResponse<T = any> = {
+
+      /** 数据列表 */
       records: T[]
+
+      /** 当前页码 */
       current: number
+
+      /** 每页条数 */
       size: number
+
+      /** 总条数 */
       total: number
     }
 
@@ -73,18 +81,44 @@ declare namespace Api {
 
     /** 用户列表项 */
     type UserListItem = {
+
+      /** 用户ID */
       id: number
+
+      /** 用户头像 */
       avatar: string
+
+      /** 用户状态 */
       status: string
+
+      /** 用户名 */
       userName: string
+
+      /** 用户性别 */
       userGender: string
+
+      /** 用户昵称 */
       nickName: string
+
+      /** 手机号码 */
       userPhone: string
+
+      /** 邮箱地址 */
       userEmail: string
+
+      /** 用户角色列表 */
       userRoles: string[]
+
+      /** 创建人 */
       createBy: string
+
+      /** 创建时间 */
       createTime: string
+
+      /** 更新人 */
       updateBy: string
+
+      /** 更新时间 */
       updateTime: string
     }
 
@@ -99,11 +133,23 @@ declare namespace Api {
 
     /** 角色列表项 */
     type RoleListItem = {
+
+      /** 角色ID */
       roleId: number
+
+      /** 角色名称 */
       roleName: string
+
+      /** 角色编码 */
       roleCode: string
+
+      /** 角色描述 */
       description: string
+
+      /** 是否启用 */
       enabled: boolean
+
+      /** 创建时间 */
       createTime: string
     }
 
@@ -111,156 +157,14 @@ declare namespace Api {
     type RoleSearchParams = Partial<
       Pick<RoleListItem, 'roleId' | 'roleName' | 'roleCode' | 'description' | 'enabled'>
       & Api.Common.CommonSearchParams & {
+
+        /** 开始时间 */
         startTime: string | null
+
+        /** 结束时间 */
         endTime: string | null
       }
     >
   }
 
-  /** 课程类型 */
-  namespace Course {
-
-    /** 课程列表请求参数 */
-    type CourseListParams = {
-      currentPage: number
-      pageSize: number
-      orderBy: string
-      isAsc: number
-    }
-
-    /** 课程列表项 */
-    type CourseListItem = {
-
-      /**
-       * 数据状态（0=删除，1=正常）
-       */
-      active?: number
-
-      /**
-       * 公司ID
-       */
-      companyId?: number
-
-      /**
-       * 学习内容（可理解为课程大纲）
-       */
-      couContent?: null | string
-
-      /**
-       * 课程ID（主键，自增）
-       */
-      couId?: number
-
-      /**
-       * 课程介绍
-       */
-      couIntro?: null | string
-
-      /**
-       * 是否启用（0=禁用，1=启用）
-       */
-      couIsUse?: number
-
-      /**
-       * 课程难度等级（1=初级，2=中级，3=高级）
-       */
-      couLevel?: number
-
-      /**
-       * 课程展示图片地址
-       */
-      couLogo?: null | string
-
-      /**
-       * 课程缩略图地址
-       */
-      couLogoSmall?: null | string
-
-      /**
-       * 课程名称
-       */
-      couName?: null | string
-
-      /**
-       * 排序号（升序）
-       */
-      couTax?: number
-
-      /**
-       * 课程报名名称
-       */
-      couTitle?: null | string
-
-      /**
-       * 课程类型
-       */
-      couType?: number
-
-      /**
-       * 课程拥有者/创建者用户ID
-       */
-      couUID?: number
-      couViewNum?: number
-
-      /**
-       * 创建人ID
-       */
-      creater?: number
-
-      /**
-       * 创建时间
-       */
-      createTime?: Date
-
-      /**
-       * 学科ID
-       */
-      sbjID?: number
-
-      /**
-       * 学科名称
-       */
-      sbjName?: null | string
-
-      /**
-       * 最后修改人ID
-       */
-      updater?: number | null
-
-      /**
-       * 最后修改时间
-       */
-      updateTime?: Date | null
-    }
-
-    /** 课程列表响应 */
-    type CourseListResponse = Api.Common.PaginatedResponse<CourseListItem>
-
-  }
-
-  /** 认证类型 */
-  namespace Auth {
-
-    /** 登录参数 */
-    type LoginParams = {
-      userName: string
-      password: string
-    }
-
-    /** 登录响应 */
-    type LoginResponse = {
-      token: string
-      refreshToken: string
-    }
-
-    /** 用户信息 */
-    type UserInfo = {
-      buttons: string[]
-      roles: string[]
-      userId: number
-      userName: string
-      email: string
-      avatar?: string
-    }
-  }
 }

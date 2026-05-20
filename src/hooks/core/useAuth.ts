@@ -49,7 +49,7 @@ export function useAuth() {
 
   const { isFrontendMode } = useAppMode()
 
-  const { info } = storeToRefs(userStore)
+  const { userInfo: info } = storeToRefs(userStore)
 
   // 后端路由 meta 配置的权限列表（例如：[{ authMark: 'add' }]）
   const backendAuthList: AuthItem[] = Array.isArray(route.meta.authList)
@@ -61,7 +61,7 @@ export function useAuth() {
    * @param auth 权限标识
    * @returns 是否有权限
    */
-  const hasAuth = (auth: string): boolean => {
+  function hasAuth(auth: string): boolean {
     // 前端模式
     if (isFrontendMode.value) {
       return (info.value?.buttons ?? []).includes(auth)

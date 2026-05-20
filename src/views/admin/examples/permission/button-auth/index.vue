@@ -31,17 +31,17 @@ const dynamicFeatureEnabled = ref(false)
 
 // 当前用户角色
 const currentUserRole = computed(() => {
-  return userStore.info?.roles?.[0] || ''
+  return userStore.userInfo?.roles?.[0] || ''
 })
 
 // 当前用户权限码
 const currentUserPermissions = computed(() => {
-  return userStore.info?.buttons || []
+  return userStore.userInfo?.buttons || []
 })
 
 // 前端模式权限列表（用户的 buttons 字段）
 const frontendAuthList = computed(() => {
-  return userStore.info?.buttons || []
+  return userStore.userInfo?.buttons || []
 })
 
 // 后端模式权限列表（路由 meta.authList 配置）

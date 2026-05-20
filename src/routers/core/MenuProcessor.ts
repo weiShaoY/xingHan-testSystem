@@ -50,7 +50,7 @@ export class MenuProcessor {
   private async processFrontendMenu(path?: string): Promise<AppRouteRecord[]> {
     const userStore = getUserStoreByPath(path)
 
-    const roles = userStore.info?.roles
+    const roles = userStore.userInfo?.roles
 
     let menuList = [...dynamicRoutes]
 

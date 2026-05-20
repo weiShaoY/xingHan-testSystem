@@ -21,7 +21,7 @@ const ENCRYPT_KEY = import.meta.env.VITE_APP_LOCK_ENCRYPT_KEY
 // Store
 const userStore = useCurrentUserStore()
 
-const { info: userInfo, lockPassword, isLock } = storeToRefs(userStore)
+const { userInfo, lockPassword, isLock } = storeToRefs(userStore)
 
 // 响应式数据
 const visible = ref<boolean>(false)

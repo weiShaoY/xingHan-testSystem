@@ -4,7 +4,7 @@ import request from '@/apis/http'
  *  获取客户端公钥
  */
 export function fetchClientGetPublicKey() {
-  return request.get<AdminApi.Auth.PublicKey>({
+  return request.get<ClientApi.Auth.PublicKey>({
     url: '/client/auth/key',
   })
 }
@@ -12,8 +12,8 @@ export function fetchClientGetPublicKey() {
 /**
  *  客户端登录
  */
-export function fetchClientLogin(params: AdminApi.Auth.LoginParams) {
-  return request.post<AdminApi.Auth.LoginResponse>({
+export function fetchClientLogin(params: ClientApi.Auth.LoginParams) {
+  return request.post<ClientApi.Auth.LoginResponse>({
     url: '/client/auth/login',
     data: params,
   })
@@ -25,7 +25,7 @@ export function fetchClientLogin(params: AdminApi.Auth.LoginParams) {
  */
 export function fetchClientGetUserInfo(authPath?: string) {
   return request.get<{
-    userInfo: AdminApi.Auth.UserInfo
+    userInfo: ClientApi.Auth.UserInfo
   }>({
     url: '/client/auth/userinfo',
     authPath,

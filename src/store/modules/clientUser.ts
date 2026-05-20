@@ -48,7 +48,7 @@ export const useClientUserStore = defineStore(
     const lockPassword = ref('')
 
     /** 当前客户端用户信息。 */
-    const info = ref<Partial<Api.Auth.UserInfo>>({
+    const userInfo = ref<Partial<ClientApi.Auth.UserInfo>>({
     })
 
     /** 客户端搜索历史记录。 */
@@ -61,7 +61,7 @@ export const useClientUserStore = defineStore(
     const refreshToken = ref('')
 
     /** 获取当前客户端用户信息。 */
-    const getUserInfo = computed(() => info.value)
+    const getUserInfo = computed(() => userInfo.value)
 
     /** 获取系统设置状态。 */
     const getSettingState = computed(() => useSettingStore().$state)
@@ -74,8 +74,8 @@ export const useClientUserStore = defineStore(
      *
      * @param newInfo 新的客户端用户信息。
      */
-    function setUserInfo(newInfo: Api.Auth.UserInfo) {
-      info.value = newInfo
+    function setUserInfo(newInfo: AdminApi.Auth.UserInfo) {
+      userInfo.value = newInfo
     }
 
     /**
@@ -144,13 +144,13 @@ export const useClientUserStore = defineStore(
      * 重置菜单首页与动态路由状态，并跳转到客户端登录页。
      */
     function logOut() {
-      const currentUserId = info.value.userId
+      const currentUserId = userInfo.value.userId
 
       if (currentUserId) {
         localStorage.setItem(CLIENT_LAST_USER_ID_KEY, String(currentUserId))
       }
 
-      info.value = {
+      userInfo.value = {
       }
       isLogin.value = false
       isLock.value = false
@@ -183,7 +183,7 @@ export const useClientUserStore = defineStore(
     function checkAndClearWorkTabs() {
       const lastUserId = localStorage.getItem(CLIENT_LAST_USER_ID_KEY)
 
-      const currentUserId = info.value.userId
+      const currentUserId = userInfo.value.userId
 
       if (!currentUserId) { return }
 
@@ -213,7 +213,7 @@ export const useClientUserStore = defineStore(
       lockPassword,
 
       /** 当前客户端用户信息。 */
-      info,
+      userInfo,
 
       /** 客户端搜索历史记录。 */
       searchHistory,

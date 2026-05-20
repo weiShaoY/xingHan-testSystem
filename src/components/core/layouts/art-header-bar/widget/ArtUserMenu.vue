@@ -42,13 +42,6 @@ function toDocs(): void {
 }
 
 /**
-   * 打开 GitHub 页面
-   */
-function toGithub(): void {
-  window.open(WEB_LINKS.GITHUB)
-}
-
-/**
    * 打开锁屏功能
    */
 function lockScreen(): void {
@@ -96,11 +89,17 @@ function closeUserMenu(): void {
     <template
       #reference
     >
-      <img
-        class="size-8.5 mr-5 c-p rounded-full max-sm:w-6.5 max-sm:h-6.5 max-sm:mr-[16px]"
-        src="@imgs/user/avatar.webp"
-        alt="avatar"
+
+      <el-avatar
+        class="size-8.5! mr-5 c-p max-sm:size-6.5! max-sm:mr-[16px]!"
+        :src="userInfo.avatar"
       >
+        <img
+          src="@imgs/user/avatar.webp"
+          alt="avatar"
+        >
+      </el-avatar>
+
     </template>
 
     <template
@@ -112,10 +111,15 @@ function closeUserMenu(): void {
         <div
           class="flex-c pb-1 px-0"
         >
-          <img
-            class="w-10 h-10 mr-3 ml-0 overflow-hidden rounded-full float-left"
-            src="@imgs/user/avatar.webp"
+          <el-avatar
+            class="w-10! h-10! mr-3 ml-0! overflow-hidden rounded-full float-left"
+            :src="userInfo.avatar"
           >
+            <img
+              src="@imgs/user/avatar.webp"
+              alt="avatar"
+            >
+          </el-avatar>
 
           <div
             class="w-[calc(100%-60px)] h-full"
@@ -128,7 +132,9 @@ function closeUserMenu(): void {
 
             <span
               class="block mt-0.5 text-xs text-g-500 truncate"
-            >{{ userInfo.email }}</span>
+            >
+              {{ userInfo.email }}
+            </span>
           </div>
         </div>
 
@@ -155,17 +161,6 @@ function closeUserMenu(): void {
             />
 
             <span>{{ $t('topBar.user.docs') }}</span>
-          </li>
-
-          <li
-            class="btn-item"
-            @click="toGithub()"
-          >
-            <ArtSvgIcon
-              icon="ri:github-line"
-            />
-
-            <span>{{ $t('topBar.user.github') }}</span>
           </li>
 
           <li

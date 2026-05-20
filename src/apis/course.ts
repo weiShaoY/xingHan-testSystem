@@ -3,9 +3,9 @@ import request from '@/apis/http'
 /**
  * 获取课程列表
  */
-export function getCourseList(params: Partial<Api.Course.CourseListParams> = {
+export function getCourseList(params: Partial<AdminApi.Course.CourseListParams> = {
 }) {
-  return request.post<Api.Course.CourseListResponse>({
+  return request.post<AdminApi.Course.CourseListResponse>({
     url: '/admin/course/list',
     data: {
       currentPage: 1,

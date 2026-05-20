@@ -18,7 +18,7 @@ const userStore = useAdminUserStore()
 const switching = ref(false)
 
 // 当前用户信息
-const currentUser = computed(() => userStore.info)
+const currentUser = computed(() => userStore.userInfo)
 
 // 账号列表 - 与登录页面保持一致
 const accounts = computed(() => [

@@ -18,7 +18,7 @@ defineOptions({
 const userStore = useAdminUserStore()
 
 // 当前用户信息
-const currentUser = computed(() => userStore.info)
+const currentUser = computed(() => userStore.userInfo)
 
 // 获取角色显示名称
 function getRoleDisplayName(role: string) {
