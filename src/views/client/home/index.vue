@@ -137,7 +137,7 @@ function handleCourseClick(item: RecommendCourse) {
     </div>
 
     <el-divider
-      class="!my-6 max-sm:!my-4"
+      class="my-6! max-sm:my-4!"
     />
 
     <!-- 推荐课程 -->

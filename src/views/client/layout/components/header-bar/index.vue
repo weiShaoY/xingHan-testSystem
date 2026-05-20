@@ -8,7 +8,7 @@ const { width } = useWindowSize()
 
 <template>
   <div
-    class="w-full border-b border-[var(--default-border)] bg-white"
+    class="w-full border-b border-(--default-border) bg-white"
   >
     <div
       class="mx-auto h-[60px] max-w-7xl flex items-center justify-between px-10 max-lg:px-6 max-sm:px-4"
