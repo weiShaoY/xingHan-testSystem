@@ -3,6 +3,8 @@
 <script lang="ts" setup>
 import { useWindowSize } from '@vueuse/core'
 
+import UserMenu from './user-menu.vue'
+
 const { width } = useWindowSize()
 </script>
 
@@ -22,8 +24,8 @@ const { width } = useWindowSize()
         />
       </div>
 
-      <!-- 用户头像、菜单 -->
-      <ArtUserMenu />
+      <!-- 客户端 用户头像、菜单 -->
+      <UserMenu />
     </div>
   </div>
 
