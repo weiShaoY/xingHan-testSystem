@@ -8,20 +8,23 @@ const { width } = useWindowSize()
 
 <template>
   <div
-    class="bg-white w-full h-[60px] flex items-center justify-between"
+    class="w-full border-b border-[var(--default-border)] bg-white"
   >
-    <!-- 系统信息  -->
     <div
-      class="flex-c c-p"
+      class="mx-auto h-[60px] max-w-7xl flex items-center justify-between px-10 max-lg:px-6 max-sm:px-4"
     >
-      <ArtLogo
-        class="pl-4.5"
-        :type="width >= 1400 ? 'full' : 'mark'"
-      />
-    </div>
+      <!-- 系统信息  -->
+      <div
+        class="flex-c c-p"
+      >
+        <ArtLogo
+          :type="width >= 1024 ? 'full' : 'mark'"
+        />
+      </div>
 
-    <!-- 用户头像、菜单 -->
-    <ArtUserMenu />
+      <!-- 用户头像、菜单 -->
+      <ArtUserMenu />
+    </div>
   </div>
 
 </template>

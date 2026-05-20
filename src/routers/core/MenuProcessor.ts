@@ -11,6 +11,8 @@ import type { AppRouteRecord } from '@/types/router'
 
 import { fetchGetMenuList } from '@/apis/system-manage'
 
+import { isDevSkipAuthEnabled } from '@/config/dev-auth'
+
 import { useAppMode } from '@/hooks/core/useAppMode'
 
 import { getUserStoreByPath } from '@/store'
@@ -26,6 +28,14 @@ export class MenuProcessor {
    * 获取菜单数据
    */
   async getMenuList(path?: string): Promise<AppRouteRecord[]> {
+    if (isDevSkipAuthEnabled) {
+      const menuList = [...dynamicRoutes]
+
+      this.validateMenuPaths(menuList)
+
+      return this.sortMenuTree(this.normalizeMenuPaths(menuList))
+    }
+
     const { isFrontendMode } = useAppMode()
 
     let menuList: AppRouteRecord[]

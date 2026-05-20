@@ -2,6 +2,9 @@
 
 type ImportMetaEnv = {
 
+  /** 是否为开发模式 */
+  readonly DEV: boolean
+
   /** 运行环境 */
   readonly VITE_APP_ENV: 'development' | 'production'
 
@@ -31,6 +34,9 @@ type ImportMetaEnv = {
 
   /** 是否删除 console */
   readonly VITE_APP_DROP_CONSOLE: 'true' | 'false'
+
+  /** 是否在开发环境跳过登录鉴权 */
+  readonly VITE_APP_DEV_SKIP_AUTH: 'true' | 'false'
 
   /** 锁屏加密密钥 */
   readonly VITE_APP_LOCK_ENCRYPT_KEY: string

@@ -53,6 +53,12 @@ import { isHttpError } from '@/apis/http/error'
 
 import { ApiStatus } from '@/apis/http/status'
 
+import {
+  devAdminUserInfo,
+  devClientUserInfo,
+  isDevSkipAuthEnabled,
+} from '@/config/dev-auth'
+
 import { useCommon } from '@/hooks/core/useCommon'
 
 import {
@@ -427,13 +433,19 @@ function handleLoginStatus(
   userStore: ReturnType<typeof getUserStoreByPath>,
   next: NavigationGuardNext,
 ): boolean {
+  if (isDevSkipAuthEnabled && !isStaticRoute(to.path)) {
+    if (!userStore.isLogin) {
+      userStore.setLoginStatus(true)
+      userStore.setToken('dev-skip-auth-token', 'dev-skip-auth-refresh-token')
+    }
+
+    return true
+  }
+
   // 已登录或访问登录页或静态路由，直接放行
   if (userStore.isLogin || isStaticRoute(to.path)) {
     return true
   }
-
-  //  临时放行
-  // return true
 
   // 未登录且访问需要权限的页面，跳转到登录页并携带 redirect 参数
   next({
@@ -523,6 +535,12 @@ function isStaticRoute(path: string): boolean {
  */
 async function fetchUserInfo(path: string): Promise<void> {
   const userStore = getUserStoreByPath(path)
+
+  if (isDevSkipAuthEnabled) {
+    userStore.setUserInfo(isClientPath(path) ? devClientUserInfo : devAdminUserInfo)
+    userStore.checkAndClearWorkTabs()
+    return
+  }
 
   const { userInfo } = isClientPath(path)
     ? await fetchClientGetUserInfo(path)

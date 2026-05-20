@@ -18,7 +18,7 @@ const route = useRoute()
 
 const { containerMinHeight } = useAutoLayoutHeight()
 
-const { pageTransition, containerWidth, refresh } = storeToRefs(useSettingStore())
+const { pageTransition, refresh } = storeToRefs(useSettingStore())
 
 const { keepAliveExclude } = storeToRefs(useWorkTabStore())
 
@@ -74,7 +74,6 @@ const containerStyle = computed(
           background: 'var(--default-bg-color)',
         }
       : {
-          maxWidth: containerWidth.value,
         },
 )
 

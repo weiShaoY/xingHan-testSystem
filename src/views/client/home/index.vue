@@ -103,16 +103,18 @@ function handleCourseClick(item: RecommendCourse) {
 </script>
 
 <template>
-  <div>
+  <div
+    class="py-5 max-sm:py-3"
+  >
     <!-- 导航栏 -->
     <div
-      class="grid grid-cols-4 gap-2.5 w-full p-3"
+      class="grid grid-cols-4 gap-4 max-md:gap-3 max-sm:gap-2.5"
     >
       <button
         v-for="item in navList"
         :key="item.name"
         type="button"
-        class="aspect-square min-w-0 flex flex-col items-center justify-center gap-1.5 overflow-hidden rounded-2xl border-0 p-[8px_4px] text-white font-500 shadow-[0_6px_14px_rgb(0_0_0/8%)] transition-[transform,filter,box-shadow] duration-120 ease-in-out cursor-pointer select-none touch-manipulation active:scale-[0.96] active:brightness-92 active:shadow-[0_3px_8px_rgb(0_0_0/10%)] [-webkit-tap-highlight-color:transparent]"
+        class="min-h-[118px] min-w-0 flex items-center justify-start gap-4 overflow-hidden rounded-custom-sm border-0 px-5 py-4 text-white font-500 shadow-[0_8px_20px_rgb(0_0_0/8%)] transition-[transform,filter,box-shadow] duration-120 ease-in-out cursor-pointer select-none touch-manipulation hover:-translate-y-0.5 hover:shadow-[0_12px_26px_rgb(0_0_0/10%)] active:scale-[0.96] active:brightness-92 active:shadow-[0_3px_8px_rgb(0_0_0/10%)] max-md:min-h-[104px] max-md:flex-col max-md:justify-center max-md:gap-2 max-md:px-3 max-md:py-3 max-sm:aspect-square max-sm:min-h-0 max-sm:gap-1.5 max-sm:rounded-2xl max-sm:p-[8px_4px] [-webkit-tap-highlight-color:transparent]"
         :style="{ backgroundColor: item.bgColor }"
         :title="item.name"
         @click="handleClick(item)"
@@ -122,36 +124,38 @@ function handleCourseClick(item: RecommendCourse) {
         >
           <ArtSvgIcon
             :icon="item.icon"
-            class="text-[32px]"
+            class="text-[38px] max-md:text-[34px] max-sm:text-[32px]"
           />
         </div>
 
         <div
-          class="line-clamp-2 w-full overflow-hidden text-center text-xs leading-[1.25] text-ellipsis"
+          class="line-clamp-2 min-w-0 flex-1 overflow-hidden text-left text-base leading-[1.35] text-ellipsis max-md:w-full max-md:flex-none max-md:text-center max-md:text-sm max-sm:text-xs max-sm:leading-[1.25]"
         >
           {{ item.name }}
         </div>
       </button>
     </div>
 
-    <el-divider />
+    <el-divider
+      class="!my-6 max-sm:!my-4"
+    />
 
     <!-- 推荐课程 -->
     <div
-      class="px-3 pb-6"
+      class="pb-6"
     >
       <div
-        class="mb-4 flex items-start justify-between"
+        class="mb-5 flex items-start justify-between gap-4 max-sm:mb-4"
       >
         <div>
           <h2
-            class="m-0 text-[22px] text-[#202124] font-700 leading-8"
+            class="m-0 text-xl text-g-900 font-semibold leading-8 max-sm:text-[22px]"
           >
             推荐
           </h2>
 
           <p
-            class="mt-2 mb-0 text-[15px] text-[#6b6f76] leading-5"
+            class="mt-1 mb-0 text-sm text-g-600 leading-5 max-sm:mt-2 max-sm:text-[15px]"
           >
             10门课程 97个小节
           </p>
@@ -159,7 +163,7 @@ function handleCourseClick(item: RecommendCourse) {
 
         <button
           type="button"
-          class="min-h-8 flex items-center gap-1 border-0 bg-transparent p-0 text-[16px] text-[#202124] font-500 cursor-pointer select-none touch-manipulation active:opacity-60 [-webkit-tap-highlight-color:transparent]"
+          class="min-h-8 flex items-center gap-1 border-0 bg-transparent p-0 text-base text-g-900 font-500 cursor-pointer select-none touch-manipulation hover:text-primary active:opacity-60 [-webkit-tap-highlight-color:transparent]"
         >
           <span>查看全部</span>
 
@@ -171,32 +175,36 @@ function handleCourseClick(item: RecommendCourse) {
       </div>
 
       <div
-        class="grid grid-cols-2 gap-x-3 gap-y-6"
+        class="grid grid-cols-4 gap-x-5 gap-y-7 max-xl:grid-cols-3 max-md:grid-cols-2 max-sm:gap-x-3 max-sm:gap-y-6"
       >
         <button
           v-for="item in recommendList"
           :key="item.title"
           type="button"
-          class="min-w-0 border-0 bg-transparent p-0 text-left cursor-pointer select-none touch-manipulation active:scale-[0.98] active:opacity-80 [-webkit-tap-highlight-color:transparent]"
+          class="group min-w-0 overflow-hidden rounded-custom-sm border-full-d bg-box p-0 text-left cursor-pointer select-none touch-manipulation transition hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-[0_12px_30px_rgb(15_23_42/8%)] active:scale-[0.98] active:opacity-80 max-sm:rounded-none max-sm:border-0 max-sm:bg-transparent max-sm:hover:translate-y-0 max-sm:hover:shadow-none [-webkit-tap-highlight-color:transparent]"
           @click="handleCourseClick(item)"
         >
           <img
             :src="item.cover"
             :alt="item.title"
-            class="aspect-16/9 w-full rounded-[5px] object-cover"
+            class="aspect-16/9 w-full object-cover max-sm:rounded-[5px]"
           >
 
-          <h3
-            class="line-clamp-2 mt-2 mb-0 min-h-[40px] overflow-hidden text-[16px] text-[#202124] font-500 leading-5 text-ellipsis"
+          <div
+            class="px-4 pb-4 pt-3 max-sm:p-0"
           >
-            {{ item.title }}
-          </h3>
+            <h3
+              class="line-clamp-2 m-0 min-h-[44px] overflow-hidden text-base text-g-900 font-500 leading-[22px] text-ellipsis group-hover:text-primary max-sm:mt-2 max-sm:min-h-[40px] max-sm:text-[16px] max-sm:leading-5"
+            >
+              {{ item.title }}
+            </h3>
 
-          <p
-            class="mt-1.5 mb-0 text-[14px] text-[#6b6f76] leading-5"
-          >
-            {{ item.sections }}个小节 {{ item.participants }}人参与
-          </p>
+            <p
+              class="mt-2 mb-0 text-sm text-g-600 leading-5 max-sm:mt-1.5 max-sm:text-[14px]"
+            >
+              {{ item.sections }}个小节 {{ item.participants }}人参与
+            </p>
+          </div>
         </button>
       </div>
     </div>
