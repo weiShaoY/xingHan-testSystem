@@ -27,7 +27,7 @@ export function fetchAdminGetUserInfo(authPath?: string) {
   return request.get<{
     userInfo: AdminApi.Auth.UserInfo
   }>({
-    url: '/admin/auth/userinfo',
+    url: '/admin/auth/userInfo',
     authPath,
 
   })
