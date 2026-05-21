@@ -42,11 +42,11 @@ const isShowClientHeaderBar = computed(() => {
       </div>
     </main>
 
-    <!-- <div
+    <div
       id="app-global"
     >
       <ArtGlobalComponent />
-    </div> -->
+    </div>
   </div>
 </template>
 

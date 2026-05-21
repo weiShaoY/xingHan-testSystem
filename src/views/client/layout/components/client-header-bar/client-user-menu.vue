@@ -125,7 +125,7 @@ function closeUserMenu(): void {
         >
           <li
             class="btn-item"
-            @click="goPage('/admin/system/user-center')"
+            @click="goPage('/client/task')"
           >
             <ArtSvgIcon
               icon="tdesign:task"
@@ -136,7 +136,7 @@ function closeUserMenu(): void {
 
           <li
             class="btn-item"
-            @click="goPage('/admin/system/user-center')"
+            @click="goPage('/client/course')"
           >
             <ArtSvgIcon
               icon="tdesign:course"
@@ -147,7 +147,7 @@ function closeUserMenu(): void {
 
           <li
             class="btn-item"
-            @click="goPage('/admin/system/user-center')"
+            @click="goPage('/client/history')"
           >
             <ArtSvgIcon
               icon="tdesign:history"
@@ -158,7 +158,7 @@ function closeUserMenu(): void {
 
           <li
             class="btn-item"
-            @click="goPage('/admin/system/user-center')"
+            @click="goPage('/client/user-center')"
           >
             <ArtSvgIcon
               icon="tdesign:architecture-hui-style"

@@ -58,7 +58,7 @@ const courseList: CourseItem[] = [
             <div
               v-for="item in courseList"
               :key="item.id"
-              class="art-card"
+              class="art-card flex items-center justify-between gap-4"
             >
               <img
                 :src="item.cover"

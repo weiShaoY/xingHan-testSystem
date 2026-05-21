@@ -184,7 +184,7 @@ function handleCourseClick(item: RecommendCourse) {
           v-for="item in recommendList"
           :key="item.title"
           type="button"
-          class="group min-w-0 overflow-hidden rounded-custom-sm border-full-d bg-box p-0 text-left cursor-pointer select-none touch-manipulation transition hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-[0_12px_30px_rgb(15_23_42/8%)] active:scale-[0.98] active:opacity-80 max-sm:rounded-none max-sm:border-0 max-sm:bg-transparent max-sm:hover:translate-y-0 max-sm:hover:shadow-none [-webkit-tap-highlight-color:transparent]"
+          class="group min-w-0 overflow-hidden art-card p-0 text-left cursor-pointer select-none touch-manipulation transition hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-[0_12px_30px_rgb(15_23_42/8%)] active:scale-[0.98] active:opacity-80 max-sm:rounded-none max-sm:border-0 max-sm:bg-transparent max-sm:hover:translate-y-0 max-sm:hover:shadow-none [-webkit-tap-highlight-color:transparent]"
           @click="handleCourseClick(item)"
         >
           <img
