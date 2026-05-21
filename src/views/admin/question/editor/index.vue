@@ -573,7 +573,7 @@ function importQuestions() {
               </el-input>
 
               <div
-                class="flex flex-shrink-0 flex-wrap gap-2 items-center max-md:w-full max-md:justify-end"
+                class="flex shrink-0 flex-wrap gap-2 items-center max-md:w-full max-md:justify-end"
               >
                 <ArtIconButton
                   v-for="item in stageActions"

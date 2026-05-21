@@ -53,7 +53,7 @@ function handleBack() {
     >
       <!-- 返回按钮 -->
       <div
-        class="flex flex-shrink-0 cursor-pointer items-center gap-2 text-primary"
+        class="flex shrink-0 cursor-pointer items-center gap-2 text-primary"
         @click="handleBack"
       >
         <art-svg-icon
@@ -65,7 +65,7 @@ function handleBack() {
       </div>
 
       <div
-        class="h-4 w-1 flex-shrink-0 bg-[var(--art-card-border)] max-sm:hidden"
+        class="h-4 w-1 shrink-0 bg-[var(--art-card-border)] max-sm:hidden"
       >
         <!-- 分割线 -->
       </div>
@@ -100,7 +100,7 @@ function handleBack() {
 
     <!-- 右侧 -->
     <div
-      class="flex flex-shrink-0 flex-wrap gap-2 items-center justify-end max-md:w-full max-sm:gap-3 max-sm:justify-start"
+      class="flex shrink-0 flex-wrap gap-2 items-center justify-end max-md:w-full max-sm:gap-3 max-sm:justify-start"
     >
       <slot
         name="extra"

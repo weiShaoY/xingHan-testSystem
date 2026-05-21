@@ -220,7 +220,7 @@ function goToEdit() {
           class="flex gap-6 items-start max-sm:flex-col"
         >
           <div
-            class="flex h-9 w-12 flex-shrink-0 items-center justify-center rounded-lg bg-primary/10 font-semibold text-primary"
+            class="flex h-9 w-12 shrink-0 items-center justify-center rounded-lg bg-primary/10 font-semibold text-primary"
           >
             Q{{ index + 1 }}
           </div>

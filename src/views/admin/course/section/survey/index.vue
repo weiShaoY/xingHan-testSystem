@@ -418,7 +418,7 @@ function handleSubmit() {
                     </el-input>
 
                     <div
-                      class="flex flex-shrink-0 gap-3 items-center justify-end"
+                      class="flex shrink-0 gap-3 items-center justify-end"
                     >
                       <ArtIconButton
                         type="link"

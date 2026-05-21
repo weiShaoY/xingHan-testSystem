@@ -218,7 +218,7 @@ onMounted(initScrollState)
       @wheel="handleWheel"
     >
       <div
-        class="box-border flex-c flex-shrink-0 flex-nowrap h-15 whitespace-nowrap"
+        class="box-border flex-c shrink-0 flex-nowrap h-15 whitespace-nowrap"
       >
         <template
           v-for="item in processedMenuList"
@@ -226,7 +226,7 @@ onMounted(initScrollState)
         >
           <div
             v-if="!item.meta.isHide"
-            class="menu-item relative flex-shrink-0 h-10 px-3 text-sm flex-c c-p hover:text-theme"
+            class="menu-item relative shrink-0 h-10 px-3 text-sm flex-c c-p hover:text-theme"
             :class="{
               'menu-item-active text-theme': item.isActive,
             }"

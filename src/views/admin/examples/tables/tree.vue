@@ -275,7 +275,7 @@ const {
       class="flex gap-4 h-full box-border max-md:gap-0 max-md:h-auto max-md:block"
     >
       <div
-        class="flex-shrink-0 h-full w-58 max-md:mb-5 max-md:h-auto max-md:w-full"
+        class="shrink-0 h-full w-58 max-md:mb-5 max-md:h-auto max-md:w-full"
       >
         <ElCard
           class="tree-card art-card-xs mt-0 flex flex-col h-full"

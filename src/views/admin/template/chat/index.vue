@@ -546,7 +546,7 @@ onMounted(() => {
               <ElAvatar
                 :size="32"
                 :src="message.avatar"
-                class="flex-shrink-0"
+                class="shrink-0"
               />
 
               <div

@@ -427,7 +427,7 @@ function moveCourse(stageIndex: number, courseIndex: number, direction: 'up' | '
                               class="grid min-w-0 flex-1 grid-cols-[32px_minmax(0,1fr)_96px] gap-4 items-center max-sm:grid-cols-[32px_minmax(0,1fr)] max-sm:items-start"
                             >
                               <div
-                                class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary"
+                                class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary"
                               >
                                 {{ course.id }}
                               </div>
