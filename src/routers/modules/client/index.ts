@@ -35,5 +35,35 @@ export const clientRoutes: AppRouteRecord = {
         keepAlive: false,
       },
     },
+    {
+      name: 'ClientCourse',
+      path: 'course',
+      component: '/client/course',
+      meta: {
+        title: '报名的课程',
+        icon: 'ri:course-line',
+        keepAlive: false,
+      },
+    },
+    {
+      name: 'ClientHistory',
+      path: 'history',
+      component: '/client/history',
+      meta: {
+        title: '学习历史',
+        icon: 'ri:history-line',
+        keepAlive: false,
+      },
+    },
+    {
+      name: 'ClientUserCenter',
+      path: 'user-center',
+      component: '/client/user-center',
+      meta: {
+        title: '个人主页',
+        icon: 'ri:user-line',
+        keepAlive: false,
+      },
+    },
   ],
 }

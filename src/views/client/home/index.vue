@@ -36,19 +36,19 @@ const navList: NavItem[] = [
   },
   {
     name: '报名的课程',
-    path: '/',
+    path: '/client/course',
     icon: 'tdesign:course',
     bgColor: '#f7979f',
   },
   {
     name: '学习历史',
-    path: '/',
+    path: '/client/history',
     icon: 'tdesign:history',
     bgColor: '#febd2d',
   },
   {
     name: '个人主页',
-    path: '/',
+    path: '/client/user-center',
     icon: 'tdesign:architecture-hui-style',
     bgColor: '#f4793e',
   },
