@@ -89,8 +89,8 @@ const loading = ref(false)
  * 登录表单数据。
  */
 const formData = ref({
-  username: '',
-  password: '',
+  username: 'qd_admin',
+  password: '123456',
   rememberPassword: true,
 })
 

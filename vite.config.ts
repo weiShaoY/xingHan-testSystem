@@ -56,6 +56,10 @@ export default ({ mode }: { mode: string }) => {
           target: VITE_APP_API_PROXY_URL,
           changeOrigin: true,
         },
+        '/client': {
+          target: VITE_APP_API_PROXY_URL,
+          changeOrigin: true,
+        },
       },
       host: true,
     },

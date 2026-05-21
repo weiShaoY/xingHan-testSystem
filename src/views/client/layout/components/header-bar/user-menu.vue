@@ -8,8 +8,6 @@ import { useRouter } from 'vue-router'
 
 import { useCurrentUserStore } from '@/store'
 
-import { WEB_LINKS } from '@/utils/constants'
-
 defineOptions({
   name: 'ArtUserMenu',
 })
@@ -23,8 +21,6 @@ const userStore = useCurrentUserStore()
 const { getUserInfo: userInfo } = storeToRefs(userStore)
 
 const isUserMenuOpen = ref(false)
-
-const isClientRoute = computed(() => router.currentRoute.value.path.startsWith('/client'))
 
 const displayName = computed(() => userInfo.value.userName || '用户')
 
@@ -54,21 +50,6 @@ function closeUserMenu(): void {
 }
 
 /**
-   * 跳转个人中心。
-   */
-function goUserCenter(): void {
-  goPage(isClientRoute.value ? '/client/home' : '/admin/system/user-center')
-}
-
-/**
-   * 打开官网页面。
-   */
-function toWebsite(): void {
-  closeUserMenu()
-  window.open(WEB_LINKS.DOCS)
-}
-
-/**
    * 用户登出确认
    */
 function loginOut(): void {
@@ -83,6 +64,7 @@ function loginOut(): void {
     })
   }, 200)
 }
+
 </script>
 
 <template>
@@ -117,12 +99,13 @@ function loginOut(): void {
     >
       <div
         v-if="isUserMenuOpen"
-        class="fixed inset-0 z-[3000] flex items-start justify-center overflow-y-auto bg-[rgb(15_35_52/76%)]"
+        class="fixed inset-0 z-3000 flex items-start justify-center overflow-y-auto bg-[rgb(15_35_52/76%)]"
         @click.self="closeUserMenu"
       >
         <div
           class="relative w-[min(100%,520px)] bg-white px-8 pb-[34px] pt-12 shadow-[0_24px_80px_rgb(15_23_42/18%)] max-sm:w-full max-sm:px-7 max-sm:pb-7 max-sm:pt-[42px]"
         >
+          <!-- 右上角关闭按钮 -->
           <button
             type="button"
             class="absolute right-5 top-5 size-10 flex items-center justify-center border-0 bg-transparent p-0 text-[34px] text-[#5f6368] cursor-pointer"
@@ -134,109 +117,102 @@ function loginOut(): void {
             />
           </button>
 
+          <!-- 用户信息 -->
           <div
-            class="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-4 border-b border-[#eceff3] pb-[42px] pt-[38px] max-sm:grid-cols-[auto_minmax(0,1fr)] max-sm:pt-[34px]"
+            class="flex items-center justify-between gap-4 border-b border-[#eceff3] pb-[42px] pt-[38px] max-sm:pt-[34px]"
           >
-            <el-avatar
-              class="size-[62px]! overflow-hidden bg-[#ffc415]"
-              :src="userInfo.avatar"
-            >
-              <img
-                src="@imgs/user/avatar.webp"
-                alt="avatar"
-              >
-            </el-avatar>
-
             <div
-              class="min-w-0 flex-1"
+              class="min-w-0 flex flex-1 items-center gap-4"
             >
-              <div
-                class="flex items-center gap-2"
+              <el-avatar
+                class="size-[62px]! overflow-hidden bg-[#ffc415]"
+                :src="userInfo.avatar"
               >
-                <h3
-                  class="m-0 max-w-full truncate text-xl text-[#202124] font-700 leading-[1.25]"
+                <img
+                  src="@imgs/user/avatar.webp"
+                  alt="avatar"
                 >
-                  {{ displayName }}
-                </h3>
+              </el-avatar>
 
-                <span
-                  class="flex-none rounded-[6px] bg-[#f1f2f4] px-2 py-1 text-[13px] text-[#686c73] leading-none"
-                >基本版</span>
+              <div
+                class="min-w-0 flex-1"
+              >
+                <div
+                  class="flex items-center gap-2"
+                >
+                  <h3
+                    class="m-0 max-w-full truncate text-xl text-[#202124] font-700 leading-[1.25]"
+                  >
+                    {{ displayName }}
+                  </h3>
+
+                  <span
+                    class="flex-none rounded-[6px] bg-[#f1f2f4] px-2 py-1 text-[13px] text-[#686c73] leading-none"
+                  >
+                    基本版
+                  </span>
+                </div>
+
+                <p
+                  class="mt-2 mb-0 truncate text-base text-[#60646b] leading-[1.3]"
+                >
+                  {{ displayEmail }}
+                </p>
               </div>
 
-              <p
-                class="mt-2 mb-0 truncate text-base text-[#60646b] leading-[1.3]"
-              >
-                {{ displayEmail }}
-              </p>
             </div>
 
             <button
               type="button"
-              class="border-0 bg-transparent p-0 text-[17px] text-[#60646b] leading-[1.4] whitespace-nowrap cursor-pointer max-sm:col-start-2 max-sm:justify-self-start"
-              @click="goUserCenter"
+              class="client-menu-profile-link"
+              @click="goPage('/admin/system/user-center')"
             >
               个人中心
             </button>
           </div>
 
+          <!-- 导航菜单 -->
           <nav
             class="flex flex-col"
           >
             <button
               type="button"
-              class="min-h-[52px] border-0 bg-transparent p-0 text-left text-lg text-[#202124] font-500 leading-[1.4] cursor-pointer hover:text-primary"
-            >
-              我的收藏
-            </button>
-
-            <button
-              type="button"
-              class="min-h-[52px] border-0 border-b border-[#eceff3] bg-transparent p-0 text-left text-lg text-[#202124] font-500 leading-[1.4] cursor-pointer hover:text-primary"
-            >
-              考题本
-            </button>
-
-            <button
-              type="button"
-              class="min-h-[52px] border-0 bg-transparent p-0 text-left text-lg text-[#202124] font-500 leading-[1.4] cursor-pointer hover:text-primary"
-            >
-              我的任务
-            </button>
-
-            <button
-              type="button"
-              class="min-h-[52px] border-0 border-b border-[#eceff3] bg-transparent p-0 text-left text-lg text-[#202124] font-500 leading-[1.4] cursor-pointer hover:text-primary"
-            >
-              学习历史
-            </button>
-
-            <button
-              type="button"
-              class="min-h-[52px] border-0 bg-transparent p-0 text-left text-lg text-[#202124] font-500 leading-[1.4] cursor-pointer hover:text-primary"
-              @click="goPage(isClientRoute ? '/client/home' : '/admin')"
+              class="client-menu-link client-menu-link--divided"
             >
               首页
             </button>
 
             <button
               type="button"
-              class="min-h-[52px] border-0 border-b border-[#eceff3] bg-transparent p-0 text-left text-lg text-[#202124] font-500 leading-[1.4] cursor-pointer hover:text-primary"
-              @click="toWebsite"
+              class="client-menu-link"
             >
-              UMU官网
+              我的收藏
             </button>
 
             <button
               type="button"
-              class="min-h-[52px] border-0 border-b border-[#eceff3] bg-transparent p-0 text-left text-lg text-[#202124] font-500 leading-[1.4] cursor-pointer hover:text-primary"
+              class="client-menu-link client-menu-link--divided"
             >
-              AI 工具
+              考题本
             </button>
 
             <button
               type="button"
-              class="min-h-[52px] border-0 bg-transparent p-0 text-left text-lg text-[#202124] font-500 leading-[1.4] cursor-pointer hover:text-primary"
+              class="client-menu-link"
+            >
+              我的任务
+            </button>
+
+            <button
+              type="button"
+              class="client-menu-link client-menu-link--divided"
+            >
+              学习历史
+            </button>
+
+            <button
+              type="button"
+              class="client-menu-link"
               @click="loginOut"
             >
               退出登录
@@ -247,3 +223,61 @@ function loginOut(): void {
     </Transition>
   </Teleport>
 </template>
+
+<style scoped>
+.client-menu-link {
+  min-height: 52px;
+  width: 100%;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  padding: 0 12px;
+  color: #202124;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.4;
+  text-align: left;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s;
+}
+
+.client-menu-link--divided {
+  border-bottom: 1px solid #eceff3;
+}
+
+.client-menu-link:hover {
+  background-color: #f1f2f4;
+  color: var(--el-color-primary);
+}
+
+.client-menu-link:active {
+  background-color: #e8eaed;
+  transform: scale(0.98);
+}
+
+.client-menu-profile-link {
+  flex: none;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  padding: 8px 12px;
+  color: #60646b;
+  font-size: 17px;
+  line-height: 1.4;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s;
+}
+
+.client-menu-profile-link:hover {
+  background-color: #f1f2f4;
+  color: var(--el-color-primary);
+}
+
+.client-menu-profile-link:active {
+  background-color: #e8eaed;
+  transform: scale(0.98);
+}
+</style>

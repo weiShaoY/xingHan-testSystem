@@ -48,6 +48,10 @@ const ContextHolder = defineComponent({
 
         window.$isDevelopment = import.meta.env.VITE_APP_ENV === 'development'
 
+        watchEffect(() => {
+          window.$isClientRoute = route.path.startsWith('/client')
+        })
+
         console.log('[AppProvider] 全局组件注册成功', {
           $notification: typeof window.$notification,
           $message: typeof window.$message,

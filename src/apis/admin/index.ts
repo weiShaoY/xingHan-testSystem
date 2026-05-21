@@ -29,6 +29,5 @@ export function fetchAdminGetUserInfo(authPath?: string) {
   }>({
     url: '/admin/auth/userInfo',
     authPath,
-
   })
 }

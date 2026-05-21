@@ -37,5 +37,11 @@ declare global {
      * @description 用于区分开发环境和生产环境
      */
     $isDevelopment: boolean
+
+    /**
+     * 是否为客户端路由
+     * @description 用于区分客户端路由和管理端路由
+     */
+    $isClientRoute: boolean
   }
 }
