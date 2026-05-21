@@ -11,6 +11,7 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    AdminPageHeader: typeof import('./../../components/admin/admin-page-header/index.vue')['default']
     ArtBackToTop: typeof import('./../../components/core/base/art-back-to-top/index.vue')['default']
     ArtBarChart: typeof import('./../../components/core/charts/art-bar-chart/index.vue')['default']
     ArtBarChartCard: typeof import('./../../components/core/cards/art-bar-chart-card/index.vue')['default']
@@ -49,7 +50,6 @@ declare module 'vue' {
     ArtMixedMenu: typeof import('./../../components/core/layouts/art-menus/art-mixed-menu/index.vue')['default']
     ArtNotification: typeof import('./../../components/core/layouts/art-notification/index.vue')['default']
     ArtPageContent: typeof import('./../../components/core/layouts/art-page-content/index.vue')['default']
-    ArtPageHeader: typeof import('./../../components/core/layouts/art-page-header/index.vue')['default']
     ArtProgressCard: typeof import('./../../components/core/cards/art-progress-card/index.vue')['default']
     ArtRadarChart: typeof import('./../../components/core/charts/art-radar-chart/index.vue')['default']
     ArtResultPage: typeof import('./../../components/core/views/result/ArtResultPage.vue')['default']
@@ -75,6 +75,7 @@ declare module 'vue' {
     BaseButton: typeof import('./../../components/Button/base-button/index.vue')['default']
     BasicSettings: typeof import('./../../components/core/layouts/art-settings-panel/widget/BasicSettings.vue')['default']
     BoxStyleSettings: typeof import('./../../components/core/layouts/art-settings-panel/widget/BoxStyleSettings.vue')['default']
+    ClientPageHeader: typeof import('./../../components/client/client-page-header/index.vue')['default']
     ColorSettings: typeof import('./../../components/core/layouts/art-settings-panel/widget/ColorSettings.vue')['default']
     CommentItem: typeof import('./../../components/business/comment-widget/widget/CommentItem.vue')['default']
     CommentWidget: typeof import('./../../components/business/comment-widget/index.vue')['default']

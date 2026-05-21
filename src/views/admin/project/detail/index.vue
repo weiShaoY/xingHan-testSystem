@@ -78,7 +78,7 @@ function goToEdit() {
   <div
     class="mx-auto mb-10 flex w-full max-w-7xl flex-col gap-4 px-10 max-lg:px-6 max-sm:px-4"
   >
-    <ArtPageHeader
+    <AdminPageHeader
       title="学习项目1 详情页"
     >
       <template
@@ -91,7 +91,7 @@ function goToEdit() {
           编辑内容
         </ArtIconButton>
       </template>
-    </ArtPageHeader>
+    </AdminPageHeader>
 
     <div
       class="flex flex-col gap-4"

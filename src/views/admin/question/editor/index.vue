@@ -487,7 +487,7 @@ function importQuestions() {
   <div
     class="mx-auto mb-10 flex w-full max-w-7xl flex-col gap-4 px-10 max-lg:px-6 max-sm:px-4"
   >
-    <ArtPageHeader
+    <AdminPageHeader
       :title="pageTitle"
       :stats="[
         `单选题数量: ${stages.filter(stage => stage.type === '单选题').length}`,
@@ -505,7 +505,7 @@ function importQuestions() {
           完成
         </ArtIconButton>
       </template>
-    </ArtPageHeader>
+    </AdminPageHeader>
 
     <div
       class="art-card"

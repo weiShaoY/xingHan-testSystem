@@ -400,7 +400,7 @@ function handleDateRangeChange(val: [string, string] | null) {
       v-model="isShowSelectFromQuestionBankDialog"
     />
 
-    <ArtPageHeader
+    <AdminPageHeader
       title="创建考试"
     >
       <template
@@ -414,7 +414,7 @@ function handleDateRangeChange(val: [string, string] | null) {
           完成
         </el-button>
       </template>
-    </ArtPageHeader>
+    </AdminPageHeader>
 
     <el-tabs
       v-model="activeTab"

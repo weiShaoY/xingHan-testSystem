@@ -248,7 +248,7 @@ onMounted(() => {
   <div
     class="mx-auto mb-10 flex w-full max-w-7xl flex-col gap-4 px-10 max-lg:px-6 max-sm:px-4"
   >
-    <ArtPageHeader
+    <AdminPageHeader
       :title="pageTitle"
     >
       <template
@@ -261,7 +261,7 @@ onMounted(() => {
           {{ submitButtonText }}
         </ArtIconButton>
       </template>
-    </ArtPageHeader>
+    </AdminPageHeader>
 
     <el-tabs
       v-model="activeTab"

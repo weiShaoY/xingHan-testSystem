@@ -9,7 +9,7 @@ import { UploadFilled } from '@element-plus/icons-vue'
   <div
     class="mb-10 flex flex-col gap-4 "
   >
-    <ArtPageHeader
+    <AdminPageHeader
       title="添加视频"
     >
       <template
@@ -21,7 +21,7 @@ import { UploadFilled } from '@element-plus/icons-vue'
           完成
         </el-button>
       </template>
-    </ArtPageHeader>
+    </AdminPageHeader>
 
     <!-- // 文件 或者 视频 -->
     <div

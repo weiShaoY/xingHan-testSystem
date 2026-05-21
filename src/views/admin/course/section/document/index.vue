@@ -118,7 +118,7 @@ function toggleAdvancedSettings() {
   <div
     class="mb-10 flex flex-col gap-4 "
   >
-    <ArtPageHeader
+    <AdminPageHeader
       title="添加文档"
     >
       <template
@@ -130,7 +130,7 @@ function toggleAdvancedSettings() {
           完成
         </el-button>
       </template>
-    </ArtPageHeader>
+    </AdminPageHeader>
 
     <!-- // 文件 或者 视频 -->
     <div

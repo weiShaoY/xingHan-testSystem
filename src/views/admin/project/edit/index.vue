@@ -328,7 +328,7 @@ function moveCourse(stageIndex: number, courseIndex: number, direction: 'up' | '
       @add-course="addCourseToStage"
     />
 
-    <ArtPageHeader
+    <AdminPageHeader
       title="编辑学习项目"
     >
       <template
@@ -341,7 +341,7 @@ function moveCourse(stageIndex: number, courseIndex: number, direction: 'up' | '
           完成
         </ArtIconButton>
       </template>
-    </ArtPageHeader>
+    </AdminPageHeader>
 
     <!-- 标签页 -->
     <div

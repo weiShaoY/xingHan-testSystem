@@ -438,7 +438,7 @@ function editSection(section: Section) {
       @select="goToAddSection"
     />
 
-    <ArtPageHeader
+    <AdminPageHeader
       title="学习课程1 详情页"
       :stats="[`小节数量: ${sectionIndexMap.size}`]"
     >
@@ -469,7 +469,7 @@ function editSection(section: Section) {
           添加课程小节
         </ArtIconButton>
       </template>
-    </ArtPageHeader>
+    </AdminPageHeader>
 
     <!-- 课程内容列表 -->
     <div
