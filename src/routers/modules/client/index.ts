@@ -25,5 +25,15 @@ export const clientRoutes: AppRouteRecord = {
         keepAlive: false,
       },
     },
+    {
+      name: 'ClientTask',
+      path: 'task',
+      component: '/client/task',
+      meta: {
+        title: '我的任务',
+        icon: 'ri:task-line',
+        keepAlive: false,
+      },
+    },
   ],
 }

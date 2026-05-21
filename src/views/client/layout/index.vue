@@ -8,6 +8,11 @@ import ClientPageContent from './components/client-page-content/index.vue'
 defineOptions({
   name: 'ClientLayout',
 })
+const router = useRouter()
+
+const isShowClientHeaderBar = computed(() => {
+  return router.currentRoute.value.path === '/client/home'
+})
 </script>
 
 <template>
@@ -24,6 +29,7 @@ defineOptions({
       id="app-main"
     >
       <div
+        v-if="isShowClientHeaderBar"
         id="app-header"
       >
         <ClientHeaderBar />

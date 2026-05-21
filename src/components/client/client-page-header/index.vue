@@ -32,6 +32,12 @@ const emit = defineEmits<{
 
 const router = useRouter()
 
+const route = useRoute()
+
+const pageTitle = computed(() => {
+  return props.title || String(route.meta.title || '')
+})
+
 /**
  * 返回上一页
  */
@@ -44,8 +50,8 @@ function handleBack() {
 <template>
 
   <div
-    class="mb-5 flex shrink-0 gap-4 rounded-xl border border-(--art-gray-200) bg-(--default-box-color) p-4 items-center justify-between max-md:flex-col max-md:items-stretch max-sm:gap-5 max-sm:p-5"
-    :class="props.sticky ? 'sticky top-30 z-10' : ''"
+    class="client-page-header relative mb-5 flex shrink-0 gap-4 border border-(--art-gray-200) bg-(--default-box-color) p-4 items-center justify-between max-md:flex-col max-md:items-stretch max-sm:gap-5 max-sm:p-5 h-[60px]"
+    :class="{ 'is-sticky': props.sticky }"
   >
     <!-- 左侧 -->
     <div
@@ -74,25 +80,9 @@ function handleBack() {
         name="content"
       >
         <div
-          class="flex min-w-0 flex-wrap gap-x-5 gap-y-2 items-center max-sm:flex-col max-sm:items-start max-sm:gap-y-2.5"
+          class="pointer-events-none absolute left-1/2 top-1/2 max-w-[60vw] -translate-x-1/2 -translate-y-1/2 truncate text-center font-medium"
         >
-          <span
-            class="truncate font-medium"
-          >
-            {{ props.title }}
-          </span>
-
-          <div
-            v-if="props.stats.length"
-            class="flex flex-wrap gap-x-3 gap-y-1 text-sm font-normal text-info"
-          >
-            <span
-              v-for="item in props.stats"
-              :key="item"
-            >
-              {{ item }}
-            </span>
-          </div>
+          {{ pageTitle }}
         </div>
       </slot>
 
@@ -109,4 +99,16 @@ function handleBack() {
   </div>
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.client-page-header {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+}
+
+.client-page-header.is-sticky {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+</style>

@@ -30,7 +30,7 @@ type RecommendCourse = {
 const navList: NavItem[] = [
   {
     name: '我的任务',
-    path: '/',
+    path: '/client/task',
     icon: 'tdesign:task',
     bgColor: '#11bbd2',
   },
@@ -93,8 +93,11 @@ const recommendList: RecommendCourse[] = [
   },
 ]
 
+const router = useRouter()
+
 function handleClick(item: NavItem) {
   console.log(item)
+  router.push(item.path)
 }
 
 function handleCourseClick(item: RecommendCourse) {
