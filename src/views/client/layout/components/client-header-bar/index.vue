@@ -3,7 +3,13 @@
 <script lang="ts" setup>
 import { useWindowSize } from '@vueuse/core'
 
-import UserMenu from './user-menu.vue'
+import ClientUserLanguage from './client-user-language.vue'
+
+import ClientUserMenu from './client-user-menu.vue'
+
+defineOptions({
+  name: 'ClientHeaderBar',
+})
 
 const { width } = useWindowSize()
 </script>
@@ -24,8 +30,17 @@ const { width } = useWindowSize()
         />
       </div>
 
-      <!-- 客户端 用户头像、菜单 -->
-      <UserMenu />
+      <div
+        class="flex-c gap-2.5"
+      >
+        <!-- 国际化按钮 -->
+        <ClientUserLanguage />
+
+        <!-- 客户端 用户头像、菜单 -->
+        <ClientUserMenu />
+
+      </div>
+
     </div>
   </div>
 

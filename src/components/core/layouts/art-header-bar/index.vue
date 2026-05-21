@@ -18,11 +18,11 @@ import { useHeaderBar } from '@/hooks/core/useHeaderBar'
 
 import { languageOptions } from '@/locales'
 
+import { useCurrentUserStore } from '@/store'
+
 import { useMenuStore } from '@/store/modules/menu'
 
 import { useSettingStore } from '@/store/modules/setting'
-
-import { useCurrentUserStore } from '@/store'
 
 import { mittBus } from '@/utils/sys'
 

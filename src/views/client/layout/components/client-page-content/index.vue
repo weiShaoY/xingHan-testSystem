@@ -11,7 +11,7 @@ import { useSettingStore } from '@/store/modules/setting'
 import { useWorkTabStore } from '@/store/modules/workTab'
 
 defineOptions({
-  name: 'PageContent',
+  name: 'ClientPageContent',
 })
 
 const route = useRoute()

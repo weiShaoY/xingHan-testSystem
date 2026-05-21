@@ -24,6 +24,10 @@ import { createPinia } from 'pinia'
 
 import { createPersistedState } from 'pinia-plugin-persistedstate'
 
+export * from './modules/adminUser'
+
+export * from './modules/clientUser'
+
 export * from './user'
 
 /**
