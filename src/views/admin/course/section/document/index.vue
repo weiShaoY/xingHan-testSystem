@@ -363,7 +363,7 @@ function toggleAdvancedSettings() {
                     >+ {{ sectionScore }}</span>
 
                     <span
-                      class="h-6 w-px bg-[var(--art-card-border)]"
+                      class="h-6 w-px bg-(--art-card-border)"
                     />
 
                     <span>基本分 {{ baseScore }} ×</span>

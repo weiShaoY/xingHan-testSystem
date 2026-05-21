@@ -39,7 +39,7 @@ function isActive(type: 'border-mode' | 'shadow-mode') {
         class="w-[calc(50%-3px)] h-8.5 leading-8.5 text-sm text-center c-p select-none rounded-md transition-all duration-200"
         :class="
           isActive(option.type)
-            ? 'text-g-800 bg-[var(--default-box-color)] dark:!text-white dark:bg-g-300'
+            ? 'text-g-800 bg-(--default-box-color) dark:!text-white dark:bg-g-300'
             : 'hover:text-g-800 hover:bg-black/[0.04] dark:hover:bg-black/20'
         "
         @click="boxStyleHandlers.setBoxMode(option.type)"

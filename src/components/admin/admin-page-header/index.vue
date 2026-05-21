@@ -44,7 +44,7 @@ function handleBack() {
 <template>
 
   <div
-    class="mb-5 flex shrink-0 gap-4 rounded-xl border border-[var(--art-gray-200)] bg-[var(--default-box-color)] p-4 items-center justify-between max-md:flex-col max-md:items-stretch max-sm:gap-5 max-sm:p-5"
+    class="mb-5 flex shrink-0 gap-4 rounded-xl border border-(--art-gray-200) bg-(--default-box-color) p-4 items-center justify-between max-md:flex-col max-md:items-stretch max-sm:gap-5 max-sm:p-5"
     :class="props.sticky ? 'sticky top-30 z-10' : ''"
   >
     <!-- 左侧 -->
@@ -65,7 +65,7 @@ function handleBack() {
       </div>
 
       <div
-        class="h-4 w-1 shrink-0 bg-[var(--art-card-border)] max-sm:hidden"
+        class="h-4 w-1 shrink-0 bg-(--art-card-border) max-sm:hidden"
       >
         <!-- 分割线 -->
       </div>

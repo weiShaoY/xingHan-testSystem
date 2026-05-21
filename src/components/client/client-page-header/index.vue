@@ -65,7 +65,7 @@ function handleBack() {
       </div>
 
       <div
-        class="h-4 w-1 shrink-0 bg-[var(--art-card-border)] max-sm:hidden"
+        class="h-4 w-1 shrink-0 bg-(--art-card-border) max-sm:hidden"
       >
         <!-- 分割线 -->
       </div>
