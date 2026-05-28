@@ -1,5 +1,5 @@
 /**
- *  管理端类型
+ *  管理端接口类型
  */
 declare namespace ClientApi {
 

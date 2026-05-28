@@ -3,8 +3,6 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 
-import { getCourseList } from '@/apis/course'
-
 import AllocateCourseDialog from './AllocateCourseDialog.vue'
 
 const router = useRouter()
@@ -71,7 +69,12 @@ const sourceList = ref<Course[]>([
  * 获取课程列表
  */
 async function fetchCourseList() {
-  const a = await getCourseList()
+  const a = await fetchAdminCourseList({
+    currentPage: 1,
+    pageSize: 10,
+    orderBy: 'id',
+    isAsc: 1,
+  })
 
   console.log('🚀 ~ file: index.vue:75 ~ a:', a)
 }

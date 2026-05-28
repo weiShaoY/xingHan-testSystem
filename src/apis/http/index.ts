@@ -20,8 +20,6 @@ import type {
   InternalAxiosRequestConfig,
 } from 'axios'
 
-import type { BaseResponse } from '@/types'
-
 import axios from 'axios'
 
 import { $t } from '@/locales'
@@ -38,6 +36,19 @@ import {
 } from './error'
 
 import { ApiStatus } from './status'
+
+/** 基础 API 响应结构 */
+type BaseResponse<T = unknown> = {
+
+  /** 状态码 */
+  code: number
+
+  /** 消息 */
+  msg: string
+
+  /** 数据 */
+  data: T
+}
 
 /** 请求超时时间，单位毫秒。 */
 const REQUEST_TIMEOUT = 15000

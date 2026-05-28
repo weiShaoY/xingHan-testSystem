@@ -53,6 +53,9 @@ declare global {
   const effectScope: typeof import('vue').effectScope
   const emojo: typeof import('../../utils/ui/emojo').default
   const extendRef: typeof import('@vueuse/core').extendRef
+  const fetchAdminCourseDetail: typeof import('../../apis/admin/index').fetchAdminCourseDetail
+  const fetchAdminCourseList: typeof import('../../apis/admin/index').fetchAdminCourseList
+  const fetchAdminGetCourseList: typeof import('../../apis/admin/index').fetchAdminGetCourseList
   const fetchAdminGetPublicKey: typeof import('../../apis/admin/index').fetchAdminGetPublicKey
   const fetchAdminGetUserInfo: typeof import('../../apis/admin/index').fetchAdminGetUserInfo
   const fetchAdminLogin: typeof import('../../apis/admin/index').fetchAdminLogin
@@ -471,6 +474,8 @@ declare module 'vue' {
     readonly effectScope: UnwrapRef<typeof import('vue')['effectScope']>
     readonly emojo: UnwrapRef<typeof import('../../utils/ui/emojo')['default']>
     readonly extendRef: UnwrapRef<typeof import('@vueuse/core')['extendRef']>
+    readonly fetchAdminCourseDetail: UnwrapRef<typeof import('../../apis/admin/index')['fetchAdminCourseDetail']>
+    readonly fetchAdminCourseList: UnwrapRef<typeof import('../../apis/admin/index')['fetchAdminCourseList']>
     readonly fetchAdminGetPublicKey: UnwrapRef<typeof import('../../apis/admin/index')['fetchAdminGetPublicKey']>
     readonly fetchAdminGetUserInfo: UnwrapRef<typeof import('../../apis/admin/index')['fetchAdminGetUserInfo']>
     readonly fetchAdminLogin: UnwrapRef<typeof import('../../apis/admin/index')['fetchAdminLogin']>
@@ -480,11 +485,9 @@ declare module 'vue' {
     readonly fetchGetMenuList: UnwrapRef<typeof import('../../apis/system-manage')['fetchGetMenuList']>
     readonly fetchGetRoleList: UnwrapRef<typeof import('../../apis/system-manage')['fetchGetRoleList']>
     readonly fetchGetUserList: UnwrapRef<typeof import('../../apis/system-manage')['fetchGetUserList']>
-    readonly fetchLogin: UnwrapRef<typeof import('../../apis/auth')['fetchLogin']>
     readonly formatMenuTitle: UnwrapRef<typeof import('../../utils/router')['formatMenuTitle']>
     readonly formatTimestampToChineseDate: UnwrapRef<typeof import('../../utils/time')['formatTimestampToChineseDate']>
     readonly getActivePinia: UnwrapRef<typeof import('pinia')['getActivePinia']>
-    readonly getCourseList: UnwrapRef<typeof import('../../apis/course')['getCourseList']>
     readonly getCssVar: UnwrapRef<typeof import('../../utils/ui/colors')['getCssVar']>
     readonly getCurrentInstance: UnwrapRef<typeof import('vue')['getCurrentInstance']>
     readonly getCurrentScope: UnwrapRef<typeof import('vue')['getCurrentScope']>

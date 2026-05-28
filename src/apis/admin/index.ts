@@ -31,3 +31,28 @@ export function fetchAdminGetUserInfo(authPath?: string) {
     authPath,
   })
 }
+
+// / //////////////////////////////////////////////  课程  //////////////////////////////////////////////
+
+/**
+ * 获取课程列表
+ */
+export function fetchAdminCourseList(params: AdminApi.Course.CourseListParams) {
+  return request.post<AdminApi.Course.CourseListResponse>({
+    url: '/admin/course/list',
+    data: params,
+  })
+}
+
+/**
+ *  获取课程详情
+ *  @param courseId 课程ID
+ */
+export function fetchAdminCourseDetail(courseId: number) {
+  return request.get<AdminApi.Course.CourseDetailResponse>({
+    url: '/admin/course/getCourse',
+    params: {
+      courseId,
+    },
+  })
+}
