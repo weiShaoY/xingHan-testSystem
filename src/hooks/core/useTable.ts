@@ -21,6 +21,8 @@ import type { ApiResponse } from '../../utils/table/tableCache'
 
 import type { TableError } from '../../utils/table/tableUtils'
 
+import type { TablePaginatedResponse, TablePaginationParams } from '@/types/common/index'
+
 import type { ColumnOption } from '@/types/component'
 
 import { useWindowSize } from '@vueuse/core'
@@ -57,7 +59,7 @@ import { useTableColumns } from './useTableColumns'
 // 类型推导工具类型
 type InferApiParams<T> = T extends (params: infer P) => any ? P : never
 type InferApiResponse<T> = T extends (params: any) => Promise<infer R> ? R : never
-type InferRecordType<T> = T extends Api.Common.PaginatedResponse<infer U> ? U : never
+type InferRecordType<T> = T extends TablePaginatedResponse<infer U> ? U : never
 
 // 优化的配置接口 - 支持自动类型推导
 export type UseTableConfig<
@@ -260,7 +262,7 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
   )
 
   // 分页配置
-  const pagination = reactive<Api.Common.PaginationParams>({
+  const pagination = reactive<TablePaginationParams>({
     current: ((searchParams as Record<string, unknown>)[pageKey] as number) || 1,
     size: ((searchParams as Record<string, unknown>)[sizeKey] as number) || 10,
     total: 0,

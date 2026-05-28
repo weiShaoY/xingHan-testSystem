@@ -1,3 +1,4 @@
+import type { TablePaginatedResponse } from '@/types/common/index'
 /**
  * API 接口类型定义模块
  *
@@ -34,50 +35,50 @@
 
 declare namespace Api {
 
-  /** 通用类型 */
-  namespace Common {
+  // /** 通用类型 */
+  // namespace Common {
 
-    /** 分页参数 */
-    type PaginationParams = {
+  //   /** 分页参数 */
+  //   type PaginationParams = {
 
-      /** 当前页码 */
-      current: number
+  //     /** 当前页码 */
+  //     current: number
 
-      /** 每页条数 */
-      size: number
+  //     /** 每页条数 */
+  //     size: number
 
-      /** 总条数 */
-      total: number
-    }
+  //     /** 总条数 */
+  //     total: number
+  //   }
 
-    /** 通用搜索参数 */
-    type CommonSearchParams = Pick<PaginationParams, 'current' | 'size'>
+  //   /** 通用搜索参数 */
+  //   type CommonSearchParams = Pick<PaginationParams, 'current' | 'size'>
 
-    /** 分页响应基础结构 */
-    type PaginatedResponse<T = any> = {
+  //   /** 分页响应基础结构 */
+  //   type PaginatedResponse<T = any> = {
 
-      /** 数据列表 */
-      records: T[]
+  //     /** 数据列表 */
+  //     records: T[]
 
-      /** 当前页码 */
-      current: number
+  //     /** 当前页码 */
+  //     current: number
 
-      /** 每页条数 */
-      size: number
+  //     /** 每页条数 */
+  //     size: number
 
-      /** 总条数 */
-      total: number
-    }
+  //     /** 总条数 */
+  //     total: number
+  //   }
 
-    /** 启用状态 */
-    type EnableStatus = '1' | '2'
-  }
+  //   /** 启用状态 */
+  //   type EnableStatus = '1' | '2'
+  // }
 
   /** 系统管理类型 */
   namespace SystemManage {
 
     /** 用户列表 */
-    type UserList = Api.Common.PaginatedResponse<UserListItem>
+    type UserList = TablePaginatedResponse<UserListItem>
 
     /** 用户列表项 */
     type UserListItem = {

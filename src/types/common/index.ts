@@ -180,3 +180,36 @@ export type Language = 'zh-CN' | 'en-US'
  * 用于区分新增和编辑场景下的标题、默认值、提交逻辑等。
  */
 export type DialogType = 'add' | 'edit'
+
+/**
+ *  表格分页参数
+ */
+export type TablePaginationParams = {
+
+  /** 当前页码 */
+  current: number
+
+  /** 每页条数 */
+  size: number
+
+  /** 总条数 */
+  total: number
+}
+
+/**
+ *  表格分页响应基础结构
+ */
+export type TablePaginatedResponse<T = any> = {
+
+  /** 分页记录列表 */
+  records: T[]
+
+  /** 当前页码 */
+  current: number
+
+  /** 每页条数 */
+  size: number
+
+  /** 总条数 */
+  total: number
+}

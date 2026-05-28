@@ -41,12 +41,14 @@
 
 import type { ApiResponse } from './tableCache'
 
+import type { TablePaginatedResponse, TablePaginationParams } from '@/types/common/index'
+
 import { tableConfig } from './tableConfig'
 
 // 请求参数基础接口，扩展分页参数
 export type BaseRequestParams = {
   [key: string]: unknown
-} & Api.Common.PaginationParams
+} & TablePaginationParams
 
 // 错误处理接口
 export type TableError = {
@@ -210,7 +212,7 @@ export function extractTableData<T>(response: ApiResponse<T>): T[] {
 /**
  * 根据API响应更新分页信息
  */
-export function updatePaginationFromResponse<T>(pagination: Api.Common.PaginationParams, response: ApiResponse<T>): void {
+export function updatePaginationFromResponse<T>(pagination: TablePaginationParams, response: ApiResponse<T>): void {
   pagination.total = response.total ?? pagination.total ?? 0
 
   if (response.current !== undefined) {
