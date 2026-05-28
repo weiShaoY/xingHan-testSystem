@@ -48,9 +48,21 @@ export function fetchAdminCourseList(params: AdminApi.Course.CourseListParams) {
  *  获取课程详情
  *  @param courseId 课程ID
  */
-export function fetchAdminCourseDetail(courseId: number) {
+export function fetchAdminCourseDetail(courseId: string) {
   return request.get<AdminApi.Course.CourseDetailResponse>({
     url: '/admin/course/getCourse',
+    params: {
+      courseId,
+    },
+  })
+}
+
+/**
+ *  获取课程设置
+ */
+export function fetchAdminCourseSetting(courseId: string) {
+  return request.get<AdminApi.Course.CourseSettingResponse>({
+    url: '/admin/course/getCourseSetting',
     params: {
       courseId,
     },

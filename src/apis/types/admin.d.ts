@@ -211,8 +211,8 @@ declare namespace AdminApi {
       courseId: number
     }
 
-    /** 课程详情响应 */
-    type CourseDetailResponse = {
+    /** 课程设置响应 */
+    type CourseSettingResponse = {
 
       /**
        * 公司ID
@@ -423,6 +423,13 @@ declare namespace AdminApi {
        * 学科名称
        */
       sbjName: string
+    }
+
+    /**
+     * 课程详情响应
+     */
+    type CourseDetailResponse = {
+
     }
   }
 }

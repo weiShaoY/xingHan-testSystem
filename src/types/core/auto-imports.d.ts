@@ -55,6 +55,7 @@ declare global {
   const extendRef: typeof import('@vueuse/core').extendRef
   const fetchAdminCourseDetail: typeof import('../../apis/admin/index').fetchAdminCourseDetail
   const fetchAdminCourseList: typeof import('../../apis/admin/index').fetchAdminCourseList
+  const fetchAdminCourseSetting: typeof import('../../apis/admin/index').fetchAdminCourseSetting
   const fetchAdminGetCourseList: typeof import('../../apis/admin/index').fetchAdminGetCourseList
   const fetchAdminGetPublicKey: typeof import('../../apis/admin/index').fetchAdminGetPublicKey
   const fetchAdminGetUserInfo: typeof import('../../apis/admin/index').fetchAdminGetUserInfo
@@ -476,6 +477,7 @@ declare module 'vue' {
     readonly extendRef: UnwrapRef<typeof import('@vueuse/core')['extendRef']>
     readonly fetchAdminCourseDetail: UnwrapRef<typeof import('../../apis/admin/index')['fetchAdminCourseDetail']>
     readonly fetchAdminCourseList: UnwrapRef<typeof import('../../apis/admin/index')['fetchAdminCourseList']>
+    readonly fetchAdminCourseSetting: UnwrapRef<typeof import('../../apis/admin/index')['fetchAdminCourseSetting']>
     readonly fetchAdminGetPublicKey: UnwrapRef<typeof import('../../apis/admin/index')['fetchAdminGetPublicKey']>
     readonly fetchAdminGetUserInfo: UnwrapRef<typeof import('../../apis/admin/index')['fetchAdminGetUserInfo']>
     readonly fetchAdminLogin: UnwrapRef<typeof import('../../apis/admin/index')['fetchAdminLogin']>

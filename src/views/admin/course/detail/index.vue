@@ -409,6 +409,18 @@ function editSection(section: Section) {
     },
   })
 }
+
+/**
+   *  获取课程详情
+   */
+async function getCourseDetail() {
+  const res = await fetchAdminCourseDetail(courseId.value)
+
+  console.log('🚀 ~ file: index.vue:418 ~ res:', res)
+}
+
+getCourseDetail()
+
 </script>
 
 <template>
