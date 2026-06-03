@@ -16,8 +16,8 @@ export const clientRoutes: AppRouteRecord = {
   redirect: '/client/home',
   children: [
     {
-      name: 'ClientHome',
       path: 'home',
+      name: 'ClientHome',
       component: '/client/home',
       meta: {
         title: '首页',
@@ -26,8 +26,8 @@ export const clientRoutes: AppRouteRecord = {
       },
     },
     {
-      name: 'ClientTask',
       path: 'task',
+      name: 'ClientTask',
       component: '/client/task',
       meta: {
         title: '我的任务',
@@ -35,26 +35,7 @@ export const clientRoutes: AppRouteRecord = {
         keepAlive: false,
       },
     },
-    {
-      name: 'ClientCourse',
-      path: 'course',
-      component: '/client/course',
-      meta: {
-        title: '报名的课程',
-        icon: 'ri:course-line',
-        keepAlive: false,
-      },
-    },
-    {
-      name: 'ClientHistory',
-      path: 'history',
-      component: '/client/history',
-      meta: {
-        title: '学习历史',
-        icon: 'ri:history-line',
-        keepAlive: false,
-      },
-    },
+
     {
       name: 'ClientUserCenter',
       path: 'user-center',
@@ -64,6 +45,107 @@ export const clientRoutes: AppRouteRecord = {
         icon: 'ri:user-line',
         keepAlive: false,
       },
+    },
+    {
+      path: 'course',
+      name: 'ClientCourse',
+      component: '',
+      redirect: '/client/course/list',
+      meta: {
+        title: '报名的课程',
+        icon: 'ri:course-line',
+        keepAlive: false,
+      },
+      children: [
+        {
+          path: 'list',
+          name: 'ClientCourseList',
+          component: '/client/course/list',
+          meta: {
+            title: '报名的课程',
+            icon: 'ri:file-text-line',
+            keepAlive: false,
+          },
+        },
+        {
+          path: 'detail',
+          name: 'ClientCourseDetail',
+          component: '/client/course/detail',
+          meta: {
+            title: '课程详情',
+            icon: 'ri:file-text-line',
+            keepAlive: false,
+          },
+        },
+      ],
+
+    },
+    {
+      path: 'history',
+      name: 'ClientHistory',
+      component: '/client/history/list',
+      meta: {
+        title: '学习历史',
+        icon: 'ri:history-line',
+        keepAlive: false,
+      },
+      children: [
+        {
+          path: 'list',
+          name: 'ClientHistoryList',
+          component: '/client/history/list',
+          meta: {
+            title: '学习历史',
+            icon: 'ri:history-line',
+            keepAlive: false,
+          },
+        },
+        {
+          path: 'detail',
+          name: 'ClientHistoryDetail',
+          component: '/client/history/detail',
+          meta: {
+            title: '学习历史详情',
+            icon: 'ri:history-line',
+            keepAlive: false,
+          },
+        },
+      ],
+
+    },
+
+    // 推荐
+    {
+      path: 'recommend',
+      name: 'ClientRecommend',
+      component: '/client/recommend',
+      meta: {
+        title: '推荐课程',
+        icon: 'ri:recommend-line',
+        keepAlive: false,
+      },
+      children: [
+        {
+          path: 'list',
+          name: 'ClientRecommendList',
+          component: '/client/recommend/list',
+          meta: {
+            title: '推荐课程',
+            icon: 'ri:recommend-line',
+            keepAlive: false,
+          },
+        },
+        {
+          path: 'detail',
+          name: 'ClientRecommendDetail',
+          component: '/client/recommend/detail',
+          meta: {
+            title: '推荐课程详情',
+            icon: 'ri:recommend-line',
+            keepAlive: false,
+          },
+        },
+      ],
     },
   ],
 }

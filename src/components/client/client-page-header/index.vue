@@ -45,6 +45,39 @@ function handleBack() {
   emit('back')
   router.back()
 }
+
+// 隐藏  app-header
+/**
+ * 隐藏或显示顶部栏
+ * @param hidden 是否隐藏
+ */
+function hideAppHeader(hidden: boolean) {
+  const element = document.querySelector<HTMLElement>('#app-header')
+
+  if (!element) {
+    return
+  }
+
+  element.style.display = hidden
+    ? 'none'
+    : ''
+}
+
+// onMounted(() => {
+//   hideAppHeader(true)
+// })
+
+// onActivated(() => {
+//   hideAppHeader(true)
+// })
+
+// onBeforeUnmount(() => {
+//   hideAppHeader(false)
+// })
+
+// onDeactivated(() => {
+//   hideAppHeader(false)
+// })
 </script>
 
 <template>

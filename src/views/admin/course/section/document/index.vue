@@ -112,6 +112,18 @@ function replaceDocument() {
 function toggleAdvancedSettings() {
   isAdvancedExpanded.value = !isAdvancedExpanded.value
 }
+
+/**
+ * 上传文件前的校验
+ */
+function beforeUpload(file: File) {
+  if (!['ppt', 'pptx', 'xls', 'xlsx', 'doc', 'docx', 'pdf', 'xlsm', 'txt'].includes(file.name.split('.').pop() || '')) {
+    ElMessage.error('仅支持 ppt、pptx、xls、xlsx、doc、docx、pdf、xlsm、txt 格式文件')
+    return false
+  }
+
+  return true
+}
 </script>
 
 <template>
@@ -141,6 +153,7 @@ function toggleAdvancedSettings() {
         drag
         action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
         multiple
+        @before-upload="beforeUpload"
       >
         <el-icon
           class="el-icon--upload"

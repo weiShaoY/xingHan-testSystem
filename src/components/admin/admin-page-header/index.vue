@@ -39,6 +39,7 @@ function handleBack() {
   emit('back')
   router.back()
 }
+
 </script>
 
 <template>

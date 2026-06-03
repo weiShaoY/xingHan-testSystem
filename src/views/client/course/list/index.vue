@@ -34,6 +34,20 @@ const courseList: CourseItem[] = [
     cover: cover1,
   },
 ]
+
+const router = useRouter()
+
+/**
+ * 跳转到详情页
+ */
+function goToDetail(item: CourseItem) {
+  router.push({
+    name: 'ClientCourseDetail',
+    params: {
+      id: item.id,
+    },
+  })
+}
 </script>
 
 <template>
@@ -59,6 +73,7 @@ const courseList: CourseItem[] = [
               v-for="item in courseList"
               :key="item.id"
               class="art-card flex items-center justify-between gap-4"
+              @click="goToDetail(item)"
             >
               <img
                 :src="item.cover"
