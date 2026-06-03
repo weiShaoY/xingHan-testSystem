@@ -56,19 +56,23 @@ declare global {
   const fetchAdminCourseDetail: typeof import('../../apis/admin/index').fetchAdminCourseDetail
   const fetchAdminCourseList: typeof import('../../apis/admin/index').fetchAdminCourseList
   const fetchAdminCourseSetting: typeof import('../../apis/admin/index').fetchAdminCourseSetting
+  const fetchAdminFileList: typeof import('../../apis/file/index').fetchAdminFileList
   const fetchAdminGetCourseList: typeof import('../../apis/admin/index').fetchAdminGetCourseList
   const fetchAdminGetPublicKey: typeof import('../../apis/admin/index').fetchAdminGetPublicKey
   const fetchAdminGetUserInfo: typeof import('../../apis/admin/index').fetchAdminGetUserInfo
   const fetchAdminLogin: typeof import('../../apis/admin/index').fetchAdminLogin
+  const fetchAdminUploadFile: typeof import('../../apis/file/index').fetchAdminUploadFile
   const fetchClientGetPublicKey: typeof import('../../apis/client/index').fetchClientGetPublicKey
   const fetchClientGetUserInfo: typeof import('../../apis/client/index').fetchClientGetUserInfo
   const fetchClientLogin: typeof import('../../apis/client/index').fetchClientLogin
+  const fetchFileList: typeof import('../../apis/file/index').fetchAdminFileList
   const fetchGetMenuList: typeof import('../../apis/system-manage').fetchGetMenuList
   const fetchGetPublicKey: typeof import('../../apis/admin/index').fetchAdminGetPublicKey
   const fetchGetRoleList: typeof import('../../apis/system-manage').fetchGetRoleList
   const fetchGetUserInfo: typeof import('../../apis/admin/index').fetchGetUserInfo
   const fetchGetUserList: typeof import('../../apis/system-manage').fetchGetUserList
   const fetchLogin: typeof import('../../apis/auth').fetchLogin
+  const fetchUploadFile: typeof import('../../apis/file/index').fetchAdminUploadFile
   const formatMenuTitle: typeof import('../../utils/router').formatMenuTitle
   const formatTimestampToChineseDate: typeof import('../../utils/time').formatTimestampToChineseDate
   const getActivePinia: typeof import('pinia').getActivePinia
@@ -78,8 +82,10 @@ declare global {
   const getCurrentScope: typeof import('vue').getCurrentScope
   const getCurrentWatcher: typeof import('vue').getCurrentWatcher
   const getDarkColor: typeof import('../../utils/ui/colors').getDarkColor
+  const getDocumentList: typeof import('../../apis/file/index').getDocumentList
   const getDuration: typeof import('../../utils/time').getDuration
   const getElapsedTime: typeof import('../../utils/time').getElapsedTime
+  const getFileList: typeof import('../../apis/file/index').getFileList
   const getFirstMenuPath: typeof import('../../utils/navigation/route').getFirstMenuPath
   const getLightColor: typeof import('../../utils/ui/colors').getLightColor
   const getPasswordStrength: typeof import('../../utils/form/validator').getPasswordStrength
@@ -193,7 +199,7 @@ declare global {
   const unref: typeof import('vue').unref
   const unrefElement: typeof import('@vueuse/core').unrefElement
   const until: typeof import('@vueuse/core').until
-  const uploadFile: typeof import('../../apis/file/index').uploadFile
+  const uploadFile: typeof import('../../apis/file/index').fetchAdminUploadFile
   const useActiveElement: typeof import('@vueuse/core').useActiveElement
   const useAnimate: typeof import('@vueuse/core').useAnimate
   const useArrayDifference: typeof import('@vueuse/core').useArrayDifference
@@ -479,9 +485,11 @@ declare module 'vue' {
     readonly fetchAdminCourseDetail: UnwrapRef<typeof import('../../apis/admin/index')['fetchAdminCourseDetail']>
     readonly fetchAdminCourseList: UnwrapRef<typeof import('../../apis/admin/index')['fetchAdminCourseList']>
     readonly fetchAdminCourseSetting: UnwrapRef<typeof import('../../apis/admin/index')['fetchAdminCourseSetting']>
+    readonly fetchAdminFileList: UnwrapRef<typeof import('../../apis/file/index')['fetchAdminFileList']>
     readonly fetchAdminGetPublicKey: UnwrapRef<typeof import('../../apis/admin/index')['fetchAdminGetPublicKey']>
     readonly fetchAdminGetUserInfo: UnwrapRef<typeof import('../../apis/admin/index')['fetchAdminGetUserInfo']>
     readonly fetchAdminLogin: UnwrapRef<typeof import('../../apis/admin/index')['fetchAdminLogin']>
+    readonly fetchAdminUploadFile: UnwrapRef<typeof import('../../apis/file/index')['fetchAdminUploadFile']>
     readonly fetchClientGetPublicKey: UnwrapRef<typeof import('../../apis/client/index')['fetchClientGetPublicKey']>
     readonly fetchClientGetUserInfo: UnwrapRef<typeof import('../../apis/client/index')['fetchClientGetUserInfo']>
     readonly fetchClientLogin: UnwrapRef<typeof import('../../apis/client/index')['fetchClientLogin']>
@@ -607,7 +615,6 @@ declare module 'vue' {
     readonly unref: UnwrapRef<typeof import('vue')['unref']>
     readonly unrefElement: UnwrapRef<typeof import('@vueuse/core')['unrefElement']>
     readonly until: UnwrapRef<typeof import('@vueuse/core')['until']>
-    readonly uploadFile: UnwrapRef<typeof import('../../apis/file/index')['uploadFile']>
     readonly useActiveElement: UnwrapRef<typeof import('@vueuse/core')['useActiveElement']>
     readonly useAnimate: UnwrapRef<typeof import('@vueuse/core')['useAnimate']>
     readonly useArrayDifference: UnwrapRef<typeof import('@vueuse/core')['useArrayDifference']>

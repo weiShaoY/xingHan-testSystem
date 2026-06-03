@@ -13,10 +13,10 @@ declare namespace CommonApi {
     pageSize: number
 
     /** 排序字段 */
-    orderBy: string
+    orderBy?: string
 
     /** 是否升序（1=升序，0=降序） */
-    isAsc: number
+    isAsc?: number
   }
 
   /** 分页响应基础结构 */

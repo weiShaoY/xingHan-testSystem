@@ -5,9 +5,10 @@ import type { UploadHooks, UploadRequestOptions } from 'element-plus'
 
 import { UploadFilled } from '@element-plus/icons-vue'
 
-import { uploadFile } from '@/apis/file'
+import { fetchAdminUploadFile } from '@/apis/file'
 
 type UploadType = 'document' | 'video'
+
 type UploadDisplay = 'button' | 'notification'
 
 type Props = {
@@ -54,7 +55,7 @@ type UploadConfig = {
   errorMessage: string
 }
 
-type UploadResponse = Awaited<ReturnType<typeof uploadFile>>
+type UploadResponse = Awaited<ReturnType<typeof fetchAdminUploadFile>>
 
 const props = withDefaults(defineProps<Props>(), {
   uploadType: 'document',
@@ -64,7 +65,12 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<{
   'upload-success': [response: UploadResponse]
+  'upload-error': [error: Error]
 }>()
+
+const uploadLoading = ref(false)
+
+const uploadRootRef = ref<HTMLElement>()
 
 const uploadConfig: Record<UploadType, UploadConfig> = {
   document: {
@@ -132,43 +138,75 @@ function validateFileBeforeUpload(
 }
 
 /**
+ * 标准化上传错误
+ * @param error 上传错误
+ */
+function normalizeUploadError(error: unknown): Error {
+  if (error instanceof Error) {
+    return error
+  }
+
+  if (typeof error === 'string') {
+    return new Error(error)
+  }
+
+  return new Error('上传失败，请稍后重试')
+}
+
+/**
  * 自定义上传请求
  * @param options 上传请求配置
  */
 async function handleUploadRequest(options: UploadRequestOptions) {
   try {
+    uploadLoading.value = true
     const formData = new FormData()
 
     formData.append(options.filename, options.file)
 
-    const response = await uploadFile(formData)
+    const response = await fetchAdminUploadFile(formData)
 
     ElNotification.success('上传成功')
 
     emit('upload-success', response)
 
+    uploadLoading.value = false
+
     return response
   }
   catch (error) {
-    if (error instanceof Error) {
-      ElNotification.error(error.message)
-    }
-    else {
-      ElNotification.error('上传失败，请稍后重试')
-    }
+    const uploadError = normalizeUploadError(error)
 
-    throw error
+    ElNotification.error(uploadError.message)
+
+    emit('upload-error', uploadError)
+
+    uploadLoading.value = false
+
+    throw uploadError
   }
+}
+
+/**
+ * 打开文件选择框
+ */
+function openFileDialog() {
+  uploadRootRef.value
+    ?.querySelector<HTMLInputElement>('input[type="file"]')
+    ?.click()
 }
 </script>
 
 <template>
-  <div>
+  <div
+    ref="uploadRootRef"
+  >
     <el-upload
       class="upload-demo"
       :drag="!isButtonDisplay"
       :accept="accept"
       :multiple="true"
+      :show-file-list="false"
       :before-upload="validateFileBeforeUpload"
       :http-request="handleUploadRequest"
     >
@@ -178,6 +216,8 @@ async function handleUploadRequest(options: UploadRequestOptions) {
         <ArtIconButton
           icon="ri:add-line"
           type="primary"
+          :loading="uploadLoading"
+          @click="openFileDialog"
         >
           {{ currentUploadConfig.title }}
         </ArtIconButton>
