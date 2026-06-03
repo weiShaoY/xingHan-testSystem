@@ -50,7 +50,7 @@ function handleClose() {
         v-for="item in sectionTypeOptions"
         :key="item.sectionType"
         type="button"
-        class="aspect-square w-full flex flex-col items-center justify-center gap-2 rounded-lg border border-[var(--art-card-border)] bg-(--default-box-color) transition-colors hover:border-primary hover:bg-primary/5"
+        class="aspect-square w-full flex flex-col items-center justify-center gap-2 rounded-lg border border-(--art-card-border) bg-(--default-box-color) transition-colors hover:border-primary hover:bg-primary/5"
         @click="handleSelect(item.sectionType)"
       >
         <ArtIconButton

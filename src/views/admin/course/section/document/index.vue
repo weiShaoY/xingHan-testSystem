@@ -204,7 +204,7 @@ function toggleAdvancedSettings() {
           class="flex flex-col gap-6"
         >
           <div
-            class="h-72 overflow-hidden rounded-lg border border-[var(--art-card-border)] bg-[var(--art-gray-100)] p-4"
+            class="h-72 overflow-hidden rounded-lg border border-(--art-card-border) bg-(--art-gray-100) p-4"
           >
             <div
               class="space-y-1 text-[10px] leading-tight text-g-500"
@@ -277,7 +277,7 @@ function toggleAdvancedSettings() {
           </el-form-item>
 
           <div
-            class="mb-6 border border-[var(--art-card-border)]"
+            class="mb-6 border border-(--art-card-border)"
           >
             <button
               type="button"
@@ -296,7 +296,7 @@ function toggleAdvancedSettings() {
 
             <div
               v-if="isAdvancedExpanded"
-              class="border-t border-[var(--art-card-border)] px-8 py-8 max-sm:px-4"
+              class="border-t border-(--art-card-border) px-8 py-8 max-sm:px-4"
             >
               <div
                 class="flex flex-col gap-7"
@@ -723,10 +723,10 @@ function toggleAdvancedSettings() {
             </template>
 
             <div
-              class="w-full border border-[var(--art-card-border)]"
+              class="w-full border border-(--art-card-border)"
             >
               <div
-                class="flex h-12 items-center border-b border-[var(--art-card-border)] text-sm"
+                class="flex h-12 items-center border-b border-(--art-card-border) text-sm"
               >
                 <button
                   type="button"
@@ -737,14 +737,14 @@ function toggleAdvancedSettings() {
 
                 <button
                   type="button"
-                  class="h-full border-l border-[var(--art-card-border)] px-6 text-primary"
+                  class="h-full border-l border-(--art-card-border) px-6 text-primary"
                 >
                   图文编辑
                 </button>
               </div>
 
               <div
-                class="flex flex-wrap items-center gap-5 border-b border-[var(--art-card-border)] px-4 py-3 text-g-500"
+                class="flex flex-wrap items-center gap-5 border-b border-(--art-card-border) px-4 py-3 text-g-500"
               >
                 <span>16px</span>
 
@@ -779,7 +779,7 @@ function toggleAdvancedSettings() {
     </div>
 
     <div
-      class="sticky bottom-0 z-10 -mx-10 border-t border-[var(--art-card-border)] bg-[var(--default-bg-color)] px-10 py-5 max-lg:-mx-6 max-lg:px-6 max-sm:-mx-4 max-sm:px-4"
+      class="sticky bottom-0 z-10 -mx-10 border-t border-(--art-card-border) bg-[var(--default-bg-color)] px-10 py-5 max-lg:-mx-6 max-lg:px-6 max-sm:-mx-4 max-sm:px-4"
     >
       <div
         class="mx-auto flex max-w-7xl justify-end gap-4 max-sm:flex-col"

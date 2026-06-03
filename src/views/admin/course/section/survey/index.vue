@@ -380,7 +380,7 @@ function handleSubmit() {
             <div
               v-for="(question, questionIndex) in questions"
               :key="question.id"
-              class="rounded-lg border border-[var(--art-card-border)] p-5"
+              class="rounded-lg border border-(--art-card-border) p-5"
             >
               <div
                 class="flex gap-4 items-start max-lg:flex-col"
@@ -502,7 +502,7 @@ function handleSubmit() {
                     </div>
 
                     <div
-                      class="border border-[var(--art-card-border)] px-4 py-3"
+                      class="border border-(--art-card-border) px-4 py-3"
                     >
                       <el-checkbox
                         v-model="question.enableOther"
@@ -535,7 +535,7 @@ function handleSubmit() {
                   </template>
 
                   <div
-                    class="border border-[var(--art-card-border)]"
+                    class="border border-(--art-card-border)"
                   >
                     <button
                       type="button"
@@ -564,7 +564,7 @@ function handleSubmit() {
 
                     <div
                       v-if="question.advancedExpanded"
-                      class="grid grid-cols-2 gap-4 border-t border-[var(--art-card-border)] p-4 max-sm:grid-cols-1"
+                      class="grid grid-cols-2 gap-4 border-t border-(--art-card-border) p-4 max-sm:grid-cols-1"
                     >
                       <el-radio-group
                         v-model="question.required"
@@ -592,10 +592,10 @@ function handleSubmit() {
                   </div>
 
                   <div
-                    class="w-full border border-[var(--art-card-border)]"
+                    class="w-full border border-(--art-card-border)"
                   >
                     <div
-                      class="flex flex-wrap items-center gap-5 border-b border-[var(--art-card-border)] px-4 py-3 text-g-500"
+                      class="flex flex-wrap items-center gap-5 border-b border-(--art-card-border) px-4 py-3 text-g-500"
                     >
                       <span>16px</span>
 
@@ -621,7 +621,7 @@ function handleSubmit() {
           </div>
 
           <div
-            class="mt-6 rounded-lg border border-[var(--art-card-border)] p-4 flex flex-wrap gap-3 items-center"
+            class="mt-6 rounded-lg border border-(--art-card-border) p-4 flex flex-wrap gap-3 items-center"
           >
             <ArtIconButton
               type="add"
@@ -772,10 +772,10 @@ function handleSubmit() {
             label="说明"
           >
             <div
-              class="w-full border border-[var(--art-card-border)]"
+              class="w-full border border-(--art-card-border)"
             >
               <div
-                class="flex h-12 items-center border-b border-[var(--art-card-border)] text-sm"
+                class="flex h-12 items-center border-b border-(--art-card-border) text-sm"
               >
                 <button
                   type="button"
@@ -786,14 +786,14 @@ function handleSubmit() {
 
                 <button
                   type="button"
-                  class="h-full border-l border-[var(--art-card-border)] px-6 text-primary"
+                  class="h-full border-l border-(--art-card-border) px-6 text-primary"
                 >
                   图文编辑
                 </button>
               </div>
 
               <div
-                class="flex flex-wrap items-center gap-5 border-b border-[var(--art-card-border)] px-4 py-3 text-g-500"
+                class="flex flex-wrap items-center gap-5 border-b border-(--art-card-border) px-4 py-3 text-g-500"
               >
                 <span>16px</span>
 
@@ -1011,7 +1011,7 @@ function handleSubmit() {
     </el-tabs>
 
     <div
-      class="sticky bottom-0 z-10 -mx-10 border-t border-[var(--art-card-border)] bg-[var(--default-bg-color)] px-10 py-5 max-lg:-mx-6 max-lg:px-6 max-sm:-mx-4 max-sm:px-4"
+      class="sticky bottom-0 z-10 -mx-10 border-t border-(--art-card-border) bg-[var(--default-bg-color)] px-10 py-5 max-lg:-mx-6 max-lg:px-6 max-sm:-mx-4 max-sm:px-4"
     >
       <div
         class="mx-auto flex max-w-7xl justify-end"

@@ -281,7 +281,7 @@ function closeDialog() {
       <div
         v-for="course in courseList"
         :key="course.accessCode"
-        class="rounded-lg border border-[var(--art-card-border)] p-4"
+        class="rounded-lg border border-(--art-card-border) p-4"
       >
         <div
           class="flex items-start justify-between gap-3"

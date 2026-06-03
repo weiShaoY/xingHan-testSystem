@@ -591,23 +591,6 @@ export function setupBeforeEachGuard(router: Router): void {
   )
 
   // 分开写路由守卫设置
-  // router.beforeEach((to, from, next) => {
-  // // 后台路由
-  //   if (to.path.startsWith('/admin')) {
-  //     const token = localStorage.getItem('admin_token')
-
-  //     if (!token && to.path !== '/admin/login') { return next('/admin/login') }
-  //   }
-
-  //   // 前台路由
-  //   else {
-  //     const token = localStorage.getItem('front_token')
-
-  //     if (!token && to.path !== '/login') { return next('/login') }
-  //   }
-
-  //   next()
-  // })
 
   // 前台路由守卫设置
 

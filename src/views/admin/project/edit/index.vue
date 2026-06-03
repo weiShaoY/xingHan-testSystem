@@ -418,7 +418,7 @@ function moveCourse(stageIndex: number, courseIndex: number, direction: 'up' | '
                         <div
                           v-for="(course, courseIndex) in stage.courses"
                           :key="course.id"
-                          class="rounded-lg border border-[var(--art-card-border)] p-4"
+                          class="rounded-lg border border-(--art-card-border) p-4"
                         >
                           <div
                             class="flex items-center justify-between gap-4 max-sm:flex-col max-sm:items-stretch"
@@ -528,7 +528,7 @@ function moveCourse(stageIndex: number, courseIndex: number, direction: 'up' | '
           >
             <!-- 设置多个学习阶段 -->
             <div
-              class="rounded-lg border border-[var(--art-card-border)] p-4"
+              class="rounded-lg border border-(--art-card-border) p-4"
             >
               <div
                 class="mb-3 flex items-center justify-between gap-4"
@@ -561,7 +561,7 @@ function moveCourse(stageIndex: number, courseIndex: number, direction: 'up' | '
 
             <!-- 解锁条件 -->
             <div
-              class="rounded-lg border border-[var(--art-card-border)] p-4"
+              class="rounded-lg border border-(--art-card-border) p-4"
             >
               <div
                 class="mb-3 flex items-center"
@@ -612,7 +612,7 @@ function moveCourse(stageIndex: number, courseIndex: number, direction: 'up' | '
 
             <!-- 展示方式 -->
             <div
-              class="rounded-lg border border-[var(--art-card-border)] p-4"
+              class="rounded-lg border border-(--art-card-border) p-4"
             >
               <div
                 class="mb-3 flex items-center"

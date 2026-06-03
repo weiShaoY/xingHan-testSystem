@@ -262,7 +262,7 @@ function goToEdit() {
             <!-- 选项 -->
             <div
               v-if="stage.type !== '开放式题'"
-              class="rounded-lg bg-[var(--art-gray-100)] p-4"
+              class="rounded-lg bg-(--art-gray-100) p-4"
             >
               <!-- 单选题 -->
               <el-radio-group
@@ -302,7 +302,7 @@ function goToEdit() {
 
             <div
               v-if="stage.standardAnswer"
-              class="rounded-lg bg-[var(--art-gray-100)] p-4"
+              class="rounded-lg bg-(--art-gray-100) p-4"
             >
               <div
                 class="mb-2 text-sm font-medium text-g-900"

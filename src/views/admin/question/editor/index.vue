@@ -837,7 +837,7 @@ function importQuestions() {
 
         <!-- 底部 -->
         <div
-          class="rounded-lg border p-5 flex flex-wrap gap-3 items-center justify-end !border-[var(--art-card-border)] !bg-[var(--art-gray-100)] max-sm:flex-col max-sm:items-stretch"
+          class="rounded-lg border p-5 flex flex-wrap gap-3 items-center justify-end !border-(--art-card-border) !bg-(--art-gray-100) max-sm:flex-col max-sm:items-stretch"
         >
           <art-icon-button
             type="import"

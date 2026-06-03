@@ -26,9 +26,9 @@ import {
 
 import { useCommon } from '@/hooks/core/useCommon'
 
-import { useSettingStore } from '@/store/modules/setting'
-
 import { useCurrentUserStore } from '@/store'
+
+import { useSettingStore } from '@/store/modules/setting'
 
 import { useWorkTabStore } from '@/store/modules/workTab'
 
@@ -463,8 +463,8 @@ watch(
     v-if="showWorkTab"
     class="box-border flex-b w-full px-5 mb-3 select-none max-sm:px-[15px]"
     :class="[
-      tabStyle === 'tab-card' ? 'py-1 border-b border-[var(--art-card-border)]' : '',
-      tabStyle === 'tab-google' ? 'pt-1 pb-0 border-b border-[var(--art-card-border)]' : '',
+      tabStyle === 'tab-card' ? 'py-1 border-b border-(--art-card-border)' : '',
+      tabStyle === 'tab-google' ? 'pt-1 pb-0 border-b border-(--art-card-border)' : '',
     ]"
   >
     <div
