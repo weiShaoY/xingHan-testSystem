@@ -113,17 +113,6 @@ function toggleAdvancedSettings() {
   isAdvancedExpanded.value = !isAdvancedExpanded.value
 }
 
-/**
- * 上传文件前的校验
- */
-function beforeUpload(file: File) {
-  if (!['ppt', 'pptx', 'xls', 'xlsx', 'doc', 'docx', 'pdf', 'xlsm', 'txt'].includes(file.name.split('.').pop() || '')) {
-    ElMessage.error('仅支持 ppt、pptx、xls、xlsx、doc、docx、pdf、xlsm、txt 格式文件')
-    return false
-  }
-
-  return true
-}
 </script>
 
 <template>
@@ -148,62 +137,7 @@ function beforeUpload(file: File) {
     <div
       class="mx-auto w-full max-w-3xl"
     >
-      <el-upload
-        class="upload-demo"
-        drag
-        action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
-        multiple
-        @before-upload="beforeUpload"
-      >
-        <el-icon
-          class="el-icon--upload"
-        >
-          <UploadFilled />
-        </el-icon>
-
-        <div
-          class="el-upload__text"
-        >
-          上传文档
-        </div>
-
-        <div
-          class="el-upload__text"
-        >
-          将文件拖到此处，或<em>点击上传</em>
-        </div>
-
-        <template
-          #tip
-        >
-          <div
-            class="el-upload__tip mt-4 space-y-2 text-left text-sm leading-relaxed text-g-600"
-          >
-            <p>
-              1. 点击上方图标，选取转码、审核完成的文档；
-            </p>
-
-            <p>
-              文档支持 ppt、pptx、xls、xlsx、doc、docx、pdf、xlsm、txt 格式。
-            </p>
-
-            <p>
-              3. 文件大小须在 100MB 以内，如需上传 100MB 以上的文件，请联系 support@umu.com；
-            </p>
-
-            <p>
-              4. 选择文档上传，代表您已同意
-              <a
-                href="javascript:void(0)"
-                class="text-primary"
-              >
-                用户使用条款
-              </a>。
-            </p>
-          </div>
-        </template>
-      </el-upload>
-
+      <AdminUpload />
     </div>
 
     <div

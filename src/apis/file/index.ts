@@ -5,7 +5,7 @@ import request from '@/apis/http'
  */
 export function uploadFile(data: FormData) {
   return request.post<FileApi.UploadFileResponse>({
-    url: '/file/upload',
+    url: '/admin/file/upload',
     data,
   })
 }

@@ -12,6 +12,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     AdminPageHeader: typeof import('./../../components/admin/admin-page-header/index.vue')['default']
+    AdminUpload: typeof import('./../../components/admin/admin-upload/index.vue')['default']
     ArtBackToTop: typeof import('./../../components/core/base/art-back-to-top/index.vue')['default']
     ArtBarChart: typeof import('./../../components/core/charts/art-bar-chart/index.vue')['default']
     ArtBarChartCard: typeof import('./../../components/core/cards/art-bar-chart-card/index.vue')['default']
