@@ -100,8 +100,25 @@ function handleClick(item: NavItem) {
   router.push(item.path)
 }
 
-function handleCourseClick(item: RecommendCourse) {
-  console.log(item)
+/**
+ * 跳转到推荐课程列表页
+ */
+function goToRecommendList() {
+  router.push({
+    name: 'ClientRecommendList',
+  })
+}
+
+/**
+   * 跳转到推荐课程详情页
+   */
+function goToRecommendDetail(item: RecommendCourse) {
+  router.push({
+    name: 'ClientRecommendDetail',
+    params: {
+      id: item.sections,
+    },
+  })
 }
 </script>
 
@@ -168,7 +185,11 @@ function handleCourseClick(item: RecommendCourse) {
           type="button"
           class="min-h-8 flex items-center gap-1 border-0 bg-transparent p-0 text-base text-g-900 font-500 cursor-pointer select-none touch-manipulation hover:text-primary active:opacity-60 [-webkit-tap-highlight-color:transparent]"
         >
-          <span>查看全部</span>
+          <span
+            @click="goToRecommendList"
+          >
+            查看全部
+          </span>
 
           <ArtSvgIcon
             icon="ri:arrow-right-s-line"
@@ -185,7 +206,7 @@ function handleCourseClick(item: RecommendCourse) {
           :key="item.title"
           type="button"
           class="group min-w-0 overflow-hidden art-card p-0 text-left cursor-pointer select-none touch-manipulation transition hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-[0_12px_30px_rgb(15_23_42/8%)] active:scale-[0.98] active:opacity-80 max-sm:rounded-none max-sm:border-0 max-sm:bg-transparent max-sm:hover:translate-y-0 max-sm:hover:shadow-none [-webkit-tap-highlight-color:transparent]"
-          @click="handleCourseClick(item)"
+          @click="goToRecommendDetail(item)"
         >
           <img
             :src="item.cover"

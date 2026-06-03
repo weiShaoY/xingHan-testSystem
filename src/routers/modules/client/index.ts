@@ -118,7 +118,7 @@ export const clientRoutes: AppRouteRecord = {
     {
       path: 'recommend',
       name: 'ClientRecommend',
-      component: '/client/recommend',
+      component: '',
       meta: {
         title: '推荐课程',
         icon: 'ri:recommend-line',
