@@ -115,7 +115,7 @@ declare namespace AdminApi {
       /**
        * 课程ID（主键，自增）
        */
-      courseId: number
+      couID: number
 
       /**
        * 课程介绍
@@ -166,6 +166,7 @@ declare namespace AdminApi {
        * 课程拥有者/创建者用户ID
        */
       couUID: number
+
       couViewNum: number
 
       /**
@@ -176,7 +177,7 @@ declare namespace AdminApi {
       /**
        * 创建时间
        */
-      createTime: Date
+      createTime: string
 
       /**
        * 学科ID
@@ -191,12 +192,12 @@ declare namespace AdminApi {
       /**
        * 最后修改人ID
        */
-      updater: number | null
+      updater: number
 
       /**
        * 最后修改时间
        */
-      updateTime: Date | null
+      updateTime: string
     }
 
     /** 课程列表响应 */

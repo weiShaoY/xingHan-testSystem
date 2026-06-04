@@ -3,11 +3,6 @@
 <script lang="ts" setup>
 import type { ColumnOption } from '@/types'
 
-const documentTable = ref<FileApi.FileListResponse>({
-  rows: [],
-  totals: 0,
-})
-
 const loading = ref(false)
 
 const columns: ColumnOption<FileApi.FileListItem>[] = [
@@ -36,13 +31,21 @@ const columns: ColumnOption<FileApi.FileListItem>[] = [
 ]
 
 /**
-   *  请求参数
-   */
+ *  请求参数
+ */
 const params = reactive<FileApi.FileListParams>({
   name: '',
   type: 'document',
   pageSize: 10,
   currentPage: 1,
+})
+
+/**
+ * 文档列表
+ */
+const documentTable = ref<FileApi.FileListResponse>({
+  rows: [],
+  totals: 0,
 })
 
 /**

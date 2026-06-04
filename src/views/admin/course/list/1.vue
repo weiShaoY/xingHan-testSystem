@@ -33,7 +33,9 @@ const courseList = ref<AdminApi.Course.CourseListResponse>({
  * 获取课程列表
  */
 async function getCourseList() {
-  courseList.value = await fetchAdminCourseList(params)
+  const a = await fetchAdminCourseList(params)
+
+  console.log('🚀 ~ file: index.vue:75 ~ a:', a)
 }
 
 getCourseList()
@@ -70,26 +72,26 @@ function goToCreate() {
 /**
  * 跳转到编辑页
  */
-function goToEdit(item: AdminApi.Course.CourseListItem) {
-  router.push({
-    name: 'AdminCourseEdit',
-    params: {
-      id: item.id,
-    },
-  })
-}
+// function goToEdit(item: AdminApi.Course.CourseListItem) {
+//   router.push({
+//     name: 'AdminCourseEdit',
+//     params: {
+//       id: item.id,
+//     },
+//   })
+// }
 
 /**
  * 跳转到详情页
  */
-function goToDetail(item: AdminApi.Course.CourseListItem) {
-  router.push({
-    name: 'AdminCourseDetail',
-    params: {
-      id: item.id,
-    },
-  })
-}
+// function goToDetail(item: AdminApi.Course.CourseListItem) {
+//   router.push({
+//     name: 'AdminCourseDetail',
+//     params: {
+//       id: item.id,
+//     },
+//   })
+// }
 </script>
 
 <template>
@@ -144,20 +146,20 @@ function goToDetail(item: AdminApi.Course.CourseListItem) {
             <span
               class="font-medium text-primary"
             >
-              {{ getDateSegment(item.createTime, 'year') }} 年
+              <!-- {{ item.time.year }} 年 -->
             </span>
 
             <span
               class="font-medium text-primary"
             >
-              {{ getDateSegment(item.createTime, 'month') }} 月 {{ getDateSegment(item.createTime, 'day') }} 日
+              <!-- {{ item.time.month }} 月 {{ item.time.day }} 日 -->
             </span>
           </div>
 
           <div
             class="mt-1 max-md:mt-0"
           >
-            创建时间 {{ getDateSegment(item.createTime, 'hour') }}:{{ getDateSegment(item.createTime, 'minute') }}
+            <!-- 创建时间 {{ getCreateTimeText(item.createTime) }} -->
           </div>
         </div>
 
@@ -180,13 +182,13 @@ function goToDetail(item: AdminApi.Course.CourseListItem) {
               <h3
                 class="truncate text-base font-semibold text-g-900"
               >
-                {{ item.couName }}
+                <!-- {{ item.name }} -->
               </h3>
 
               <p
                 class="mt-2 line-clamp-2 max-w-3xl text-sm text-g-600"
               >
-                {{ item.couIntro }}
+                <!-- {{ item.description }} -->
               </p>
             </div>
 
@@ -223,21 +225,21 @@ function goToDetail(item: AdminApi.Course.CourseListItem) {
                 class="text-sm text-g-600 flex flex-wrap gap-x-4 gap-y-2 items-center"
               >
                 <span>
-                  总课时: {{ }} 节
+                  <!-- 总课时: {{ item.lessons }} 节 -->
                 </span>
 
                 <span>
-                  已完成: {{ }} 节
+                  <!-- 已完成: {{ item.completedLessons }} 节 -->
                 </span>
 
                 <span>
-                  进度: {{ }} %
+                  <!-- 进度: {{ getCourseProgress(item) }}% -->
                 </span>
               </div>
             </section>
 
             <!-- 课程标签 -->
-            <!-- <section>
+            <section>
               <p
                 class="font-medium mb-2 text-g-900"
               >
@@ -247,15 +249,15 @@ function goToDetail(item: AdminApi.Course.CourseListItem) {
               <div
                 class="flex flex-wrap gap-2"
               >
-                <el-tag
+                <!-- <el-tag
                   v-for="(tag, index) in item.tags"
                   :key="index"
                   size="small"
                 >
                   {{ tag }}
-                </el-tag>
+                </el-tag> -->
               </div>
-            </section> -->
+            </section>
 
             <!-- 更新时间 -->
             <section
@@ -270,7 +272,7 @@ function goToDetail(item: AdminApi.Course.CourseListItem) {
               <p
                 class="text-sm text-g-600"
               >
-                {{ formatDateTime(item.updateTime) }}
+                {{ item.updateTime }}
               </p>
             </section>
 

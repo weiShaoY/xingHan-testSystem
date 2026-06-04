@@ -73,6 +73,7 @@ declare global {
   const fetchGetUserList: typeof import('../../apis/system-manage').fetchGetUserList
   const fetchLogin: typeof import('../../apis/auth').fetchLogin
   const fetchUploadFile: typeof import('../../apis/file/index').fetchAdminUploadFile
+  const formatDateTime: typeof import('../../utils/time').formatDateTime
   const formatFileSize: typeof import('../../utils/file').formatFileSize
   const formatMenuTitle: typeof import('../../utils/router').formatMenuTitle
   const formatTimestampToChineseDate: typeof import('../../utils/time').formatTimestampToChineseDate
@@ -83,6 +84,8 @@ declare global {
   const getCurrentScope: typeof import('vue').getCurrentScope
   const getCurrentWatcher: typeof import('vue').getCurrentWatcher
   const getDarkColor: typeof import('../../utils/ui/colors').getDarkColor
+  const getDatePart: typeof import('../../utils/time').getDateSegment
+  const getDateSegment: typeof import('../../utils/time').getDateSegment
   const getDocumentList: typeof import('../../apis/file/index').getDocumentList
   const getDuration: typeof import('../../utils/time').getDuration
   const getElapsedTime: typeof import('../../utils/time').getElapsedTime
@@ -497,6 +500,7 @@ declare module 'vue' {
     readonly fetchGetMenuList: UnwrapRef<typeof import('../../apis/system-manage')['fetchGetMenuList']>
     readonly fetchGetRoleList: UnwrapRef<typeof import('../../apis/system-manage')['fetchGetRoleList']>
     readonly fetchGetUserList: UnwrapRef<typeof import('../../apis/system-manage')['fetchGetUserList']>
+    readonly formatDateTime: UnwrapRef<typeof import('../../utils/time')['formatDateTime']>
     readonly formatFileSize: UnwrapRef<typeof import('../../utils/file')['formatFileSize']>
     readonly formatMenuTitle: UnwrapRef<typeof import('../../utils/router')['formatMenuTitle']>
     readonly formatTimestampToChineseDate: UnwrapRef<typeof import('../../utils/time')['formatTimestampToChineseDate']>
@@ -506,6 +510,7 @@ declare module 'vue' {
     readonly getCurrentScope: UnwrapRef<typeof import('vue')['getCurrentScope']>
     readonly getCurrentWatcher: UnwrapRef<typeof import('vue')['getCurrentWatcher']>
     readonly getDarkColor: UnwrapRef<typeof import('../../utils/ui/colors')['getDarkColor']>
+    readonly getDateSegment: UnwrapRef<typeof import('../../utils/time')['getDateSegment']>
     readonly getDuration: UnwrapRef<typeof import('../../utils/time')['getDuration']>
     readonly getElapsedTime: UnwrapRef<typeof import('../../utils/time')['getElapsedTime']>
     readonly getFirstMenuPath: UnwrapRef<typeof import('../../utils/navigation/route')['getFirstMenuPath']>

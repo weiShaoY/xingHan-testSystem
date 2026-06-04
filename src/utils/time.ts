@@ -92,3 +92,110 @@ export function formatTimestampToChineseDate(timestamp: number | string | Date):
 
   return `${year}年${month}月${day}日 ${hours}点${minutes}分${seconds}秒` //  调整为更常见的中文日期格式，日和点之间增加空格
 }
+
+/**
+ * 从 ISO 日期字符串中提取指定部分
+ * @param dateStr 日期字符串 如 2026-06-02T16:37:50.4
+ * @param type 要提取的类型：year/month/day/hour/minute/second
+ * @returns 提取后的字符串，异常返回 -
+ */
+export function getDateSegment(
+  dateStr: string | undefined | null,
+  type: 'year' | 'month' | 'day' | 'hour' | 'minute' | 'second',
+): string {
+  // 空值判断
+  if (!dateStr) {
+    return '-'
+  }
+
+  try {
+    const date = new Date(dateStr)
+
+    // 非法日期判断
+    if (Number.isNaN(date.getTime())) {
+      return '-'
+    }
+
+    // 按类型返回
+    switch (type) {
+      case 'year':
+        return date.getFullYear().toString()
+      case 'month':
+        return (date.getMonth() + 1)
+          .toString()
+          .padStart(2, '0')
+      case 'day':
+        return date.getDate()
+          .toString()
+          .padStart(2, '0')
+      case 'hour':
+        return date.getHours()
+          .toString()
+          .padStart(2, '0')
+      case 'minute':
+        return date.getMinutes()
+          .toString()
+          .padStart(2, '0')
+      case 'second':
+        return date.getSeconds()
+          .toString()
+          .padStart(2, '0')
+      default:
+        return '-'
+    }
+  }
+  catch {
+    return '-'
+  }
+}
+
+/**
+ * 格式化时间
+ * @param dateStr 时间字符串 2026-06-02T16:37:50.4
+ * @param options 配置项
+ * @param options.chinese 是否使用中文日期格式
+ * @returns 2026-06-02 16:37 或 2026年06月02日 16时37分
+ */
+export function formatDateTime(
+  dateStr: string | undefined | null,
+  options?: { chinese?: boolean },
+): string {
+  if (!dateStr) {
+    return '-'
+  }
+
+  try {
+    const date = new Date(dateStr)
+
+    if (Number.isNaN(date.getTime())) {
+      return '-'
+    }
+
+    const year = date.getFullYear()
+
+    const month = (date.getMonth() + 1)
+      .toString()
+      .padStart(2, '0')
+
+    const day = date.getDate()
+      .toString()
+      .padStart(2, '0')
+
+    const hours = date.getHours()
+      .toString()
+      .padStart(2, '0')
+
+    const minutes = date.getMinutes()
+      .toString()
+      .padStart(2, '0')
+
+    if (options?.chinese) {
+      return `${year}年${month}月${day}日 ${hours}时${minutes}分`
+    }
+
+    return `${year}-${month}-${day} ${hours}:${minutes}`
+  }
+  catch {
+    return '-'
+  }
+}
