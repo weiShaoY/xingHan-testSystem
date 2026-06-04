@@ -10,6 +10,7 @@ declare global {
   const EffectScope: typeof import('vue').EffectScope
   const ElLoading: typeof import('element-plus/es').ElLoading
   const ElMessage: typeof import('element-plus/es').ElMessage
+  const ElMessageBox: typeof import('element-plus/es').ElMessageBox
   const ElNotification: typeof import('element-plus/es').ElNotification
   const HttpError: typeof import('../../apis/http/error').HttpError
   const PasswordStrength: typeof import('../../utils/form/validator').PasswordStrength
@@ -463,6 +464,7 @@ declare module 'vue' {
     readonly EffectScope: UnwrapRef<typeof import('vue')['EffectScope']>
     readonly ElLoading: UnwrapRef<typeof import('element-plus/es')['ElLoading']>
     readonly ElMessage: UnwrapRef<typeof import('element-plus/es')['ElMessage']>
+    readonly ElMessageBox: UnwrapRef<typeof import('element-plus/es')['ElMessageBox']>
     readonly ElNotification: UnwrapRef<typeof import('element-plus/es')['ElNotification']>
     readonly HttpError: UnwrapRef<typeof import('../../apis/http/error')['HttpError']>
     readonly PasswordStrength: UnwrapRef<typeof import('../../utils/form/validator')['PasswordStrength']>

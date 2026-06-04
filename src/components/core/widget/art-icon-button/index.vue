@@ -8,6 +8,9 @@ defineOptions({
 const props = withDefaults(defineProps<Props>(), {
   type: 'default',
   disabled: false,
+  deleteConfirm: true,
+  deleteConfirmTitle: '删除确认',
+  deleteConfirmMessage: '确定要删除吗？删除后无法恢复',
 })
 
 const emit = defineEmits<{
@@ -94,6 +97,24 @@ type Props = {
    * @description 禁用后按钮不可点击
    */
   disabled?: boolean
+
+  /**
+   * 删除按钮是否需要确认
+   * @description type 为 delete 时生效
+   */
+  deleteConfirm?: boolean
+
+  /**
+   * 删除确认标题
+   * @description type 为 delete 且 deleteConfirm 为 true 时生效
+   */
+  deleteConfirmTitle?: string
+
+  /**
+   * 删除确认内容
+   * @description type 为 delete 且 deleteConfirm 为 true 时生效
+   */
+  deleteConfirmMessage?: string
 }
 
 type ButtonPreset = {
@@ -269,12 +290,25 @@ const textStyle = computed(() => {
  *
  * @param event 鼠标事件
  */
-function handleClick(event: MouseEvent) {
+async function handleClick(event: MouseEvent) {
   event.stopPropagation()
 
   if (props.disabled) {
     event.preventDefault()
     return
+  }
+
+  if (props.type === 'delete' && props.deleteConfirm) {
+    try {
+      await ElMessageBox.confirm(props.deleteConfirmMessage, props.deleteConfirmTitle, {
+        confirmButtonText: '删除',
+        cancelButtonText: '取消',
+        type: 'warning',
+      })
+    }
+    catch {
+      return
+    }
   }
 
   emit('click', event)
