@@ -119,33 +119,6 @@ function handleSearch() {
   getDocumentList()
 }
 
-/**
- * 重置搜索
- */
-function handleResetSearch() {
-  params.name = ''
-  params.currentPage = 1
-  getDocumentList()
-}
-
-/**
- * 格式化文件大小
- */
-function formatFileSize(size?: number) {
-  if (!size && size !== 0) {
-    return '-'
-  }
-
-  if (size < 1024) {
-    return `${size} B`
-  }
-
-  if (size < 1024 * 1024) {
-    return `${(size / 1024).toFixed(1)} KB`
-  }
-
-  return `${(size / 1024 / 1024).toFixed(1)} MB`
-}
 </script>
 
 <template>
@@ -153,7 +126,7 @@ function formatFileSize(size?: number) {
     class="mx-auto max-w-7xl px-10 relative max-lg:px-6 max-sm:px-4"
   >
     <div
-      class="my-5 flex w-full items-center justify-between gap-4 max-sm:items-start"
+      class="my-5 flex w-full items-center justify-between gap-4 max-md:flex-col max-md:items-stretch"
     >
       <div>
         <h2
@@ -170,11 +143,11 @@ function formatFileSize(size?: number) {
       </div>
 
       <div
-        class="flex items-center gap-3"
+        class="flex flex-1 items-center justify-end gap-3 max-md:w-full max-md:justify-start max-sm:flex-col"
       >
         <el-input
           v-model="params.name"
-          class="min-w-56 w-56"
+          class="max-w-110 max-md:max-w-none max-sm:w-full"
           placeholder="请输入文件名称"
           clearable
           @keyup.enter="handleSearch"
@@ -196,7 +169,6 @@ function formatFileSize(size?: number) {
         />
 
       </div>
-
     </div>
 
     <!-- 文档表格 -->
