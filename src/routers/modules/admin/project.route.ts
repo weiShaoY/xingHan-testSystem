@@ -21,7 +21,7 @@ export const Project: AppRouteRecord = {
       meta: {
         title: '项目列表',
         icon: 'ri:list-check',
-        keepAlive: true,
+        keepAlive: false,
         sort: 0,
       },
     },

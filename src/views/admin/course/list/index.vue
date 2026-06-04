@@ -1,13 +1,18 @@
 <!------  2026-04-15---16:08---星期三  ------>
 <!------------------------------------    ------------------------------------------------->
 <script lang="ts" setup>
-import { ref } from 'vue'
+import {
+  onActivated,
+  ref,
+} from 'vue'
 
 import AllocateCourseDialog from './AllocateCourseDialog.vue'
 
 const router = useRouter()
 
 const loading = ref(false)
+
+let isFirstActivated = true
 
 /**
  * 是否显示分配学习任务弹窗
@@ -49,6 +54,15 @@ async function getCourseList() {
 }
 
 getCourseList()
+
+// onActivated(() => {
+//   if (isFirstActivated) {
+//     isFirstActivated = false
+//     return
+//   }
+
+//   getCourseList()
+// })
 
 /**
  * 获取课程完成进度

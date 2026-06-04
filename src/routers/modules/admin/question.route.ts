@@ -20,7 +20,7 @@ export const Question: AppRouteRecord = {
       meta: {
         title: '题库列表',
         icon: 'ri:align-item-left-fill',
-        keepAlive: true,
+        keepAlive: false,
         sort: 0,
       },
     },

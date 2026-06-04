@@ -9,7 +9,7 @@ export const AdminUserFile: AppRouteRecord = {
   meta: {
     title: '文件管理',
     icon: 'ri:file-text-line',
-    keepAlive: true,
+    keepAlive: false,
     sort: 5,
   },
   children: [
@@ -20,7 +20,6 @@ export const AdminUserFile: AppRouteRecord = {
       meta: {
         title: '文档',
         icon: 'ri:align-item-left-fill',
-        keepAlive: true,
         sort: 1,
       },
     },
@@ -31,7 +30,6 @@ export const AdminUserFile: AppRouteRecord = {
       meta: {
         title: '视频',
         icon: 'ri:align-item-left-fill',
-        keepAlive: true,
         sort: 2,
       },
     },
@@ -42,7 +40,6 @@ export const AdminUserFile: AppRouteRecord = {
       meta: {
         title: '回收站',
         icon: 'ri:align-item-left-fill',
-        keepAlive: true,
         sort: 3,
       },
     },

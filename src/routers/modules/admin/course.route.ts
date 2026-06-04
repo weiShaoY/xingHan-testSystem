@@ -80,7 +80,7 @@ export const Course: AppRouteRecord = {
       meta: {
         title: '课程列表',
         icon: 'ri:file-text-line',
-        keepAlive: true,
+        keepAlive: false,
         sort: 0,
       },
     },
