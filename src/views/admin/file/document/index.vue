@@ -61,9 +61,13 @@ const pagination = computed(() => ({
    *  获取文档列表
    */
 async function getDocumentList() {
+  loading.value = true
+
   try {
-    loading.value = true
     documentTable.value = await fetchAdminFileList(params)
+  }
+  catch {
+    loading.value = false
   }
   finally {
     loading.value = false

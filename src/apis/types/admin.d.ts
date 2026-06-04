@@ -92,7 +92,13 @@ declare namespace AdminApi {
   namespace Course {
 
     /** 课程列表请求参数 */
-    type CourseListParams = CommonApi.PaginationParams
+    type CourseListParams = CommonApi.PaginationParams & {
+
+      /**
+       * 课程名称
+       */
+      name: string
+    }
 
     /** 课程列表项 */
     type CourseListItem = {

@@ -1,18 +1,12 @@
 <!------  2026-04-15---16:08---星期三  ------>
 <!------------------------------------    ------------------------------------------------->
 <script lang="ts" setup>
-import {
-  onActivated,
-  ref,
-} from 'vue'
 
 import AllocateCourseDialog from './AllocateCourseDialog.vue'
 
 const router = useRouter()
 
 const loading = ref(false)
-
-let isFirstActivated = true
 
 /**
  * 是否显示分配学习任务弹窗
@@ -23,7 +17,7 @@ const isShowAllocateCourseDialog = ref(false)
  *  请求参数
  */
 const params = reactive<AdminApi.Course.CourseListParams>({
-  // name: '',
+  name: '',
   pageSize: 10,
   currentPage: 1,
 })
@@ -148,6 +142,14 @@ async function deleteCourse(item: AdminApi.Course.CourseListItem) {
   }
 }
 
+/**
+ * 搜索课程
+ */
+function handleSearch() {
+  params.currentPage = 1
+  params.name = params.name.trim()
+  getCourseList()
+}
 </script>
 
 <template>
@@ -177,12 +179,33 @@ async function deleteCourse(item: AdminApi.Course.CourseListItem) {
         </p>
       </div>
 
-      <ArtIconButton
-        type="add"
-        @click="goToCreate"
+      <div
+        class="flex flex-1 items-center justify-end gap-3 max-md:w-full max-md:justify-start max-sm:flex-col"
       >
-        创建课程
-      </ArtIconButton>
+        <el-input
+          v-model="params.name"
+          class="max-w-110 max-md:max-w-none max-sm:w-full"
+          placeholder="请输入文件名称"
+          clearable
+          @keyup.enter="handleSearch"
+          @clear="handleSearch"
+        >
+          <template
+            #append
+          >
+            <ArtSvgIcon
+              icon="tdesign:search"
+            />
+          </template>
+        </el-input>
+
+        <ArtIconButton
+          type="add"
+          @click="goToCreate"
+        >
+          创建课程
+        </ArtIconButton>
+      </div>
     </div>
 
     <div
