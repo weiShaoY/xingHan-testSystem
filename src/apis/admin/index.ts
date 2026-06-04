@@ -79,6 +79,18 @@ export function fetchAdminUpdateCourse(data: AdminApi.Course.CourseEditor) {
 }
 
 /**
+ * 删除课程
+ */
+export function fetchAdminDeleteCourse(couId: string) {
+  return request.post<boolean>({
+    url: '/admin/course/deleteCourse',
+    data: {
+      couId,
+    },
+  })
+}
+
+/**
  *  获取课程设置
  */
 export function fetchAdminCourseSetting(couId: string) {

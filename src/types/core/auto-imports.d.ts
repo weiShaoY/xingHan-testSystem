@@ -53,11 +53,17 @@ declare global {
   const effectScope: typeof import('vue').effectScope
   const emojo: typeof import('../../utils/ui/emojo').default
   const extendRef: typeof import('@vueuse/core').extendRef
+  const f: typeof import('../../apis/admin/index').f
+  const fetch: typeof import('../../apis/admin/index').fetch
+  const fetchAdmin: typeof import('../../apis/admin/index').fetchAdmin
   const fetchAdminAddCourse: typeof import('../../apis/admin/index').fetchAdminCreateCourse
   const fetchAdminCourseDetail: typeof import('../../apis/admin/index').fetchAdminCourseDetail
   const fetchAdminCourseList: typeof import('../../apis/admin/index').fetchAdminCourseList
   const fetchAdminCourseSetting: typeof import('../../apis/admin/index').fetchAdminCourseSetting
   const fetchAdminCreateCourse: typeof import('../../apis/admin/index').fetchAdminCreateCourse
+  const fetchAdminD: typeof import('../../apis/admin/index').fetchAdminD
+  const fetchAdminDe: typeof import('../../apis/admin/index').fetchAdminDe
+  const fetchAdminDeleteCourse: typeof import('../../apis/admin/index').fetchAdminDeleteCourse
   const fetchAdminFileList: typeof import('../../apis/file/index').fetchAdminFileList
   const fetchAdminGetCourseList: typeof import('../../apis/admin/index').fetchAdminGetCourseList
   const fetchAdminGetPublicKey: typeof import('../../apis/admin/index').fetchAdminGetPublicKey
@@ -504,6 +510,7 @@ declare module 'vue' {
     readonly fetchAdminCourseList: UnwrapRef<typeof import('../../apis/admin/index')['fetchAdminCourseList']>
     readonly fetchAdminCourseSetting: UnwrapRef<typeof import('../../apis/admin/index')['fetchAdminCourseSetting']>
     readonly fetchAdminCreateCourse: UnwrapRef<typeof import('../../apis/admin/index')['fetchAdminCreateCourse']>
+    readonly fetchAdminDeleteCourse: UnwrapRef<typeof import('../../apis/admin/index')['fetchAdminDeleteCourse']>
     readonly fetchAdminFileList: UnwrapRef<typeof import('../../apis/file/index')['fetchAdminFileList']>
     readonly fetchAdminGetPublicKey: UnwrapRef<typeof import('../../apis/admin/index')['fetchAdminGetPublicKey']>
     readonly fetchAdminGetUserInfo: UnwrapRef<typeof import('../../apis/admin/index')['fetchAdminGetUserInfo']>

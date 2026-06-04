@@ -7,6 +7,8 @@ import AllocateCourseDialog from './AllocateCourseDialog.vue'
 
 const router = useRouter()
 
+const loading = ref(false)
+
 /**
  * 是否显示分配学习任务弹窗
  */
@@ -33,7 +35,17 @@ const courseList = ref<AdminApi.Course.CourseListResponse>({
  * 获取课程列表
  */
 async function getCourseList() {
-  courseList.value = await fetchAdminCourseList(params)
+  loading.value = true
+
+  try {
+    courseList.value = await fetchAdminCourseList(params)
+  }
+  catch {
+    loading.value = false
+  }
+  finally {
+    loading.value = false
+  }
 }
 
 getCourseList()
@@ -107,6 +119,21 @@ function handleCurrentChange(currentPage: number) {
   params.currentPage = currentPage
   getCourseList()
 }
+
+/**
+ * 删除课程
+ */
+async function deleteCourse(item: AdminApi.Course.CourseListItem) {
+  try {
+    await fetchAdminDeleteCourse(String(item.couId))
+    getCourseList()
+    ElNotification.success('删除成功')
+  }
+  catch {
+    ElNotification.error('删除失败')
+  }
+}
+
 </script>
 
 <template>
@@ -145,6 +172,7 @@ function handleCurrentChange(currentPage: number) {
     </div>
 
     <div
+      v-loading="loading"
       class="flex flex-col gap-4"
     >
       <div
@@ -215,6 +243,11 @@ function handleCurrentChange(currentPage: number) {
               <ArtIconButton
                 type="edit"
                 @click="goToEdit(item)"
+              />
+
+              <ArtIconButton
+                type="delete"
+                @click="deleteCourse(item)"
               />
 
               <ArtIconButton
