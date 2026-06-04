@@ -68,3 +68,13 @@ export function fetchAdminCourseSetting(courseId: string) {
     },
   })
 }
+
+/**
+ *  新增课程
+ */
+export function fetchAdminAddCourse(params: AdminApi.Course.AddCourseParams) {
+  return request.post({
+    url: '/admin/course/addCourse',
+    data: params,
+  })
+}

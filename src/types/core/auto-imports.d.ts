@@ -53,6 +53,7 @@ declare global {
   const effectScope: typeof import('vue').effectScope
   const emojo: typeof import('../../utils/ui/emojo').default
   const extendRef: typeof import('@vueuse/core').extendRef
+  const fetchAdminAddCourse: typeof import('../../apis/admin/index').fetchAdminAddCourse
   const fetchAdminCourseDetail: typeof import('../../apis/admin/index').fetchAdminCourseDetail
   const fetchAdminCourseList: typeof import('../../apis/admin/index').fetchAdminCourseList
   const fetchAdminCourseSetting: typeof import('../../apis/admin/index').fetchAdminCourseSetting
@@ -486,6 +487,7 @@ declare module 'vue' {
     readonly effectScope: UnwrapRef<typeof import('vue')['effectScope']>
     readonly emojo: UnwrapRef<typeof import('../../utils/ui/emojo')['default']>
     readonly extendRef: UnwrapRef<typeof import('@vueuse/core')['extendRef']>
+    readonly fetchAdminAddCourse: UnwrapRef<typeof import('../../apis/admin/index')['fetchAdminAddCourse']>
     readonly fetchAdminCourseDetail: UnwrapRef<typeof import('../../apis/admin/index')['fetchAdminCourseDetail']>
     readonly fetchAdminCourseList: UnwrapRef<typeof import('../../apis/admin/index')['fetchAdminCourseList']>
     readonly fetchAdminCourseSetting: UnwrapRef<typeof import('../../apis/admin/index')['fetchAdminCourseSetting']>

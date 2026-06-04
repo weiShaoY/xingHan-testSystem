@@ -288,6 +288,40 @@ onMounted(() => {
           </el-form-item>
 
           <el-form-item
+            label="课程形式"
+            required
+          >
+            <el-radio-group
+              v-model="formData.courseForm"
+              class="flex flex-wrap gap-x-6 gap-y-2"
+            >
+              <el-radio
+                value="online"
+              >
+                在线课程
+              </el-radio>
+
+              <el-radio
+                value="offline"
+              >
+                面授课程
+              </el-radio>
+
+              <el-radio
+                value="hybrid"
+              >
+                混合式学习
+              </el-radio>
+
+              <el-radio
+                value="other"
+              >
+                其他
+              </el-radio>
+            </el-radio-group>
+          </el-form-item>
+
+          <el-form-item
             label="内容分类"
             required
           >
@@ -303,6 +337,17 @@ onMounted(() => {
                 :label="item.label"
               />
             </el-select>
+          </el-form-item>
+
+          <el-form-item
+            label="课程标签"
+            required
+          >
+            <el-input
+              v-model="formData.tags"
+              placeholder="用逗号隔开，方便更多学员找到您的课程"
+              class="w-full"
+            />
           </el-form-item>
 
           <el-form-item
@@ -615,8 +660,7 @@ onMounted(() => {
             />
           </el-form-item>
 
-          <!-- 先隐藏 -->
-          <!-- <el-form-item
+          <el-form-item
             label="报名信息"
           >
             <div
@@ -651,7 +695,7 @@ onMounted(() => {
                 </el-checkbox>
               </div>
             </div>
-          </el-form-item> -->
+          </el-form-item>
         </el-form>
       </el-tab-pane>
 
@@ -739,6 +783,22 @@ onMounted(() => {
             <el-form-item>
               <div>
                 <el-checkbox
+                  v-model="formData.enableAutoEvaluation"
+                >
+                  学完视频和微课自动弹出课程评价弹窗
+                </el-checkbox>
+
+                <div
+                  class="ml-6 mt-2 text-sm text-g-600 max-sm:ml-0"
+                >
+                  开启时，在学员学完视频和微课小节时，会自动弹出课程评价弹窗。关闭时，弹窗不会自动弹出。
+                </div>
+              </div>
+            </el-form-item>
+
+            <el-form-item>
+              <div>
+                <el-checkbox
                   v-model="formData.enableAutoNextSection"
                 >
                   学完视频和微课自动进入下一个小节
@@ -784,6 +844,22 @@ onMounted(() => {
               </div>
             </el-form-item>
 
+            <el-form-item>
+              <div>
+                <el-checkbox
+                  v-model="formData.showSectionNumbers"
+                >
+                  显示小节序号
+                </el-checkbox>
+
+                <div
+                  class="ml-6 mt-2 text-sm text-g-600 max-sm:ml-0"
+                >
+                  开启时，从第一个小节开始显示默认序号，小节顺序调整后序号会自动更新。<br>
+                  关闭后，小节不再显示默认序号，您可以在小节标题中加入自定义序号。
+                </div>
+              </div>
+            </el-form-item>
           </el-form>
         </div>
       </el-tab-pane>
