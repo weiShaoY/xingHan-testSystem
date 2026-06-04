@@ -101,6 +101,17 @@ type ExtendedAxiosRequestConfig = AxiosRequestConfig & {
   authPath?: string
 }
 
+/**
+ * GET 请求配置。
+ *
+ * GET 参数应通过 `params` 传递，不允许传入请求体 `data`。
+ */
+type GetAxiosRequestConfig = Omit<ExtendedAxiosRequestConfig, 'data'> & {
+
+  /** GET 请求不允许传入请求体。 */
+  data?: 'GET 请求请使用 params 传参，不要使用 data'
+}
+
 const { VITE_APP_API_URL, VITE_APP_WITH_CREDENTIALS } = import.meta.env
 
 /**
@@ -418,7 +429,7 @@ const api = {
    * @param config 请求配置。
    * @returns 响应体中的 `data` 字段。
    */
-  get<T>(config: ExtendedAxiosRequestConfig) {
+  get<T>(config: GetAxiosRequestConfig) {
     return retryRequest<T>({
       ...config,
       method: 'GET',

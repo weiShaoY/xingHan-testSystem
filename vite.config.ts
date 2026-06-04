@@ -108,7 +108,7 @@ export default ({ mode }: { mode: string }) => {
         imports: ['vue', 'vue-router', 'pinia', '@vueuse/core'],
 
         // 👇 自动扫描指定目录下的文件导出
-        dirs: ['src/composables', 'src/stores', 'src/utils', 'src/directives', 'src/configs', 'src/apis/**'],
+        dirs: ['src/composables', 'src/store', 'src/utils', 'src/directives', 'src/configs', 'src/apis/**'],
 
         // 👇 生成的类型声明文件路径
         dts: 'src/types/core/auto-imports.d.ts',

@@ -74,7 +74,7 @@ function goToEdit(item: AdminApi.Course.CourseListItem) {
   router.push({
     name: 'AdminCourseEdit',
     params: {
-      id: item.id,
+      couId: item.couId,
     },
   })
 }
@@ -86,9 +86,26 @@ function goToDetail(item: AdminApi.Course.CourseListItem) {
   router.push({
     name: 'AdminCourseDetail',
     params: {
-      id: item.id,
+      couId: item.couId,
     },
   })
+}
+
+/**
+ * 每页条数变化
+ */
+function handleSizeChange(pageSize: number) {
+  params.pageSize = pageSize
+  params.currentPage = 1
+  getCourseList()
+}
+
+/**
+ * 当前页变化
+ */
+function handleCurrentChange(currentPage: number) {
+  params.currentPage = currentPage
+  getCourseList()
 }
 </script>
 
@@ -132,8 +149,9 @@ function goToDetail(item: AdminApi.Course.CourseListItem) {
     >
       <div
         v-for="item in courseList.rows"
-        :key="item.couID"
+        :key="item.couId"
         class="grid grid-cols-[150px_8px_minmax(0,1fr)] gap-5 items-center max-md:grid-cols-1 max-md:gap-3"
+        @click="goToDetail(item)"
       >
         <div
           class="flex flex-col items-end text-sm text-g-600 max-md:flex-row max-md:items-center max-md:justify-between max-md:rounded-custom-sm max-md:bg-box max-md:border-full-d max-md:px-4 max-md:py-3"
@@ -277,6 +295,24 @@ function goToDetail(item: AdminApi.Course.CourseListItem) {
           </div>
         </div>
       </div>
+    </div>
+
+    <!-- 分页组件 -->
+    <div
+      v-if="courseList.totals > 0"
+      class="mt-6 flex justify-center overflow-x-auto pb-4"
+    >
+      <ElPagination
+        v-model:current-page="params.currentPage"
+        v-model:page-size="params.pageSize"
+        background
+        :page-sizes="[10, 20, 30, 50]"
+        :pager-count="7"
+        layout="total, prev, pager, next, sizes, jumper"
+        :total="courseList.totals"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+      />
     </div>
 
   </div>

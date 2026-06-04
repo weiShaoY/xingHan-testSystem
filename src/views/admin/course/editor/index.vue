@@ -13,20 +13,22 @@ const route = useRoute()
 
 const router = useRouter()
 
+const workTabStore = useWorkTabStore()
+
 const activeTab = ref('basic')
 
 /**
  * 是否为编辑模式
  */
 const isEditMode = computed(() => {
-  return Boolean(route.params.id)
+  return Boolean(route.params.couId)
 })
 
 /**
  * 课程 ID
  */
-const courseId = computed(() => {
-  return String(route.params.id || '')
+const couId = computed(() => {
+  return String(route.params.couId || '')
 })
 
 /**
@@ -46,173 +48,88 @@ const submitButtonText = computed(() => {
 /**
  * 表单数据
  */
-const formData = ref({
-  // 基本信息
-  name: '未命名课程',
-  courseForm: 'online',
-  category: '',
-  tags: '',
-
-  // 图片设置
-  coverImage: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=autumn%20forest%20road%20scenery%20with%20colorful%20trees&image_size=landscape_4_3',
-  backgroundImage: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=autumn%20forest%20landscape%20with%20colorful%20trees&image_size=landscape_4_3',
-
-  // 报名设置
-  enableEnrollment: true,
-  enrollmentTitle: '未命名课程',
-  enrollmentQuotaType: 'unlimited',
-  enrollmentLimit: '',
-  enrollmentTimeType: 'unlimited',
-  enrollmentStart: '',
-  enrollmentEnd: '',
-  enrollmentAuditType: 'auto',
-  allowCancelEnrollment: 'no',
-  enrollmentIntroduction: '',
-
-  enrollmentFields: {
-    name: false,
-    phone: false,
-    company: false,
-  },
-
-  enrollmentFieldLabels: {
-    name: '输入真实姓名',
-    phone: '输入手机号码',
-    company: '您的公司',
-  },
-
-  enrollmentFieldRequired: {
-    name: false,
-    phone: false,
-    company: false,
-  },
-
-  // 高级设置
-  enablePassMode: true,
-  electiveUnlockCondition: 'previous_completed',
-  singleSectionMode: false,
-  enableAutoEvaluation: true,
-  enableAutoNextSection: false,
-  showCompletedLearners: true,
-  enableLearningTimeLimit: false,
-  showSectionNumbers: true,
+const formData = ref<AdminApi.Course.CourseEditor>({
+  couName: '未命名课程',
+  couIntro: '',
+  couIsApply: 1,
+  couTitle: '',
+  couIsRestrict: 1,
+  couRestrictCount: 5,
+  couIsRestrictTime: 1,
+  couApplyStartTime: '',
+  couApplyEndTime: '',
+  couIsApplyApproval: 1,
+  couIsCancel: 1,
+  couApplyContent: '',
+  couUnlockMethod: 1,
+  couIsStudyInfo: 1,
+  couIsLimitTime: 0,
+  couLimitTime: 10,
 })
-
-/**
- * 内容分类选项
- */
-const categoryOptions = [
-  {
-    label: '前端开发',
-    value: 'frontend',
-  },
-  {
-    label: '后端开发',
-    value: 'backend',
-  },
-  {
-    label: '移动开发',
-    value: 'mobile',
-  },
-  {
-    label: '数据分析',
-    value: 'data',
-  },
-  {
-    label: '人工智能',
-    value: 'ai',
-  },
-  {
-    label: '云计算',
-    value: 'cloud',
-  },
-  {
-    label: '网络安全',
-    value: 'security',
-  },
-  {
-    label: '其他',
-    value: 'other',
-  },
-]
 
 /**
  * 报名信息字段 key
  */
-type EnrollmentFieldKey = 'name' | 'phone' | 'company'
+// type EnrollmentFieldKey = 'name' | 'phone' | 'company'
 
 /**
  * 报名信息字段配置
  */
-const enrollmentFieldOptions: Array<{
-  key: EnrollmentFieldKey
-  label: string
-}> = [
-  {
-    key: 'name',
-    label: '姓名',
-  },
-  {
-    key: 'phone',
-    label: '手机号',
-  },
-  {
-    key: 'company',
-    label: '公司',
-  },
-]
+// const enrollmentFieldOptions: Array<{
+//   key: EnrollmentFieldKey
+//   label: string
+// }> = [
+//   {
+//     key: 'name',
+//     label: '姓名',
+//   },
+//   {
+//     key: 'phone',
+//     label: '手机号',
+//   },
+//   {
+//     key: 'company',
+//     label: '公司',
+//   },
+// ]
 
 /**
  * 获取课程详情
  */
 async function getCourseDetail() {
-  if (!courseId.value) {
+  if (!couId.value) {
     return
   }
 
   // TODO: 替换成真实接口
-  console.log('获取课程详情:', courseId.value)
+  console.log('获取课程详情:', couId.value)
 
-  // 示例：接口返回后回填表单
-  // const res = await getCourseDetailApi(courseId.value)
-  //
-  // formData.value = {
-  //   ...formData.value,
-  //   ...res.data,
-  // }
-}
+  const result = await fetchAdminCourseDetail(couId.value)
 
-/**
- * 上传图片
- *
- * @param type 图片类型
- */
-function uploadImage(type: string) {
-  console.log('上传图片:', type)
-}
+  console.log('🚀 ~ file: index.vue:115 ~ res:', result)
 
-/**
- * AI 生成图片
- *
- * @param type 图片类型
- */
-function generateImage(type: string) {
-  console.log('AI生成图片:', type)
-}
-
-/**
- * 自定义封面
- */
-function customCover() {
-  console.log('自定义封面')
+  formData.value = result
 }
 
 /**
  * 创建课程
  */
 async function createCourse() {
-  // TODO: 替换成真实创建接口
-  console.log('创建课程:', formData.value)
+  const result = await fetchAdminCreateCourse(formData.value)
+
+  if (result === true) {
+    ElNotification.success('课程创建成功')
+
+    // 关闭当前标签页
+    workTabStore.removeTab(route.path)
+
+    router.push({
+      path: '/admin/course',
+    })
+  }
+  else {
+    ElNotification.error('课程创建失败')
+  }
 }
 
 /**
@@ -220,11 +137,11 @@ async function createCourse() {
  */
 async function updateCourse() {
   // TODO: 替换成真实更新接口
-  console.log('更新课程:', courseId.value, formData.value)
+  console.log('更新课程:', couId.value, formData.value)
 }
 
 /**
- * 提交课程
+ * 保存或创建课程
  */
 async function handleSubmitCourse() {
   if (isEditMode.value) {
@@ -233,8 +150,6 @@ async function handleSubmitCourse() {
   else {
     await createCourse()
   }
-
-  router.back()
 }
 
 onMounted(() => {
@@ -281,7 +196,7 @@ onMounted(() => {
             required
           >
             <el-input
-              v-model="formData.name"
+              v-model="formData.couName"
               placeholder="请输入课程名称"
               class="w-full"
             />
@@ -291,8 +206,8 @@ onMounted(() => {
             label="内容分类"
             required
           >
-            <el-select
-              v-model="formData.category"
+            <!-- <el-select
+              v-model="formData.couCategory"
               placeholder="请选择分类"
               class="w-full"
             >
@@ -302,7 +217,19 @@ onMounted(() => {
                 :value="item.value"
                 :label="item.label"
               />
-            </el-select>
+            </el-select> -->
+          </el-form-item>
+
+          <el-form-item
+            label="课程介绍"
+          >
+            <el-input
+              v-model="formData.couIntro"
+              type="textarea"
+              :rows="6"
+              placeholder="请输入课程介绍"
+              class="w-full"
+            />
           </el-form-item>
 
           <el-form-item
@@ -318,7 +245,7 @@ onMounted(() => {
                   class="mb-4 w-full"
                 >
                   <img
-                    :src="formData.coverImage"
+                    src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=autumn%20forest%20road%20scenery%20with%20colorful%20trees&image_size=landscape_4_3"
                     alt="课程封面图"
                     class="h-40 w-64 rounded object-cover max-sm:h-auto max-sm:w-full max-sm:aspect-16/10"
                   >
@@ -329,17 +256,10 @@ onMounted(() => {
                 >
                   <el-button
                     type="primary"
-                    @click="customCover"
                   >
-                    自定义封面
+                    自定义 课程封面图
                   </el-button>
 
-                  <el-button
-                    type="warning"
-                    @click="generateImage('cover')"
-                  >
-                    AI生成
-                  </el-button>
                 </div>
               </div>
 
@@ -350,7 +270,7 @@ onMounted(() => {
                   class="mb-4 w-full"
                 >
                   <img
-                    :src="formData.backgroundImage"
+                    src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=autumn%20forest%20road%20scenery%20with%20colorful%20trees&image_size=landscape_4_3"
                     alt="课程背景图"
                     class="h-40 w-64 rounded object-cover max-sm:h-auto max-sm:w-full max-sm:aspect-16/10"
                   >
@@ -361,17 +281,10 @@ onMounted(() => {
                 >
                   <el-button
                     type="primary"
-                    @click="uploadImage('background')"
                   >
-                    上传图片
+                    自定义 课程背景图
                   </el-button>
 
-                  <el-button
-                    type="warning"
-                    @click="generateImage('background')"
-                  >
-                    AI生成
-                  </el-button>
                 </div>
               </div>
             </div>
@@ -407,12 +320,15 @@ onMounted(() => {
             </el-tooltip>
 
             <el-switch
-              v-model="formData.enableEnrollment"
+              v-model="formData.couIsApply"
+              :active-value="1"
+              :inactive-value="0"
             />
           </div>
         </div>
 
         <el-form
+          v-if="formData.couIsApply === 1"
           label-position="top"
           label-width="120px"
         >
@@ -421,7 +337,7 @@ onMounted(() => {
             required
           >
             <el-input
-              v-model="formData.enrollmentTitle"
+              v-model="formData.couTitle"
               placeholder="未命名课程"
               class="w-full"
             />
@@ -431,33 +347,34 @@ onMounted(() => {
             label="报名名额"
           >
             <div
-              class="flex w-full flex-wrap gap-x-4 gap-y-2 items-center"
+              class="flex w-full items-center gap-10"
             >
               <el-radio-group
-                v-model="formData.enrollmentQuotaType"
+                v-model="formData.couIsRestrict"
                 class="flex flex-wrap gap-x-6 gap-y-2"
               >
                 <el-radio
-                  value="unlimited"
+                  :value="0"
                 >
                   不限制
                 </el-radio>
 
                 <el-radio
-                  value="limited"
+                  :value="1"
                 >
                   限制
                 </el-radio>
               </el-radio-group>
 
-              <template
-                v-if="formData.enrollmentQuotaType === 'limited'"
+              <div
+                v-if="formData.couIsRestrict === 1"
+                class="flex items-center gap-2"
               >
                 <el-input
-                  v-model="formData.enrollmentLimit"
+                  v-model="formData.couRestrictCount"
                   type="number"
                   placeholder="请输入限制人数"
-                  class="w-40 max-sm:w-full"
+                  class="w-40 "
                 />
 
                 <span>个</span>
@@ -471,7 +388,7 @@ onMounted(() => {
                     <QuestionFilled />
                   </el-icon>
                 </el-tooltip>
-              </template>
+              </div>
             </div>
           </el-form-item>
 
@@ -479,23 +396,23 @@ onMounted(() => {
             label="报名开放时间"
           >
             <div
-              class="flex w-full flex-col gap-3"
+              class="flex w-full items-center gap-10"
             >
               <div
                 class="flex flex-wrap gap-x-4 gap-y-2 items-center"
               >
                 <el-radio-group
-                  v-model="formData.enrollmentTimeType"
+                  v-model="formData.couIsRestrictTime"
                   class="flex flex-wrap gap-x-6 gap-y-2"
                 >
                   <el-radio
-                    value="unlimited"
+                    :value="0"
                   >
                     不限制
                   </el-radio>
 
                   <el-radio
-                    value="limited"
+                    :value="1"
                   >
                     限制
                   </el-radio>
@@ -513,18 +430,18 @@ onMounted(() => {
               </div>
 
               <div
-                v-if="formData.enrollmentTimeType === 'limited'"
-                class="grid grid-cols-2 gap-4 max-md:grid-cols-1"
+                v-if="formData.couIsRestrictTime === 1"
+                class="flex items-center gap-2"
               >
                 <el-date-picker
-                  v-model="formData.enrollmentStart"
+                  v-model="formData.couApplyStartTime"
                   type="datetime"
                   placeholder="开始时间"
                   class="w-full!"
                 />
 
                 <el-date-picker
-                  v-model="formData.enrollmentEnd"
+                  v-model="formData.couApplyEndTime"
                   type="datetime"
                   placeholder="结束时间"
                   class="w-full!"
@@ -540,17 +457,17 @@ onMounted(() => {
               class="flex flex-wrap gap-x-4 gap-y-2 items-center"
             >
               <el-radio-group
-                v-model="formData.enrollmentAuditType"
+                v-model="formData.couIsApplyApproval"
                 class="flex flex-wrap gap-x-6 gap-y-2"
               >
                 <el-radio
-                  value="auto"
+                  :value="0"
                 >
                   自动审核
                 </el-radio>
 
                 <el-radio
-                  value="manual"
+                  :value="1"
                 >
                   手动审核
                 </el-radio>
@@ -575,17 +492,17 @@ onMounted(() => {
               class="flex flex-wrap gap-x-4 gap-y-2 items-center"
             >
               <el-radio-group
-                v-model="formData.allowCancelEnrollment"
+                v-model="formData.couIsCancel"
                 class="flex flex-wrap gap-x-6 gap-y-2"
               >
                 <el-radio
-                  value="no"
+                  :value="0"
                 >
                   不允许
                 </el-radio>
 
                 <el-radio
-                  value="yes"
+                  :value="1"
                 >
                   允许
                 </el-radio>
@@ -607,7 +524,7 @@ onMounted(() => {
             label="报名介绍"
           >
             <el-input
-              v-model="formData.enrollmentIntroduction"
+              v-model="formData.couApplyContent"
               type="textarea"
               :rows="6"
               placeholder="请输入报名介绍"
@@ -672,116 +589,134 @@ onMounted(() => {
           </div>
 
           <el-form
-            label-position="left"
+            label-position="top"
           >
-            <el-form-item>
+            <el-form-item
+              label="课程小节解锁方式"
+            >
               <div
-                class="flex flex-col"
+                class="flex w-full items-center gap-10"
               >
-                <el-checkbox
-                  v-model="formData.enablePassMode"
-                >
-                  按课程小节解锁（闯关模式）
-                </el-checkbox>
-
-                <div
-                  class="ml-6 mt-2 text-sm text-g-600 max-sm:ml-0"
-                >
-                  闯关模式下，学员需完成上一必修小节，才会解锁下一必修小节。两个必修小节间的选修小节将自动解锁。<br>
-                  课程拥有者和协作者不受闯关模式影响，始终可以查看所有小节。
-                </div>
-              </div>
-            </el-form-item>
-
-            <el-form-item>
-              <div
-                class="flex flex-col pl-10 max-sm:pl-0"
-              >
-                <div>
-                  选修小节解锁条件
-                </div>
-
                 <el-radio-group
-                  v-model="formData.electiveUnlockCondition"
-                  class="flex flex-wrap gap-x-6 gap-y-2"
+                  v-model="formData.couUnlockMethod"
+                  class=""
                 >
-                  <el-radio
-                    value="previous_section"
+                  <div
+                    class="flex flex-col gap-4"
                   >
-                    前面的必修小节解锁之后
-                  </el-radio>
+                    <!-- 1. 顺序解锁 -->
+                    <div
+                      class="flex items-center"
+                    >
+                      <el-radio
+                        :value="1"
+                        class="w-30"
+                      >
+                        顺序解锁
+                      </el-radio>
 
-                  <el-radio
-                    value="previous_completed"
-                  >
-                    前面的必修小节完成之后
-                  </el-radio>
+                      <div
+                        class="text-info text-sm"
+                      >
+                        学员必须按章节顺序学习，完成当前章节后，自动解锁下一章节，无需额外条件。
+                      </div>
+                    </div>
+
+                    <!-- 2. 进度解锁 -->
+                    <div
+                      class="flex items-center"
+                    >
+                      <el-radio
+                        :value="2"
+                        class="w-30"
+                      >
+                        进度解锁
+                      </el-radio>
+
+                      <div
+                        class="text-info text-sm"
+                      >
+                        学员需完成上一必修小节，才会解锁下一必修小节。两个必修小节间的选修小节将自动解锁。<br>
+                        课程拥有者和协作者不受闯关模式影响，始终可以查看所有小节。
+                      </div>
+                    </div>
+
+                    <!-- 3. 章节测试解锁 -->
+                    <div
+                      class="flex items-center"
+                    >
+                      <el-radio
+                        :value="3"
+                        class="w-30"
+                      >
+                        章节测试解锁
+                      </el-radio>
+
+                      <div
+                        class="text-info text-sm"
+                      >
+                        学员必须完成当前章节的测试并达到合格分数，方可解锁下一章节，未达标无法继续学习后续内容。
+                      </div>
+                    </div>
+                  </div>
                 </el-radio-group>
               </div>
             </el-form-item>
 
-            <el-form-item>
-              <div>
-                <el-checkbox
-                  v-model="formData.singleSectionMode"
-                >
-                  单节模式
-                </el-checkbox>
+            <el-form-item
+              label="视频和微课详情中显示已经学完的学员"
+            >
+              <el-checkbox
+                v-model="formData.couIsStudyInfo"
+                :true-value="1"
+                :false-value="0"
+              />
 
-                <div
-                  class="ml-6 mt-2 text-sm text-g-600 max-sm:ml-0"
-                >
-                  单节模式下，学员参与小节时，将无法从当前小节跳转至上一节或下一节课程。
-                </div>
+              <div
+                class=" text-sm text-info "
+              >
+                开启时，学员可在视频和微课小节详情中查看"正在学习"与"已经学完"的学员。关闭时，"正在学习"与"已经学完"的学员将会被隐藏。
               </div>
             </el-form-item>
 
-            <el-form-item>
-              <div>
-                <el-checkbox
-                  v-model="formData.enableAutoNextSection"
+            <el-form-item
+              label="课程学习时长统计上限"
+            >
+              <div
+                class="flex flex-col gap-4"
+              >
+                <div
+                  class="flex items-center gap-2"
                 >
-                  学完视频和微课自动进入下一个小节
-                </el-checkbox>
+                  <el-checkbox
+                    v-model="formData.couIsLimitTime"
+                    :true-value="1"
+                    :false-value="0"
+                  />
+
+                  <div
+                    class="text-sm text-info"
+                  >
+                    设置学习时长上限后，学员在本课程有效学习时长的最大值为讲师设置值。实际学习时长会始终被记录。
+                  </div>
+
+                </div>
 
                 <div
-                  class="ml-6 mt-2 text-sm text-g-600 max-sm:ml-0"
+                  v-if="formData.couIsLimitTime"
+                  class="flex items-center gap-2"
                 >
-                  开启时，在学员学完视频和微课小节时，会自动进入下一个小节。关闭时，学完不会自动进入下一个小节。该设置项仅在"学完视频和微课自动弹出课程评价弹窗"为"关闭"时生效。
+                  <el-input-number
+                    v-model="formData.couLimitTime"
+                    :min="1"
+                  />
+
+                  <span>小时</span>
+
                 </div>
+
               </div>
-            </el-form-item>
 
-            <el-form-item>
-              <div>
-                <el-checkbox
-                  v-model="formData.showCompletedLearners"
-                >
-                  视频和微课详情中显示已经学完的学员
-                </el-checkbox>
-
-                <div
-                  class="ml-6 mt-2 text-sm text-g-600 max-sm:ml-0"
-                >
-                  开启时，学员可在视频和微课小节详情中查看"正在学习"与"已经学完"的学员。关闭时，"正在学习"与"已经学完"的学员将会被隐藏。
-                </div>
-              </div>
-            </el-form-item>
-
-            <el-form-item>
-              <div>
-                <el-checkbox
-                  v-model="formData.enableLearningTimeLimit"
-                >
-                  课程学习时长统计上限
-                </el-checkbox>
-
-                <div
-                  class="ml-6 mt-2 text-sm text-g-600 max-sm:ml-0"
-                >
-                  设置学习时长上限后，学员在本课程有效学习时长的最大值为讲师设置值。实际学习时长会始终被记录。
-                </div>
-              </div>
             </el-form-item>
 
           </el-form>

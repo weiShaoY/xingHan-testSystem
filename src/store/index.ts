@@ -28,6 +28,8 @@ export * from './modules/adminUser'
 
 export * from './modules/clientUser'
 
+export * from './modules/workTab'
+
 export * from './user'
 
 /**

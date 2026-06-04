@@ -99,7 +99,7 @@ export const Course: AppRouteRecord = {
       },
     },
     {
-      path: 'edit/:id',
+      path: 'edit/:couId',
       name: 'AdminCourseEdit',
       component: '/admin/course/editor',
       meta: {
@@ -114,7 +114,7 @@ export const Course: AppRouteRecord = {
     },
 
     {
-      path: 'detail/:id',
+      path: 'detail/:couId',
       name: 'AdminCourseDetail',
       component: '/admin/course/detail',
       meta: {

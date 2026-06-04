@@ -12,10 +12,10 @@ export function fetchAdminGetPublicKey() {
 /**
  *  管理端登录
  */
-export function fetchAdminLogin(params: AdminApi.Auth.LoginParams) {
+export function fetchAdminLogin(data: AdminApi.Auth.LoginParams) {
   return request.post<AdminApi.Auth.LoginResponse>({
     url: '/admin/auth/login',
-    data: params,
+    data,
   })
 }
 
@@ -37,44 +37,55 @@ export function fetchAdminGetUserInfo(authPath?: string) {
 /**
  * 获取课程列表
  */
-export function fetchAdminCourseList(params: AdminApi.Course.CourseListParams) {
+export function fetchAdminCourseList(data: AdminApi.Course.CourseListParams) {
   return request.post<AdminApi.Course.CourseListResponse>({
     url: '/admin/course/list',
-    data: params,
-  })
-}
-
-/**
- *  获取课程详情
- *  @param courseId 课程ID
- */
-export function fetchAdminCourseDetail(courseId: string) {
-  return request.get<AdminApi.Course.CourseDetailResponse>({
-    url: '/admin/course/getCourse',
-    params: {
-      courseId,
-    },
-  })
-}
-
-/**
- *  获取课程设置
- */
-export function fetchAdminCourseSetting(courseId: string) {
-  return request.get<AdminApi.Course.CourseSettingResponse>({
-    url: '/admin/course/getCourseSetting',
-    params: {
-      courseId,
-    },
+    data,
   })
 }
 
 /**
  *  新增课程
  */
-export function fetchAdminAddCourse(params: AdminApi.Course.AddCourseParams) {
-  return request.post({
+
+export function fetchAdminCreateCourse(data: AdminApi.Course.CourseEditor) {
+  return request.post<boolean>({
     url: '/admin/course/addCourse',
-    data: params,
+    data,
+  })
+}
+
+/**
+ *  获取课程详情
+ *  @param couId 课程ID
+ */
+export function fetchAdminCourseDetail(couId: string) {
+  return request.get<AdminApi.Course.CourseEditor>({
+    url: '/admin/course/getCourse',
+    params: {
+      couId,
+    },
+  })
+}
+
+/**
+ *  编辑课程
+ */
+export function fetchAdminUpdateCourse(data: AdminApi.Course.CourseEditor) {
+  return request.post<boolean>({
+    url: '/admin/course/updateCourse',
+    data,
+  })
+}
+
+/**
+ *  获取课程设置
+ */
+export function fetchAdminCourseSetting(couId: string) {
+  return request.get<AdminApi.Course.CourseSettingResponse>({
+    url: '/admin/course/getCourseSetting',
+    params: {
+      couId,
+    },
   })
 }

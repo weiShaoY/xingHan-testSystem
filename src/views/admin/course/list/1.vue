@@ -134,7 +134,7 @@ function goToCreate() {
     >
       <div
         v-for="item in courseList.rows"
-        :key="item.couID"
+        :key="item.couId"
         class="grid grid-cols-[150px_8px_minmax(0,1fr)] gap-5 items-center max-md:grid-cols-1 max-md:gap-3"
       >
         <div

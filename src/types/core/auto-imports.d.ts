@@ -53,15 +53,17 @@ declare global {
   const effectScope: typeof import('vue').effectScope
   const emojo: typeof import('../../utils/ui/emojo').default
   const extendRef: typeof import('@vueuse/core').extendRef
-  const fetchAdminAddCourse: typeof import('../../apis/admin/index').fetchAdminAddCourse
+  const fetchAdminAddCourse: typeof import('../../apis/admin/index').fetchAdminCreateCourse
   const fetchAdminCourseDetail: typeof import('../../apis/admin/index').fetchAdminCourseDetail
   const fetchAdminCourseList: typeof import('../../apis/admin/index').fetchAdminCourseList
   const fetchAdminCourseSetting: typeof import('../../apis/admin/index').fetchAdminCourseSetting
+  const fetchAdminCreateCourse: typeof import('../../apis/admin/index').fetchAdminCreateCourse
   const fetchAdminFileList: typeof import('../../apis/file/index').fetchAdminFileList
   const fetchAdminGetCourseList: typeof import('../../apis/admin/index').fetchAdminGetCourseList
   const fetchAdminGetPublicKey: typeof import('../../apis/admin/index').fetchAdminGetPublicKey
   const fetchAdminGetUserInfo: typeof import('../../apis/admin/index').fetchAdminGetUserInfo
   const fetchAdminLogin: typeof import('../../apis/admin/index').fetchAdminLogin
+  const fetchAdminUpdateCourse: typeof import('../../apis/admin/index').fetchAdminUpdateCourse
   const fetchAdminUploadFile: typeof import('../../apis/file/index').fetchAdminUploadFile
   const fetchClientGetPublicKey: typeof import('../../apis/client/index').fetchClientGetPublicKey
   const fetchClientGetUserInfo: typeof import('../../apis/client/index').fetchClientGetUserInfo
@@ -93,8 +95,11 @@ declare global {
   const getFileList: typeof import('../../apis/file/index').getFileList
   const getFirstMenuPath: typeof import('../../utils/navigation/route').getFirstMenuPath
   const getLightColor: typeof import('../../utils/ui/colors').getLightColor
+  const getLoginRouteNameByPath: typeof import('../../store/user').getLoginRouteNameByPath
   const getPasswordStrength: typeof import('../../utils/form/validator').getPasswordStrength
   const getTabConfig: typeof import('../../utils/ui/tabs').getTabConfig
+  const getUserStorageKeyByPath: typeof import('../../store/user').getUserStorageKeyByPath
+  const getUserStoreByPath: typeof import('../../store/user').getUserStoreByPath
   const h: typeof import('vue').h
   const handleElementThemeColor: typeof import('../../utils/ui/colors').handleElementThemeColor
   const handleError: typeof import('../../apis/http/error').handleError
@@ -103,8 +108,10 @@ declare global {
   const hexToRgba: typeof import('../../utils/ui/colors').hexToRgba
   const http: typeof import('../../apis/http/index').default
   const ignorableWatch: typeof import('@vueuse/core').ignorableWatch
+  const initStore: typeof import('../../store/index').initStore
   const inject: typeof import('vue').inject
   const injectLocal: typeof import('@vueuse/core').injectLocal
+  const isClientPath: typeof import('../../store/user').isClientPath
   const isDefined: typeof import('@vueuse/core').isDefined
   const isHttpError: typeof import('../../apis/http/error').isHttpError
   const isIframe: typeof import('../../utils/navigation/route').isIframe
@@ -182,6 +189,7 @@ declare global {
   const showSuccess: typeof import('../../apis/http/error').showSuccess
   const socket: typeof import('../../utils/socket/index').default
   const sortRouteModules: typeof import('../../routers/core/RouteLoader').sortRouteModules
+  const store: typeof import('../../store/index').store
   const storeToRefs: typeof import('pinia').storeToRefs
   const subtractSize: typeof import('../../utils/size').subtractSize
   const syncRef: typeof import('@vueuse/core').syncRef
@@ -206,6 +214,7 @@ declare global {
   const until: typeof import('@vueuse/core').until
   const uploadFile: typeof import('../../apis/file/index').fetchAdminUploadFile
   const useActiveElement: typeof import('@vueuse/core').useActiveElement
+  const useAdminUserStore: typeof import('../../store/modules/adminUser').useAdminUserStore
   const useAnimate: typeof import('@vueuse/core').useAnimate
   const useArrayDifference: typeof import('@vueuse/core').useArrayDifference
   const useArrayEvery: typeof import('@vueuse/core').useArrayEvery
@@ -229,6 +238,7 @@ declare global {
   const useBroadcastChannel: typeof import('@vueuse/core').useBroadcastChannel
   const useBrowserLocation: typeof import('@vueuse/core').useBrowserLocation
   const useCached: typeof import('@vueuse/core').useCached
+  const useClientUserStore: typeof import('../../store/modules/clientUser').useClientUserStore
   const useClipboard: typeof import('@vueuse/core').useClipboard
   const useClipboardItems: typeof import('@vueuse/core').useClipboardItems
   const useCloned: typeof import('@vueuse/core').useCloned
@@ -241,6 +251,8 @@ declare global {
   const useCssVar: typeof import('@vueuse/core').useCssVar
   const useCssVars: typeof import('vue').useCssVars
   const useCurrentElement: typeof import('@vueuse/core').useCurrentElement
+  const useCurrentLoginRouteName: typeof import('../../store/user').useCurrentLoginRouteName
+  const useCurrentUserStore: typeof import('../../store/user').useCurrentUserStore
   const useCycleList: typeof import('@vueuse/core').useCycleList
   const useDark: typeof import('@vueuse/core').useDark
   const useDateFormat: typeof import('@vueuse/core').useDateFormat
@@ -374,6 +386,7 @@ declare global {
   const useWindowFocus: typeof import('@vueuse/core').useWindowFocus
   const useWindowScroll: typeof import('@vueuse/core').useWindowScroll
   const useWindowSize: typeof import('@vueuse/core').useWindowSize
+  const useWorkTabStore: typeof import('../../store/modules/workTab').useWorkTabStore
   const validateAccount: typeof import('../../utils/form/validator').validateAccount
   const validateBankCard: typeof import('../../utils/form/validator').validateBankCard
   const validateChineseIDCard: typeof import('../../utils/form/validator').validateChineseIDCard
@@ -487,14 +500,15 @@ declare module 'vue' {
     readonly effectScope: UnwrapRef<typeof import('vue')['effectScope']>
     readonly emojo: UnwrapRef<typeof import('../../utils/ui/emojo')['default']>
     readonly extendRef: UnwrapRef<typeof import('@vueuse/core')['extendRef']>
-    readonly fetchAdminAddCourse: UnwrapRef<typeof import('../../apis/admin/index')['fetchAdminAddCourse']>
     readonly fetchAdminCourseDetail: UnwrapRef<typeof import('../../apis/admin/index')['fetchAdminCourseDetail']>
     readonly fetchAdminCourseList: UnwrapRef<typeof import('../../apis/admin/index')['fetchAdminCourseList']>
     readonly fetchAdminCourseSetting: UnwrapRef<typeof import('../../apis/admin/index')['fetchAdminCourseSetting']>
+    readonly fetchAdminCreateCourse: UnwrapRef<typeof import('../../apis/admin/index')['fetchAdminCreateCourse']>
     readonly fetchAdminFileList: UnwrapRef<typeof import('../../apis/file/index')['fetchAdminFileList']>
     readonly fetchAdminGetPublicKey: UnwrapRef<typeof import('../../apis/admin/index')['fetchAdminGetPublicKey']>
     readonly fetchAdminGetUserInfo: UnwrapRef<typeof import('../../apis/admin/index')['fetchAdminGetUserInfo']>
     readonly fetchAdminLogin: UnwrapRef<typeof import('../../apis/admin/index')['fetchAdminLogin']>
+    readonly fetchAdminUpdateCourse: UnwrapRef<typeof import('../../apis/admin/index')['fetchAdminUpdateCourse']>
     readonly fetchAdminUploadFile: UnwrapRef<typeof import('../../apis/file/index')['fetchAdminUploadFile']>
     readonly fetchClientGetPublicKey: UnwrapRef<typeof import('../../apis/client/index')['fetchClientGetPublicKey']>
     readonly fetchClientGetUserInfo: UnwrapRef<typeof import('../../apis/client/index')['fetchClientGetUserInfo']>
@@ -517,8 +531,11 @@ declare module 'vue' {
     readonly getElapsedTime: UnwrapRef<typeof import('../../utils/time')['getElapsedTime']>
     readonly getFirstMenuPath: UnwrapRef<typeof import('../../utils/navigation/route')['getFirstMenuPath']>
     readonly getLightColor: UnwrapRef<typeof import('../../utils/ui/colors')['getLightColor']>
+    readonly getLoginRouteNameByPath: UnwrapRef<typeof import('../../store/user')['getLoginRouteNameByPath']>
     readonly getPasswordStrength: UnwrapRef<typeof import('../../utils/form/validator')['getPasswordStrength']>
     readonly getTabConfig: UnwrapRef<typeof import('../../utils/ui/tabs')['getTabConfig']>
+    readonly getUserStorageKeyByPath: UnwrapRef<typeof import('../../store/user')['getUserStorageKeyByPath']>
+    readonly getUserStoreByPath: UnwrapRef<typeof import('../../store/user')['getUserStoreByPath']>
     readonly h: UnwrapRef<typeof import('vue')['h']>
     readonly handleElementThemeColor: UnwrapRef<typeof import('../../utils/ui/colors')['handleElementThemeColor']>
     readonly handleError: UnwrapRef<typeof import('../../apis/http/error')['handleError']>
@@ -527,8 +544,10 @@ declare module 'vue' {
     readonly hexToRgba: UnwrapRef<typeof import('../../utils/ui/colors')['hexToRgba']>
     readonly http: UnwrapRef<typeof import('../../apis/http/index')['default']>
     readonly ignorableWatch: UnwrapRef<typeof import('@vueuse/core')['ignorableWatch']>
+    readonly initStore: UnwrapRef<typeof import('../../store/index')['initStore']>
     readonly inject: UnwrapRef<typeof import('vue')['inject']>
     readonly injectLocal: UnwrapRef<typeof import('@vueuse/core')['injectLocal']>
+    readonly isClientPath: UnwrapRef<typeof import('../../store/user')['isClientPath']>
     readonly isDefined: UnwrapRef<typeof import('@vueuse/core')['isDefined']>
     readonly isHttpError: UnwrapRef<typeof import('../../apis/http/error')['isHttpError']>
     readonly isIframe: UnwrapRef<typeof import('../../utils/navigation/route')['isIframe']>
@@ -602,6 +621,7 @@ declare module 'vue' {
     readonly showError: UnwrapRef<typeof import('../../apis/http/error')['showError']>
     readonly showSuccess: UnwrapRef<typeof import('../../apis/http/error')['showSuccess']>
     readonly socket: UnwrapRef<typeof import('../../utils/socket/index')['default']>
+    readonly store: UnwrapRef<typeof import('../../store/index')['store']>
     readonly storeToRefs: UnwrapRef<typeof import('pinia')['storeToRefs']>
     readonly subtractSize: UnwrapRef<typeof import('../../utils/size')['subtractSize']>
     readonly syncRef: UnwrapRef<typeof import('@vueuse/core')['syncRef']>
@@ -625,6 +645,7 @@ declare module 'vue' {
     readonly unrefElement: UnwrapRef<typeof import('@vueuse/core')['unrefElement']>
     readonly until: UnwrapRef<typeof import('@vueuse/core')['until']>
     readonly useActiveElement: UnwrapRef<typeof import('@vueuse/core')['useActiveElement']>
+    readonly useAdminUserStore: UnwrapRef<typeof import('../../store/modules/adminUser')['useAdminUserStore']>
     readonly useAnimate: UnwrapRef<typeof import('@vueuse/core')['useAnimate']>
     readonly useArrayDifference: UnwrapRef<typeof import('@vueuse/core')['useArrayDifference']>
     readonly useArrayEvery: UnwrapRef<typeof import('@vueuse/core')['useArrayEvery']>
@@ -648,6 +669,7 @@ declare module 'vue' {
     readonly useBroadcastChannel: UnwrapRef<typeof import('@vueuse/core')['useBroadcastChannel']>
     readonly useBrowserLocation: UnwrapRef<typeof import('@vueuse/core')['useBrowserLocation']>
     readonly useCached: UnwrapRef<typeof import('@vueuse/core')['useCached']>
+    readonly useClientUserStore: UnwrapRef<typeof import('../../store/modules/clientUser')['useClientUserStore']>
     readonly useClipboard: UnwrapRef<typeof import('@vueuse/core')['useClipboard']>
     readonly useClipboardItems: UnwrapRef<typeof import('@vueuse/core')['useClipboardItems']>
     readonly useCloned: UnwrapRef<typeof import('@vueuse/core')['useCloned']>
@@ -660,6 +682,8 @@ declare module 'vue' {
     readonly useCssVar: UnwrapRef<typeof import('@vueuse/core')['useCssVar']>
     readonly useCssVars: UnwrapRef<typeof import('vue')['useCssVars']>
     readonly useCurrentElement: UnwrapRef<typeof import('@vueuse/core')['useCurrentElement']>
+    readonly useCurrentLoginRouteName: UnwrapRef<typeof import('../../store/user')['useCurrentLoginRouteName']>
+    readonly useCurrentUserStore: UnwrapRef<typeof import('../../store/user')['useCurrentUserStore']>
     readonly useCycleList: UnwrapRef<typeof import('@vueuse/core')['useCycleList']>
     readonly useDark: UnwrapRef<typeof import('@vueuse/core')['useDark']>
     readonly useDateFormat: UnwrapRef<typeof import('@vueuse/core')['useDateFormat']>
@@ -793,6 +817,7 @@ declare module 'vue' {
     readonly useWindowFocus: UnwrapRef<typeof import('@vueuse/core')['useWindowFocus']>
     readonly useWindowScroll: UnwrapRef<typeof import('@vueuse/core')['useWindowScroll']>
     readonly useWindowSize: UnwrapRef<typeof import('@vueuse/core')['useWindowSize']>
+    readonly useWorkTabStore: UnwrapRef<typeof import('../../store/modules/workTab')['useWorkTabStore']>
     readonly validateAccount: UnwrapRef<typeof import('../../utils/form/validator')['validateAccount']>
     readonly validateBankCard: UnwrapRef<typeof import('../../utils/form/validator')['validateBankCard']>
     readonly validateChineseIDCard: UnwrapRef<typeof import('../../utils/form/validator')['validateChineseIDCard']>
