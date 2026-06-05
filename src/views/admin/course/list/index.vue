@@ -1,31 +1,44 @@
 <!------  2026-04-15---16:08---星期三  ------>
 <!------------------------------------    ------------------------------------------------->
 <script lang="ts" setup>
-
 import AllocateCourseDialog from './AllocateCourseDialog.vue'
 
+/**
+ * 分页条数选项。
+ */
+const PAGE_SIZE_OPTIONS = [10, 20, 30, 50]
+
+/**
+ * Vue Router 实例，用于课程相关页面跳转。
+ */
 const router = useRouter()
 
+/**
+ * 工作标签页 Store，用于更新动态页面标签标题。
+ */
 const workTabStore = useWorkTabStore()
 
+/**
+ * 课程列表加载状态。
+ */
 const loading = ref(false)
 
 /**
- * 是否显示分配学习任务弹窗
+ * 分配学习任务弹窗显示状态。
  */
 const isShowAllocateCourseDialog = ref(false)
 
 /**
- *  请求参数
+ * 课程列表查询参数。
  */
 const params = reactive<AdminApi.Course.CourseListParams>({
   name: '',
-  pageSize: 10,
+  pageSize: PAGE_SIZE_OPTIONS[0],
   currentPage: 1,
 })
 
 /**
- * 课程列表
+ * 课程列表响应数据。
  */
 const courseList = ref<AdminApi.Course.CourseListResponse>({
   rows: [],
@@ -33,7 +46,9 @@ const courseList = ref<AdminApi.Course.CourseListResponse>({
 })
 
 /**
- * 获取课程列表
+ * 获取课程列表数据。
+ *
+ * @returns 请求完成后更新课程列表和加载状态。
  */
 async function getCourseList() {
   loading.value = true
@@ -42,17 +57,51 @@ async function getCourseList() {
     courseList.value = await fetchAdminCourseList(params)
   }
   catch {
-    loading.value = false
+    ElNotification.error('课程列表获取失败')
   }
   finally {
     loading.value = false
   }
 }
 
-getCourseList()
+/**
+ * 重置到第一页并刷新课程列表。
+ */
+function refreshFirstPage() {
+  params.currentPage = 1
+  getCourseList()
+}
 
 /**
- * 跳转到创建页
+ * 按课程名称搜索课程。
+ */
+function handleSearch() {
+  params.name = (params.name || '').trim()
+  refreshFirstPage()
+}
+
+/**
+ * 处理每页条数变化。
+ *
+ * @param pageSize 新的每页条数。
+ */
+function handleSizeChange(pageSize: number) {
+  params.pageSize = pageSize
+  refreshFirstPage()
+}
+
+/**
+ * 处理当前页变化。
+ *
+ * @param currentPage 新的当前页码。
+ */
+function handleCurrentChange(currentPage: number) {
+  params.currentPage = currentPage
+  getCourseList()
+}
+
+/**
+ * 跳转到课程创建页。
  */
 function goToCreate() {
   router.push({
@@ -61,61 +110,68 @@ function goToCreate() {
 }
 
 /**
- * 跳转到编辑页
+ * 打开分配学习任务弹窗。
  */
-async function goToEdit(item: AdminApi.Course.CourseListItem) {
-  const editRoute = router.resolve({
-    name: 'AdminCourseEdit',
+function openAllocateCourseDialog() {
+  isShowAllocateCourseDialog.value = true
+}
+
+/**
+ * 跳转到课程相关页面，并按课程名称更新工作标签标题。
+ *
+ * @param item 课程列表项。
+ * @param routeName 目标课程路由名称。
+ * @param titlePrefix 标签标题前缀。
+ * @returns 页面跳转和标签标题更新完成。
+ */
+async function goToCoursePage(
+  item: AdminApi.Course.CourseListItem,
+  routeName: 'AdminCourseEdit' | 'AdminCourseDetail',
+  titlePrefix: string,
+) {
+  /**
+   * 解析后的目标路由。
+   */
+  const targetRoute = router.resolve({
+    name: routeName,
     params: {
       couId: item.couId,
     },
   })
 
-  await router.push(editRoute)
+  await router.push(targetRoute)
 
-  workTabStore.updateTabTitle(editRoute.path, `编辑课程-${item.couName}`)
+  workTabStore.updateTabTitle(targetRoute.path, `${titlePrefix}-${item.couName}`)
 }
 
 /**
- * 跳转到详情页
+ * 跳转到课程编辑页。
+ *
+ * @param item 需要编辑的课程。
  */
-async function goToDetail(item: AdminApi.Course.CourseListItem) {
-  const detailRoute = router.resolve({
-    name: 'AdminCourseDetail',
-    params: {
-      couId: item.couId,
-    },
-  })
-
-  await router.push(detailRoute)
-
-  workTabStore.updateTabTitle(detailRoute.path, `课程详情-${item.couName}`)
+function goToEdit(item: AdminApi.Course.CourseListItem) {
+  void goToCoursePage(item, 'AdminCourseEdit', '编辑课程')
 }
 
 /**
- * 每页条数变化
+ * 跳转到课程详情页。
+ *
+ * @param item 需要查看详情的课程。
  */
-function handleSizeChange(pageSize: number) {
-  params.pageSize = pageSize
-  params.currentPage = 1
-  getCourseList()
+function goToDetail(item: AdminApi.Course.CourseListItem) {
+  void goToCoursePage(item, 'AdminCourseDetail', '课程详情')
 }
 
 /**
- * 当前页变化
- */
-function handleCurrentChange(currentPage: number) {
-  params.currentPage = currentPage
-  getCourseList()
-}
-
-/**
- * 删除课程
+ * 删除课程并刷新列表。
+ *
+ * @param item 需要删除的课程。
+ * @returns 删除请求和列表刷新完成。
  */
 async function deleteCourse(item: AdminApi.Course.CourseListItem) {
   try {
     await fetchAdminDeleteCourse(String(item.couId))
-    getCourseList()
+    await getCourseList()
     ElNotification.success('删除成功')
   }
   catch {
@@ -123,14 +179,7 @@ async function deleteCourse(item: AdminApi.Course.CourseListItem) {
   }
 }
 
-/**
- * 搜索课程
- */
-function handleSearch() {
-  params.currentPage = 1
-  params.name = params.name.trim()
-  getCourseList()
-}
+getCourseList()
 </script>
 
 <template>
@@ -233,7 +282,6 @@ function handleSearch() {
 
         <div
           class="art-card flex flex-1 flex-col cursor-pointer justify-center relative transition hover:border-primary/30 max-sm:p-4"
-          @click="goToDetail(item)"
         >
           <div
             class="flex items-start justify-between gap-4 max-sm:flex-col"
@@ -270,7 +318,7 @@ function handleSearch() {
 
               <ArtIconButton
                 type="allocate"
-                @click="isShowAllocateCourseDialog = true"
+                @click="openAllocateCourseDialog"
               />
             </div>
           </div>
@@ -357,7 +405,7 @@ function handleSearch() {
         v-model:current-page="params.currentPage"
         v-model:page-size="params.pageSize"
         background
-        :page-sizes="[10, 20, 30, 50]"
+        :page-sizes="PAGE_SIZE_OPTIONS"
         :pager-count="7"
         layout="total, prev, pager, next, sizes, jumper"
         :total="courseList.totals"
