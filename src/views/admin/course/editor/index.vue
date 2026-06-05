@@ -171,15 +171,16 @@ async function handleSubmitCourse() {
   }
 
   loading.value = true
-  try {
-    /**
-     * 当前表单提交动作。
-     */
-    const submitAction = isEditMode.value
-      ? fetchAdminCourseUpdate
-      : fetchAdminCourseCreate
 
-    await submitAction(formData.value)
+  try {
+    if (isEditMode.value) {
+      await fetchAdminCourseUpdate(formData.value)
+      ElNotification.success('课程更新成功')
+    }
+    else {
+      await fetchAdminCourseCreate(formData.value)
+      ElNotification.success('课程创建成功')
+    }
 
     backToCourseList()
 

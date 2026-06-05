@@ -78,19 +78,20 @@ async function handleSubmit() {
   }
 
   loading.value = true
+
   try {
     if (isEditMode.value) {
       await fetchAdminCourseOutlineUpdate(formData.value)
-      ElNotification.success('章节更新成功')
-      emit('success', formData.value)
     }
     else {
       await fetchAdminCourseOutlineAdd(formData.value)
-      ElNotification.success('章节新增成功')
-      emit('success', formData.value)
     }
 
+    emit('success', formData.value)
+
     visible.value = false
+
+    ElNotification.success(isEditMode.value ? '章节更新成功' : '章节新增成功')
   }
   catch {
     ElNotification.error(isEditMode.value ? '章节更新失败' : '章节新增失败')
@@ -111,11 +112,13 @@ onMounted(() => {
   <el-dialog
     v-if="visible"
     v-model="visible"
+    v-loading="loading"
     :title="dialogTitle"
     width="50%"
     :show-close="false"
   >
     <el-form
+      v-loading="loading"
       :model="formData"
       label-position="top"
     >
