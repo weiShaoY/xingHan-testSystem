@@ -509,12 +509,6 @@ declare namespace AdminApi {
       asId?: number
 
       /**
-       * 小节序号
-       * @description 通常为当前小节列表长度加1；仅小节类型需要。
-       */
-      olTax?: number
-
-      /**
        * 学科ID
        * @description 当前大纲节点关联的学科。
        */
@@ -522,12 +516,57 @@ declare namespace AdminApi {
     }
 
     /**
-     * 课程章节列表项
-     * @description 接口字段待补充，暂用空记录约束占位。
+     * 小节类型定义
      */
-    type CourseOutlineListItem = {
+    type Section = {
 
+      /** 小节 ID */
+      id: number
+
+      /** 小节名称 */
+      name: string
+
+      /** 小节描述 */
+      description: string
+
+      /** 内容项类型标识  区分是 小节 或 章节 */
+      itemType: 'section'
+
+      /** 小节内容类型 */
+      sectionType: SectionType
+
+      /** 参与小节学习的人数 */
+      participantCount: number
     }
+
+    /**
+     * 章节类型定义
+     */
+    type Chapter = {
+
+      /** 章节 ID */
+      id: number
+
+      /** 章节名称 */
+      name: string
+
+      /** 章节描述 */
+      description: string
+
+      /** 内容项类型标识  区分是 小节 或 章节 */
+      itemType: 'chapter'
+
+      /** 章节是否对学员可见 */
+      isVisible: string
+
+      /** 章节下的小节列表 */
+      sectionList: Section[]
+    }
+
+    /**
+     * 章节或小节的列表项。
+     */
+    type CourseOutlineListItem = Chapter | Section
 
     /**
      * 课程章节列表响应

@@ -95,7 +95,11 @@ const emit = defineEmits<{
         <div
           class="mt-2 flex flex-col gap-1 text-xs text-g-600"
         >
-          <span>{{ section.participantCount }} 人参与</span>
+          <span
+            v-if="section.participantCount > 0"
+          >
+            {{ section.participantCount }} 人参与
+          </span>
 
           <span
             class="wrap-break-word leading-relaxed"

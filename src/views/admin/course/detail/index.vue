@@ -27,59 +27,6 @@ const couId = computed(() => {
 })
 
 /**
- * 小节类型定义
- */
-type Section = {
-
-  /** 小节 ID */
-  id: number
-
-  /** 小节名称 */
-  name: string
-
-  /** 小节描述 */
-  description: string
-
-  /** 内容项类型标识  区分是 小节 或 章节 */
-  itemType: 'section'
-
-  /** 小节内容类型 */
-  sectionType: SectionType
-
-  /** 参与小节学习的人数 */
-  participantCount: number
-}
-
-/**
- * 章节类型定义
- */
-type Chapter = {
-
-  /** 章节 ID */
-  id: number
-
-  /** 章节名称 */
-  name: string
-
-  /** 章节描述 */
-  description: string
-
-  /** 内容项类型标识  区分是 小节 或 章节 */
-  itemType: 'chapter'
-
-  /** 章节是否对学员可见 */
-  isVisible: string
-
-  /** 章节下的小节列表 */
-  sectionList: Section[]
-}
-
-/**
- * 课程内容项类型（章节或小节）
- */
-type CourseItem = Chapter | Section
-
-/**
  * 创建小节路由映射
  */
 const createSectionRouteMap: Record<SectionType, string> = {
@@ -122,7 +69,7 @@ const chapterFormMode = ref<'add' | 'edit'>('add')
 /**
  * 当前编辑的章节
  */
-const currentEditChapter = ref<Chapter>()
+const currentEditChapter = ref<AdminApi.Course.CourseOutlineListItem>()
 
 /**
  * 当前要添加小节的章节 ID，空值表示添加课程直属小节
@@ -132,7 +79,7 @@ const currentCreateSectionChapterId = ref<number>()
 /**
  * 课程内容数据
  */
-const courseItems = ref<CourseItem[]>([
+const outlineList = ref<AdminApi.Course.CourseOutlineListItem[]>([
   {
     id: 1,
     name: '章节1',
@@ -229,11 +176,11 @@ const courseItems = ref<CourseItem[]>([
  * 页面从上到下的小节序号映射
  */
 const sectionIndexMap = computed(() => {
-  const map = new Map<Section, number>()
+  const map = new Map<AdminApi.Course.Section, number>()
 
   let index = 1
 
-  courseItems.value.forEach((item) => {
+  outlineList.value.forEach((item) => {
     if (item.itemType === 'chapter') {
       item.sectionList.forEach((section) => {
         map.set(section, index)
@@ -253,7 +200,7 @@ const sectionIndexMap = computed(() => {
 /**
  * 获取当前小节在整个页面中的序号
  */
-function getSectionIndex(section: Section) {
+function getSectionIndex(section: AdminApi.Course.Section) {
   return sectionIndexMap.value.get(section) ?? 0
 }
 
@@ -326,7 +273,7 @@ function openAddChapterDialog() {
  * 新增章节
  */
 function handleAddChapter(data: { name: string, description: string, isVisible: string }) {
-  courseItems.value.push({
+  outlineList.value.push({
     id: Date.now(),
     name: data.name,
     description: data.description,
@@ -340,8 +287,8 @@ function handleAddChapter(data: { name: string, description: string, isVisible: 
  * 编辑章节
  */
 function editChapter(chapterId: number) {
-  const chapter = courseItems.value.find(
-    (item): item is Chapter => item.itemType === 'chapter' && item.id === chapterId,
+  const chapter = outlineList.value.find(
+    (item): item is AdminApi.Course.Chapter => item.itemType === 'chapter' && item.id === chapterId,
   )
 
   if (!chapter) {
@@ -357,13 +304,13 @@ function editChapter(chapterId: number) {
  * 更新章节
  */
 function handleEditChapter(data: { name: string, description: string, isVisible: string }) {
-  if (!currentEditChapter.value) {
-    return
-  }
+  // if (!currentEditChapter.value) {
+  //   return
+  // }
 
-  currentEditChapter.value.name = data.name
-  currentEditChapter.value.description = data.description
-  currentEditChapter.value.isVisible = data.isVisible
+  // currentEditChapter.value.name = data.name
+  // currentEditChapter.value.description = data.description
+  // currentEditChapter.value.isVisible = data.isVisible
 }
 
 /**
@@ -376,40 +323,40 @@ function allocateSection() {
 /**
  * 删除小节
  */
-function deleteSection(section: Section) {
-  const rootSectionIndex = courseItems.value.findIndex(
-    item => item.itemType === 'section' && item.id === section.id,
-  )
+function deleteSection(section: AdminApi.Course.Section) {
+  // const rootSectionIndex = outlineList.value.findIndex(
+  //   item => item.itemType === 'section' && item.id === section.id,
+  // )
 
-  if (rootSectionIndex > -1) {
-    courseItems.value.splice(rootSectionIndex, 1)
-    return
-  }
+  // if (rootSectionIndex > -1) {
+  //   outlineList.value.splice(rootSectionIndex, 1)
+  //   return
+  // }
 
-  courseItems.value.forEach((item) => {
-    if (item.itemType !== 'chapter') {
-      return
-    }
+  // outlineList.value.forEach((item) => {
+  //   if (item.itemType !== 'chapter') {
+  //     return
+  //   }
 
-    const sectionIndex = item.sectionList.findIndex(child => child.id === section.id)
+  //   const sectionIndex = item.sectionList.findIndex(child => child.id === section.id)
 
-    if (sectionIndex > -1) {
-      item.sectionList.splice(sectionIndex, 1)
-    }
-  })
+  //   if (sectionIndex > -1) {
+  //     item.sectionList.splice(sectionIndex, 1)
+  //   }
+  // })
 }
 
 /**
  * 编辑小节
  */
-function editSection(section: Section) {
-  router.push({
-    name: editSectionRouteMap[section.sectionType],
-    params: {
-      courseId: couId.value,
-      sectionId: section.id,
-    },
-  })
+function editSection(section: AdminApi.Course.Section) {
+  // router.push({
+  //   name: editSectionRouteMap[section.sectionType],
+  //   params: {
+  //     courseId: couId.value,
+  //     sectionId: section.id,
+  //   },
+  // })
 }
 
 /**
@@ -418,6 +365,7 @@ function editSection(section: Section) {
 async function getCourseDetail() {
   const res = await fetchAdminCourseOutlineList(couId.value)
 
+  outlineList.value = res
   console.log('🚀 ~ file: index.vue:418 ~ res:', res)
 }
 
@@ -486,7 +434,7 @@ getCourseDetail()
 
     <!-- 课程内容列表 -->
     <div
-      v-for="item in courseItems"
+      v-for="item in outlineList"
       :key="item.id"
     >
       <!-- 章节 -->

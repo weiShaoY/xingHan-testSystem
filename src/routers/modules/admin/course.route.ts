@@ -121,7 +121,7 @@ export const Course: AppRouteRecord = {
       meta: {
         title: '课程详情',
         icon: 'ri:eye-line',
-        keepAlive: true,
+        keepAlive: false,
         multiTab: true,
         sort: 1,
         isHide: true,
