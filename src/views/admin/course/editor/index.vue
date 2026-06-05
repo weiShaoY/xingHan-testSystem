@@ -176,8 +176,8 @@ async function handleSubmitCourse() {
      * 当前表单提交动作。
      */
     const submitAction = isEditMode.value
-      ? fetchAdminUpdateCourse
-      : fetchAdminCreateCourse
+      ? fetchAdminCourseUpdate
+      : fetchAdminCourseCreate
 
     await submitAction(formData.value)
 
