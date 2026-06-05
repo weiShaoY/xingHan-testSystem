@@ -51,35 +51,6 @@ async function getCourseList() {
 
 getCourseList()
 
-// onActivated(() => {
-//   if (isFirstActivated) {
-//     isFirstActivated = false
-//     return
-//   }
-
-//   getCourseList()
-// })
-
-/**
- * 获取课程完成进度
- */
-// function getCourseProgress(item: AdminApi.Course.CourseListItem) {
-//   if (!item.lessons) {
-//     return 0
-//   }
-
-//   return Math.round((item.completedLessons / item.lessons) * 100)
-// }
-
-/**
- * 获取课程创建时间文本
- */
-// function getCreateTimeText(item: AdminApi.Course.CourseListItem) {
-//   const minute = item.time.minute < 10 ? `0${item.time.minute}` : item.time.minute
-
-//   return `${item.time.hour}:${minute}`
-// }
-
 /**
  * 跳转到创建页
  */
@@ -92,13 +63,17 @@ function goToCreate() {
 /**
  * 跳转到编辑页
  */
-function goToEdit(item: AdminApi.Course.CourseListItem) {
-  router.push({
+async function goToEdit(item: AdminApi.Course.CourseListItem) {
+  const editRoute = router.resolve({
     name: 'AdminCourseEdit',
     params: {
       couId: item.couId,
     },
   })
+
+  await router.push(editRoute)
+
+  workTabStore.updateTabTitle(editRoute.path, `编辑课程-${item.couName}`)
 }
 
 /**

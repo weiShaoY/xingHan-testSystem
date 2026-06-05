@@ -106,6 +106,7 @@ export const Course: AppRouteRecord = {
         title: '课程编辑',
         icon: 'ri:edit-line',
         keepAlive: true,
+        multiTab: true,
         sort: 2,
         isHide: true,
         activePath: '/admin/course/list',

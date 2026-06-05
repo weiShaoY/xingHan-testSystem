@@ -427,15 +427,6 @@ declare namespace AdminApi {
       sbjName?: string
     }
 
-    /** 课程详情请求参数 */
-    type CourseDetailParams = {
-
-      /**
-       * 课程ID
-       */
-      courseId: number
-    }
-
     /** 课程设置响应 */
     type CourseSettingResponse = {
 
