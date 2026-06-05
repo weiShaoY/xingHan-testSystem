@@ -121,6 +121,7 @@ export const Course: AppRouteRecord = {
         title: '课程详情',
         icon: 'ri:eye-line',
         keepAlive: true,
+        multiTab: true,
         sort: 1,
         isHide: true,
         activePath: '/admin/course/list',

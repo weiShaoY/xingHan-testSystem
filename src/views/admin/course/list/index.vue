@@ -6,6 +6,8 @@ import AllocateCourseDialog from './AllocateCourseDialog.vue'
 
 const router = useRouter()
 
+const workTabStore = useWorkTabStore()
+
 const loading = ref(false)
 
 /**
@@ -102,13 +104,17 @@ function goToEdit(item: AdminApi.Course.CourseListItem) {
 /**
  * 跳转到详情页
  */
-function goToDetail(item: AdminApi.Course.CourseListItem) {
-  router.push({
+async function goToDetail(item: AdminApi.Course.CourseListItem) {
+  const detailRoute = router.resolve({
     name: 'AdminCourseDetail',
     params: {
       couId: item.couId,
     },
   })
+
+  await router.push(detailRoute)
+
+  workTabStore.updateTabTitle(detailRoute.path, `课程详情-${item.couName}`)
 }
 
 /**

@@ -147,15 +147,11 @@ export const useWorkTabStore = defineStore(
         removeKeepAliveExclude(tab.name)
       }
 
-      // 先根据路由名称查找（应对动态路由参数导致的多开问题），找不到再根据路径查找
-      let existingIndex = -1
+      // 默认同名动态路由复用标签；multiTab 路由按完整路径区分标签。
+      let existingIndex = findTabIndex(tab.path)
 
-      if (tab.name) {
+      if (existingIndex === -1 && tab.name && !tab.multiTab) {
         existingIndex = opened.value.findIndex(t => t.name === tab.name)
-      }
-
-      if (existingIndex === -1) {
-        existingIndex = findTabIndex(tab.path)
       }
 
       if (existingIndex === -1) {
@@ -186,6 +182,7 @@ export const useWorkTabStore = defineStore(
           query: tab.query,
           title: tab.title || existingTab.title,
           fixedTab: tab.fixedTab ?? existingTab.fixedTab,
+          multiTab: tab.multiTab ?? existingTab.multiTab,
           keepAlive: tab.keepAlive ?? existingTab.keepAlive,
           name: tab.name || existingTab.name,
           icon: tab.icon || existingTab.icon,

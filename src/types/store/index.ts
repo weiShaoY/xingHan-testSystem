@@ -116,6 +116,9 @@ export type WorkTab = {
   /** 是否固定标签 */
   fixedTab?: boolean
 
+  /** 是否允许同一路由名称按不同路径打开多个标签页 */
+  multiTab?: boolean
+
   /** 路由参数 */
   params?: object
 

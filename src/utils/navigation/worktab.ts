@@ -56,6 +56,7 @@ export function setWorkTab(to: RouteLocationNormalized): void {
           keepAlive: meta.keepAlive as boolean,
           params,
           query,
+          multiTab: meta.multiTab as boolean,
         })
       }
     }
@@ -69,6 +70,7 @@ export function setWorkTab(to: RouteLocationNormalized): void {
         params,
         query,
         fixedTab: meta.fixedTab as boolean,
+        multiTab: meta.multiTab as boolean,
       })
     }
   }

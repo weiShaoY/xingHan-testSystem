@@ -76,6 +76,9 @@ export type RouteMeta = {
   /** 是否固定标签页 */
   fixedTab?: boolean
 
+  /** 是否允许同一路由名称按不同路径打开多个标签页 */
+  multiTab?: boolean
+
   /** 激活菜单路径 */
   activePath?: string
 

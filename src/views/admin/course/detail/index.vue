@@ -22,7 +22,7 @@ const router = useRouter()
 /**
  * 当前课程 ID
  */
-const courseId = computed(() => String(route.params.id ?? ''))
+const courseId = computed(() => String(route.params.couId ?? ''))
 
 /**
  * 小节类型定义
@@ -269,7 +269,7 @@ function goToEdit() {
   router.push({
     name: 'AdminCourseEdit',
     params: {
-      id: courseId.value,
+      couId: courseId.value,
     },
   })
 }
