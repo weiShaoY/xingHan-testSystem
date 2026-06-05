@@ -429,6 +429,12 @@ getCourseDetail()
   <div
     class="mx-auto mb-10 flex w-full max-w-7xl flex-col gap-4 px-10 max-lg:px-6 max-sm:px-4"
   >
+    <!-- 分配学习任务弹窗 -->
+    <AllocateCourseDialog
+      v-if="isShowAllocateCourseDialog"
+      v-model="isShowAllocateCourseDialog"
+    />
+
     <!-- 章节新增或编辑弹窗 -->
     <ChapterEditorDialog
       v-if="isShowChapterFormDialog"
@@ -443,12 +449,6 @@ getCourseDetail()
       v-if="isShowCreateSectionDialog"
       v-model="isShowCreateSectionDialog"
       @select="goToAddSection"
-    />
-
-    <!-- 分配学习任务弹窗 -->
-    <AllocateCourseDialog
-      v-if="isShowAllocateCourseDialog"
-      v-model="isShowAllocateCourseDialog"
     />
 
     <AdminPageHeader

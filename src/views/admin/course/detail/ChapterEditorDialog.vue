@@ -11,14 +11,9 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits<{
 
   /**
-   * 新建章节
+   * 提交成功
    */
-  add: [data: typeof formData.value]
-
-  /**
-   * 编辑章节
-   */
-  edit: [data: typeof formData.value]
+  success: [data: typeof formData.value]
 }>()
 
 /**
@@ -63,30 +58,9 @@ const dialogTitle = computed(() => {
 })
 
 /**
- * 提交按钮文本
- */
-const submitText = computed(() => {
-  return isEditMode.value ? '保存' : '完成'
-})
-
-/**
    * 提交按钮加载状态
    */
 const loading = ref(false)
-
-/**
- * 重置表单
- */
-function resetFormData() {
-  formData.value = {
-    couId: props.couId,
-    olType: 1,
-    olLevel: 1,
-    olName: '',
-    olIntro: '',
-    olIsUse: 1,
-  }
-}
 
 /**
  * 获取章节详情
@@ -99,15 +73,31 @@ async function getOutlineDetail() {
  * 提交表单
  */
 async function handleSubmit() {
-  if (isEditMode.value) {
-    emit('edit', formData.value)
-  }
-  else {
-    await fetchAdminCourseOutlineAdd(formData.value)
-    emit('add', formData.value)
+  if (loading.value) {
+    return
   }
 
-  visible.value = false
+  loading.value = true
+  try {
+    if (isEditMode.value) {
+      await fetchAdminCourseOutlineUpdate(formData.value)
+      ElNotification.success('章节更新成功')
+      emit('success', formData.value)
+    }
+    else {
+      await fetchAdminCourseOutlineAdd(formData.value)
+      ElNotification.success('章节新增成功')
+      emit('success', formData.value)
+    }
+
+    visible.value = false
+  }
+  catch {
+    ElNotification.error(isEditMode.value ? '章节更新失败' : '章节新增失败')
+  }
+  finally {
+    loading.value = false
+  }
 }
 
 onMounted(() => {
@@ -193,7 +183,7 @@ onMounted(() => {
         type="primary"
         @click="handleSubmit"
       >
-        {{ submitText }}
+        完成
       </el-button>
     </template>
   </el-dialog>

@@ -526,7 +526,7 @@ declare namespace AdminApi {
      * @description 接口字段待补充，暂用空记录约束占位。
      */
     type CourseOutlineListItem = {
-      /**
+
     }
 
     /**

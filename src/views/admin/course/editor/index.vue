@@ -102,13 +102,6 @@ const pageTitle = computed(() => {
 })
 
 /**
- * 提交按钮文本。
- */
-const submitButtonText = computed(() => {
-  return isEditMode.value ? '保存' : '完成'
-})
-
-/**
  * 创建课程编辑表单默认值。
  *
  * @returns 默认课程编辑表单数据。
@@ -222,7 +215,7 @@ onMounted(() => {
           :loading="loading"
           @click="handleSubmitCourse"
         >
-          {{ submitButtonText }}
+          完成
         </ArtIconButton>
       </template>
     </AdminPageHeader>
