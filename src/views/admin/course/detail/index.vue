@@ -1,5 +1,5 @@
 <!------  2026-04-15---16:08---星期三  ------>
-<!------------------------------------    ------------------------------------------------->
+<!------------------------------------  课程详情页  ------------------------------------------------->
 <script lang="ts" setup>
 import type { SectionType } from './sectionType'
 
@@ -7,11 +7,11 @@ import { computed, ref } from 'vue'
 
 import AllocateCourseDialog from '../list/AllocateCourseDialog.vue'
 
-import ChapterFormDialog from './ChapterFormDialog.vue'
-
 import CourseSectionItem from './CourseSectionItem.vue'
 
 import CreateSectionDialog from './CreateSectionDialog.vue'
+
+import ChapterFormDialog from './OnlineEditorDialog.vue'
 
 import { sectionTypeConfigMap } from './sectionType'
 
@@ -22,7 +22,9 @@ const router = useRouter()
 /**
  * 当前课程 ID
  */
-const courseId = computed(() => String(route.params.couId ?? ''))
+const couId = computed(() => {
+  return Number(route.params.couId || 0)
+})
 
 /**
  * 小节类型定义
@@ -269,7 +271,7 @@ function goToEdit() {
   router.push({
     name: 'AdminCourseEdit',
     params: {
-      couId: courseId.value,
+      couId: couId.value,
     },
   })
 }
@@ -284,7 +286,7 @@ function goToAddSection(type: SectionType) {
     name: createSectionRouteMap[type],
 
     params: {
-      courseId: courseId.value,
+      courseId: couId.value,
     },
 
     query: currentCreateSectionChapterId.value
@@ -404,7 +406,7 @@ function editSection(section: Section) {
   router.push({
     name: editSectionRouteMap[section.sectionType],
     params: {
-      courseId: courseId.value,
+      courseId: couId.value,
       sectionId: section.id,
     },
   })
@@ -414,7 +416,7 @@ function editSection(section: Section) {
    *  获取课程详情
    */
 async function getCourseDetail() {
-  const res = await fetchAdminCourseDetail(courseId.value)
+  const res = await fetchAdminCourseOutlineList(couId.value)
 
   console.log('🚀 ~ file: index.vue:418 ~ res:', res)
 }
@@ -438,9 +440,8 @@ getCourseDetail()
       v-if="isShowChapterFormDialog"
       v-model="isShowChapterFormDialog"
       :mode="chapterFormMode"
+      :cou-id="couId"
       :edit-data="currentEditChapter"
-      @add="handleAddChapter"
-      @edit="handleEditChapter"
     />
 
     <!-- 创建小节类型选择弹窗 -->

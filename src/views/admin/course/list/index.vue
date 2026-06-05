@@ -170,7 +170,7 @@ function goToDetail(item: AdminApi.Course.CourseListItem) {
  */
 async function deleteCourse(item: AdminApi.Course.CourseListItem) {
   try {
-    await fetchAdminDeleteCourse(String(item.couId))
+    await fetchAdminDeleteCourse(item.couId)
     await getCourseList()
     ElNotification.success('删除成功')
   }

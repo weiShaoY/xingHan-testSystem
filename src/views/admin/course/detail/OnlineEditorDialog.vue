@@ -1,10 +1,8 @@
-<!-- 章节弹窗 -->
+<!-- 章节新增或者编辑弹窗 -->
 <script lang="ts" setup>
-import { computed, watch } from 'vue'
 
 const props = withDefaults(defineProps<Props>(), {
   mode: 'add',
-  editData: undefined,
 })
 
 /**
@@ -35,23 +33,21 @@ type Props = {
   mode?: 'add' | 'edit'
 
   /**
-   * 编辑时的章节数据
+   * 课程 ID
    */
-  editData?: {
-    id?: string | number
-    name: string
-    description: string
-    isVisible: string | number
-  }
+  couId: number
 }
 
 /**
  * 表单数据
  */
-const formData = ref({
-  name: '',
-  description: '',
-  isVisible: '1',
+const formData = ref<AdminApi.Course.CourseOutlineEditor>({
+  couId: props.couId,
+  olType: 1,
+  olLevel: 1,
+  olName: '',
+  olIntro: '',
+  olIsUse: 1,
 })
 
 /**
@@ -74,56 +70,51 @@ const submitText = computed(() => {
 })
 
 /**
+   * 提交按钮加载状态
+   */
+const loading = ref(false)
+
+/**
  * 重置表单
  */
 function resetFormData() {
   formData.value = {
-    name: '',
-    description: '',
-    isVisible: '1',
+    couId: props.couId,
+    olType: 1,
+    olLevel: 1,
+    olName: '',
+    olIntro: '',
+    olIsUse: 1,
   }
 }
 
 /**
- * 回显编辑数据
+ * 获取章节详情
  */
-function setEditFormData() {
-  if (!props.editData) { return }
+async function getOutlineDetail() {
 
-  formData.value = {
-    name: props.editData.name,
-    description: props.editData.description,
-    isVisible: String(props.editData.isVisible),
-  }
 }
 
 /**
  * 提交表单
  */
-function handleSubmit() {
+async function handleSubmit() {
   if (isEditMode.value) {
     emit('edit', formData.value)
   }
   else {
+    await fetchAdminCourseOutlineAdd(formData.value)
     emit('add', formData.value)
   }
 
   visible.value = false
 }
 
-watch(
-  () => visible.value,
-  (value) => {
-    if (!value) { return }
-
-    if (isEditMode.value) {
-      setEditFormData()
-    }
-    else {
-      resetFormData()
-    }
-  },
-)
+onMounted(() => {
+  if (isEditMode.value) {
+    void getOutlineDetail()
+  }
+})
 </script>
 
 <template>
@@ -139,21 +130,23 @@ watch(
       label-position="top"
     >
       <el-form-item
-        prop="name"
+        prop="olName"
+        required
         label="章节名称"
       >
         <el-input
-          v-model="formData.name"
+          v-model="formData.olName"
           placeholder="请输入章节名称"
         />
       </el-form-item>
 
       <el-form-item
-        prop="description"
+        prop="olIntro"
+        required
         label="章节描述"
       >
         <el-input
-          v-model="formData.description"
+          v-model="formData.olIntro"
           type="textarea"
           :rows="5"
           placeholder="请填写章节描述，帮助学员理解章节内容"
@@ -172,9 +165,9 @@ watch(
             <span>对学员可见</span>
 
             <el-switch
-              v-model="formData.isVisible"
-              active-value="1"
-              inactive-value="0"
+              v-model="formData.olIsUse"
+              :active-value="1"
+              :inactive-value="0"
             />
           </div>
 

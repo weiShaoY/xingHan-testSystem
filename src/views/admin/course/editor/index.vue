@@ -1,18 +1,21 @@
 <!------  2026-04-15---16:08---星期三  ------>
-<!------------------------------------  课程编辑器  ------------------------------------------------->
+<!------------------------------------  课程新增或者编辑编辑页  ------------------------------------------------->
 <script lang="ts" setup>
 import { QuestionFilled } from '@element-plus/icons-vue'
 
-import {
-  computed,
-  onMounted,
-  ref,
-} from 'vue'
-
+/**
+ * 课程列表页路径。
+ */
 const COURSE_LIST_PATH = '/admin/course'
 
+/**
+ * 默认课程展示图预览地址。
+ */
 const previewImageUrl = 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=autumn%20forest%20road%20scenery%20with%20colorful%20trees&image_size=landscape_4_3'
 
+/**
+ * 课程图片配置项。
+ */
 const courseImageOptions = [
   {
     label: '课程封面图',
@@ -26,6 +29,9 @@ const courseImageOptions = [
   },
 ]
 
+/**
+ * 课程小节解锁方式选项。
+ */
 const unlockMethodOptions = [
   {
     value: 1,
@@ -44,6 +50,69 @@ const unlockMethodOptions = [
   },
 ]
 
+/**
+ * 当前路由对象。
+ */
+const route = useRoute()
+
+/**
+ * Vue Router 实例。
+ */
+const router = useRouter()
+
+/**
+ * 工作标签页 Store。
+ */
+const workTabStore = useWorkTabStore()
+
+/**
+ * 当前激活的编辑页签。
+ */
+const activeTab = ref('basic')
+
+/**
+ * 页面提交和详情加载状态。
+ */
+const loading = ref(false)
+
+/**
+ * 表单数据。
+ */
+const formData = ref<AdminApi.Course.CourseEditor>(createDefaultFormData())
+
+/**
+ * 是否为编辑模式。
+ */
+const isEditMode = computed(() => {
+  return Boolean(route.params.couId)
+})
+
+/**
+ * 当前课程 ID
+ */
+const couId = computed(() => {
+  return Number(route.params.couId || 0)
+})
+
+/**
+ * 页面标题。
+ */
+const pageTitle = computed(() => {
+  return isEditMode.value ? '编辑课程' : '创建课程'
+})
+
+/**
+ * 提交按钮文本。
+ */
+const submitButtonText = computed(() => {
+  return isEditMode.value ? '保存' : '完成'
+})
+
+/**
+ * 创建课程编辑表单默认值。
+ *
+ * @returns 默认课程编辑表单数据。
+ */
 function createDefaultFormData(): AdminApi.Course.CourseEditor {
   return {
     couName: '未命名课程',
@@ -65,51 +134,10 @@ function createDefaultFormData(): AdminApi.Course.CourseEditor {
   }
 }
 
-const route = useRoute()
-
-const router = useRouter()
-
-const workTabStore = useWorkTabStore()
-
-const activeTab = ref('basic')
-
-const loading = ref(false)
-
 /**
- * 是否为编辑模式
- */
-const isEditMode = computed(() => {
-  return Boolean(route.params.couId)
-})
-
-/**
- * 课程 ID
- */
-const couId = computed(() => {
-  return String(route.params.couId || '')
-})
-
-/**
- * 页面标题
- */
-const pageTitle = computed(() => {
-  return isEditMode.value ? '编辑课程' : '创建课程'
-})
-
-/**
- * 提交按钮文本
- */
-const submitButtonText = computed(() => {
-  return isEditMode.value ? '保存' : '完成'
-})
-
-/**
- * 表单数据
- */
-const formData = ref<AdminApi.Course.CourseEditor>(createDefaultFormData())
-
-/**
- * 获取课程详情
+ * 获取课程详情并回填表单。
+ *
+ * @returns 课程详情请求完成。
  */
 async function getCourseDetail() {
   if (!couId.value) {
@@ -129,8 +157,8 @@ async function getCourseDetail() {
 }
 
 /**
-   *  返回课程列表
-   */
+ * 返回课程列表页并关闭当前编辑标签。
+ */
 function backToCourseList() {
   workTabStore.removeTab(route.path)
 
@@ -140,7 +168,9 @@ function backToCourseList() {
 }
 
 /**
- * 保存或创建课程
+ * 保存或创建课程。
+ *
+ * @returns 提交请求完成。
  */
 async function handleSubmitCourse() {
   if (loading.value) {
@@ -149,6 +179,9 @@ async function handleSubmitCourse() {
 
   loading.value = true
   try {
+    /**
+     * 当前表单提交动作。
+     */
     const submitAction = isEditMode.value
       ? fetchAdminUpdateCourse
       : fetchAdminCreateCourse
@@ -169,7 +202,7 @@ async function handleSubmitCourse() {
 
 onMounted(() => {
   if (isEditMode.value) {
-    getCourseDetail()
+    void getCourseDetail()
   }
 })
 </script>

@@ -3,7 +3,9 @@
  */
 declare namespace AdminApi {
 
-  /** 认证类型 */
+  /**
+   * 认证类型
+   */
   namespace Auth {
 
     /** 公钥 */
@@ -88,10 +90,14 @@ declare namespace AdminApi {
     }
   }
 
-  /** 课程类型 */
+  /**
+   * 课程类型
+   */
   namespace Course {
 
-    /** 课程列表请求参数 */
+    /**
+     * 课程列表请求参数
+     */
     type CourseListParams = CommonApi.PaginationParams & {
 
       /**
@@ -100,7 +106,9 @@ declare namespace AdminApi {
       name: string
     }
 
-    /** 课程列表项 */
+    /**
+     * 课程列表项
+     */
     type CourseListItem = {
 
       /**
@@ -206,11 +214,14 @@ declare namespace AdminApi {
       updateTime: string
     }
 
-    /** 课程列表响应 */
+    /**
+     * 课程列表响应
+     */
     type CourseListResponse = CommonApi.PaginatedResponse<CourseListItem>
 
     /**
-     * 课程基础参数
+     * 课程新增或编辑请求参数
+     * @description 新增和编辑课程时的参数
      */
     type CourseEditor = {
 
@@ -230,9 +241,10 @@ declare namespace AdminApi {
       couTitle: string
 
       /**
-       * 是否限制报名人数（0=不限制，1=限制）
+       * 是否限制报名人数
+       * @description 0=不限制，1=限制。
        */
-      couIsRestrict: number
+      couIsRestrict: 0 | 1
 
       /**
        * 限制报名人数上限
@@ -240,9 +252,10 @@ declare namespace AdminApi {
       couRestrictCount: number
 
       /**
-       * 是否限制报名时间（0=不限制，1=限制）
+       * 是否限制报名时间
+       * @description 0=不限制，1=限制。
        */
-      couIsRestrictTime: number
+      couIsRestrictTime: 0 | 1
 
       /**
        * 报名开始时间
@@ -255,14 +268,16 @@ declare namespace AdminApi {
       couApplyEndTime: string
 
       /**
-       * 是否需要人工审批（0=不需要，1=需要）
+       * 是否需要人工审批
+       * @description 0=不需要，1=需要。
        */
-      couIsApplyApproval: number
+      couIsApplyApproval: 0 | 1
 
       /**
-       * 是否允许取消报名（0=不允许，1=允许）
+       * 是否允许取消报名
+       * @description 0=不允许，1=允许。
        */
-      couIsCancel: number
+      couIsCancel: 0 | 1
 
       /**
        * 报名介绍/说明
@@ -270,19 +285,22 @@ declare namespace AdminApi {
       couApplyContent: string
 
       /**
-       * 章节解锁方式（1=顺序解锁，2=进度解锁，3=章节测试解锁）
+       * 章节解锁方式
+       * @description 1=顺序解锁，2=进度解锁，3=章节测试解锁。
        */
-      couUnlockMethod: number
+      couUnlockMethod: 1 | 2 | 3
 
       /**
-       * 是否展示学习学员信息（0=不展示，1=展示）
+       * 是否展示学习学员信息
+       * @description 0=不展示，1=展示。
        */
-      couIsStudyInfo: number
+      couIsStudyInfo: 0 | 1
 
       /**
-       * 是否限制学习总时长（0=不限制，1=限制）
+       * 是否限制学习总时长
+       * @description 0=不限制，1=限制。
        */
-      couIsLimitTime: number
+      couIsLimitTime: 0 | 1
 
       /**
        * 学习总时长（小时）
@@ -312,9 +330,10 @@ declare namespace AdminApi {
       couApplyInfoTemplate?: string
 
       /**
-       * 报名是否需要填写信息（1=是，0=否）
+       * 报名是否需要填写信息
+       * @description 0=否，1=是。
        */
-      couApplyNeedInfo?: number
+      couApplyNeedInfo?: 0 | 1
 
       /**
        * 学习内容（可理解为课程大纲）
@@ -322,39 +341,46 @@ declare namespace AdminApi {
       couContent?: string
 
       /**
-       * 是否有考试（0=无，1=有）
+       * 是否有考试
+       * @description 0=无，1=有。
        */
-      couExistExam?: number
+      couExistExam?: 0 | 1
 
       /**
-       * 是否需要报名（0=不需要，1=需要）
+       * 是否需要报名
+       * @description 0=不需要，1=需要。
        */
-      couIsApply?: number
+      couIsApply?: 0 | 1
 
       /**
-       * 是否章节结束时弹出评价（0=不弹出，1=弹出）
+       * 是否章节结束时弹出评价
+       * @description 0=不弹出，1=弹出。
        */
-      couIsEvaluate?: number
+      couIsEvaluate?: 0 | 1
 
       /**
-       * 是否展示序列号（0=不展示，1=展示）
+       * 是否展示序列号
+       * @description 0=不展示，1=展示。
        */
-      couIsNumber?: number
+      couIsNumber?: 0 | 1
 
       /**
-       * 是否单节模式（0=否，1=是）
+       * 是否单节模式
+       * @description 0=否，1=是。
        */
-      couIsSingle?: number
+      couIsSingle?: 0 | 1
 
       /**
-       * 是否启用（0=禁用，1=启用）
+       * 是否启用
+       * @description 0=禁用，1=启用。
        */
-      couIsUse?: number
+      couIsUse?: 0 | 1
 
       /**
-       * 课程难度等级（1=初级，2=中级，3=高级）
+       * 课程难度等级
+       * @description 1=初级，2=中级，3=高级。
        */
-      couLevel?: number
+      couLevel?: 1 | 2 | 3
 
       /**
        * 课程展示图片地址
@@ -367,12 +393,13 @@ declare namespace AdminApi {
       couLogoSmall?: string
 
       /**
-       * 每人最多报名次数（0或不限制）
+       * 每人最多报名次数
+       * @description 0=不限制，其他值为限制次数。
        */
       couMaxApplyCount?: number
 
       /**
-       * 课程ID（主键，自增）
+       * 课程ID
        */
       courseId?: number
 
@@ -427,190 +454,85 @@ declare namespace AdminApi {
       sbjName?: string
     }
 
-    /** 课程设置响应 */
-    type CourseSettingResponse = {
+    /**
+     * 课程大纲节点新增或编辑请求参数
+     * @description 用于创建或编辑课程章节、小节节点。
+     */
+    type CourseOutlineEditor = {
 
       /**
-       * 公司ID
+       * 课程ID
+       * @description 当前大纲节点所属课程。
        */
-      companyId: number
+      couId: number
 
       /**
-       * 报名信息模板（JSON格式）
+       * 节点类型
+       * @description 1=章节，2=小节。
        */
-      cou_Apply_Info_Template: string
+      olType: 1 | 2
 
       /**
-       * 是否自动审批（1=自动通过，0=需人工审批）
+       * 节点深度
+       * @description 章节固定为1；小节可为1或2。
        */
-      couApplyAutoApprove: number
+      olLevel: 1 | 2
 
       /**
-       * 报名需要填写的信息模板
+       * 节点名称
+       * @description 章节或小节的展示名称。
        */
-      couApplyInfo: string
+      olName: string
 
       /**
-       * 报名是否需要填写信息（1=是，0=否）
+       * 节点简介
+       * @description 章节或小节的简介内容。
        */
-      couApplyNeedInfo: number
+      olIntro: string
 
       /**
-       * 报名开始时间
+       * 是否对学员可见
+       * @description 0=不可见，1=可见；仅章节类型需要。
        */
-      couApplyStartTime: Date
+      olIsUse?: 0 | 1
 
       /**
-       * 学习内容（可理解为课程大纲）
+       * 父级节点ID
+       * @description 创建章节下的小节时填写父级章节ID；仅小节类型需要。
        */
-      couContent: string
+      olPID?: number
 
       /**
-       * 是否有考试（0=无，1=有）
+       * 附件ID
+       * @description 小节关联的附件ID；仅小节类型需要。
        */
-      couExistExam: number
+      asId?: number
 
       /**
-       * 是否需要报名（0=不需要，1=需要）
+       * 小节序号
+       * @description 通常为当前小节列表长度加1；仅小节类型需要。
        */
-      couIsApply: number
-
-      /**
-       * 是否允许取消报名（0=不允许，1=允许）
-       */
-      couIsCancel: number
-
-      /**
-       * 是否章节结束时弹出评价（0=不弹出，1=弹出）
-       */
-      couIsEvaluate: number
-
-      /**
-       * 是否限制学习总时长（0=不限制，1=限制）
-       */
-      couIsLimitTime: number
-
-      /**
-       * 是否展示序列号（0=不展示，1=展示）
-       */
-      couIsNumber: number
-
-      /**
-       * 是否限制报名人数（0=不限制，1=限制）
-       */
-      couIsRestrict: number
-
-      /**
-       * 是否限制报名时间（0=不限制，1=限制）
-       */
-      couIsRestrictTime: number
-
-      /**
-       * 是否单节模式（0=否，1=是）
-       */
-      couIsSingle: number
-
-      /**
-       * 是否启用（0=禁用，1=启用）
-       */
-      couIsUse: number
-
-      /**
-       * 课程难度等级（1=初级，2=中级，3=高级）
-       */
-      couLevel: number
-
-      /**
-       * 学习总时长（小时）
-       */
-      couLimitTime: number
-
-      /**
-       * 课程展示图片地址
-       */
-      couLogo: string
-
-      /**
-       * 课程缩略图地址
-       */
-      couLogoSmall: string
-
-      /**
-       * 每人最多报名次数（0或不限制）
-       */
-      couMaxApplyCount: number
-
-      /**
-       * 课程名称
-       */
-      couName: string
-
-      /**
-       * 限制报名人数上限
-       */
-      couRestrictCount: number
-
-      /**
-       * 课程ID（主键，自增）
-       */
-      courseId: number
-
-      /**
-       * 学习人数（选课人数统计）
-       */
-      couStudentSum: number
-
-      /**
-       * 排序号（升序）
-       */
-      couTax: number
-
-      /**
-       * 课程类型
-       */
-      couType: number
-
-      /**
-       * 课程拥有者/创建者用户ID
-       */
-      couUID: number
-
-      /**
-       * 视频课时数量
-       */
-      couVideoCount: number
-
-      /**
-       * 课程浏览/点击数
-       */
-      couViewNum: number
-
-      /**
-       * 部门中文名称
-       */
-      depCnName: string
-
-      /**
-       * 部门ID
-       */
-      depId: number
+      olTax?: number
 
       /**
        * 学科ID
+       * @description 当前大纲节点关联的学科。
        */
-      sbjID: number
-
-      /**
-       * 学科名称
-       */
-      sbjName: string
+      sbjID?: number
     }
 
     /**
-     * 课程详情响应
+     * 课程章节列表项
+     * @description 接口字段待补充，暂用空记录约束占位。
      */
-    type CourseDetailResponse = {
-
+    type CourseOutlineListItem = {
+      /**
     }
+
+    /**
+     * 课程章节列表响应
+     */
+    type CourseOutlineListResponse = CourseOutlineListItem[]
+
   }
 }

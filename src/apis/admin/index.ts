@@ -48,7 +48,7 @@ export function fetchAdminCourseList(data: AdminApi.Course.CourseListParams) {
  *  新增课程
  */
 
-export function fetchAdminCreateCourse(data: AdminApi.Course.CourseEditor) {
+export function fetchAdminCourseCreate(data: AdminApi.Course.CourseEditor) {
   return request.post<boolean>({
     url: '/admin/course/addCourse',
     data,
@@ -59,7 +59,7 @@ export function fetchAdminCreateCourse(data: AdminApi.Course.CourseEditor) {
  *  获取课程详情
  *  @param couId 课程ID
  */
-export function fetchAdminCourseDetail(couId: string) {
+export function fetchAdminCourseDetail(couId: number) {
   return request.get<AdminApi.Course.CourseEditor>({
     url: '/admin/course/getCourse',
     params: {
@@ -71,7 +71,7 @@ export function fetchAdminCourseDetail(couId: string) {
 /**
  *  编辑课程
  */
-export function fetchAdminUpdateCourse(data: AdminApi.Course.CourseEditor) {
+export function fetchAdminCourseUpdate(data: AdminApi.Course.CourseEditor) {
   return request.post<boolean>({
     url: '/admin/course/updateCourse',
     data,
@@ -79,9 +79,10 @@ export function fetchAdminUpdateCourse(data: AdminApi.Course.CourseEditor) {
 }
 
 /**
- * 删除课程
+ *  删除课程
+ *  @param couId 课程ID
  */
-export function fetchAdminDeleteCourse(couId: string) {
+export function fetchAdminCourseDelete(couId: number) {
   return request.post<boolean>({
     url: '/admin/course/deleteCourse',
     data: {
@@ -91,13 +92,47 @@ export function fetchAdminDeleteCourse(couId: string) {
 }
 
 /**
- *  获取课程设置
+ *  获取后台管理课程章节列表
+ *  @param couId 课程ID
  */
-export function fetchAdminCourseSetting(couId: string) {
-  return request.get<AdminApi.Course.CourseSettingResponse>({
-    url: '/admin/course/getCourseSetting',
-    params: {
+export function fetchAdminCourseOutlineList(couId: number) {
+  return request.post<AdminApi.Course.CourseOutlineListResponse>({
+    url: '/admin/outline/list',
+    data: {
       couId,
+    },
+  })
+}
+
+/**
+ * 新增课程章节或小节
+ */
+export function fetchAdminCourseOutlineAdd(data: AdminApi.Course.CourseOutlineEditor) {
+  return request.post<boolean>({
+    url: '/admin/outline/addChapter',
+    data,
+  })
+}
+
+/**
+ *  编辑课程章节或者小节
+ */
+export function fetchAdminCourseOutlineUpdate(data: AdminApi.Course.CourseOutlineEditor) {
+  return request.post<boolean>({
+    url: '/admin/outline/updateChapter',
+    data,
+  })
+}
+
+/**
+ *  删除课程章节或者小节
+ *  @param chapterId 章节ID
+ */
+export function fetchAdminCourseOutlineDelete(chapterId: number) {
+  return request.post<boolean>({
+    url: '/admin/outline/deleteChapter',
+    data: {
+      chapterId,
     },
   })
 }
