@@ -355,7 +355,7 @@ function editSection(section: AdminApi.Course.Section) {
   //   params: {
   //     courseId: couId.value,
   //     sectionId: section.id,
-  //   },
+  //   }, 
   // })
 }
 
