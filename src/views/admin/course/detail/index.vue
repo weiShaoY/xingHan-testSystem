@@ -69,7 +69,7 @@ const chapterFormMode = ref<'add' | 'edit'>('add')
 /**
  * 当前编辑的章节
  */
-const currentEditChapter = ref<AdminApi.Course.CourseOutlineListItem>()
+const currentEditChapter = ref<AdminApi.Course.Chapter>()
 
 /**
  * 当前要添加小节的章节 ID，空值表示添加课程直属小节
@@ -300,7 +300,7 @@ getCourseDetail()
                 type="info"
                 size="small"
               >
-                {{ item?.sectionList?.length || 0 }} 个小节
+                {{ item.sectionList.length }} 个小节
               </el-tag>
             </div>
 
@@ -337,12 +337,12 @@ getCourseDetail()
           v-if="item.sectionList.length"
           class="flex flex-col gap-3"
         >
+          <!-- 章节里的小节 -->
           <CourseSectionItem
             v-for="section in item.sectionList"
             :key="section.id"
             inner
             :section="section"
-            :section-index="getSectionIndex(section)"
             :type-config="getSectionTypeIcon(section.sectionType)"
             @allocate="allocateSection"
             @delete="deleteSection"
@@ -366,7 +366,6 @@ getCourseDetail()
       <CourseSectionItem
         v-else-if="item.itemType === 'section'"
         :section="item"
-        :section-index="getSectionIndex(item)"
         :type-config="getSectionTypeIcon(item.sectionType)"
         @allocate="allocateSection"
         @delete="deleteSection"

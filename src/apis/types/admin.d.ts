@@ -522,7 +522,7 @@ declare namespace AdminApi {
       /**
        *  小节序号
        */
-      order: number
+      order?: number
 
       /**
        *  小节描述
@@ -544,7 +544,7 @@ declare namespace AdminApi {
        * 内容项类型标识
        * @description section 小节，chapter 章节。
        */
-      itemType: 'section' | 'chapter'
+      itemType: 'section'
     }
 
     /**
@@ -577,7 +577,7 @@ declare namespace AdminApi {
        * 内容项类型标识
        * @description section 小节，chapter 章节。
        */
-      itemType: 'chapter' | 'section'
+      itemType: 'chapter'
 
       /** 章节下的小节列表 */
       sectionList: Section[]

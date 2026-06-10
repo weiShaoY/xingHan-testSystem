@@ -1,37 +1,10 @@
 <script lang="ts" setup>
-import type { SectionType, SectionTypeConfig } from './sectionType'
-
-/**
- * 小节类型定义
- */
-type Section = {
-
-  /** 小节 ID */
-  id: number
-
-  /** 小节名称 */
-  name: string
-
-  /** 小节描述 */
-  description: string
-
-  /** 内容项类型标识 */
-  itemType: 'section'
-
-  /** 小节内容类型 */
-  sectionType: SectionType
-
-  /** 参与小节学习的人数 */
-  participantCount: number
-}
+import type { SectionTypeConfig } from './sectionType'
 
 defineProps<{
 
   /** 小节数据 */
-  section: Section
-
-  /** 小节在页面中的序号 */
-  sectionIndex: number
+  section: AdminApi.Course.Section
 
   /** 小节类型配置 */
   typeConfig: SectionTypeConfig
@@ -46,10 +19,10 @@ const emit = defineEmits<{
   allocate: []
 
   /** 删除当前小节 */
-  delete: [section: Section]
+  delete: [section: AdminApi.Course.Section]
 
   /** 编辑当前小节 */
-  edit: [section: Section]
+  edit: [section: AdminApi.Course.Section]
 }>()
 </script>
 
@@ -64,7 +37,7 @@ const emit = defineEmits<{
       <div
         class="text-lg font-bold text-primary max-sm:text-base"
       >
-        {{ sectionIndex }}
+        {{ section.order }}
       </div>
 
       <div
