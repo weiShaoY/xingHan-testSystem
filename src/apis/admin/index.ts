@@ -104,10 +104,36 @@ export function fetchAdminCourseOutlineList(couId: number) {
   })
 }
 
+// ! /////////////////////////////////////////////////////   课程章节  /////////////////////////////////////////////////////
+
 /**
- *  获取课程章节或小节详情
+ *  新增 课程章节
  */
-export function fetchAdminCourseOutlineDetail(olId: number) {
+export function fetchAdminCourseOutlineChapterAdd(data: AdminApi.Course.CourseOutlineEditor) {
+  return request.post<boolean>({
+    url: '/admin/outline/addChapter',
+    data,
+  })
+}
+
+/**
+ *  删除 课程章节
+ *  @param olId 章节ID
+ */
+export function fetchAdminCourseOutlineChapterDelete(olId: number) {
+  return request.post<boolean>({
+    url: '/admin/outline/deleteChapter',
+    data: {
+      olId,
+    },
+  })
+}
+
+/**
+ *  获取课程 章节详情
+ *  @param olId 章节ID
+ */
+export function fetchAdminCourseOutlineChapterDetail(olId: number) {
   return request.get<AdminApi.Course.CourseOutlineDetail>({
     url: '/admin/outline/getChapter',
     params: {
@@ -117,34 +143,57 @@ export function fetchAdminCourseOutlineDetail(olId: number) {
 }
 
 /**
- * 新增课程章节或小节
+ *  编辑 课程章节
  */
-export function fetchAdminCourseOutlineAdd(data: AdminApi.Course.CourseOutlineEditor) {
-  return request.post<boolean>({
-    url: '/admin/outline/addChapter',
-    data,
-  })
-}
-
-/**
- *  编辑课程章节或者小节
- */
-export function fetchAdminCourseOutlineUpdate(data: AdminApi.Course.CourseOutlineEditor) {
+export function fetchAdminCourseOutlineChapterUpdate(data: AdminApi.Course.CourseOutlineEditor) {
   return request.post<boolean>({
     url: '/admin/outline/updateChapter',
     data,
   })
 }
 
+// / /////////////////////////////////////////////////////   课程小节  /////////////////////////////////////////////////////
 /**
- *  删除课程章节或者小节
- *  @param chapterId 章节ID
+ * 新增 课程小节
  */
-export function fetchAdminCourseOutlineDelete(chapterId: number) {
+export function fetchAdminCourseOutlineSectionAdd(data: AdminApi.Course.CourseOutlineEditor) {
   return request.post<boolean>({
-    url: '/admin/outline/deleteChapter',
+    url: '/admin/outline/addSection',
+    data,
+  })
+}
+
+/**
+ *  删除 课程小节
+ */
+export function fetchAdminCourseOutlineSectionDelete(olId: number) {
+  return request.post<boolean>({
+    url: '/admin/outline/deleteSection',
     data: {
-      chapterId,
+      olId,
     },
+  })
+}
+
+/**
+ *  获取课程 小节详情
+ *  @param olId 小节ID
+ */
+export function fetchAdminCourseSectionDetail(olId: number) {
+  return request.get<AdminApi.Course.CourseOutlineDetail>({
+    url: '/admin/outline/getSection',
+    params: {
+      olId,
+    },
+  })
+}
+
+/**
+ *  编辑 课程小节
+ */
+export function fetchAdminCourseOutlineSectionUpdate(data: AdminApi.Course.CourseOutlineEditor) {
+  return request.post<boolean>({
+    url: '/admin/outline/updateSection',
+    data,
   })
 }

@@ -59,15 +59,25 @@ declare global {
   const fetchAdmin: typeof import('../../apis/admin/index').fetchAdmin
   const fetchAdminAddCourse: typeof import('../../apis/admin/index').fetchAdminCourseCreate
   const fetchAdminAddCourseOutline: typeof import('../../apis/admin/index').fetchAdminCourseOutlineAdd
+  const fetchAdminCourseChapterDetail: typeof import('../../apis/admin/index').fetchAdminCourseOutlineChapterDetail
   const fetchAdminCourseCreate: typeof import('../../apis/admin/index').fetchAdminCourseCreate
   const fetchAdminCourseDelete: typeof import('../../apis/admin/index').fetchAdminCourseDelete
   const fetchAdminCourseDetail: typeof import('../../apis/admin/index').fetchAdminCourseDetail
   const fetchAdminCourseList: typeof import('../../apis/admin/index').fetchAdminCourseList
   const fetchAdminCourseOutlineAdd: typeof import('../../apis/admin/index').fetchAdminCourseOutlineAdd
+  const fetchAdminCourseOutlineChapterAdd: typeof import('../../apis/admin/index').fetchAdminCourseOutlineChapterAdd
+  const fetchAdminCourseOutlineChapterDelete: typeof import('../../apis/admin/index').fetchAdminCourseOutlineChapterDelete
+  const fetchAdminCourseOutlineChapterDetail: typeof import('../../apis/admin/index').fetchAdminCourseOutlineChapterDetail
+  const fetchAdminCourseOutlineChapterUpdate: typeof import('../../apis/admin/index').fetchAdminCourseOutlineChapterUpdate
   const fetchAdminCourseOutlineDelete: typeof import('../../apis/admin/index').fetchAdminCourseOutlineDelete
+  const fetchAdminCourseOutlineDeleteSection: typeof import('../../apis/admin/index').fetchAdminCourseOutlineDeleteSection
   const fetchAdminCourseOutlineDetail: typeof import('../../apis/admin/index').fetchAdminCourseOutlineDetail
   const fetchAdminCourseOutlineList: typeof import('../../apis/admin/index').fetchAdminCourseOutlineList
+  const fetchAdminCourseOutlineSectionAdd: typeof import('../../apis/admin/index').fetchAdminCourseOutlineSectionAdd
+  const fetchAdminCourseOutlineSectionDelete: typeof import('../../apis/admin/index').fetchAdminCourseOutlineSectionDelete
+  const fetchAdminCourseOutlineSectionUpdate: typeof import('../../apis/admin/index').fetchAdminCourseOutlineSectionUpdate
   const fetchAdminCourseOutlineUpdate: typeof import('../../apis/admin/index').fetchAdminCourseOutlineUpdate
+  const fetchAdminCourseSectionDetail: typeof import('../../apis/admin/index').fetchAdminCourseSectionDetail
   const fetchAdminCourseSectionList: typeof import('../../apis/admin/index').fetchAdminCourseSectionList
   const fetchAdminCourseSetting: typeof import('../../apis/admin/index').fetchAdminCourseSetting
   const fetchAdminCourseUpdate: typeof import('../../apis/admin/index').fetchAdminCourseUpdate
@@ -522,11 +532,15 @@ declare module 'vue' {
     readonly fetchAdminCourseDelete: UnwrapRef<typeof import('../../apis/admin/index')['fetchAdminCourseDelete']>
     readonly fetchAdminCourseDetail: UnwrapRef<typeof import('../../apis/admin/index')['fetchAdminCourseDetail']>
     readonly fetchAdminCourseList: UnwrapRef<typeof import('../../apis/admin/index')['fetchAdminCourseList']>
-    readonly fetchAdminCourseOutlineAdd: UnwrapRef<typeof import('../../apis/admin/index')['fetchAdminCourseOutlineAdd']>
-    readonly fetchAdminCourseOutlineDelete: UnwrapRef<typeof import('../../apis/admin/index')['fetchAdminCourseOutlineDelete']>
-    readonly fetchAdminCourseOutlineDetail: UnwrapRef<typeof import('../../apis/admin/index')['fetchAdminCourseOutlineDetail']>
+    readonly fetchAdminCourseOutlineChapterAdd: UnwrapRef<typeof import('../../apis/admin/index')['fetchAdminCourseOutlineChapterAdd']>
+    readonly fetchAdminCourseOutlineChapterDelete: UnwrapRef<typeof import('../../apis/admin/index')['fetchAdminCourseOutlineChapterDelete']>
+    readonly fetchAdminCourseOutlineChapterDetail: UnwrapRef<typeof import('../../apis/admin/index')['fetchAdminCourseOutlineChapterDetail']>
+    readonly fetchAdminCourseOutlineChapterUpdate: UnwrapRef<typeof import('../../apis/admin/index')['fetchAdminCourseOutlineChapterUpdate']>
     readonly fetchAdminCourseOutlineList: UnwrapRef<typeof import('../../apis/admin/index')['fetchAdminCourseOutlineList']>
-    readonly fetchAdminCourseOutlineUpdate: UnwrapRef<typeof import('../../apis/admin/index')['fetchAdminCourseOutlineUpdate']>
+    readonly fetchAdminCourseOutlineSectionAdd: UnwrapRef<typeof import('../../apis/admin/index')['fetchAdminCourseOutlineSectionAdd']>
+    readonly fetchAdminCourseOutlineSectionDelete: UnwrapRef<typeof import('../../apis/admin/index')['fetchAdminCourseOutlineSectionDelete']>
+    readonly fetchAdminCourseOutlineSectionUpdate: UnwrapRef<typeof import('../../apis/admin/index')['fetchAdminCourseOutlineSectionUpdate']>
+    readonly fetchAdminCourseSectionDetail: UnwrapRef<typeof import('../../apis/admin/index')['fetchAdminCourseSectionDetail']>
     readonly fetchAdminCourseUpdate: UnwrapRef<typeof import('../../apis/admin/index')['fetchAdminCourseUpdate']>
     readonly fetchAdminFileList: UnwrapRef<typeof import('../../apis/file/index')['fetchAdminFileList']>
     readonly fetchAdminGetPublicKey: UnwrapRef<typeof import('../../apis/admin/index')['fetchAdminGetPublicKey']>

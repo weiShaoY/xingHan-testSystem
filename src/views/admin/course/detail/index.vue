@@ -67,9 +67,9 @@ const isShowCreateSectionDialog = ref(false)
 const chapterFormMode = ref<'add' | 'edit'>('add')
 
 /**
- * 当前编辑的章节
+ * 当前编辑的章节ID
  */
-const currentEditChapter = ref<AdminApi.Course.Chapter>()
+const currentEditChapterId = ref<number>()
 
 /**
  * 当前要添加小节的章节 ID，空值表示添加课程直属小节
@@ -80,6 +80,16 @@ const currentCreateSectionChapterId = ref<number>()
  * 课程内容数据
  */
 const outlineList = ref<AdminApi.Course.CourseOutlineListItem[]>([])
+
+/**
+   *  获取课程详情
+   */
+async function getCourseDetail() {
+  outlineList.value = await fetchAdminCourseOutlineList(couId.value)
+  console.log('🚀 ~ file: index.vue:206 ~ outlineList.value:', outlineList.value)
+}
+
+getCourseDetail()
 
 /**
  * 获取小节类型对应的图标配置
@@ -141,7 +151,6 @@ function openAddChapterSectionDialog(chapterId: number) {
  * 打开新增章节弹窗
  */
 function openAddChapterDialog() {
-  currentEditChapter.value = undefined
   chapterFormMode.value = 'add'
   isShowChapterFormDialog.value = true
 }
@@ -156,26 +165,27 @@ function handleAddChapter(data: { name: string, description: string, isVisible: 
 /**
  * 编辑章节
  */
-function editChapter(chapterId: number) {
-  const chapter = outlineList.value.find(
-    (item): item is AdminApi.Course.Chapter => item.itemType === 'chapter' && item.id === chapterId,
-  )
-
-  if (!chapter) {
-    return
-  }
-
-  currentEditChapter.value = chapter
+function editChapter(olId: number) {
+  currentEditChapterId.value = olId
   chapterFormMode.value = 'edit'
   isShowChapterFormDialog.value = true
 }
 
 /**
- * 更新章节
+ * 删除章节
  */
-function handleEditChapter(data: { name: string, description: string, isVisible: string }) {
-
+async function deleteChapter(chapter: AdminApi.Course.Chapter) {
+  await fetchAdminCourseOutlineChapterDelete(chapter.id)
+  try {
+    await getCourseDetail()
+    ElNotification.success('删除成功')
+  }
+  catch {
+    ElNotification.error('删除失败')
+  }
 }
+
+// / //////////////////////////////////// 小节相关 ///////////////////////////////////////
 
 /**
  * 打开小节分配学习任务弹窗
@@ -187,28 +197,23 @@ function allocateSection() {
 /**
  * 删除小节
  */
-function deleteSection(section: AdminApi.Course.Section) {
-
+async function deleteSection(section: AdminApi.Course.Section) {
+  await fetchAdminCourseOutlineSectionDelete(section.id)
+  try {
+    await getCourseDetail()
+    ElNotification.success('删除成功')
+  }
+  catch {
+    ElNotification.error('删除失败')
+  }
 }
 
 /**
  * 编辑小节
  */
 function editSection(section: AdminApi.Course.Section) {
-
+  console.log('🚀 ~ file: index.vue:231 ~ section:', section)
 }
-
-/**
-   *  获取课程详情
-   */
-async function getCourseDetail() {
-  const res = await fetchAdminCourseOutlineList(couId.value)
-
-  outlineList.value = res
-  console.log('🚀 ~ file: index.vue:418 ~ res:', res)
-}
-
-getCourseDetail()
 
 </script>
 
@@ -222,10 +227,11 @@ getCourseDetail()
       v-model="isShowChapterFormDialog"
       :mode="chapterFormMode"
       :cou-id="couId"
+      :ol-id="currentEditChapterId"
       @success="getCourseDetail"
     />
 
-    <!-- 创建小节类型选择弹窗 -->
+    <!-- 创建小节 类型选择弹窗 -->
     <CreateSectionDialog
       v-if="isShowCreateSectionDialog"
       v-model="isShowCreateSectionDialog"
@@ -324,12 +330,17 @@ getCourseDetail()
 
             <ArtIconButton
               type="delete"
-            />
+              @click="deleteChapter(item)"
+            >
+              删除章节
+            </ArtIconButton>
 
             <ArtIconButton
               type="edit"
               @click="editChapter(item.id)"
-            />
+            >
+              编辑章节
+            </ArtIconButton>
           </div>
         </div>
 

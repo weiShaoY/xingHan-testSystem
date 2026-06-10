@@ -13,7 +13,7 @@ const emit = defineEmits<{
   /**
    * 提交成功
    */
-  success: [data: typeof formData.value]
+  success: [data: typeof addFormData.value]
 }>()
 
 /**
@@ -39,9 +39,9 @@ type Props = {
 }
 
 /**
- * 表单数据
+ * 新增章节表单数据
  */
-const formData = ref<AdminApi.Course.CourseOutlineEditor>({
+const addFormData = ref<AdminApi.Course.CourseOutlineEditor>({
   couId: props.couId,
   olType: 1,
   olLevel: 1,
@@ -80,9 +80,9 @@ async function getOutlineDetail() {
   }
 
   try {
-    const res = await fetchAdminCourseOutlineDetail(props.olId)
+    const res = await fetchAdminCourseChapterDetail(props.olId)
 
-    formData.value = res
+    addFormData.value = res
   }
   catch {
     ElNotification.error('获取章节详情失败')
@@ -101,13 +101,13 @@ async function handleSubmit() {
 
   try {
     if (isEditMode.value) {
-      await fetchAdminCourseOutlineUpdate(formData.value)
+      await fetchAdminCourseOutlineUpdate(addFormData.value)
     }
     else {
-      await fetchAdminCourseOutlineAdd(formData.value)
+      await fetchAdminCourseOutlineAdd(addFormData.value)
     }
 
-    emit('success', formData.value)
+    emit('success', addFormData.value)
 
     visible.value = false
 
@@ -139,7 +139,7 @@ onMounted(() => {
   >
     <el-form
       v-loading="loading"
-      :model="formData"
+      :model="addFormData"
       label-position="top"
     >
       <el-form-item
@@ -148,7 +148,7 @@ onMounted(() => {
         label="章节名称"
       >
         <el-input
-          v-model="formData.olName"
+          v-model="addFormData.olName"
           placeholder="请输入章节名称"
         />
       </el-form-item>
@@ -159,7 +159,7 @@ onMounted(() => {
         label="章节描述"
       >
         <el-input
-          v-model="formData.olIntro"
+          v-model="addFormData.olIntro"
           type="textarea"
           :rows="5"
           placeholder="请填写章节描述，帮助学员理解章节内容"
@@ -178,7 +178,7 @@ onMounted(() => {
             <span>对学员可见</span>
 
             <el-switch
-              v-model="formData.olIsUse"
+              v-model="addFormData.olIsUse"
               :active-value="1"
               :inactive-value="0"
             />
