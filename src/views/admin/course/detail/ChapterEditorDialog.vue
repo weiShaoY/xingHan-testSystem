@@ -31,6 +31,11 @@ type Props = {
    * 课程 ID
    */
   couId: number
+
+  /**
+   * 章节 ID
+   */
+  olId?: number
 }
 
 /**
@@ -70,12 +75,14 @@ async function getOutlineDetail() {
     return
   }
 
-  try {
-    const res = await fetchAdminCourseOutlineDetail({
-      olId: formData.value.olID,
-    })
+  if (!props.olId) {
+    return
+  }
 
-    formData.value = res.data
+  try {
+    const res = await fetchAdminCourseOutlineDetail(props.olId)
+
+    formData.value = res
   }
   catch {
     ElNotification.error('获取章节详情失败')

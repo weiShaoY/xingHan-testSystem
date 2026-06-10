@@ -509,23 +509,42 @@ declare namespace AdminApi {
      */
     type Section = {
 
-      /** 小节 ID */
+      /**
+       *  小节 ID
+       */
       id: number
 
-      /** 小节名称 */
+      /**
+       *  小节名称
+       */
       name: string
 
-      /** 小节描述 */
+      /**
+       *  小节序号
+       */
+      order: number
+
+      /**
+       *  小节描述
+       */
       description: string
 
-      /** 内容项类型标识  区分是 小节 或 章节 */
-      itemType: 'section'
-
-      /** 小节内容类型 */
-      sectionType: SectionType
-
-      /** 参与小节学习的人数 */
+      /**
+       * 小节学习人数
+       */
       participantCount: number
+
+      /**
+       * 小节内容类型
+       * @description 0=文档，1=视频，2=考试，3=问卷。
+       */
+      sectionType: 0 | 1 | 2 | 3
+
+      /**
+       * 内容项类型标识
+       * @description section 小节，chapter 章节。
+       */
+      itemType: 'section' | 'chapter'
     }
 
     /**
@@ -533,20 +552,32 @@ declare namespace AdminApi {
      */
     type Chapter = {
 
-      /** 章节 ID */
+      /**
+       *  章节 ID
+       */
       id: number
 
-      /** 章节名称 */
+      /**
+       *  章节名称
+       */
       name: string
 
-      /** 章节描述 */
+      /**
+       *  章节描述
+       */
       description: string
 
-      /** 内容项类型标识  区分是 小节 或 章节 */
-      itemType: 'chapter'
+      /**
+       *  章节是否对学员可见
+       * @description 0=不可见，1=可见。
+       */
+      isVisible: 0 | 1
 
-      /** 章节是否对学员可见 */
-      isVisible: string
+      /**
+       * 内容项类型标识
+       * @description section 小节，chapter 章节。
+       */
+      itemType: 'chapter' | 'section'
 
       /** 章节下的小节列表 */
       sectionList: Section[]

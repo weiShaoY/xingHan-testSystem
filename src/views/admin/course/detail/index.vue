@@ -79,130 +79,7 @@ const currentCreateSectionChapterId = ref<number>()
 /**
  * 课程内容数据
  */
-const outlineList = ref<AdminApi.Course.CourseOutlineListItem[]>([
-  {
-    id: 1,
-    name: '章节1',
-    description: '章节1描述',
-    itemType: 'chapter',
-    isVisible: '1',
-    sectionList: [
-      {
-        id: 1,
-        name: '章节1的小节1',
-        description: '小节1描述',
-        itemType: 'section',
-        sectionType: 0,
-        participantCount: 6,
-      },
-      {
-        id: 2,
-        name: '章节1的小节2',
-        description: '小节2描述',
-        itemType: 'section',
-        sectionType: 1,
-        participantCount: 4,
-      },
-    ],
-  },
-  {
-    id: 2,
-    name: '章节2',
-    description: '章节2描述',
-    itemType: 'chapter',
-    isVisible: '1',
-    sectionList: [
-      {
-        id: 3,
-        name: '章节2的小节1',
-        description: '小节3描述',
-        itemType: 'section',
-        sectionType: 2,
-        participantCount: 8,
-      },
-    ],
-  },
-  {
-    id: 4,
-    name: '小节1',
-    description: '小节1描述',
-    itemType: 'section',
-    sectionType: 3,
-    participantCount: 5,
-  },
-  {
-    id: 5,
-    name: '小节2',
-    description: '小节2描述',
-    itemType: 'section',
-    sectionType: 0,
-    participantCount: 3,
-  },
-  {
-    id: 6,
-    name: '小节3',
-    description: '小节3描述',
-    itemType: 'section',
-    sectionType: 2,
-    participantCount: 2,
-  },
-  {
-    id: 7,
-    name: '小节4',
-    description: '小节4描述',
-    itemType: 'section',
-    sectionType: 3,
-    participantCount: 1,
-  },
-  {
-    id: 8,
-    name: '小节5',
-    description: '小节5描述',
-    itemType: 'section',
-    sectionType: 0,
-    participantCount: 1,
-  },
-  {
-    id: 9,
-    name: '小节5',
-    description: '小节5描述',
-    itemType: 'section',
-    sectionType: 0,
-    participantCount: 3,
-  },
-])
-
-/**
- * 页面从上到下的小节序号映射
- */
-const sectionIndexMap = computed(() => {
-  const map = new Map<AdminApi.Course.Section, number>()
-
-  let index = 1
-
-  outlineList.value.forEach((item) => {
-    if (item.itemType === 'chapter') {
-      item.sectionList.forEach((section) => {
-        map.set(section, index)
-        index += 1
-      })
-
-      return
-    }
-
-    map.set(item, index)
-    index += 1
-  })
-
-  return map
-})
-
-/**
- * 获取当前小节在整个页面中的序号
- */
-function getSectionIndex(section: AdminApi.Course.Section) {
-  return sectionIndexMap.value.get(section) ?? 0
-}
+const outlineList = ref<AdminApi.Course.CourseOutlineListItem[]>([])
 
 /**
  * 获取小节类型对应的图标配置
@@ -273,14 +150,7 @@ function openAddChapterDialog() {
  * 新增章节
  */
 function handleAddChapter(data: { name: string, description: string, isVisible: string }) {
-  outlineList.value.push({
-    id: Date.now(),
-    name: data.name,
-    description: data.description,
-    itemType: 'chapter',
-    isVisible: data.isVisible,
-    sectionList: [],
-  })
+
 }
 
 /**
@@ -304,13 +174,7 @@ function editChapter(chapterId: number) {
  * 更新章节
  */
 function handleEditChapter(data: { name: string, description: string, isVisible: string }) {
-  // if (!currentEditChapter.value) {
-  //   return
-  // }
 
-  // currentEditChapter.value.name = data.name
-  // currentEditChapter.value.description = data.description
-  // currentEditChapter.value.isVisible = data.isVisible
 }
 
 /**
@@ -324,39 +188,14 @@ function allocateSection() {
  * 删除小节
  */
 function deleteSection(section: AdminApi.Course.Section) {
-  // const rootSectionIndex = outlineList.value.findIndex(
-  //   item => item.itemType === 'section' && item.id === section.id,
-  // )
 
-  // if (rootSectionIndex > -1) {
-  //   outlineList.value.splice(rootSectionIndex, 1)
-  //   return
-  // }
-
-  // outlineList.value.forEach((item) => {
-  //   if (item.itemType !== 'chapter') {
-  //     return
-  //   }
-
-  //   const sectionIndex = item.sectionList.findIndex(child => child.id === section.id)
-
-  //   if (sectionIndex > -1) {
-  //     item.sectionList.splice(sectionIndex, 1)
-  //   }
-  // })
 }
 
 /**
  * 编辑小节
  */
 function editSection(section: AdminApi.Course.Section) {
-  // router.push({
-  //   name: editSectionRouteMap[section.sectionType],
-  //   params: {
-  //     courseId: couId.value,
-  //     sectionId: section.id,
-  //   }, 
-  // })
+
 }
 
 /**
@@ -401,7 +240,7 @@ getCourseDetail()
 
     <AdminPageHeader
       title="学习课程1 详情页"
-      :stats="[`小节数量: ${sectionIndexMap.size}`]"
+      :stats="[`小节数量: ${outlineList.filter((item) => item.itemType === 'section').length}`]"
     >
       <template
         #extra
@@ -461,7 +300,7 @@ getCourseDetail()
                 type="info"
                 size="small"
               >
-                {{ item.sectionList.length }} 个小节
+                {{ item?.sectionList?.length || 0 }} 个小节
               </el-tag>
             </div>
 
