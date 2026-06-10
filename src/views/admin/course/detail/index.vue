@@ -110,27 +110,6 @@ function getSectionTypeIcon(sectionType: SectionType) {
   return sectionTypeConfigMap[sectionType]
 }
 
-/**
- * 跳转到添加小节（根据类型）
- */
-function goToAddSection(type: SectionType) {
-  isShowCreateSectionDialog.value = false
-
-  router.push({
-    name: createSectionRouteMap[type],
-
-    params: {
-      courseId: couId.value,
-    },
-
-    query: currentCreateSectionChapterId.value
-      ? {
-          chapterId: currentCreateSectionChapterId.value,
-        }
-      : undefined,
-  })
-}
-
 // ! ////////////////////////////// 分配 ///////////////////////////////////////
 /**
  * 打开小节分配学习任务弹窗
@@ -139,7 +118,7 @@ function allocateSection() {
   isShowAllocateCourseDialog.value = true
 }
 
-// ! ////////////////////////////// 章节相关 ///////////////////////////////////////
+// # ////////////////////////////// 章节相关 ///////////////////////////////////////
 
 /**
  * 新增章节
@@ -173,24 +152,36 @@ function editChapter(chapter: AdminApi.Course.Chapter) {
   isShowChapterFormDialog.value = true
 }
 
-// ! ////////////////////////////// 最外层 ///////////////////////////////////////
+// $ ////////////////////////////// 小节相关 ///////////////////////////////////////
 /**
- *
+ * 新增小节
  */
-function openAddSectionDialog() {
-  currentCreateSectionChapterId.value = undefined
+function addSection(chapter?: AdminApi.Course.Chapter) {
+  currentCreateSectionChapterId.value = chapter?.id || undefined
   isShowCreateSectionDialog.value = true
 }
 
 /**
- * 打开新增章节小节弹窗
+ * 跳转到添加小节（根据类型）
  */
-function openAddChapterSectionDialog(chapterId: number) {
-  currentCreateSectionChapterId.value = chapterId
-  isShowCreateSectionDialog.value = true
-}
+function goToAddSection(sectionType: SectionType) {
+  isShowCreateSectionDialog.value = false
 
-// / //////////////////////////////////// 小节相关 ///////////////////////////////////////
+  router.push({
+    name: createSectionRouteMap[sectionType],
+
+    params: {
+      couId: couId.value,
+      olId: currentCreateSectionChapterId.value,
+    },
+
+    query: currentCreateSectionChapterId.value
+      ? {
+          chapterId: currentCreateSectionChapterId.value,
+        }
+      : undefined,
+  })
+}
 
 /**
  * 删除小节
@@ -210,7 +201,19 @@ async function deleteSection(section: AdminApi.Course.Section) {
  * 编辑小节
  */
 function editSection(section: AdminApi.Course.Section) {
-  console.log('🚀 ~ file: index.vue:231 ~ section:', section)
+  router.push({
+    name: editSectionRouteMap[section.sectionType],
+
+    params: {
+      courseId: couId.value,
+    },
+
+    query: {
+      sectionId: section.id,
+    },
+  })
+  isShowCreateSectionDialog.value = true
+  isShowCreateSectionDialog.value = false
 }
 
 </script>
@@ -268,9 +271,9 @@ function editSection(section: AdminApi.Course.Section) {
 
         <ArtIconButton
           type="add"
-          @click="openAddSectionDialog"
+          @click="addSection()"
         >
-          添加课程小节
+          添加小节
         </ArtIconButton>
       </template>
     </AdminPageHeader>
@@ -321,9 +324,9 @@ function editSection(section: AdminApi.Course.Section) {
           >
             <ArtIconButton
               type="add"
-              @click="openAddChapterSectionDialog(item.id)"
+              @click="addSection(item)"
             >
-              添加课程小节
+              添加小节
             </ArtIconButton>
 
             <ArtIconButton
