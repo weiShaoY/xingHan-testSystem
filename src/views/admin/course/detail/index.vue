@@ -167,8 +167,8 @@ async function deleteChapter(chapter: AdminApi.Course.Chapter) {
 /**
  * 编辑章节
  */
-function editChapter(olId: number) {
-  currentEditChapterId.value = olId
+function editChapter(chapter: AdminApi.Course.Chapter) {
+  currentEditChapterId.value = chapter.id
   chapterFormMode.value = 'edit'
   isShowChapterFormDialog.value = true
 }
@@ -335,7 +335,7 @@ function editSection(section: AdminApi.Course.Section) {
 
             <ArtIconButton
               type="edit"
-              @click="editChapter(item.id)"
+              @click="editChapter(item)"
             >
               编辑章节
             </ArtIconButton>

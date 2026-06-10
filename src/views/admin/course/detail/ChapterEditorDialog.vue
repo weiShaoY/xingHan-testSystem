@@ -49,7 +49,7 @@ const formData = ref<AdminApi.Course.CourseOutlineChapterEditor>({
   olIsUse: 1,
 })
 
-console.log('🚀 ~ file: ChapterEditorDialog.vue:52 ~ formData.value:', formData.value)
+console.log('🚀 ~ file: ChapterEditorDialog.vue:53 ~ props.olId:', props.olId)
 
 /**
  * 是否为编辑模式
@@ -76,15 +76,17 @@ async function getOutlineDetail() {
     return
   }
 
-  console.log('🚀 ~ file: ChapterEditorDialog.vue:80 ~ props.olId:', props.olId)
-
   if (!props.olId) {
     return
   }
 
   try {
-    formData.value = await fetchAdminCourseOutlineChapterDetail(props.olId)
-    console.log('🚀 ~ file: ChapterEditorDialog.vue:87 ~ formData.value:', formData.value)
+    const res = await fetchAdminCourseOutlineChapterDetail(props.olId)
+
+    formData.value = {
+      olId: props.olId,
+      ...res,
+    }
   }
   catch {
     ElNotification.error('获取章节详情失败')
@@ -98,8 +100,6 @@ async function handleSubmit() {
   if (loading.value) {
     return
   }
-
-  console.log('🚀 ~ file: ChapterEditorDialog.vue:107 ~ formData.value:', formData.value)
 
   loading.value = true
 
