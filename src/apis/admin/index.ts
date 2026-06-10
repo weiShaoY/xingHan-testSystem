@@ -109,7 +109,7 @@ export function fetchAdminCourseOutlineList(couId: number) {
 /**
  *  新增 课程章节
  */
-export function fetchAdminCourseOutlineChapterAdd(data: AdminApi.Course.CourseOutlineEditor) {
+export function fetchAdminCourseOutlineChapterAdd(data: AdminApi.Course.CourseOutlineChapterEditor) {
   return request.post<boolean>({
     url: '/admin/outline/addChapter',
     data,
@@ -134,7 +134,7 @@ export function fetchAdminCourseOutlineChapterDelete(olId: number) {
  *  @param olId 章节ID
  */
 export function fetchAdminCourseOutlineChapterDetail(olId: number) {
-  return request.get<AdminApi.Course.CourseOutlineDetail>({
+  return request.get<AdminApi.Course.CourseOutlineChapterEditor>({
     url: '/admin/outline/getChapter',
     params: {
       olId,
@@ -145,7 +145,7 @@ export function fetchAdminCourseOutlineChapterDetail(olId: number) {
 /**
  *  编辑 课程章节
  */
-export function fetchAdminCourseOutlineChapterUpdate(data: AdminApi.Course.CourseOutlineEditor) {
+export function fetchAdminCourseOutlineChapterUpdate(data: AdminApi.Course.CourseOutlineChapterEditor) {
   return request.post<boolean>({
     url: '/admin/outline/updateChapter',
     data,
@@ -179,7 +179,7 @@ export function fetchAdminCourseOutlineSectionDelete(olId: number) {
  *  获取课程 小节详情
  *  @param olId 小节ID
  */
-export function fetchAdminCourseSectionDetail(olId: number) {
+export function fetchAdminCourseOutlineSectionDetail(olId: number) {
   return request.get<AdminApi.Course.CourseOutlineDetail>({
     url: '/admin/outline/getSection',
     params: {

@@ -538,28 +538,20 @@ declare namespace AdminApi {
     type CourseOutlineListResponse = CourseOutlineListItem[]
 
     /**
-     * 课程大纲节点新增或编辑请求参数
-     * @description 用于创建或编辑课程章节、小节节点。
+     * 课程章节 新增或编辑请求参数
      */
-    type CourseOutlineEditor = {
+    type CourseOutlineChapterEditor = {
+
+      /**
+       * 章节ID
+       */
+      olId?: number
 
       /**
        * 课程ID
        * @description 当前大纲节点所属课程。
        */
       couId: number
-
-      /**
-       * 节点类型
-       * @description 1=章节，2=小节。
-       */
-      olType: 1 | 2
-
-      /**
-       * 节点深度
-       * @description 章节固定为1；小节可为1或2。
-       */
-      olLevel: 1 | 2
 
       /**
        * 节点名称
@@ -579,17 +571,38 @@ declare namespace AdminApi {
        */
       olIsUse?: 0 | 1
 
-      /**
-       * 父级节点ID
-       * @description 创建章节下的小节时填写父级章节ID；仅小节类型需要。
-       */
-      olPID?: number
+      // ////////////
 
-      /**
-       * 附件ID
-       * @description 小节关联的附件ID；仅小节类型需要。
-       */
-      asId?: number
+      // /**
+      //  * 节点类型
+      //  * @description 1=章节，2=小节。
+      //  */
+      // olType: 1 | 2
+
+      // /**
+      //  * 节点深度
+      //  * @description 章节固定为1；小节可为1或2。
+      //  */
+      // olLevel: 1 | 2
+
+      // /**
+      //  * 父级节点ID
+      //  * @description 创建章节下的小节时填写父级章节ID；仅小节类型需要。
+      //  */
+      // olPID?: number
+
+      // /**
+      //  * 附件ID
+      //  * @description 小节关联的附件ID；仅小节类型需要。
+      //  */
+      // asId?: number
+
+    }
+
+    /**
+     *  课程小节 新增或编辑请求参数
+     */
+    type CourseOutlineSectionEditor = {
 
     }
 

@@ -13,7 +13,7 @@ const emit = defineEmits<{
   /**
    * 提交成功
    */
-  success: [data: typeof addFormData.value]
+  success: [data: typeof formData.value]
 }>()
 
 /**
@@ -39,16 +39,17 @@ type Props = {
 }
 
 /**
- * 新增章节表单数据
+ * 章节表单数据
  */
-const addFormData = ref<AdminApi.Course.CourseOutlineEditor>({
+const formData = ref<AdminApi.Course.CourseOutlineChapterEditor>({
+  olId: props.olId,
   couId: props.couId,
-  olType: 1,
-  olLevel: 1,
   olName: '',
   olIntro: '',
   olIsUse: 1,
 })
+
+console.log('🚀 ~ file: ChapterEditorDialog.vue:52 ~ formData.value:', formData.value)
 
 /**
  * 是否为编辑模式
@@ -68,21 +69,22 @@ const dialogTitle = computed(() => {
 const loading = ref(false)
 
 /**
- * 获取章节详情
+ * 获取课程章节详情
  */
 async function getOutlineDetail() {
   if (!isEditMode.value) {
     return
   }
 
+  console.log('🚀 ~ file: ChapterEditorDialog.vue:80 ~ props.olId:', props.olId)
+
   if (!props.olId) {
     return
   }
 
   try {
-    const res = await fetchAdminCourseChapterDetail(props.olId)
-
-    addFormData.value = res
+    formData.value = await fetchAdminCourseOutlineChapterDetail(props.olId)
+    console.log('🚀 ~ file: ChapterEditorDialog.vue:87 ~ formData.value:', formData.value)
   }
   catch {
     ElNotification.error('获取章节详情失败')
@@ -97,17 +99,19 @@ async function handleSubmit() {
     return
   }
 
+  console.log('🚀 ~ file: ChapterEditorDialog.vue:107 ~ formData.value:', formData.value)
+
   loading.value = true
 
   try {
     if (isEditMode.value) {
-      await fetchAdminCourseOutlineUpdate(addFormData.value)
+      await fetchAdminCourseOutlineChapterUpdate(formData.value)
     }
     else {
-      await fetchAdminCourseOutlineAdd(addFormData.value)
+      await fetchAdminCourseOutlineChapterAdd(formData.value)
     }
 
-    emit('success', addFormData.value)
+    emit('success', formData.value)
 
     visible.value = false
 
@@ -132,14 +136,13 @@ onMounted(() => {
   <el-dialog
     v-if="visible"
     v-model="visible"
-    v-loading="loading"
     :title="dialogTitle"
     width="50%"
     :show-close="false"
   >
     <el-form
       v-loading="loading"
-      :model="addFormData"
+      :model="formData"
       label-position="top"
     >
       <el-form-item
@@ -148,7 +151,7 @@ onMounted(() => {
         label="章节名称"
       >
         <el-input
-          v-model="addFormData.olName"
+          v-model="formData.olName"
           placeholder="请输入章节名称"
         />
       </el-form-item>
@@ -159,7 +162,7 @@ onMounted(() => {
         label="章节描述"
       >
         <el-input
-          v-model="addFormData.olIntro"
+          v-model="formData.olIntro"
           type="textarea"
           :rows="5"
           placeholder="请填写章节描述，帮助学员理解章节内容"
@@ -178,7 +181,7 @@ onMounted(() => {
             <span>对学员可见</span>
 
             <el-switch
-              v-model="addFormData.olIsUse"
+              v-model="formData.olIsUse"
               :active-value="1"
               :inactive-value="0"
             />

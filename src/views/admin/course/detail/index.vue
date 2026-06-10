@@ -52,7 +52,7 @@ const editSectionRouteMap: Record<SectionType, string> = {
 const isShowAllocateCourseDialog = ref(false)
 
 /**
- * 是否显示新建章节弹窗
+ * 是否显示章节新增或者编辑弹窗
  */
 const isShowChapterFormDialog = ref(false)
 
@@ -82,6 +82,18 @@ const currentCreateSectionChapterId = ref<number>()
 const outlineList = ref<AdminApi.Course.CourseOutlineListItem[]>([])
 
 /**
+ * 跳转到课程编辑页
+ */
+function goToCourseEdit() {
+  router.push({
+    name: 'AdminCourseEdit',
+    params: {
+      couId: couId.value,
+    },
+  })
+}
+
+/**
    *  获取课程详情
    */
 async function getCourseDetail() {
@@ -96,18 +108,6 @@ getCourseDetail()
  */
 function getSectionTypeIcon(sectionType: SectionType) {
   return sectionTypeConfigMap[sectionType]
-}
-
-/**
- * 跳转到编辑页
- */
-function goToEdit() {
-  router.push({
-    name: 'AdminCourseEdit',
-    params: {
-      couId: couId.value,
-    },
-  })
 }
 
 /**
@@ -131,43 +131,22 @@ function goToAddSection(type: SectionType) {
   })
 }
 
+// ! ////////////////////////////// 分配 ///////////////////////////////////////
 /**
- * 打开新增课程直属小节弹窗
+ * 打开小节分配学习任务弹窗
  */
-function openAddCourseSectionDialog() {
-  currentCreateSectionChapterId.value = undefined
-  isShowCreateSectionDialog.value = true
+function allocateSection() {
+  isShowAllocateCourseDialog.value = true
 }
 
-/**
- * 打开新增章节小节弹窗
- */
-function openAddChapterSectionDialog(chapterId: number) {
-  currentCreateSectionChapterId.value = chapterId
-  isShowCreateSectionDialog.value = true
-}
-
-/**
- * 打开新增章节弹窗
- */
-function openAddChapterDialog() {
-  chapterFormMode.value = 'add'
-  isShowChapterFormDialog.value = true
-}
+// ! ////////////////////////////// 章节相关 ///////////////////////////////////////
 
 /**
  * 新增章节
  */
-function handleAddChapter(data: { name: string, description: string, isVisible: string }) {
-
-}
-
-/**
- * 编辑章节
- */
-function editChapter(olId: number) {
-  currentEditChapterId.value = olId
-  chapterFormMode.value = 'edit'
+function addChapter() {
+  currentEditChapterId.value = undefined
+  chapterFormMode.value = 'add'
   isShowChapterFormDialog.value = true
 }
 
@@ -185,14 +164,33 @@ async function deleteChapter(chapter: AdminApi.Course.Chapter) {
   }
 }
 
-// / //////////////////////////////////// 小节相关 ///////////////////////////////////////
+/**
+ * 编辑章节
+ */
+function editChapter(olId: number) {
+  currentEditChapterId.value = olId
+  chapterFormMode.value = 'edit'
+  isShowChapterFormDialog.value = true
+}
+
+// ! ////////////////////////////// 最外层 ///////////////////////////////////////
+/**
+ *
+ */
+function openAddSectionDialog() {
+  currentCreateSectionChapterId.value = undefined
+  isShowCreateSectionDialog.value = true
+}
 
 /**
- * 打开小节分配学习任务弹窗
+ * 打开新增章节小节弹窗
  */
-function allocateSection() {
-  isShowAllocateCourseDialog.value = true
+function openAddChapterSectionDialog(chapterId: number) {
+  currentCreateSectionChapterId.value = chapterId
+  isShowCreateSectionDialog.value = true
 }
+
+// / //////////////////////////////////// 小节相关 ///////////////////////////////////////
 
 /**
  * 删除小节
@@ -221,7 +219,7 @@ function editSection(section: AdminApi.Course.Section) {
   <div
     class="mx-auto mb-10 flex w-full max-w-7xl flex-col gap-4 px-10 max-lg:px-6 max-sm:px-4"
   >
-    <!-- 章节新增或编辑弹窗 -->
+    <!-- 章节 新增或编辑 弹窗 -->
     <ChapterEditorDialog
       v-if="isShowChapterFormDialog"
       v-model="isShowChapterFormDialog"
@@ -258,19 +256,19 @@ function editSection(section: AdminApi.Course.Section) {
 
         <ArtIconButton
           type="edit"
-          @click="goToEdit()"
+          @click="goToCourseEdit()"
         />
 
         <ArtIconButton
           type="add"
-          @click="openAddChapterDialog"
+          @click="addChapter"
         >
           添加章节
         </ArtIconButton>
 
         <ArtIconButton
           type="add"
-          @click="openAddCourseSectionDialog"
+          @click="openAddSectionDialog"
         >
           添加课程小节
         </ArtIconButton>
