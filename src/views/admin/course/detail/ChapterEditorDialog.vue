@@ -66,7 +66,20 @@ const loading = ref(false)
  * 获取章节详情
  */
 async function getOutlineDetail() {
+  if (!isEditMode.value) {
+    return
+  }
 
+  try {
+    const res = await fetchAdminCourseOutlineDetail({
+      olId: formData.value.olID,
+    })
+
+    formData.value = res.data
+  }
+  catch {
+    ElNotification.error('获取章节详情失败')
+  }
 }
 
 /**

@@ -105,6 +105,18 @@ export function fetchAdminCourseOutlineList(couId: number) {
 }
 
 /**
+ *  获取课程章节或小节详情
+ */
+export function fetchAdminCourseOutlineDetail(olId: number) {
+  return request.get<AdminApi.Course.CourseOutlineDetail>({
+    url: '/admin/outline/getChapter',
+    params: {
+      olId,
+    },
+  })
+}
+
+/**
  * 新增课程章节或小节
  */
 export function fetchAdminCourseOutlineAdd(data: AdminApi.Course.CourseOutlineEditor) {

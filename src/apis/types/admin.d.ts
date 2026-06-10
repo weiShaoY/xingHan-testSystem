@@ -112,9 +112,10 @@ declare namespace AdminApi {
     type CourseListItem = {
 
       /**
-       * 数据状态（0=删除，1=正常）
+       * 数据状态
+       * @description 0=删除，1=正常。
        */
-      active: number
+      active: 0 | 1
 
       /**
        * 公司ID
@@ -137,14 +138,16 @@ declare namespace AdminApi {
       couIntro: string
 
       /**
-       * 是否启用（0=禁用，1=启用）
+       * 是否启用
+       * @description 0=禁用，1=启用。
        */
-      couIsUse: number
+      couIsUse: 0 | 1
 
       /**
-       * 课程难度等级（1=初级，2=中级，3=高级）
+       * 课程难度等级
+       * @description 1=初级，2=中级，3=高级。
        */
-      couLevel: number
+      couLevel: 1 | 2 | 3
 
       /**
        * 课程展示图片地址
@@ -192,11 +195,6 @@ declare namespace AdminApi {
        * 创建时间
        */
       createTime: string
-
-      /**
-       * 学科ID
-       */
-      sbjID: number
 
       /**
        * 学科名称
@@ -315,9 +313,10 @@ declare namespace AdminApi {
       companyId?: number
 
       /**
-       * 是否自动审批（1=自动通过，0=需人工审批）
+       * 是否自动审批
+       * @description 0=需人工审批，1=自动通过。
        */
-      couApplyAutoApprove?: number
+      couApplyAutoApprove?: 0 | 1
 
       /**
        * 报名需要填写的信息模板
@@ -444,11 +443,6 @@ declare namespace AdminApi {
       depId?: number
 
       /**
-       * 学科ID
-       */
-      sbjID?: number
-
-      /**
        * 学科名称
        */
       sbjName?: string
@@ -508,11 +502,6 @@ declare namespace AdminApi {
        */
       asId?: number
 
-      /**
-       * 学科ID
-       * @description 当前大纲节点关联的学科。
-       */
-      sbjID?: number
     }
 
     /**
@@ -572,6 +561,66 @@ declare namespace AdminApi {
      * 课程章节列表响应
      */
     type CourseOutlineListResponse = CourseOutlineListItem[]
+
+    /**
+     * 课程章节或小节详情响应
+     */
+    type CourseOutlineDetail = {
+
+      /**
+       * 课程ID
+       * @description 当前大纲节点所属课程。
+       */
+      couId: number
+
+      /**
+       * 节点类型
+       * @description 1=章节，2=小节。
+       */
+      olType: 1 | 2
+
+      /**
+       * 节点深度
+       * @description 章节固定为1；小节可为1或2。
+       */
+      olLevel: 1 | 2
+
+      /**
+       * 节点名称
+       * @description 章节或小节的展示名称。
+       */
+      olName: string
+
+      /**
+       * 节点简介
+       * @description 章节或小节的简介内容。
+       */
+      olIntro: string
+
+      /**
+       * 是否对学员可见
+       * @description 0=不可见，1=可见；仅章节类型需要。
+       */
+      olIsUse?: 0 | 1
+
+      /**
+       * 父级节点ID
+       * @description 创建章节下的小节时填写父级章节ID；仅小节类型需要。
+       */
+      olPID?: number
+
+      /**
+       * 附件ID
+       * @description 小节关联的附件ID；仅小节类型需要。
+       */
+      asId?: number
+
+      /**
+       * 小节序号
+       * @description 小节在章节下的排序号。
+       */
+      olTax: number
+    }
 
   }
 }
