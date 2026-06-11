@@ -165,7 +165,7 @@ function backToCourseList() {
  *
  * @returns 提交请求完成。
  */
-async function handleSubmitCourse() {
+async function handleSubmit() {
   if (loading.value) {
     return
   }
@@ -214,7 +214,7 @@ onMounted(() => {
         <ArtIconButton
           type="success"
           :loading="loading"
-          @click="handleSubmitCourse"
+          @click="handleSubmit"
         >
           完成
         </ArtIconButton>

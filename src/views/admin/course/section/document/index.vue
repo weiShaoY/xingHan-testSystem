@@ -6,6 +6,8 @@ import { useRoute } from 'vue-router'
 
 const route = useRoute()
 
+const router = useRouter()
+
 /**
  * 当前课程 ID
  */
@@ -163,11 +165,11 @@ const formData = ref<AdminApi.Course.CourseOutlineSectionEditor>(
   // 新增小节
     : {
         couId: couId.value,
-        olName: selectedDocument.value?.asName || '',
+        olName: '',
         olIntro: '',
-        olPID: olPID.value,
-        olLevel: 2,
-        asId: selectedDocument.value?.asId || 0,
+        olPID: olPID.value || 0,
+        olLevel: olPID.value ? 2 : 1,
+        asId: 0,
       },
 )
 
@@ -203,20 +205,63 @@ onMounted(() => {
  */
 function handleDocumentCurrentChange(row: FileApi.FileListItem) {
   selectedDocument.value = row
-
-  formData.value = {
-    ...formData.value,
-    asId: row.asId,
-  }
 }
 
 /**
  * 确认选择文档
  */
 function confirmSelectDocument() {
+  if (!selectedDocument.value) {
+    return
+  }
+
+  formData.value = {
+    ...formData.value,
+    asId: selectedDocument.value.asId,
+  }
+
   isShowFileSelectDialog.value = false
 }
 
+/**
+ * 更换文档
+ */
+function handleReplaceDocumentClick() {
+  selectedDocument.value = undefined
+  getDocumentList()
+  isShowFileSelectDialog.value = true
+}
+
+/**
+ * 工作标签页 Store。
+ */
+const workTabStore = useWorkTabStore()
+
+/**
+ * 提交文档小节
+ */
+async function handleSubmit() {
+  try {
+    if (isEditMode.value) {
+      await fetchAdminCourseOutlineSectionUpdate(formData.value)
+      console.log('🚀 ~ file: index.vue:247 ~ formData.value:', formData.value)
+      ElNotification.success('文档小节更新成功')
+    }
+    else {
+      await fetchAdminCourseOutlineSectionAdd(formData.value)
+      console.log('🚀 ~ file: index.vue:251 ~ formData.value:', formData.value)
+      ElNotification.success('文档小节创建成功')
+    }
+
+    // 关闭当前标签页
+    workTabStore.removeTab(route.path)
+
+    router.back()
+  }
+  catch {
+    ElNotification.error(isEditMode.value ? '文档小节更新失败' : '文档小节新增失败')
+  }
+}
 </script>
 
 <template>
@@ -314,11 +359,21 @@ function confirmSelectDocument() {
       <template
         #extra
       >
-        <el-button
-          class="flex items-center justify-center"
+        <ArtIconButton
+          type="warning"
+          class="mr-2"
+          @click="handleReplaceDocumentClick"
+        >
+          更换文档
+        </ArtIconButton>
+
+        <ArtIconButton
+          type="primary"
+          class=""
+          @click="handleSubmit"
         >
           完成
-        </el-button>
+        </ArtIconButton>
       </template>
     </AdminPageHeader>
 
@@ -353,7 +408,7 @@ function confirmSelectDocument() {
 
     <!-- 文档编辑区 -->
     <div
-      class="art-card flex items-center justify-between"
+      class="art-card flex items-center justify-between gap-20"
     >
       <aside
         class=""
@@ -405,7 +460,7 @@ function confirmSelectDocument() {
 
       <!-- 右侧 -->
       <div
-        class=""
+        class="flex-1"
       >
         <el-form
           :model="formData"
@@ -423,12 +478,13 @@ function confirmSelectDocument() {
           </el-form-item>
 
           <el-form-item
-            label="文档名称"
+            label="文档描述"
             required
           >
             <el-input
-              v-model="formData.olName"
-              placeholder="请输入文档名称"
+              v-model="formData.olIntro"
+              placeholder="请输入文档描述"
+              type="textarea"
             />
           </el-form-item>
         </el-form>
