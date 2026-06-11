@@ -561,7 +561,7 @@ declare namespace AdminApi {
 
       /**
        * 节点简介
-       * @description 章节或小节的简介内容。
+       * @description 章节的简介内容。
        */
       olIntro: string
 
@@ -570,32 +570,6 @@ declare namespace AdminApi {
        * @description 0=不可见，1=可见；仅章节类型需要。
        */
       olIsUse?: 0 | 1
-
-      // ////////////
-
-      // /**
-      //  * 节点类型
-      //  * @description 1=章节，2=小节。
-      //  */
-      // olType: 1 | 2
-
-      // /**
-      //  * 节点深度
-      //  * @description 章节固定为1；小节可为1或2。
-      //  */
-      // olLevel: 1 | 2
-
-      // /**
-      //  * 父级节点ID
-      //  * @description 创建章节下的小节时填写父级章节ID；仅小节类型需要。
-      //  */
-      // olPID?: number
-
-      // /**
-      //  * 附件ID
-      //  * @description 小节关联的附件ID；仅小节类型需要。
-      //  */
-      // asId?: number
 
     }
 
@@ -604,12 +578,10 @@ declare namespace AdminApi {
      */
     type CourseOutlineSectionEditor = {
 
-    }
-
-    /**
-     * 课程章节或小节详情响应
-     */
-    type CourseOutlineDetail = {
+      /**
+       * 小节ID
+       */
+      olId?: number
 
       /**
        * 课程ID
@@ -618,52 +590,19 @@ declare namespace AdminApi {
       couId: number
 
       /**
-       * 节点类型
-       * @description 1=章节，2=小节。
-       */
-      olType: 1 | 2
-
-      /**
-       * 节点深度
-       * @description 章节固定为1；小节可为1或2。
-       */
-      olLevel: 1 | 2
-
-      /**
        * 节点名称
-       * @description 章节或小节的展示名称。
+       * @description 小节的展示名称。
        */
       olName: string
 
       /**
-       * 节点简介
-       * @description 章节或小节的简介内容。
+       *  节点简介
+       * @description 小节的简介内容。
        */
-      olIntro: string
-
       /**
-       * 是否对学员可见
-       * @description 0=不可见，1=可见；仅章节类型需要。
+       *  附件ID
        */
-      olIsUse?: 0 | 1
-
-      /**
-       * 父级节点ID
-       * @description 创建章节下的小节时填写父级章节ID；仅小节类型需要。
-       */
-      olPID?: number
-
-      /**
-       * 附件ID
-       * @description 小节关联的附件ID；仅小节类型需要。
-       */
-      asId?: number
-
-      /**
-       * 小节序号
-       * @description 小节在章节下的排序号。
-       */
-      olTax: number
+      asId: number
     }
 
   }
