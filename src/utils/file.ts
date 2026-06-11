@@ -29,3 +29,22 @@ export function formatFileSize(size?: number | null, fixed = 1): string {
     ? `${fileSize} ${units[index]}`
     : `${fileSize.toFixed(fixed)} ${units[index]}`
 }
+
+/**
+ * 获取完整文件访问地址
+ * @param path 后端返回的文件相对路径，支持 Windows 反斜杠路径
+ * @returns 拼接 VITE_APP_API_PROXY_URL 后的文件访问地址
+ */
+export function getFileUrl(path: string) {
+  if (!path) {
+    return ''
+  }
+
+  const baseUrl = import.meta.env.VITE_APP_API_PROXY_URL.replace(/\/+$/, '')
+
+  const normalizedPath = path
+    .replace(/\\/g, '/')
+    .replace(/^\/+/, '')
+
+  return `${baseUrl}/${normalizedPath}`
+}

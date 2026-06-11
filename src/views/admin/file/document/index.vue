@@ -133,19 +133,6 @@ function handleSearch() {
   getDocumentList()
 }
 
-function getFileUrl(path: string) {
-  if (!path) {
-    return ''
-  }
-
-  const baseUrl = import.meta.env.VITE_APP_API_PROXY_URL.replace(/\/+$/, '')
-
-  const normalizedPath = path
-    .replace(/\\/g, '/')
-    .replace(/^\/+/, '')
-
-  return `${baseUrl}/${normalizedPath}`
-}
 </script>
 
 <template>

@@ -530,12 +530,48 @@ declare namespace AdminApi {
     /**
      * 章节或小节的列表项。
      */
-    type CourseOutlineListItem = Chapter | Section
+    type CourseOutlineListNodesItem = Chapter | Section
 
     /**
      * 课程章节列表响应
      */
-    type CourseOutlineListResponse = CourseOutlineListItem[]
+    type CourseOutlineListResponse = {
+
+      /**
+       * 课程章节数
+       */
+      couChapterCount: number
+
+      /**
+       * 学习内容（可理解为课程大纲）
+       */
+      couContent: string
+
+      /**
+       * 课程ID
+       */
+      couId: number
+
+      /**
+       * 课程介绍
+       */
+      couIntro: string
+
+      /**
+       * 课程名称
+       */
+      couName: string
+
+      /**
+       * 课程章小节
+       */
+      couSectionCount: number
+
+      /**
+       * 树形
+       */
+      nodes?: CourseOutlineListNodesItem[]
+    }
 
     /**
      * 课程章节 新增或编辑请求参数
@@ -579,15 +615,17 @@ declare namespace AdminApi {
     type CourseOutlineSectionEditor = {
 
       /**
-       * 小节ID
-       */
-      olId?: number
-
-      /**
        * 课程ID
        * @description 当前大纲节点所属课程。
        */
       couId: number
+
+      /**
+       * 小节ID
+       * @description 小节的唯一标识符
+       * @description 只有新建时需要。
+       */
+      olId?: number
 
       /**
        * 节点名称
@@ -599,6 +637,22 @@ declare namespace AdminApi {
        *  节点简介
        * @description 小节的简介内容。
        */
+      olIntro: string
+
+      /**
+       * 父级节点ID
+       * @description 小节所属的章节ID , 只有在章节深度为2时才需要。
+       * @description 只有新建时需要。
+       */
+      olPID?: number
+
+      /**
+       *  章节深度
+       * @description 1 跟章节同级，2 在章节里面。
+       * @description 只有新建时需要。
+       */
+      olLevel?: 1 | 2
+
       /**
        *  附件ID
        */

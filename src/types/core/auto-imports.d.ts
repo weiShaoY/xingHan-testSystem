@@ -121,6 +121,7 @@ declare global {
   const getDuration: typeof import('../../utils/time').getDuration
   const getElapsedTime: typeof import('../../utils/time').getElapsedTime
   const getFileList: typeof import('../../apis/file/index').getFileList
+  const getFileUrl: typeof import('../../utils/file').getFileUrl
   const getFirstMenuPath: typeof import('../../utils/navigation/route').getFirstMenuPath
   const getLightColor: typeof import('../../utils/ui/colors').getLightColor
   const getLoginRouteNameByPath: typeof import('../../store/user').getLoginRouteNameByPath
@@ -567,6 +568,7 @@ declare module 'vue' {
     readonly getDateSegment: UnwrapRef<typeof import('../../utils/time')['getDateSegment']>
     readonly getDuration: UnwrapRef<typeof import('../../utils/time')['getDuration']>
     readonly getElapsedTime: UnwrapRef<typeof import('../../utils/time')['getElapsedTime']>
+    readonly getFileUrl: UnwrapRef<typeof import('../../utils/file')['getFileUrl']>
     readonly getFirstMenuPath: UnwrapRef<typeof import('../../utils/navigation/route')['getFirstMenuPath']>
     readonly getLightColor: UnwrapRef<typeof import('../../utils/ui/colors')['getLightColor']>
     readonly getLoginRouteNameByPath: UnwrapRef<typeof import('../../store/user')['getLoginRouteNameByPath']>

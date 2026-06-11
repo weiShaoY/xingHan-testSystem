@@ -47,7 +47,7 @@ const createSectionRoutes: AppRouteRecord[] = sectionRouteConfigs.map((item, ind
 }))
 
 const editSectionRoutes: AppRouteRecord[] = sectionRouteConfigs.map((item, index) => ({
-  path: `:couId/section/${item.type}/:sectionId/edit`,
+  path: `:couId/section/${item.type}/:olId/edit`,
   name: `AdminCourseSection${item.name}Edit`,
   component: item.component,
   meta: {

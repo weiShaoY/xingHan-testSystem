@@ -77,11 +77,6 @@ const currentEditChapterId = ref<number>()
 const currentCreateSectionChapterId = ref<number>()
 
 /**
- * 课程内容数据
- */
-const outlineList = ref<AdminApi.Course.CourseOutlineListItem[]>([])
-
-/**
  * 跳转到课程编辑页
  */
 function goToCourseEdit() {
@@ -93,12 +88,24 @@ function goToCourseEdit() {
   })
 }
 
+const courseDetail = ref<AdminApi.Course.CourseOutlineListResponse>(
+  {
+    couId: 0,
+    couName: '',
+    couContent: '',
+    couIntro: '',
+    couChapterCount: 0,
+    couSectionCount: 0,
+    nodes: [],
+  },
+)
+
 /**
    *  获取课程详情
    */
 async function getCourseDetail() {
-  outlineList.value = await fetchAdminCourseOutlineList(couId.value)
-  console.log('🚀 ~ file: index.vue:206 ~ outlineList.value:', outlineList.value)
+  courseDetail.value = await fetchAdminCourseOutlineList(couId.value)
+  console.log('🚀 ~ file: index.vue:206 ~ courseDetail.value:', courseDetail.value)
 }
 
 getCourseDetail()
@@ -176,7 +183,7 @@ function goToAddSection(sectionType: SectionType) {
 
     query: currentCreateSectionChapterId.value
       ? {
-          olId: currentCreateSectionChapterId.value,
+          olPID: currentCreateSectionChapterId.value,
         }
       : undefined,
   })
@@ -205,11 +212,9 @@ function editSection(section: AdminApi.Course.Section) {
 
     params: {
       couId: couId.value,
-      sectionId: section.id,
+      olId: section.id,
     },
   })
-  isShowCreateSectionDialog.value = true
-  isShowCreateSectionDialog.value = false
 }
 
 </script>
@@ -242,8 +247,10 @@ function editSection(section: AdminApi.Course.Section) {
     />
 
     <AdminPageHeader
-      title="学习课程1 详情页"
-      :stats="[`小节数量: ${outlineList.filter((item) => item.itemType === 'section').length}`]"
+      :title="` ${courseDetail.couName}`"
+      :stats="[`
+        章节数量: ${courseDetail.couChapterCount}
+        小节数量: ${courseDetail.couSectionCount}`]"
     >
       <template
         #extra
@@ -277,7 +284,7 @@ function editSection(section: AdminApi.Course.Section) {
 
     <!-- 课程内容列表 -->
     <div
-      v-for="item in outlineList"
+      v-for="item in courseDetail.nodes"
       :key="item.id"
     >
       <!-- 章节 -->
