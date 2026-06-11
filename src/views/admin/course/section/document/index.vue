@@ -40,6 +40,12 @@ const isEditMode = computed(() => {
 
 const loading = ref(false)
 
+/**
+   *  是否显示 文档选择上传区域
+   *  @abstract 首次判断 为 如果是编辑模式则不显示
+   */
+const isShowDocumentUploadArea = ref(!isEditMode.value)
+
 const columns: ColumnOption<FileApi.FileListItem>[] = [
   {
     label: '文件名称',
@@ -221,12 +227,15 @@ function confirmSelectDocument() {
   }
 
   isShowFileSelectDialog.value = false
+  isShowDocumentUploadArea.value = false
 }
 
 /**
  * 更换文档
  */
 function handleReplaceDocumentClick() {
+  isShowDocumentUploadArea.value = true
+
   selectedDocument.value = undefined
   getDocumentList()
   isShowFileSelectDialog.value = true
@@ -360,6 +369,7 @@ async function handleSubmit() {
         #extra
       >
         <ArtIconButton
+          v-if="!isShowDocumentUploadArea"
           type="warning"
           class="mr-2"
           @click="handleReplaceDocumentClick"
@@ -379,6 +389,7 @@ async function handleSubmit() {
 
     <!-- 文档选择上传区域 -->
     <div
+      v-if="isShowDocumentUploadArea"
       class="art-card flex flex-col items-center justify-center"
     >
       <ArtIconButton
@@ -408,6 +419,7 @@ async function handleSubmit() {
 
     <!-- 文档编辑区 -->
     <div
+      v-else
       class="art-card flex items-center justify-between gap-20"
     >
       <aside
