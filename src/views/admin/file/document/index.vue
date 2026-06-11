@@ -12,6 +12,13 @@ const columns: ColumnOption<FileApi.FileListItem>[] = [
     minWidth: 460,
     useSlot: true,
   },
+  {
+    label: '上传时间',
+    prop: 'createTime',
+    minWidth: 140,
+    useSlot: true,
+    sortable: true,
+  },
 
   {
     label: '文件大小',
@@ -19,6 +26,7 @@ const columns: ColumnOption<FileApi.FileListItem>[] = [
     slotName: 'fileSize',
     minWidth: 140,
     useSlot: true,
+    sortable: true,
   },
   {
     label: '操作',
@@ -125,6 +133,19 @@ function handleSearch() {
   getDocumentList()
 }
 
+function getFileUrl(path: string) {
+  if (!path) {
+    return ''
+  }
+
+  const baseUrl = import.meta.env.VITE_APP_API_PROXY_URL.replace(/\/+$/, '')
+
+  const normalizedPath = path
+    .replace(/\\/g, '/')
+    .replace(/^\/+/, '')
+
+  return `${baseUrl}/${normalizedPath}`
+}
 </script>
 
 <template>
@@ -192,8 +213,19 @@ function handleSearch() {
         #fileName="{ row }"
       >
         <div
-          class="min-w-0"
+          class="min-w-0 flex items-center gap-2"
         >
+          <div
+            class=""
+          >
+            <el-image
+              :src="getFileUrl(row.asThumbnailPath)"
+              fit="contain"
+              class="w-5 h-10 "
+            />
+            {{ getFileUrl(row.asThumbnailPath) }}
+          </div>
+
           <div
             class="truncate text-sm font-medium text-g-900"
           >
@@ -201,6 +233,15 @@ function handleSearch() {
           </div>
 
         </div>
+      </template>
+
+      <template
+        #createTime="{ row }"
+      >
+        <span>
+          {{ formatDateTime(row.createTime) }}
+        </span>
+
       </template>
 
       <template

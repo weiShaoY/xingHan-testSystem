@@ -49,37 +49,62 @@ declare namespace FileApi {
     /**
      * 时长或文件页数（视频时长秒数/PDF页数）
      */
-    asDuration?: number | null
+    asDuration: number
 
     /**
      * 文件后缀（如.mp4、.pdf）
      */
-    asExtension?: null | string
+    asExtension: string
 
     /**
      * 文件路径/存储路径
      */
-    asFileName?: null | string
+    asFileName: string
 
     /**
      * 附件ID（主键，自增）
      */
-    asId?: number
+    asId: number
 
     /**
      * 文件显示名称
      */
-    asName?: null | string
+    asName: string
 
     /**
      * 文件大小（字节）
      */
-    asSize?: number
+    asSize: number
 
     /**
      * 附件类型（如：video、audio、document、image）
      */
-    asType?: null | string
+    asType: 'document' | 'video'
+
+    /**
+     * 附件略缩图
+     */
+    asThumbnailPath: string
+
+    /**
+     *  创建时间
+     */
+    createTime: string
+
+    /**
+     * 创建人ID
+     */
+    creater: number
+
+    /**
+     * 最后修改人ID
+     */
+    updater: number
+
+    /**
+     * 最后修改时间
+     */
+    updateTime: string
   }
 
   /**

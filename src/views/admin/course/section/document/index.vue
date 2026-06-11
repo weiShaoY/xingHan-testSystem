@@ -2,6 +2,24 @@
 <script lang="ts" setup>
 import type { ColumnOption } from '@/types'
 
+import { useRoute } from 'vue-router'
+
+const route = useRoute()
+
+/**
+ * 当前章节 ID
+ */
+const olId = computed(() => {
+  return Number(route.params.olId || 0)
+})
+
+/**
+ * 当前课程 ID
+ */
+const couId = computed(() => {
+  return Number(route.params.couId || 0)
+})
+
 const loading = ref(false)
 
 const columns: ColumnOption<FileApi.FileListItem>[] = [
@@ -12,6 +30,13 @@ const columns: ColumnOption<FileApi.FileListItem>[] = [
     minWidth: 460,
     useSlot: true,
   },
+  {
+    label: '上传时间',
+    prop: 'createTime',
+    minWidth: 140,
+    useSlot: true,
+    sortable: true,
+  },
 
   {
     label: '文件大小',
@@ -19,6 +44,7 @@ const columns: ColumnOption<FileApi.FileListItem>[] = [
     slotName: 'fileSize',
     minWidth: 140,
     useSlot: true,
+    sortable: true,
   },
 ]
 
@@ -113,6 +139,15 @@ function handleSearch() {
 function handleDocumentCurrentChange(row?: FileApi.FileListItem) {
   selectedDocument.value = row
 }
+
+const formData = ref<AdminApi.Course.CourseOutlineSectionEditor>({
+  olId: olId.value,
+  couId: couId.value,
+  olName: '',
+  asId: 1,
+})
+
+// # ///////////////////////////////////////////////////
 
 /**
  * 文档表单数据
@@ -373,6 +408,28 @@ function toggleAdvancedSettings() {
           2.文档支持pdf格式;
         </p>
       </div>
+    </div>
+
+    <!-- 文档编辑区 -->
+    <div
+      class="art-card flex items-center justify-between"
+    >
+      <aside
+        class=""
+      >
+        <el-image
+          src="string"
+        />
+
+      </aside>
+
+      <div
+        class=""
+      >
+        1
+
+      </div>
+
     </div>
 
     <div
