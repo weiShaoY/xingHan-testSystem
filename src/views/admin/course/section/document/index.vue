@@ -1,7 +1,126 @@
-<!------  2026-04-16---20:42---星期四  ------>
-<!------------------------------------    ------------------------------------------------->
+<!------------------------------------  创建文档小节  ------------------------------------------------->
 <script lang="ts" setup>
-import { UploadFilled } from '@element-plus/icons-vue'
+import type { ColumnOption } from '@/types'
+
+const loading = ref(false)
+
+const columns: ColumnOption<FileApi.FileListItem>[] = [
+  {
+    label: '',
+    prop: 'selected',
+    slotName: 'selected',
+    width: 56,
+    align: 'center',
+    useSlot: true,
+  },
+  {
+    label: '文件名称',
+    prop: 'asName',
+    slotName: 'fileName',
+    minWidth: 460,
+    useSlot: true,
+  },
+
+  {
+    label: '文件大小',
+    prop: 'asSize',
+    slotName: 'fileSize',
+    minWidth: 140,
+    useSlot: true,
+  },
+]
+
+/**
+   *  是否显示文件选择弹窗
+   */
+const isShowFileSelectDialog = ref(false)
+
+/**
+ *  请求参数
+ */
+const params = reactive<FileApi.FileListParams>({
+  name: '',
+  type: 'document',
+  pageSize: 10,
+  currentPage: 1,
+})
+
+/**
+ * 文档列表
+ */
+const documentTable = ref<FileApi.FileListResponse>({
+  rows: [],
+  totals: 0,
+})
+
+/**
+ * 当前选中的文档
+ */
+const selectedDocument = ref<FileApi.FileListItem>()
+
+/**
+ * 分页配置
+ */
+const pagination = computed(() => ({
+  current: params.currentPage,
+  size: params.pageSize,
+  total: documentTable.value.totals,
+}))
+
+/**
+   *  获取文档列表
+   */
+async function getDocumentList() {
+  loading.value = true
+
+  try {
+    documentTable.value = await fetchAdminFileList(params)
+  }
+  catch {
+    loading.value = false
+  }
+  finally {
+    loading.value = false
+  }
+}
+
+getDocumentList()
+
+/**
+ * 每页条数变化
+ */
+function handleSizeChange(size: number) {
+  params.pageSize = size
+  params.currentPage = 1
+  selectedDocument.value = undefined
+  getDocumentList()
+}
+
+/**
+ * 当前页变化
+ */
+function handleCurrentChange(currentPage: number) {
+  params.currentPage = currentPage
+  selectedDocument.value = undefined
+  getDocumentList()
+}
+
+/**
+ * 搜索文档
+ */
+function handleSearch() {
+  params.currentPage = 1
+  params.name = params.name.trim()
+  selectedDocument.value = undefined
+  getDocumentList()
+}
+
+/**
+ * 选择文档表格行
+ */
+function handleDocumentCurrentChange(row?: FileApi.FileListItem) {
+  selectedDocument.value = row
+}
 
 /**
  * 文档表单数据
@@ -96,7 +215,24 @@ function handleSubmit() {
   console.log('文档小节表单:', {
     ...documentForm.value,
     ...documentInfo,
+    document: selectedDocument.value,
   })
+}
+
+/**
+ * 确认选择文档
+ */
+function confirmSelectDocument() {
+  if (!selectedDocument.value) {
+    return
+  }
+
+  const document = selectedDocument.value
+
+  documentForm.value.name = document.asName || document.asFileName || `未命名文件${document.asExtension || ''}`
+  isShowFileSelectDialog.value = false
+
+  console.log('当前选中文档:', document)
 }
 
 /**
@@ -117,8 +253,104 @@ function toggleAdvancedSettings() {
 
 <template>
   <div
-    class="mb-10 flex flex-col gap-4 "
+    class="mx-auto mb-10 flex w-full max-w-7xl flex-col gap-4 px-10 max-lg:px-6 max-sm:px-4"
   >
+    <el-dialog
+      v-if="isShowFileSelectDialog"
+      v-model="isShowFileSelectDialog"
+      title="选择文档"
+      width="50%"
+      :show-close="false"
+    >
+      <div
+        class="flex justify-between items-center"
+      >
+        <el-input
+          v-model="params.name"
+          class="max-w-110 max-md:max-w-none max-sm:w-full"
+          placeholder="请输入文件名称"
+          clearable
+          @keyup.enter="handleSearch"
+          @clear="handleSearch"
+        >
+          <template
+            #append
+          >
+            <ArtSvgIcon
+              icon="tdesign:search"
+            />
+          </template>
+        </el-input>
+
+        <div
+          class="flex gap-2 items-center"
+        >
+          <ArtIconButton
+            @click="$router.push({ name: 'AdminFileDocument' })"
+          >
+            去上传文档
+          </ArtIconButton>
+
+          <ArtIconButton
+            :disabled="!selectedDocument"
+            type="primary"
+            @click="confirmSelectDocument"
+          >
+            选择文档
+          </ArtIconButton>
+        </div>
+      </div>
+
+      <!-- 文档表格 -->
+      <ArtTable
+        :loading="loading"
+        :data="documentTable.rows"
+        :columns="columns"
+        :pagination="pagination"
+        row-key="asId"
+        highlight-current-row
+        @current-change="handleDocumentCurrentChange"
+        @row-click="handleDocumentCurrentChange"
+        @pagination:size-change="handleSizeChange"
+        @pagination:current-change="handleCurrentChange"
+      >
+        <template
+          #selected="{ row }"
+        >
+          <el-radio
+            :model-value="selectedDocument?.asId"
+            :value="row.asId"
+            @change="handleDocumentCurrentChange(row)"
+          />
+        </template>
+
+        <template
+          #fileName="{ row }"
+        >
+          <div
+            class="min-w-0"
+          >
+            <div
+              class="truncate text-sm font-medium text-g-900"
+            >
+              {{ row.asName || row.asFileName || `未命名文件${row.asExtension || ''}` }}
+            </div>
+
+          </div>
+        </template>
+
+        <template
+          #fileSize="{ row }"
+        >
+          <span
+            class="text-base text-g-900"
+          >
+            {{ formatFileSize(row.asSize) }}
+          </span>
+        </template>
+      </ArtTable>
+    </el-dialog>
+
     <AdminPageHeader
       title="添加文档"
     >
@@ -133,11 +365,33 @@ function toggleAdvancedSettings() {
       </template>
     </AdminPageHeader>
 
-    <!-- // 文件 或者 视频 -->
+    <!-- 文档选择上传区域 -->
     <div
-      class="mx-auto w-full max-w-3xl"
+      class="art-card flex flex-col items-center justify-center"
     >
-      <AdminUpload />
+      <ArtIconButton
+        icon="ri:upload-line"
+        class="text-2xl w-20 h-20"
+        @click="isShowFileSelectDialog = true"
+      />
+
+      <div
+        class="my-5"
+      >
+        选择一个文档
+      </div>
+
+      <div
+        class="text-sm text-g-600"
+      >
+        <p>
+          1.点击上方图标，选取转码、审核完成的文档;
+        </p>
+
+        <p>
+          2.文档支持pdf格式;
+        </p>
+      </div>
     </div>
 
     <div

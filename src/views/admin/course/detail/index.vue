@@ -172,12 +172,11 @@ function goToAddSection(sectionType: SectionType) {
 
     params: {
       couId: couId.value,
-      olId: currentCreateSectionChapterId.value,
     },
 
     query: currentCreateSectionChapterId.value
       ? {
-          chapterId: currentCreateSectionChapterId.value,
+          olId: currentCreateSectionChapterId.value,
         }
       : undefined,
   })
@@ -205,10 +204,7 @@ function editSection(section: AdminApi.Course.Section) {
     name: editSectionRouteMap[section.sectionType],
 
     params: {
-      courseId: couId.value,
-    },
-
-    query: {
+      couId: couId.value,
       sectionId: section.id,
     },
   })
@@ -264,17 +260,18 @@ function editSection(section: AdminApi.Course.Section) {
 
         <ArtIconButton
           type="add"
+          @click="addSection()"
+        >
+          添加小节
+        </ArtIconButton>
+
+        <ArtIconButton
+          type="add"
           @click="addChapter"
         >
           添加章节
         </ArtIconButton>
 
-        <ArtIconButton
-          type="add"
-          @click="addSection()"
-        >
-          添加小节
-        </ArtIconButton>
       </template>
     </AdminPageHeader>
 

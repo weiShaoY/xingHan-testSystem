@@ -32,7 +32,7 @@ const sectionRouteConfigs = [
 ]
 
 const createSectionRoutes: AppRouteRecord[] = sectionRouteConfigs.map((item, index) => ({
-  path: `:courseId/section/${item.type}/create`,
+  path: `:couId/section/${item.type}/create`,
   name: `AdminCourseSection${item.name}Create`,
   component: item.component,
   meta: {
@@ -47,7 +47,7 @@ const createSectionRoutes: AppRouteRecord[] = sectionRouteConfigs.map((item, ind
 }))
 
 const editSectionRoutes: AppRouteRecord[] = sectionRouteConfigs.map((item, index) => ({
-  path: `:courseId/section/${item.type}/:sectionId/edit`,
+  path: `:couId/section/${item.type}/:sectionId/edit`,
   name: `AdminCourseSection${item.name}Edit`,
   component: item.component,
   meta: {
