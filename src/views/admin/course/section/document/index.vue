@@ -6,14 +6,6 @@ const loading = ref(false)
 
 const columns: ColumnOption<FileApi.FileListItem>[] = [
   {
-    label: '',
-    prop: 'selected',
-    slotName: 'selected',
-    width: 56,
-    align: 'center',
-    useSlot: true,
-  },
-  {
     label: '文件名称',
     prop: 'asName',
     slotName: 'fileName',
@@ -310,20 +302,9 @@ function toggleAdvancedSettings() {
         row-key="asId"
         highlight-current-row
         @current-change="handleDocumentCurrentChange"
-        @row-click="handleDocumentCurrentChange"
         @pagination:size-change="handleSizeChange"
         @pagination:current-change="handleCurrentChange"
       >
-        <template
-          #selected="{ row }"
-        >
-          <el-radio
-            :model-value="selectedDocument?.asId"
-            :value="row.asId"
-            @change="handleDocumentCurrentChange(row)"
-          />
-        </template>
-
         <template
           #fileName="{ row }"
         >
