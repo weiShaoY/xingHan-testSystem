@@ -9,6 +9,11 @@ const route = useRoute()
 const router = useRouter()
 
 /**
+ * 工作标签页 Store。
+ */
+const workTabStore = useWorkTabStore()
+
+/**
  * 当前课程 ID
  */
 const couId = computed(() => {
@@ -17,35 +22,35 @@ const couId = computed(() => {
 
 /**
  * 当前编辑的小节 ID
- * @abstract 只有在编辑模式下才会有值
  */
 const olId = computed(() => {
   return Number(route.params.olId || 0)
 })
 
 /**
- * 当前节点所属的 章节 ID
- * @abstract 只有在新增模式下才会有值
+ * 新增小节时所属的章节 ID；为空时表示课程直属小节。
  */
 const olPID = computed(() => {
   return Number(route.query.olPID || 0)
 })
 
 /**
- * 是否为编辑模式。
+ * 是否为编辑模式
  */
 const isEditMode = computed(() => {
   return Boolean(olId.value)
 })
 
-const loading = ref(false)
+/**
+ * 页面标题
+ */
+const pageTitle = computed(() => {
+  return isEditMode.value ? '编辑文档' : '添加文档'
+})
 
 /**
-   *  是否显示 文档选择上传区域
-   *  @abstract 首次判断 为 如果是编辑模式则不显示
-   */
-const isShowDocumentUploadArea = ref(!isEditMode.value)
-
+ * 文档表格列配置
+ */
 const columns: ColumnOption<FileApi.FileListItem>[] = [
   {
     label: '文件名称',
@@ -73,12 +78,22 @@ const columns: ColumnOption<FileApi.FileListItem>[] = [
 ]
 
 /**
-   *  是否显示文件选择弹窗
-   */
+ * 文档列表加载状态
+ */
+const loading = ref(false)
+
+/**
+ * 是否显示文件选择弹窗
+ */
 const isShowFileSelectDialog = ref(false)
 
 /**
- *  请求参数
+ * 是否显示文档选择上传区域
+ */
+const isShowDocumentUploadArea = ref(!isEditMode.value)
+
+/**
+ * 文件列表请求参数
  */
 const params = reactive<FileApi.FileListParams>({
   name: '',
@@ -96,7 +111,7 @@ const documentTable = ref<FileApi.FileListResponse>({
 })
 
 /**
- * 当前选中的文档
+ * 表格当前选中的文档。只有点击“选择文档”后才会写入 formData。
  */
 const selectedDocument = ref<FileApi.FileListItem>()
 
@@ -110,74 +125,62 @@ const pagination = computed(() => ({
 }))
 
 /**
-   *  获取文档列表
-   */
+ * 小节表单数据
+ */
+const formData = ref<AdminApi.Course.CourseOutlineSectionEditor>(createInitialFormData())
+
+/**
+ * 创建新增或编辑模式下的小节初始表单
+ */
+function createInitialFormData(): AdminApi.Course.CourseOutlineSectionEditor {
+  const baseFormData = {
+    couId: couId.value,
+    olName: '',
+    olIntro: '',
+    asId: 0,
+  }
+
+  if (isEditMode.value) {
+    return {
+      ...baseFormData,
+      olId: olId.value,
+    }
+  }
+
+  return {
+    ...baseFormData,
+    olPID: olPID.value || 0,
+    olLevel: olPID.value ? 2 : 1,
+  }
+}
+
+/**
+ * 获取文档展示名称
+ */
+function getDocumentName(document: FileApi.FileListItem) {
+  return document.asName || document.asFileName || `未命名文件${document.asExtension || ''}`
+}
+
+/**
+ * 清空表格当前选择
+ */
+function clearSelectedDocument() {
+  selectedDocument.value = undefined
+}
+
+/**
+ * 获取可选择的文档列表
+ */
 async function getDocumentList() {
   loading.value = true
 
   try {
     documentTable.value = await fetchAdminFileList(params)
   }
-  catch {
-    loading.value = false
-  }
   finally {
     loading.value = false
   }
 }
-
-getDocumentList()
-
-/**
- * 每页条数变化
- */
-function handleSizeChange(size: number) {
-  params.pageSize = size
-  params.currentPage = 1
-  selectedDocument.value = undefined
-  getDocumentList()
-}
-
-/**
- * 当前页变化
- */
-function handleCurrentChange(currentPage: number) {
-  params.currentPage = currentPage
-  selectedDocument.value = undefined
-  getDocumentList()
-}
-
-/**
- * 搜索文档
- */
-function handleSearch() {
-  params.currentPage = 1
-  params.name = params.name.trim()
-  selectedDocument.value = undefined
-  getDocumentList()
-}
-
-const formData = ref<AdminApi.Course.CourseOutlineSectionEditor>(
-  isEditMode.value
-  // 编辑小节
-    ? {
-        olId: olId.value,
-        couId: couId.value,
-        olName: '',
-        olIntro: '',
-        asId: 0,
-      }
-
-  // 新增小节
-    : {
-        couId: couId.value,
-        olName: '',
-        olIntro: '',
-        olPID: olPID.value || 0,
-        olLevel: olPID.value ? 2 : 1,
-        asId: 0,
-      },
-)
 
 /**
  * 获取小节详情
@@ -200,16 +203,10 @@ async function getSectionDetail() {
   }
 }
 
-onMounted(() => {
-  if (isEditMode.value) {
-    void getSectionDetail()
-  }
-})
-
 /**
  * 选择文档表格行
  */
-function handleDocumentCurrentChange(row: FileApi.FileListItem) {
+function handleDocumentCurrentChange(row?: FileApi.FileListItem) {
   selectedDocument.value = row
 }
 
@@ -235,30 +232,56 @@ function confirmSelectDocument() {
  */
 function handleReplaceDocumentClick() {
   isShowDocumentUploadArea.value = true
-
-  selectedDocument.value = undefined
-  getDocumentList()
+  clearSelectedDocument()
+  void getDocumentList()
   isShowFileSelectDialog.value = true
 }
 
 /**
- * 工作标签页 Store。
+ * 每页条数变化
  */
-const workTabStore = useWorkTabStore()
+function handleSizeChange(size: number) {
+  params.pageSize = size
+  params.currentPage = 1
+  clearSelectedDocument()
+  void getDocumentList()
+}
+
+/**
+ * 当前页变化
+ */
+function handleCurrentChange(currentPage: number) {
+  params.currentPage = currentPage
+  clearSelectedDocument()
+  void getDocumentList()
+}
+
+/**
+ * 搜索文档
+ */
+function handleSearch() {
+  params.currentPage = 1
+  params.name = params.name.trim()
+  clearSelectedDocument()
+  void getDocumentList()
+}
 
 /**
  * 提交文档小节
  */
 async function handleSubmit() {
+  if (!formData.value.asId) {
+    ElNotification.warning('请先选择文档')
+    return
+  }
+
   try {
     if (isEditMode.value) {
       await fetchAdminCourseOutlineSectionUpdate(formData.value)
-      console.log('🚀 ~ file: index.vue:247 ~ formData.value:', formData.value)
       ElNotification.success('文档小节更新成功')
     }
     else {
       await fetchAdminCourseOutlineSectionAdd(formData.value)
-      console.log('🚀 ~ file: index.vue:251 ~ formData.value:', formData.value)
       ElNotification.success('文档小节创建成功')
     }
 
@@ -271,6 +294,14 @@ async function handleSubmit() {
     ElNotification.error(isEditMode.value ? '文档小节更新失败' : '文档小节新增失败')
   }
 }
+
+onMounted(() => {
+  void getDocumentList()
+
+  if (isEditMode.value) {
+    void getSectionDetail()
+  }
+})
 </script>
 
 <template>
@@ -344,10 +375,18 @@ async function handleSubmit() {
             <div
               class="truncate text-sm font-medium text-g-900"
             >
-              {{ row.asName || row.asFileName || `未命名文件${row.asExtension || ''}` }}
+              {{ getDocumentName(row) }}
             </div>
 
           </div>
+        </template>
+
+        <template
+          #createTime="{ row }"
+        >
+          <span>
+            {{ formatDateTime(row.createTime) }}
+          </span>
         </template>
 
         <template
@@ -363,7 +402,7 @@ async function handleSubmit() {
     </el-dialog>
 
     <AdminPageHeader
-      title="添加文档"
+      :title="pageTitle"
     >
       <template
         #extra
@@ -379,7 +418,6 @@ async function handleSubmit() {
 
         <ArtIconButton
           type="primary"
-          class=""
           @click="handleSubmit"
         >
           完成
@@ -422,8 +460,9 @@ async function handleSubmit() {
       v-else
       class="art-card flex items-center justify-between gap-20"
     >
+      <!-- //  未完成, 给根据 formData 获取 文档数据 来展示 -->
       <aside
-        class=""
+        v-if="selectedDocument"
       >
         <el-image
           :src="getFileUrl(selectedDocument?.asThumbnailPath || '')"
@@ -444,7 +483,7 @@ async function handleSubmit() {
             </div>
 
             <div>
-              {{ selectedDocument?.asName || selectedDocument?.asFileName || `未命名文件${selectedDocument?.asExtension || ''}` }}
+              {{ getDocumentName(selectedDocument) || '-' }}
             </div>
           </div>
 
@@ -480,22 +519,22 @@ async function handleSubmit() {
           class="min-w-0"
         >
           <el-form-item
-            label="文档名称"
+            label="节点名称"
             required
           >
             <el-input
               v-model="formData.olName"
-              placeholder="请输入文档名称"
+              placeholder="请输入节点名称"
             />
           </el-form-item>
 
           <el-form-item
-            label="文档描述"
+            label="节点描述"
             required
           >
             <el-input
               v-model="formData.olIntro"
-              placeholder="请输入文档描述"
+              placeholder="请输入节点描述"
               type="textarea"
             />
           </el-form-item>

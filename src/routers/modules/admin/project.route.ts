@@ -26,7 +26,7 @@ export const Project: AppRouteRecord = {
       },
     },
     {
-      path: 'detail/:id',
+      path: 'detail/:projId',
       name: 'AdminProjectDetail',
       component: '/admin/project/detail',
       meta: {
@@ -38,13 +38,13 @@ export const Project: AppRouteRecord = {
       },
     },
     {
-      path: 'edit/:id',
+      path: 'edit/:projId',
       name: 'AdminProjectEdit',
       component: '/admin/project/edit',
       meta: {
         title: '项目编辑',
         icon: 'ri:pencil-line',
-        keepAlive: true,
+        keepAlive: false,
         sort: 2,
         isHide: true,
       },

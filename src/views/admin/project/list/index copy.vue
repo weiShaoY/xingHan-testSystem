@@ -18,9 +18,76 @@ const isShowCreateProjectDialog = ref(false)
 const isShowAllocateDialog = ref(false)
 
 /**
+ * 学习项目类型定义
+ */
+type StudyProject = {
+
+  /** 唯一标识 */
+  id: string
+
+  /** 项目标题 */
+  title: string
+
+  /** 项目描述 */
+  description: string
+
+  /** 时间 */
+  date: string
+
+  /** 学习阶段数量 */
+  stageCount: number
+
+  /** 课程数量 */
+  courseCount: number
+
+  /** 跳转链接 */
+  link?: string
+}
+
+/**
+ * 学习项目列表
+ */
+const projectList = ref<StudyProject[]>([
+  {
+    id: '1',
+    title: '未命名学习项目1',
+    description: '暂时没有项目描述',
+    date: '2026/04/12',
+    stageCount: 1,
+    courseCount: 1,
+    link: '#',
+  },
+  {
+    id: '2',
+    title: 'Vue3 进阶训练',
+    description: '深入学习组合式 API + Pinia 状态管理',
+    date: '2026/04/10',
+    stageCount: 3,
+    courseCount: 8,
+    link: '#',
+  },
+  {
+    id: '3',
+    title: '前端工程化实践',
+    description: 'Vite + 自动化部署 + CI/CD 实战',
+    date: '2026/04/08',
+    stageCount: 2,
+    courseCount: 5,
+    link: '#',
+  },
+])
+
+/**
+ * 获取课程描述文本
+ */
+function getCourseText(item: StudyProject): string {
+  return `${item.stageCount} 个学习阶段，${item.courseCount} 门课程`
+}
+
+/**
  * 打开分配弹窗
  */
-function openAllocateProjectDialog(item: AdminApi.Project.ProjectListItem) {
+function openAllocateDialog(item: StudyProject) {
   console.log('🚀 ~ file: index.vue:83 ~ item:', item)
   isShowAllocateDialog.value = true
 }
@@ -28,120 +95,27 @@ function openAllocateProjectDialog(item: AdminApi.Project.ProjectListItem) {
 const router = useRouter()
 
 /**
- * 列表加载状态。
+ * 跳转到详情页
  */
-const loading = ref(false)
-
-/**
- * 分页条数选项。
- */
-const PAGE_SIZE_OPTIONS = [10, 20, 30, 50]
-
-/**
- * 列表查询参数。
- */
-const params = reactive<AdminApi.Project.ProjectListParams>({
-  name: '',
-  pageSize: PAGE_SIZE_OPTIONS[0],
-  currentPage: 1,
-})
-
-/**
- * 列表响应数据。
- */
-const projectList = ref<AdminApi.Project.ProjectListResponse>({
-  rows: [],
-  totals: 0,
-})
-
-/**
- * 获取项目列表
- */
-async function getProjectList() {
-  loading.value = true
-
-  try {
-    projectList.value = await fetchAdminProjectList(params)
-  }
-  catch {
-    ElNotification.error('项目列表获取失败')
-  }
-  finally {
-    loading.value = false
-  }
-}
-
-getProjectList()
-
-/**
- * 工作标签页 Store，用于更新动态页面标签标题。
- */
-const workTabStore = useWorkTabStore()
-
-/**
- * 跳转到项目相关页面，并按项目名称更新工作标签标题。
- *
- * @param item 项目列表项。
- * @param routeName 目标项目路由名称。
- * @param titlePrefix 标签标题前缀。
- * @returns 页面跳转和标签标题更新完成。
- */
-async function goToProjectPage(
-  item: AdminApi.Project.ProjectListItem,
-  routeName: 'AdminProjectEdit' | 'AdminProjectDetail',
-  titlePrefix: string,
-) {
-  /**
-   * 解析后的目标路由。
-   */
-  const targetRoute = router.resolve({
-    name: routeName,
+function goToDetail(item: StudyProject) {
+  router.push({
+    name: 'AdminProjectDetail',
     params: {
-      projId: item.projId,
+      id: item.id,
     },
   })
-
-  /**
-   * 跳转到目标路由。
-   */
-  router.push(targetRoute)
-
-  /**
-   * 更新工作标签标题。
-   */
-  workTabStore.updateTabTitle(targetRoute.path, `${titlePrefix}-${item.projName}`)
 }
 
 /**
  * 跳转到编辑页
  */
-function goToEdit(item: AdminApi.Project.ProjectListItem) {
-  void goToProjectPage(item, 'AdminProjectEdit', '编辑项目')
-}
-
-/**
- * 跳转到课程详情页。
- *
- * @param item 需要查看详情的项目。
- */
-function goToDetail(item: AdminApi.Project.ProjectListItem) {
-  void goToProjectPage(item, 'AdminProjectDetail', '项目详情')
-}
-
-/**
- * 删除项目并刷新列表。
- *
- * @param item 需要删除的项目。
- */
-async function deleteProject(item: AdminApi.Project.ProjectListItem) {
-  try {
-    await fetchAdminProjectDelete(item.projId)
-    await getProjectList()
-    ElNotification.success('删除成功')
-  }
-  catch {
-    ElNotification.error('删除失败')
-  }
+function goToEdit(item: StudyProject) {
+  router.push({
+    name: 'AdminProjectEdit',
+    params: {
+      id: item.id,
+    },
+  })
 }
 </script>
 
@@ -169,7 +143,7 @@ async function deleteProject(item: AdminApi.Project.ProjectListItem) {
         <p
           class="mt-1 text-sm text-g-600"
         >
-          共 {{ projectList.totals }} 个项目
+          共 {{ projectList.length }} 个项目
         </p>
       </div>
 
@@ -179,22 +153,27 @@ async function deleteProject(item: AdminApi.Project.ProjectListItem) {
         <el-input
           v-model="inputVModel"
           class="max-w-110 max-md:max-w-none max-sm:w-full"
-          placeholder="请输入项目名称"
+          placeholder="学习项目名称、描述、标签或访问码"
         >
           <template
             #append
           >
-            <ArtSvgIcon
-              icon="tdesign:search"
-            />
+            <el-button
+              class="flex items-center justify-center"
+            >
+              <SvgIcon
+                icon="search"
+              />
+            </el-button>
           </template>
         </el-input>
 
         <ArtIconButton
           type="add"
+          class="max-sm:w-full"
           @click="isShowCreateProjectDialog = true"
         >
-          创建项目
+          创建学习项目
         </ArtIconButton>
       </div>
     </div>
@@ -208,34 +187,22 @@ async function deleteProject(item: AdminApi.Project.ProjectListItem) {
       />
 
       <div
-        v-for="item in projectList.rows"
-        :key="item.projId"
+        v-for="item in projectList"
+        :key="item.id"
         class="grid grid-cols-[150px_8px_minmax(0,1fr)] gap-5 items-center max-md:grid-cols-1 max-md:gap-3"
       >
         <div
           class="flex flex-col items-end text-sm text-g-600 max-md:flex-row max-md:items-center max-md:justify-between max-md:rounded-custom-sm max-md:bg-box max-md:border-full-d max-md:px-4 max-md:py-3"
         >
-          <div
-            class="max-md:flex max-md:items-center max-md:gap-1"
+          <span
+            class="font-medium text-primary"
           >
-            <span
-              class="font-medium text-primary"
-            >
-              {{ getDateSegment(item.createTime, 'year') }} 年
-            </span>
+            {{ item.date }}
+          </span>
 
-            <span
-              class="font-medium text-primary"
-            >
-              {{ getDateSegment(item.createTime, 'month') }} 月 {{ getDateSegment(item.createTime, 'day') }} 日
-            </span>
-          </div>
-
-          <div
-            class="mt-1 max-md:mt-0"
-          >
-            创建时间 {{ getDateSegment(item.createTime, 'hour') }}:{{ getDateSegment(item.createTime, 'minute') }}
-          </div>
+          <span>
+            创建时间
+          </span>
         </div>
 
         <div
@@ -257,13 +224,13 @@ async function deleteProject(item: AdminApi.Project.ProjectListItem) {
               <h3
                 class="truncate text-base font-semibold text-g-900"
               >
-                {{ item.projName }}
+                {{ item.title }}
               </h3>
 
               <p
                 class="mt-2 line-clamp-2 text-sm text-g-600"
               >
-                {{ item.projIntro }}
+                {{ item.description }}
               </p>
             </div>
 
@@ -277,13 +244,8 @@ async function deleteProject(item: AdminApi.Project.ProjectListItem) {
               />
 
               <ArtIconButton
-                type="delete"
-                @click="deleteProject(item)"
-              />
-
-              <ArtIconButton
                 type="allocate"
-                @click="openAllocateProjectDialog(item)"
+                @click="openAllocateDialog(item)"
               />
             </div>
           </div>
@@ -299,7 +261,7 @@ async function deleteProject(item: AdminApi.Project.ProjectListItem) {
               <p
                 class="text-lg font-semibold"
               >
-                <!-- {{ item.stageCount }} -->
+                {{ item.stageCount }}
               </p>
 
               <p
@@ -315,7 +277,7 @@ async function deleteProject(item: AdminApi.Project.ProjectListItem) {
               <p
                 class="text-lg font-semibold"
               >
-                <!-- {{ item.courseCount }} -->
+                {{ item.courseCount }}
               </p>
 
               <p
@@ -325,14 +287,14 @@ async function deleteProject(item: AdminApi.Project.ProjectListItem) {
               </p>
             </div>
 
-            <!-- <el-link
+            <el-link
               :href="item.link"
               type="primary"
               class="justify-self-end max-sm:justify-self-start"
               @click.stop
             >
               {{ getCourseText(item) }} >
-            </el-link> -->
+            </el-link>
           </div>
         </div>
       </div>

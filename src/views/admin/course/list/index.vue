@@ -19,7 +19,7 @@ const router = useRouter()
 const workTabStore = useWorkTabStore()
 
 /**
- * 课程列表加载状态。
+ * 列表加载状态。
  */
 const loading = ref(false)
 
@@ -29,7 +29,7 @@ const loading = ref(false)
 const isShowAllocateCourseDialog = ref(false)
 
 /**
- * 课程列表查询参数。
+ * 列表查询参数。
  */
 const params = reactive<AdminApi.Course.CourseListParams>({
   name: '',
@@ -38,7 +38,7 @@ const params = reactive<AdminApi.Course.CourseListParams>({
 })
 
 /**
- * 课程列表响应数据。
+ * 列表响应数据。
  */
 const courseList = ref<AdminApi.Course.CourseListResponse>({
   rows: [],
@@ -46,9 +46,7 @@ const courseList = ref<AdminApi.Course.CourseListResponse>({
 })
 
 /**
- * 获取课程列表数据。
- *
- * @returns 请求完成后更新课程列表和加载状态。
+ * 获取课程列表
  */
 async function getCourseList() {
   loading.value = true
@@ -112,7 +110,8 @@ function goToCreate() {
 /**
  * 打开分配学习任务弹窗。
  */
-function openAllocateCourseDialog() {
+function openAllocateCourseDialog(item: AdminApi.Course.CourseListItem) {
+  console.log('🚀 ~ file: index.vue:114 ~ item:', item)
   isShowAllocateCourseDialog.value = true
 }
 
@@ -164,9 +163,7 @@ function goToDetail(item: AdminApi.Course.CourseListItem) {
 
 /**
  * 删除课程并刷新列表。
- *
  * @param item 需要删除的课程。
- * @returns 删除请求和列表刷新完成。
  */
 async function deleteCourse(item: AdminApi.Course.CourseListItem) {
   try {
@@ -215,7 +212,7 @@ getCourseList()
         <el-input
           v-model="params.name"
           class="max-w-110 max-md:max-w-none max-sm:w-full"
-          placeholder="请输入文件名称"
+          placeholder="请输入课程名称"
           clearable
           @keyup.enter="handleSearch"
           @clear="handleSearch"
@@ -318,7 +315,7 @@ getCourseList()
 
               <ArtIconButton
                 type="allocate"
-                @click="openAllocateCourseDialog"
+                @click="openAllocateCourseDialog(item)"
               />
             </div>
           </div>
