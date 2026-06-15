@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 
-import AllocateDialog from './AllocateDialog.vue'
+import AllocateDialog from './AllocateProjectDialog.vue/index.js'
 
 import CreateProjectDialog from './CreateProjectDialog.vue'
 

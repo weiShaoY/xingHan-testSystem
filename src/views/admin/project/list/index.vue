@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 
-import AllocateDialog from './AllocateDialog.vue'
+import AllocateProjectDialog from './AllocateProjectDialog.vue'
 
 import CreateProjectDialog from './CreateProjectDialog.vue'
 
@@ -18,6 +18,48 @@ const isShowCreateProjectDialog = ref(false)
 const isShowAllocateDialog = ref(false)
 
 /**
+ * 分页条数选项。
+ */
+const PAGE_SIZE_OPTIONS = [10, 20, 30, 50]
+
+/**
+ * 列表查询参数。
+ */
+const params = reactive<AdminApi.Course.CourseListParams>({
+  name: '',
+  pageSize: PAGE_SIZE_OPTIONS[0],
+  currentPage: 1,
+})
+
+/**
+ * 重置到第一页并刷新课程列表。
+ */
+function refreshFirstPage() {
+  params.currentPage = 1
+  getCourseList()
+}
+
+/**
+ * 处理每页条数变化。
+ *
+ * @param pageSize 新的每页条数。
+ */
+function handleSizeChange(pageSize: number) {
+  params.pageSize = pageSize
+  refreshFirstPage()
+}
+
+/**
+ * 处理当前页变化。
+ *
+ * @param currentPage 新的当前页码。
+ */
+function handleCurrentChange(currentPage: number) {
+  params.currentPage = currentPage
+  getCourseList()
+}
+
+/**
  * 打开分配弹窗
  */
 function openAllocateProjectDialog(item: AdminApi.Project.ProjectListItem) {
@@ -31,20 +73,6 @@ const router = useRouter()
  * 列表加载状态。
  */
 const loading = ref(false)
-
-/**
- * 分页条数选项。
- */
-const PAGE_SIZE_OPTIONS = [10, 20, 30, 50]
-
-/**
- * 列表查询参数。
- */
-const params = reactive<AdminApi.Project.ProjectListParams>({
-  name: '',
-  pageSize: PAGE_SIZE_OPTIONS[0],
-  currentPage: 1,
-})
 
 /**
  * 列表响应数据。
@@ -149,6 +177,11 @@ async function deleteProject(item: AdminApi.Project.ProjectListItem) {
   <div
     class="relative mx-auto max-w-7xl px-10 max-lg:px-6 max-sm:px-4"
   >
+    <AllocateProjectDialog
+      v-if="isShowAllocateDialog"
+      v-model="isShowAllocateDialog"
+    />
+
     <CreateProjectDialog
       v-if="isShowCreateProjectDialog"
       v-model="isShowCreateProjectDialog"
@@ -200,12 +233,9 @@ async function deleteProject(item: AdminApi.Project.ProjectListItem) {
     </div>
 
     <div
+      v-loading="loading"
       class="flex flex-col gap-4"
     >
-      <AllocateDialog
-        v-if="isShowAllocateDialog"
-        v-model="isShowAllocateDialog"
-      />
 
       <div
         v-for="item in projectList.rows"
@@ -336,6 +366,24 @@ async function deleteProject(item: AdminApi.Project.ProjectListItem) {
           </div>
         </div>
       </div>
+    </div>
+
+    <!-- 分页组件 -->
+    <div
+      v-if="projectList.totals > 0"
+      class="mt-6 flex justify-center overflow-x-auto pb-4"
+    >
+      <ElPagination
+        v-model:current-page="params.currentPage"
+        v-model:page-size="params.pageSize"
+        background
+        :page-sizes="PAGE_SIZE_OPTIONS"
+        :pager-count="7"
+        layout="total, prev, pager, next, sizes, jumper"
+        :total="projectList.totals"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+      />
     </div>
   </div>
 </template>
