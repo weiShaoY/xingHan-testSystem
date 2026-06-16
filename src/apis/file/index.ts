@@ -30,6 +30,7 @@ export function fetchAdminFileList(params: FileApi.FileListParams) {
 export function fetchAdminFileAttachment(asId: number) {
   return request.get<FileApi.FileAttachmentResponse>({
     url: '/admin/file/getAttachment',
+    responseType: 'blob',
     params: {
       asId,
     },

@@ -18,6 +18,7 @@ import type {
   AxiosRequestConfig,
   AxiosResponse,
   InternalAxiosRequestConfig,
+  ResponseType,
 } from 'axios'
 
 import axios from 'axios'
@@ -99,6 +100,45 @@ type ExtendedAxiosRequestConfig = AxiosRequestConfig & {
 
   /** 指定用于读取 token 的路由路径，不传时根据当前路由自动判断。 */
   authPath?: string
+}
+
+function isBinaryResponseType(responseType?: ResponseType) {
+  return responseType === 'blob' || responseType === 'arraybuffer'
+}
+
+function isJsonContentType(contentType?: string) {
+  return !!contentType && (
+    contentType.includes('application/json')
+    || contentType.includes('text/json')
+    || contentType.includes('+json')
+  )
+}
+
+async function parseBinaryResponseData(data: Blob | ArrayBuffer) {
+  const text = data instanceof Blob
+    ? await data.text()
+    : new TextDecoder('utf-8').decode(data)
+
+  try {
+    return JSON.parse(text)
+  }
+  catch {
+    return text
+  }
+}
+
+function handleBusinessError(response: AxiosResponse<BaseResponse>) {
+  const { code, msg } = response.data
+
+  if (code === ApiStatus.success) { return response }
+
+  if (code === ApiStatus.unauthorized) { handleUnauthorizedError(msg) }
+
+  throw createHttpError(msg || $t('httpMsg.requestFailed'), code, {
+    data: response.data,
+    url: response.config.url,
+    method: response.config.method?.toUpperCase(),
+  })
 }
 
 /**
@@ -215,27 +255,27 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
 
   // HTTP 2xx 响应会进入这里，再继续判断业务 code。
-  (response: AxiosResponse<BaseResponse>) => {
-    // 解构后端统一响应中的业务状态码和消息。
-    const { code, msg } = response.data
+  async (response: AxiosResponse<BaseResponse>) => {
+    if (isBinaryResponseType(response.config.responseType)) {
+      const contentType = response.headers?.['content-type']
 
-    // 业务成功时返回完整响应，后续 request 函数会解包 data。
-    if (code === ApiStatus.success) { return response }
+      if (isJsonContentType(contentType) && response.data) {
+        const parsedData = await parseBinaryResponseData(response.data as Blob | ArrayBuffer)
 
-    // 未授权时走统一退出登录和防抖提示逻辑。
-    if (code === ApiStatus.unauthorized) { handleUnauthorizedError(msg) }
+        if (parsedData && typeof parsedData === 'object' && 'code' in parsedData) {
+          const parsedResponse = {
+            ...response,
+            data: parsedData as BaseResponse,
+          } as AxiosResponse<BaseResponse>
 
-    // 其他业务错误统一转换成 HttpError。
-    throw createHttpError(msg || $t('httpMsg.requestFailed'), code, {
-      // 保存完整业务响应，便于日志排查。
-      data: response.data,
+          return handleBusinessError(parsedResponse)
+        }
+      }
 
-      // 保存请求地址，便于定位出错接口。
-      url: response.config.url,
+      return response
+    }
 
-      // 保存请求方法，并统一转成大写。
-      method: response.config.method?.toUpperCase(),
-    })
+    return handleBusinessError(response)
   },
 
   // 非 HTTP 2xx 或网络错误会进入这里。
@@ -397,6 +437,10 @@ async function request<T = any>(config: ExtendedAxiosRequestConfig): Promise<T> 
 
   try {
     const res = await axiosInstance.request<BaseResponse<T>>(config)
+
+    if (isBinaryResponseType(config.responseType)) {
+      return res.data as T
+    }
 
     // 显示成功消息
     if (config.showSuccessMessage && res.data.msg) {

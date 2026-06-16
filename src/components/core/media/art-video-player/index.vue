@@ -48,6 +48,10 @@ type Props = {
   commonStyle?: VideoPlayerStyle
 }
 
+const localPlayerId = `art-video-player-${Math.random().toString(36).slice(2, 10)}`
+
+const resolvedPlayerId = computed(() => props.playerId || localPlayerId)
+
 /**
    * 视频播放器实例引用
    */
@@ -89,10 +93,22 @@ const defaultStyle: VideoPlayerStyle = {
   volumeColor: '#00AEED',
 }
 
-// 组件挂载时初始化播放器
-onMounted(() => {
+function destroyPlayer() {
+  if (playerInstance.value) {
+    playerInstance.value.destroy()
+    playerInstance.value = null
+  }
+}
+
+function initPlayer() {
+  if (!props.videoUrl) {
+    return
+  }
+
+  destroyPlayer()
+
   playerInstance.value = new Player({
-    id: props.playerId,
+    id: resolvedPlayerId.value,
 
     /** 设置界面语言为中文 */
     lang: 'zh',
@@ -145,18 +161,33 @@ onMounted(() => {
   playerInstance.value.on('error', (error) => {
     console.error('Error occurred:', error)
   })
+}
+
+// 组件挂载时初始化播放器
+onMounted(() => {
+  initPlayer()
 })
+
+watch(
+  () => props.videoUrl,
+  async (videoUrl, prevVideoUrl) => {
+    if (!videoUrl || videoUrl === prevVideoUrl) {
+      return
+    }
+
+    await nextTick()
+    initPlayer()
+  },
+)
 
 // 组件卸载前清理播放器实例
 onBeforeUnmount(() => {
-  if (playerInstance.value) {
-    playerInstance.value.destroy()
-  }
+  destroyPlayer()
 })
 </script>
 
 <template>
   <div
-    :id="playerId"
+    :id="resolvedPlayerId"
   />
 </template>

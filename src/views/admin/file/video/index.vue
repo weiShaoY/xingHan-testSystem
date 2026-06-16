@@ -143,16 +143,29 @@ function handleSearch() {
    */
 const videoPlayUrl = ref('')
 
+function resetVideoPlayer() {
+  isShowVideoPlayDialog.value = false
+
+  if (videoPlayUrl.value) {
+    URL.revokeObjectURL(videoPlayUrl.value)
+    videoPlayUrl.value = ''
+  }
+}
+
 /**
  * 播放视频
  */
 async function playVideo(item: FileApi.FileListItem) {
   console.log('播放视频:', item)
-  const res = await fetchAdminFileAttachment(item.asId)
 
-  console.log('🚀 ~ file: index.vue:142 ~ res:', res)
-  videoPlayUrl.value = URL.createObjectURL(res)
-  isShowVideoPlayDialog.value = true
+  try {
+    resetVideoPlayer()
+    videoPlayUrl.value = URL.createObjectURL(await fetchAdminFileAttachment(item.asId))
+    isShowVideoPlayDialog.value = true
+  }
+  catch {
+    ElNotification.error('播放视频失败')
+  }
 }
 
 </script>
@@ -162,16 +175,17 @@ async function playVideo(item: FileApi.FileListItem) {
     class="mx-auto max-w-7xl px-10 relative max-lg:px-6 max-sm:px-4"
   >
     <el-dialog
-      v-if="isShowVideoPlayDialog"
-      v-model:visible="isShowVideoPlayDialog"
+      v-if="isShowVideoPlayDialog && videoPlayUrl"
+      v-model="isShowVideoPlayDialog"
       title="播放视频"
       width="50%"
+      @close="resetVideoPlayer"
     >
       <ArtVideoPlayer
-        :src="videoPlayUrl"
+        player-id="file-video-player"
+        :video-url="videoPlayUrl"
         :autoplay="true"
         :volume="0.5"
-        :screen-shot="true"
       />
 
     </el-dialog>
