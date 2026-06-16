@@ -657,6 +657,11 @@ declare namespace AdminApi {
        *  附件ID
        */
       asId: number
+
+      /**
+       * 附件信息
+       */
+      accessory?: FileApi.FileListItem
     }
 
   }

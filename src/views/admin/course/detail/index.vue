@@ -100,6 +100,8 @@ const courseDetail = ref<AdminApi.Course.CourseOutlineListResponse>(
   },
 )
 
+const courseNodes = computed(() => courseDetail.value.nodes || [])
+
 /**
    *  获取课程详情
    */
@@ -283,111 +285,123 @@ function editSection(section: AdminApi.Course.Section) {
     </AdminPageHeader>
 
     <!-- 课程内容列表 -->
-    <div
-      v-for="item in courseDetail.nodes"
-      :key="item.id"
+
+    <template
+      v-if="courseNodes.length"
     >
-      <!-- 章节 -->
-      <section
-        v-if="item.itemType === 'chapter'"
-        class="art-card flex flex-col gap-4"
+      <div
+        v-for="item in courseNodes"
+        :key="item.id"
       >
-        <div
-          class="flex items-start justify-between gap-4 max-md:flex-col"
+        <!-- 章节 -->
+        <section
+          v-if="item.itemType === 'chapter'"
+          class="art-card flex flex-col gap-4"
         >
           <div
-            class="min-w-0"
+            class="flex items-start justify-between gap-4 max-md:flex-col"
           >
             <div
-              class="flex flex-wrap gap-3 items-center"
+              class="min-w-0"
             >
               <div
-                class="truncate text-base font-semibold text-g-900"
+                class="flex flex-wrap gap-3 items-center"
               >
-                {{ item.name }}
+                <div
+                  class="truncate text-base font-semibold text-g-900"
+                >
+                  {{ item.name }}
+                </div>
+
+                <el-tag
+                  type="info"
+                  size="small"
+                >
+                  {{ item.sectionList.length }} 个小节
+                </el-tag>
               </div>
 
-              <el-tag
-                type="info"
-                size="small"
+              <div
+                class="mt-2 text-sm text-g-600"
               >
-                {{ item.sectionList.length }} 个小节
-              </el-tag>
+                {{ item.description }}
+              </div>
             </div>
 
             <div
-              class="mt-2 text-sm text-g-600"
+              class="flex flex-wrap gap-2 items-center justify-end pr-5 max-md:w-full max-md:justify-start max-sm:pr-0"
+              @click.stop
             >
-              {{ item.description }}
+              <ArtButton
+                type="add"
+                @click="addSection(item)"
+              >
+                添加小节
+              </ArtButton>
+
+              <ArtButton
+                type="delete"
+                @click="deleteChapter(item)"
+              >
+                删除章节
+              </ArtButton>
+
+              <ArtButton
+                type="edit"
+                @click="editChapter(item)"
+              >
+                编辑章节
+              </ArtButton>
             </div>
           </div>
 
           <div
-            class="flex flex-wrap gap-2 items-center justify-end pr-5 max-md:w-full max-md:justify-start max-sm:pr-0"
-            @click.stop
+            v-if="item.sectionList.length"
+            class="flex flex-col gap-3"
           >
-            <ArtButton
-              type="add"
-              @click="addSection(item)"
-            >
-              添加小节
-            </ArtButton>
-
-            <ArtButton
-              type="delete"
-              @click="deleteChapter(item)"
-            >
-              删除章节
-            </ArtButton>
-
-            <ArtButton
-              type="edit"
-              @click="editChapter(item)"
-            >
-              编辑章节
-            </ArtButton>
+            <!-- 章节里的小节 -->
+            <CourseSectionItem
+              v-for="section in item.sectionList"
+              :key="section.id"
+              inner
+              :section="section"
+              :type-config="getSectionTypeIcon(section.sectionType)"
+              @allocate="allocateSection"
+              @delete="deleteSection"
+              @edit="editSection"
+            />
           </div>
-        </div>
 
-        <div
-          v-if="item.sectionList.length"
-          class="flex flex-col gap-3"
-        >
-          <!-- 章节里的小节 -->
-          <CourseSectionItem
-            v-for="section in item.sectionList"
-            :key="section.id"
-            inner
-            :section="section"
-            :type-config="getSectionTypeIcon(section.sectionType)"
-            @allocate="allocateSection"
-            @delete="deleteSection"
-            @edit="editSection"
-          />
-        </div>
+          <div
+            v-else
+            class="rounded-custom-sm border-full-d"
+          >
+            <el-empty
+              description="暂无小节"
+              :image-size="30"
+              class="py-2!"
+            />
+          </div>
+        </section>
 
-        <div
-          v-else
-          class="rounded-custom-sm border-full-d"
-        >
-          <el-empty
-            description="暂无小节"
-            :image-size="30"
-            class="py-2!"
-          />
-        </div>
-      </section>
+        <!-- 独立小节 -->
+        <CourseSectionItem
+          v-else-if="item.itemType === 'section'"
+          :section="item"
+          :type-config="getSectionTypeIcon(item.sectionType)"
+          @allocate="allocateSection"
+          @delete="deleteSection"
+          @edit="editSection"
+        />
+      </div>
+    </template>
 
-      <!-- 独立小节 -->
-      <CourseSectionItem
-        v-else-if="item.itemType === 'section'"
-        :section="item"
-        :type-config="getSectionTypeIcon(item.sectionType)"
-        @allocate="allocateSection"
-        @delete="deleteSection"
-        @edit="editSection"
-      />
-    </div>
+    <el-empty
+      v-else
+      description="暂无章节和小节"
+      :image-size="30"
+      class="py-2!"
+    />
   </div>
 </template>
 

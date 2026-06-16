@@ -197,6 +197,7 @@ async function getSectionDetail() {
       ...formData.value,
       ...section,
     }
+    selectedDocument.value = section.accessory
   }
   catch {
     ElNotification.error('获取小节详情失败')
