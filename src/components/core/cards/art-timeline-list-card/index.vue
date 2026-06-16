@@ -39,7 +39,7 @@ type Props = {
   list: TimelineItem[]
 
   /** 标题 */
-  title: string
+  title?: string
 
   /** 副标题 */
   subtitle?: string

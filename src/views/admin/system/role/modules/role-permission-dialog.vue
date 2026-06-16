@@ -6,7 +6,7 @@ import { formatMenuTitle } from '@/utils/router'
 type RoleListItem = Api.SystemManage.RoleListItem
 
 type Props = {
-  modelValue: boolean
+  modelValue?: boolean
   roleData?: RoleListItem
 }
 

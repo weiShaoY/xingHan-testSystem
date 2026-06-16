@@ -28,7 +28,7 @@ const props = withDefaults(defineProps<Props>(), {
 type Props = {
 
   /** 菜单列表数据 */
-  list: AppRouteRecord[]
+  list?: AppRouteRecord[]
 }
 
 type ProcessedMenuItem = {

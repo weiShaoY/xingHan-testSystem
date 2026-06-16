@@ -124,7 +124,7 @@ export type FormItem = {
 type FormProps = {
 
   /** 表单数据 */
-  items: FormItem[]
+  items?: FormItem[]
 
   /** 每列的宽度（基于 24 格布局） */
   span?: number

@@ -44,7 +44,7 @@ type Props = {
   radius?: [string, string]
 
   /** 数据 */
-  data: [number, number]
+  data?: [number, number]
 }
 
 function formatNumber(num: number) {

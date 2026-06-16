@@ -129,7 +129,7 @@ export type SearchFormItem = {
 type SearchBarProps = {
 
   /** 表单数据 */
-  items: SearchFormItem[]
+  items?: SearchFormItem[]
 
   /** 每列的宽度（基于 24 格布局） */
   span?: number

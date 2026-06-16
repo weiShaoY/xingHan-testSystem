@@ -13,16 +13,16 @@ withDefaults(defineProps<ResultPageProps>(), {
 type ResultPageProps = {
 
   /** 成功/失败 */
-  type: 'success' | 'fail'
+  type?: 'success' | 'fail'
 
   /** 标题 */
-  title: string
+  title?: string
 
   /** 消息 */
-  message: string
+  message?: string
 
   /** 图标 */
-  iconCode: string
+  iconCode?: string
 }
 
 </script>

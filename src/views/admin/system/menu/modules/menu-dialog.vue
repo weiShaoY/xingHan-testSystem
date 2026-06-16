@@ -78,7 +78,7 @@ type MenuFormData = {
 }
 
 type Props = {
-  visible: boolean
+  visible?: boolean
   editData?: AppRouteRecord | any
   type?: 'menu' | 'button'
   lockType?: boolean

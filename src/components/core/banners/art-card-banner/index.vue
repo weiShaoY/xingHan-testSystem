@@ -48,10 +48,10 @@ type CardBannerProps = {
   image?: string
 
   /** 标题文本 */
-  title: string
+  title?: string
 
   /** 描述文本 */
-  description: string
+  description?: string
 
   /** 主按钮配置 */
   button?: {

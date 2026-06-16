@@ -112,4 +112,9 @@ declare namespace FileApi {
    */
   type FileListResponse = CommonApi.PaginatedResponse<FileListItem>
 
+  /**
+   *  获取附件返回资源文件流响应
+   */
+  type FileAttachmentResponse = Blob
+
 }

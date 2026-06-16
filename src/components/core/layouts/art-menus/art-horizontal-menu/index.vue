@@ -21,7 +21,7 @@ const { isDark } = storeToRefs(settingStore)
 type Props = {
 
   /** 菜单列表数据 */
-  list: AppRouteRecord[]
+  list?: AppRouteRecord[]
 }
 
 const route = useRoute()

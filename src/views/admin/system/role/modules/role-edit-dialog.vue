@@ -4,8 +4,8 @@ import type { FormInstance, FormRules } from 'element-plus'
 type RoleListItem = Api.SystemManage.RoleListItem
 
 type Props = {
-  modelValue: boolean
-  dialogType: 'add' | 'edit'
+  modelValue?: boolean
+  dialogType?: 'add' | 'edit'
   roleData?: RoleListItem
 }
 

@@ -21,13 +21,13 @@ const props = withDefaults(defineProps<Props>(), {
 type Props = {
 
   /** 播放器容器 ID */
-  playerId: string
+  playerId?: string
 
   /** 视频源URL */
-  videoUrl: string
+  videoUrl?: string
 
   /** 视频封面图URL */
-  posterUrl: string
+  posterUrl?: string
 
   /** 是否自动播放 */
   autoplay?: boolean
@@ -43,24 +43,40 @@ type Props = {
 
   /** 是否静音 */
   muted?: boolean
+
+  /** 自定义播放器样式 */
   commonStyle?: VideoPlayerStyle
 }
 
-// 设置属性默认值
-
-// 播放器实例引用
+/**
+   * 视频播放器实例引用
+   */
 const playerInstance = ref<Player | null>(null)
 
-// 播放器样式接口定义
+/**
+   * 视频播放器样式接口定义
+   */
 type VideoPlayerStyle = {
-  progressColor?: string // 进度条背景色
-  playedColor?: string // 已播放部分颜色
-  cachedColor?: string // 缓存部分颜色
-  sliderBtnStyle?: Record<string, string> // 滑块按钮样式
-  volumeColor?: string // 音量控制器颜色
+
+  /** 进度条背景色 */
+  progressColor?: string
+
+  /** 已播放部分颜色 */
+  playedColor?: string
+
+  /** 缓存部分颜色 */
+  cachedColor?: string
+
+  /** 滑块按钮样式 */
+  sliderBtnStyle?: Record<string, string>
+
+  /** 音量控制器颜色 */
+  volumeColor?: string
 }
 
-// 默认样式配置
+/**
+   * 视频播放器默认样式配置
+   */
 const defaultStyle: VideoPlayerStyle = {
   progressColor: 'rgba(255, 255, 255, 0.3)',
   playedColor: '#00AEED',
@@ -77,16 +93,38 @@ const defaultStyle: VideoPlayerStyle = {
 onMounted(() => {
   playerInstance.value = new Player({
     id: props.playerId,
-    lang: 'zh', // 设置界面语言为中文
+
+    /** 设置界面语言为中文 */
+    lang: 'zh',
+
+    /** 音量大小(0-1) */
     volume: props.volume,
+
+    /** 是否自动播放 */
     autoplay: props.autoplay,
-    screenShot: true, // 启用截图功能
+
+    /** 启用截图功能 */
+    screenShot: true,
+
+    /** 视频源URL */
     url: props.videoUrl,
+
+    /** 视频封面图URL */
     poster: props.posterUrl,
-    fluid: true, // 启用流式布局，自适应容器大小
+
+    /** 启用流式布局，自适应容器大小 */
+    fluid: true,
+
+    /** 可选的播放速率 */
     playbackRate: props.playbackRates,
+
+    /** 是否循环播放 */
     loop: props.loop,
+
+    /** 是否静音 */
     muted: props.muted,
+
+    /** 自定义播放器样式 */
     commonStyle: {
       ...defaultStyle,
       ...props.commonStyle,

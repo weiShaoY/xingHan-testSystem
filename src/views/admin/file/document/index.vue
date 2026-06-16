@@ -50,7 +50,7 @@ const params = reactive<FileApi.FileListParams>({
 /**
  * 文档列表
  */
-const documentTable = ref<FileApi.FileListResponse>({
+const documentList = ref<FileApi.FileListResponse>({
   rows: [],
   totals: 0,
 })
@@ -61,7 +61,7 @@ const documentTable = ref<FileApi.FileListResponse>({
 const pagination = computed(() => ({
   current: params.currentPage,
   size: params.pageSize,
-  total: documentTable.value.totals,
+  total: documentList.value.totals,
 }))
 
 /**
@@ -71,7 +71,7 @@ async function getDocumentList() {
   loading.value = true
 
   try {
-    documentTable.value = await fetchAdminFileList(params)
+    documentList.value = await fetchAdminFileList(params)
   }
   catch {
     loading.value = false
@@ -125,7 +125,7 @@ function handleCurrentChange(currentPage: number) {
 }
 
 /**
- * 搜索文档
+ * 搜索
  */
 function handleSearch() {
   params.currentPage = 1
@@ -152,7 +152,7 @@ function handleSearch() {
         <p
           class="mt-1 text-sm text-g-600"
         >
-          共 {{ documentTable.totals }} 个文档
+          共 {{ documentList.totals }} 个文档
         </p>
       </div>
 
@@ -188,7 +188,7 @@ function handleSearch() {
     <!-- 文档表格 -->
     <ArtTable
       :loading="loading"
-      :data="documentTable.rows"
+      :data="documentList.rows"
       :columns="columns"
       :pagination="pagination"
       row-key="asId"
@@ -205,16 +205,9 @@ function handleSearch() {
           <div
             class=""
           >
-            <el-image
-              :src="getFileUrl(row.asThumbnailPath)"
-              :zoom-rate="1.2"
-              :max-scale="7"
-              :min-scale="0.2"
-              preview-teleported
-              fit="cover"
+            <ArtPreviewImage
+              :path="row.asThumbnailPath"
               class="w-15 h-20"
-              hide-on-click-modal
-              :preview-src-list="[getFileUrl(row.asThumbnailPath)]"
             />
           </div>
 

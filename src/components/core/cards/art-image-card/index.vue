@@ -27,10 +27,10 @@ const emit = defineEmits<{
 type Props = {
 
   /** 图片地址 */
-  imageUrl: string
+  imageUrl?: string
 
   /** 标题 */
-  title: string
+  title?: string
 
   /** 分类 */
   category?: string

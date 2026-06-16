@@ -1,66 +1,37 @@
-<!------  2026-05-10---05:14---星期天  ------>
-<!------------------------------------    ------------------------------------------------->
+<!------------------------------------  文档列表  ------------------------------------------------->
 <script lang="ts" setup>
 import type { ColumnOption } from '@/types'
 
-type DocumentStatus = 'available' | 'processing' | 'failed'
+const loading = ref(false)
 
-type UserDocument = {
-  id: string
-  name: string
-  status: DocumentStatus
-  uploadTime: string
-  size: string
-  duration: string
-  coverColor: string
-}
+/**
+   *  是否显示播放弹窗
+   */
+const isShowVideoPlayDialog = ref(false)
 
-const videoList = ref<UserDocument[]>([
-  {
-    id: '1',
-    name: '前端工程化实践.mp4',
-    status: 'available',
-    uploadTime: '2026-04-16 15:19:51',
-    size: '578MB',
-    duration: '12:48',
-    coverColor: 'bg-primary/15 text-primary',
-  },
-  {
-    id: '2',
-    name: 'Vue3 进阶训练.mp4',
-    status: 'available',
-    uploadTime: '2025-10-09 10:13:30',
-    size: '228MB',
-    duration: '08:36',
-    coverColor: 'bg-secondary/15 text-secondary',
-  },
-])
-
-const columns: ColumnOption<UserDocument>[] = [
+const columns: ColumnOption<FileApi.FileListItem>[] = [
   {
     label: '文件名称',
-    prop: 'name',
+    prop: 'asName',
+    slotName: 'fileName',
     minWidth: 460,
     useSlot: true,
   },
   {
-    label: '状态',
-    prop: 'status',
-    minWidth: 120,
-    useSlot: true,
-  },
-  {
     label: '上传时间',
-    prop: 'uploadTime',
-    minWidth: 220,
-    sortable: true,
-    useSlot: true,
-  },
-  {
-    label: '文件大小',
-    prop: 'size',
+    prop: 'createTime',
     minWidth: 140,
     useSlot: true,
+    sortable: true,
+  },
+
+  {
+    label: '文件大小',
+    prop: 'asSize',
+    slotName: 'fileSize',
+    minWidth: 140,
+    useSlot: true,
+    sortable: true,
   },
   {
     label: '操作',
@@ -71,42 +42,140 @@ const columns: ColumnOption<UserDocument>[] = [
   },
 ]
 
-function getStatusText(status: DocumentStatus) {
-  const statusMap: Record<DocumentStatus, string> = {
-    available: '可用',
-    processing: '处理中',
-    failed: '不可用',
-  }
+/**
+ *  请求参数
+ */
+const params = reactive<FileApi.FileListParams>({
+  name: '',
+  type: 'video',
+  pageSize: 10,
+  currentPage: 1,
+})
 
-  return statusMap[status]
+/**
+ * 视频列表
+ */
+const videoList = ref<FileApi.FileListResponse>({
+  rows: [],
+  totals: 0,
+})
+
+/**
+ * 分页配置
+ */
+const pagination = computed(() => ({
+  current: params.currentPage,
+  size: params.pageSize,
+  total: videoList.value.totals,
+}))
+
+/**
+   *  获取文档列表
+   */
+async function getDocumentList() {
+  loading.value = true
+
+  try {
+    videoList.value = await fetchAdminFileList(params)
+  }
+  catch {
+    loading.value = false
+  }
+  finally {
+    loading.value = false
+  }
+}
+
+getDocumentList()
+
+/**
+ * 上传成功
+ */
+function handleUploadSuccess() {
+  params.currentPage = 1
+  getDocumentList()
+}
+
+function handleUploadError(error: Error) {
+  console.log('上传失败:', error)
+}
+
+function downloadDocument(item: FileApi.FileListItem) {
+  console.log('下载文档:', item)
+}
+
+function deleteDocument(_item: FileApi.FileListItem) {
+
+}
+
+function exportDocument(item: FileApi.FileListItem) {
+  console.log('导出文档:', item)
 }
 
 /**
- * 上传视频
+ * 每页条数变化
  */
-function uploadVideo() {
-
+function handleSizeChange(size: number) {
+  params.pageSize = size
+  params.currentPage = 1
+  getDocumentList()
 }
 
-function downloadVideo(item: UserDocument) {
-  console.log('下载视频:', item)
+/**
+ * 当前页变化
+ */
+function handleCurrentChange(currentPage: number) {
+  params.currentPage = currentPage
+  getDocumentList()
 }
 
-function deleteVideo(item: UserDocument) {
-  videoList.value = videoList.value.filter(video => video.id !== item.id)
+/**
+ * 搜索
+ */
+function handleSearch() {
+  params.currentPage = 1
+  params.name = params.name.trim()
+  getDocumentList()
 }
 
-function exportVideo(item: UserDocument) {
-  console.log('导出视频:', item)
+/**
+   *  视频播放地址
+   */
+const videoPlayUrl = ref('')
+
+/**
+ * 播放视频
+ */
+async function playVideo(item: FileApi.FileListItem) {
+  console.log('播放视频:', item)
+  const res = await fetchAdminFileAttachment(item.asId)
+
+  console.log('🚀 ~ file: index.vue:142 ~ res:', res)
 }
+
 </script>
 
 <template>
   <div
     class="mx-auto max-w-7xl px-10 relative max-lg:px-6 max-sm:px-4"
   >
+    <el-dialog
+      v-if="isShowVideoPlayDialog"
+      v-model:visible="isShowVideoPlayDialog"
+      title="播放视频"
+      width="50%"
+    >
+      <ArtVideoPlayer
+        :src="videoPlayUrl"
+        :autoplay="true"
+        :volume="0.5"
+        :screen-shot="true"
+      />
+
+    </el-dialog>
+
     <div
-      class="my-5 flex w-full items-center justify-between gap-4 max-sm:items-start"
+      class="my-5 flex w-full items-center justify-between gap-4 max-md:flex-col max-md:items-stretch"
     >
       <div>
         <h2
@@ -118,81 +187,92 @@ function exportVideo(item: UserDocument) {
         <p
           class="mt-1 text-sm text-g-600"
         >
-          共 {{ videoList.length }} 个视频
+          共 {{ videoList.totals }} 个文档
         </p>
       </div>
 
-      <ArtIconButton
-        type="add"
-        @click="uploadVideo"
+      <div
+        class="flex flex-1 items-center justify-end gap-3 max-md:w-full max-md:justify-start max-sm:flex-col"
       >
-        上传视频
-      </ArtIconButton>
+        <el-input
+          v-model="params.name"
+          class="max-w-110 max-md:max-w-none max-sm:w-full"
+          placeholder="请输入文件名称"
+          clearable
+          @keyup.enter="handleSearch"
+          @clear="handleSearch"
+        >
+          <template
+            #append
+          >
+            <ArtSvgIcon
+              icon="tdesign:search"
+            />
+          </template>
+        </el-input>
+
+        <AdminUpload
+          upload-type="video"
+          @upload-success="handleUploadSuccess"
+          @upload-error="handleUploadError"
+        />
+
+      </div>
     </div>
 
     <!-- 视频表格 -->
     <ArtTable
-      :data="videoList"
+      :loading="loading"
+      :data="videoList.rows"
       :columns="columns"
-      row-key="id"
+      :pagination="pagination"
+      row-key="asId"
+      @pagination:size-change="handleSizeChange"
+      @pagination:current-change="handleCurrentChange"
     >
+
       <template
-        #name="{ row }"
+        #fileName="{ row }"
       >
         <div
-          class="flex items-center gap-18 max-md:gap-5"
+          class="min-w-0 flex items-center gap-2"
         >
           <div
-            class="relative flex h-23 w-41 shrink-0 items-center justify-center overflow-hidden rounded bg-g-200"
-            :class="row.coverColor"
+            class=""
           >
-            <ArtSvgIcon
-              icon="ri:play-circle-line"
-              class="text-8"
+            <ArtPreviewImage
+              :path="row.asThumbnailPath"
+              class="w-15 h-20"
+              :preview="false"
+              @click="playVideo(row)"
             />
-
-            <span
-              class="absolute bottom-1.5 right-1.5 rounded bg-black/70 px-1.5 py-0.5 text-xs text-white"
-            >
-              {{ row.duration }}
-            </span>
           </div>
 
-          <span
-            class="min-w-0 truncate text-base text-g-900"
+          <div
+            class="truncate text-sm font-medium text-g-900"
           >
-            {{ row.name }}
-          </span>
+            {{ row.asName || row.asFileName || `未命名文件${row.asExtension || ''}` }}
+          </div>
+
         </div>
       </template>
 
       <template
-        #status="{ row }"
+        #createTime="{ row }"
       >
-        <span
-          class="text-base text-g-900"
-        >
-          {{ getStatusText(row.status) }}
+        <span>
+          {{ formatDateTime(row.createTime) }}
         </span>
+
       </template>
 
       <template
-        #uploadTime="{ row }"
+        #fileSize="{ row }"
       >
         <span
           class="text-base text-g-900"
         >
-          {{ row.uploadTime }}
-        </span>
-      </template>
-
-      <template
-        #size="{ row }"
-      >
-        <span
-          class="text-base text-g-900"
-        >
-          {{ row.size }}
+          {{ formatFileSize(row.asSize) }}
         </span>
       </template>
 
@@ -204,19 +284,19 @@ function exportVideo(item: UserDocument) {
         >
           <ArtIconButton
             type="download"
-            @click="downloadVideo(row)"
+            @click="downloadDocument(row)"
           />
 
           <ArtIconButton
             type="delete"
             tooltip="删除"
-            @click="deleteVideo(row)"
+            @click="deleteDocument(row)"
           />
 
           <ArtIconButton
             type="export"
             tooltip="导出"
-            @click="exportVideo(row)"
+            @click="exportDocument(row)"
           />
         </div>
       </template>

@@ -87,7 +87,9 @@ declare global {
   const fetchAdminDe: typeof import('../../apis/admin/index').fetchAdminDe
   const fetchAdminDeleteCourse: typeof import('../../apis/admin/index').fetchAdminCourseDelete
   const fetchAdminDeleteProject: typeof import('../../apis/admin/project').fetchAdminDeleteProject
+  const fetchAdminFileAttachment: typeof import('../../apis/file/index').fetchAdminFileAttachment
   const fetchAdminFileList: typeof import('../../apis/file/index').fetchAdminFileList
+  const fetchAdminFileResource: typeof import('../../apis/file/index').fetchAdminFileResource
   const fetchAdminGetCourseList: typeof import('../../apis/admin/index').fetchAdminGetCourseList
   const fetchAdminGetPublicKey: typeof import('../../apis/admin/auth').fetchAdminGetPublicKey
   const fetchAdminGetUserInfo: typeof import('../../apis/admin/auth').fetchAdminGetUserInfo
@@ -547,6 +549,7 @@ declare module 'vue' {
     readonly fetchAdminCourseOutlineSectionDetail: UnwrapRef<typeof import('../../apis/admin/course')['fetchAdminCourseOutlineSectionDetail']>
     readonly fetchAdminCourseOutlineSectionUpdate: UnwrapRef<typeof import('../../apis/admin/course')['fetchAdminCourseOutlineSectionUpdate']>
     readonly fetchAdminCourseUpdate: UnwrapRef<typeof import('../../apis/admin/course')['fetchAdminCourseUpdate']>
+    readonly fetchAdminFileAttachment: UnwrapRef<typeof import('../../apis/file/index')['fetchAdminFileAttachment']>
     readonly fetchAdminFileList: UnwrapRef<typeof import('../../apis/file/index')['fetchAdminFileList']>
     readonly fetchAdminGetPublicKey: UnwrapRef<typeof import('../../apis/admin/auth')['fetchAdminGetPublicKey']>
     readonly fetchAdminGetUserInfo: UnwrapRef<typeof import('../../apis/admin/auth')['fetchAdminGetUserInfo']>

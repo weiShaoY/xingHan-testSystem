@@ -14,7 +14,7 @@ import {
 type CountToProps = {
 
   /** 目标值 */
-  target: number
+  target?: number
 
   /** 动画持续时间（毫秒） */
   duration?: number
