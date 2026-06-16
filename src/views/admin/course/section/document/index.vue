@@ -357,6 +357,7 @@ onMounted(() => {
 
       <!-- 文档表格 -->
       <ArtTable
+        class="max-h-[calc(100vh-400px)] overflow-auto"
         :loading="loading"
         :data="documentTable.rows"
         :columns="columns"
@@ -371,12 +372,21 @@ onMounted(() => {
           #fileName="{ row }"
         >
           <div
-            class="min-w-0"
+            class="min-w-0 flex items-center gap-2"
           >
+            <div
+              class=""
+            >
+              <ArtPreviewImage
+                :path="row.asThumbnailPath"
+                class="w-15 h-20"
+              />
+            </div>
+
             <div
               class="truncate text-sm font-medium text-g-900"
             >
-              {{ getDocumentName(row) }}
+              {{ row.asName || row.asFileName || `未命名文件${row.asExtension || ''}` }}
             </div>
 
           </div>
