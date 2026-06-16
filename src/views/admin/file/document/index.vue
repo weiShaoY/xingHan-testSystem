@@ -207,10 +207,15 @@ function handleSearch() {
           >
             <el-image
               :src="getFileUrl(row.asThumbnailPath)"
-              fit="contain"
-              class="w-5 h-10 "
+              :zoom-rate="1.2"
+              :max-scale="7"
+              :min-scale="0.2"
+              preview-teleported
+              fit="cover"
+              class="w-15 h-20"
+              hide-on-click-modal
+              :preview-src-list="[getFileUrl(row.asThumbnailPath)]"
             />
-            {{ getFileUrl(row.asThumbnailPath) }}
           </div>
 
           <div

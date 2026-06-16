@@ -828,6 +828,16 @@ declare namespace AdminApi {
        * 最后修改时间
        */
       updateTime: string
+
+      /**
+       * 项目阶段数量
+       */
+      projStage: string
+
+      /**
+       * 项目课程数量
+       */
+      projStageCourse: string
     }
 
     /**

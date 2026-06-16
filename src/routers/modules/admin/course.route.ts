@@ -79,7 +79,7 @@ export const Course: AppRouteRecord = {
       component: '/admin/course/list',
       meta: {
         title: '课程列表',
-        icon: 'ri:file-text-line',
+        icon: 'ri:list-check',
         keepAlive: false,
         sort: 0,
       },

@@ -329,7 +329,7 @@ async function deleteProject(item: AdminApi.Project.ProjectListItem) {
               <p
                 class="text-lg font-semibold"
               >
-                <!-- {{ item.stageCount }} -->
+                {{ item.projStage }}
               </p>
 
               <p
@@ -345,7 +345,7 @@ async function deleteProject(item: AdminApi.Project.ProjectListItem) {
               <p
                 class="text-lg font-semibold"
               >
-                <!-- {{ item.courseCount }} -->
+                {{ item.projStageCourse }}
               </p>
 
               <p
