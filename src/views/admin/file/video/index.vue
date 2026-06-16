@@ -151,6 +151,8 @@ async function playVideo(item: FileApi.FileListItem) {
   const res = await fetchAdminFileAttachment(item.asId)
 
   console.log('🚀 ~ file: index.vue:142 ~ res:', res)
+  videoPlayUrl.value = URL.createObjectURL(res)
+  isShowVideoPlayDialog.value = true
 }
 
 </script>

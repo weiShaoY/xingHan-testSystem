@@ -59,7 +59,7 @@ type UploadResponse = Awaited<ReturnType<typeof fetchAdminUploadFile>>
 
 const props = withDefaults(defineProps<Props>(), {
   uploadType: 'document',
-  maxFileSize: 100,
+  maxFileSize: 500,
   display: 'button',
 })
 
@@ -94,6 +94,11 @@ const uploadConfig: Record<UploadType, UploadConfig> = {
 const currentUploadConfig = computed(() => uploadConfig[props.uploadType])
 
 /**
+ * 当前上传文件大小限制
+ */
+const currentMaxFileSize = computed(() => props.maxFileSize)
+
+/**
  * 是否显示按钮样式
  */
 const isButtonDisplay = computed(() => props.display === 'button')
@@ -122,7 +127,7 @@ function validateFileBeforeUpload(
 
   const isValidExtension = currentUploadConfig.value.extensions.includes(fileExtension)
 
-  const isValidSize = file.size / 1024 / 1024 <= props.maxFileSize
+  const isValidSize = file.size / 1024 / 1024 <= currentMaxFileSize.value
 
   if (!isValidExtension) {
     ElNotification.error(currentUploadConfig.value.errorMessage)
@@ -130,7 +135,7 @@ function validateFileBeforeUpload(
   }
 
   if (!isValidSize) {
-    ElNotification.error(`文件大小不能超过 ${props.maxFileSize}MB`)
+    ElNotification.error(`文件大小不能超过 ${currentMaxFileSize.value}MB`)
     return false
   }
 
@@ -213,14 +218,24 @@ function openFileDialog() {
       <template
         v-if="isButtonDisplay"
       >
-        <ArtIconButton
-          icon="ri:add-line"
-          type="primary"
-          :loading="uploadLoading"
-          @click="openFileDialog"
+        <div
+          class="flex flex-col items-end gap-1 max-sm:w-full max-sm:items-stretch"
         >
-          {{ currentUploadConfig.title }}
-        </ArtIconButton>
+          <ArtIconButton
+            icon="ri:add-line"
+            type="primary"
+            :loading="uploadLoading"
+            @click="openFileDialog"
+          >
+            {{ currentUploadConfig.title }}
+          </ArtIconButton>
+
+          <p
+            class="text-xs leading-5 text-g-500"
+          >
+            支持 {{ currentUploadConfig.extensions.join(' / ') }}，大小不超过 {{ currentMaxFileSize }}MB
+          </p>
+        </div>
       </template>
 
       <template
@@ -261,7 +276,7 @@ function openFileDialog() {
           </p>
 
           <p>
-            3. 文件大小须在 {{ props.maxFileSize }}MB 以内，如需上传 {{ props.maxFileSize }}MB 以上的文件，请联系 support@umu.com；
+            3. 文件大小须在 {{ currentMaxFileSize }}MB 以内，如需上传 {{ currentMaxFileSize }}MB 以上的文件，请联系 support@umu.com；
           </p>
 
           <p>
