@@ -461,13 +461,12 @@ onMounted(() => {
       v-else
       class="art-card flex items-center justify-between gap-20"
     >
-      <!-- //  未完成, 给根据 formData 获取 文档数据 来展示 -->
       <aside
         v-if="selectedDocument"
       >
-        <el-image
+        <!-- <el-image
           :src="getFileUrl(selectedDocument?.asThumbnailPath || '')"
-        />
+        /> -->
 
         <div
           class="space-y-4 text-sm text-g-600"
@@ -476,6 +475,15 @@ onMounted(() => {
             class="text-lg font-semibold text-g-900"
           >
             文档信息
+          </div>
+
+          <div
+            class=""
+          >
+            <ArtPreviewImage
+              :path="selectedDocument?.asThumbnailPath"
+              class="w-15 h-20"
+            />
           </div>
 
           <div>
