@@ -109,8 +109,10 @@ declare global {
   const fetchGetUserList: typeof import('../../apis/system-manage').fetchGetUserList
   const fetchLogin: typeof import('../../apis/auth').fetchLogin
   const fetchUploadFile: typeof import('../../apis/file/index').fetchAdminUploadFile
+  const fileDownload: typeof import('../../utils/file').fileDownload
+  const fileSizeFormat: typeof import('../../utils/file').fileSizeFormat
   const formatDateTime: typeof import('../../utils/time').formatDateTime
-  const formatFileSize: typeof import('../../utils/file').formatFileSize
+  const formatFileSize: typeof import('../../utils/file').fileSizeFormat
   const formatMenuTitle: typeof import('../../utils/router').formatMenuTitle
   const formatTimestampToChineseDate: typeof import('../../utils/time').formatTimestampToChineseDate
   const getActivePinia: typeof import('pinia').getActivePinia
@@ -563,8 +565,9 @@ declare module 'vue' {
     readonly fetchGetMenuList: UnwrapRef<typeof import('../../apis/system-manage')['fetchGetMenuList']>
     readonly fetchGetRoleList: UnwrapRef<typeof import('../../apis/system-manage')['fetchGetRoleList']>
     readonly fetchGetUserList: UnwrapRef<typeof import('../../apis/system-manage')['fetchGetUserList']>
+    readonly fileDownload: UnwrapRef<typeof import('../../utils/file')['fileDownload']>
+    readonly fileSizeFormat: UnwrapRef<typeof import('../../utils/file')['fileSizeFormat']>
     readonly formatDateTime: UnwrapRef<typeof import('../../utils/time')['formatDateTime']>
-    readonly formatFileSize: UnwrapRef<typeof import('../../utils/file')['formatFileSize']>
     readonly formatMenuTitle: UnwrapRef<typeof import('../../utils/router')['formatMenuTitle']>
     readonly formatTimestampToChineseDate: UnwrapRef<typeof import('../../utils/time')['formatTimestampToChineseDate']>
     readonly getActivePinia: UnwrapRef<typeof import('pinia')['getActivePinia']>

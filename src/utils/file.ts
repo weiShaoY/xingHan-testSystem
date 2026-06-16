@@ -1,10 +1,29 @@
 /**
+ * 获取完整文件访问地址
+ * @param path 后端返回的文件相对路径，支持 Windows 反斜杠路径
+ * @returns 拼接 VITE_APP_API_PROXY_URL 后的文件访问地址
+ */
+export function getFileUrl(path: string) {
+  if (!path) {
+    return ''
+  }
+
+  const baseUrl = import.meta.env.VITE_APP_API_PROXY_URL.replace(/\/+$/, '')
+
+  const normalizedPath = path
+    .replace(/\\/g, '/')
+    .replace(/^\/+/, '')
+
+  return `${baseUrl}/${normalizedPath}`
+}
+
+/**
  * 格式化文件大小
  * @param size 文件大小（字节）
  * @param fixed 保留小数位数，默认 1
  * @returns 格式化后的字符串，如 1.2 KB、256 MB、3.5 GB
  */
-export function formatFileSize(size?: number | null, fixed = 1): string {
+export function fileSizeFormat(size?: number | null, fixed = 1): string {
   // 修复：使用 Number.isNaN 符合 eslint 规则
   if (size === undefined || size === null || Number.isNaN(size) || size < 0) {
     return '-'
@@ -31,20 +50,37 @@ export function formatFileSize(size?: number | null, fixed = 1): string {
 }
 
 /**
- * 获取完整文件访问地址
- * @param path 后端返回的文件相对路径，支持 Windows 反斜杠路径
- * @returns 拼接 VITE_APP_API_PROXY_URL 后的文件访问地址
+ * 文件下载
+ * @param blob 文件内容 Blob 对象
+ * @param fileName 下载后的文件名
  */
-export function getFileUrl(path: string) {
-  if (!path) {
-    return ''
+export async function fileDownload(blob: Blob, fileName: string): Promise<void> {
+  const objectUrl = URL.createObjectURL(blob)
+
+  try {
+    const a = document.createElement('a')
+
+    a.href = objectUrl
+    a.download = fileName
+    a.style.display = 'none'
+
+    document.body.appendChild(a)
+    a.click()
+
+    await new Promise(resolve => setTimeout(resolve, 0))
+
+    ElNotification.success('文件下载成功')
   }
+  catch (error) {
+    ElNotification.error('文件下载失败')
 
-  const baseUrl = import.meta.env.VITE_APP_API_PROXY_URL.replace(/\/+$/, '')
+    throw error
+  }
+  finally {
+    URL.revokeObjectURL(objectUrl)
 
-  const normalizedPath = path
-    .replace(/\\/g, '/')
-    .replace(/^\/+/, '')
+    const linkElement = document.querySelector(`a[href="${objectUrl}"]`)
 
-  return `${baseUrl}/${normalizedPath}`
+    linkElement?.remove()
+  }
 }

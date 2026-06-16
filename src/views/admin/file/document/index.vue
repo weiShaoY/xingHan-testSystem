@@ -95,8 +95,21 @@ function handleUploadError(error: Error) {
   console.log('上传失败:', error)
 }
 
-function downloadDocument(item: FileApi.FileListItem) {
+async function downloadDocument(item: FileApi.FileListItem) {
   console.log('下载文档:', item)
+
+  // 根据blob 下载文档
+  loading.value = true
+  try {
+    const blob = await fetchAdminFileAttachment(item.asId)
+
+    await fileDownload(blob, item.asName)
+    loading.value = false
+  }
+  catch {
+    ElNotification.error('文件下载失败')
+    loading.value = false
+  }
 }
 
 function deleteDocument(_item: FileApi.FileListItem) {
