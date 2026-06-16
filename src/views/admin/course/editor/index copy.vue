@@ -254,12 +254,12 @@ onMounted(() => {
       <template
         #extra
       >
-        <ArtIconButton
+        <ArtButton
           type="success"
           @click="handleSubmitCourse"
         >
           {{ submitButtonText }}
-        </ArtIconButton>
+        </ArtButton>
       </template>
     </AdminPageHeader>
 

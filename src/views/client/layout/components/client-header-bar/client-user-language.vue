@@ -65,7 +65,7 @@ onMounted(() => {
       popper-class="langDropDownStyle"
       @command="changeLanguage"
     >
-      <ArtIconButton
+      <ArtButton
         icon="ri:translate-2"
         class="language-btn text-[19px]"
       />

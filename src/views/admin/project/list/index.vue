@@ -223,12 +223,12 @@ async function deleteProject(item: AdminApi.Project.ProjectListItem) {
           </template>
         </el-input>
 
-        <ArtIconButton
+        <ArtButton
           type="add"
           @click="isShowCreateProjectDialog = true"
         >
           创建项目
-        </ArtIconButton>
+        </ArtButton>
       </div>
     </div>
 
@@ -301,17 +301,17 @@ async function deleteProject(item: AdminApi.Project.ProjectListItem) {
               class="flex shrink-0 gap-2 items-center justify-center max-sm:w-full max-sm:justify-end"
               @click.stop
             >
-              <ArtIconButton
+              <ArtButton
                 type="edit"
                 @click="goToEdit(item)"
               />
 
-              <ArtIconButton
+              <ArtButton
                 type="delete"
                 @click="deleteProject(item)"
               />
 
-              <ArtIconButton
+              <ArtButton
                 type="allocate"
                 @click="openAllocateProjectDialog(item)"
               />

@@ -245,18 +245,18 @@ function handleSearch() {
         <div
           class="flex items-center gap-2"
         >
-          <ArtIconButton
+          <ArtButton
             type="download"
             @click="downloadDocument(row)"
           />
 
-          <ArtIconButton
+          <ArtButton
             type="delete"
             tooltip="删除"
             @click="deleteDocument(row)"
           />
 
-          <ArtIconButton
+          <ArtButton
             type="export"
             tooltip="导出"
             @click="exportDocument(row)"

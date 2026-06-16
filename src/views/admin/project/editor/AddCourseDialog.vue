@@ -310,7 +310,7 @@ function closeDialog() {
             </div>
           </div>
 
-          <ArtIconButton
+          <ArtButton
             type="view"
             @click="viewCourse(course)"
           />

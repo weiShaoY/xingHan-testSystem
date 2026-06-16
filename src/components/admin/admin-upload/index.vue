@@ -221,20 +221,15 @@ function openFileDialog() {
         <div
           class="flex flex-col items-end gap-1 max-sm:w-full max-sm:items-stretch"
         >
-          <ArtIconButton
+          <ArtButton
             icon="ri:add-line"
             type="primary"
             :loading="uploadLoading"
             @click="openFileDialog"
           >
             {{ currentUploadConfig.title }}
-          </ArtIconButton>
+          </ArtButton>
 
-          <p
-            class="text-xs leading-5 text-g-500"
-          >
-            支持 {{ currentUploadConfig.extensions.join(' / ') }}，大小不超过 {{ currentMaxFileSize }}MB
-          </p>
         </div>
       </template>
 

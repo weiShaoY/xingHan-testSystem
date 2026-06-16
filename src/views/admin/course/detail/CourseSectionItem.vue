@@ -43,7 +43,7 @@ const emit = defineEmits<{
       <div
         class="flex items-center flex-col gap-1 justify-center max-sm:flex-row max-sm:justify-start max-sm:gap-2"
       >
-        <ArtIconButton
+        <ArtButton
           :icon="typeConfig.sectionIcon"
           icon-color="#ffffff"
           :bg-color="typeConfig.sectionIconBgColor"
@@ -86,17 +86,17 @@ const emit = defineEmits<{
         class="flex gap-2 items-center justify-end max-md:col-span-3 max-sm:col-span-1 max-sm:w-full max-sm:justify-end"
         @click.stop
       >
-        <ArtIconButton
+        <ArtButton
           type="allocate"
           @click="emit('allocate')"
         />
 
-        <ArtIconButton
+        <ArtButton
           type="delete"
           @click="emit('delete', section)"
         />
 
-        <ArtIconButton
+        <ArtButton
           type="edit"
           @click="emit('edit', section)"
         />

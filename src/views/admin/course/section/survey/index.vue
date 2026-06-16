@@ -331,12 +331,12 @@ function handleSubmit() {
       <template
         #extra
       >
-        <ArtIconButton
+        <ArtButton
           type="success"
           @click="handleSubmit"
         >
           完成
-        </ArtIconButton>
+        </ArtButton>
       </template>
     </AdminPageHeader>
 
@@ -366,12 +366,12 @@ function handleSubmit() {
               />
             </el-form-item>
 
-            <ArtIconButton
+            <ArtButton
               type="link"
               @click="batchAddQuestion"
             >
               批量添加问题
-            </ArtIconButton>
+            </ArtButton>
           </div>
 
           <div
@@ -420,27 +420,27 @@ function handleSubmit() {
                     <div
                       class="flex shrink-0 gap-3 items-center justify-end"
                     >
-                      <ArtIconButton
+                      <ArtButton
                         type="link"
                         :disabled="questionIndex === 0"
                         @click="moveQuestion(questionIndex, 'up')"
                       >
                         移动
-                      </ArtIconButton>
+                      </ArtButton>
 
-                      <ArtIconButton
+                      <ArtButton
                         type="link"
                         @click="copyQuestion(question)"
                       >
                         复制
-                      </ArtIconButton>
+                      </ArtButton>
 
-                      <ArtIconButton
+                      <ArtButton
                         type="link"
                         @click="deleteQuestion(questionIndex)"
                       >
                         删除
-                      </ArtIconButton>
+                      </ArtButton>
                     </div>
                   </div>
 
@@ -488,12 +488,12 @@ function handleSubmit() {
                       <div
                         class="flex gap-2 justify-end"
                       >
-                        <ArtIconButton
+                        <ArtButton
                           type="add"
                           @click="addOption(question, optionIndex)"
                         />
 
-                        <ArtIconButton
+                        <ArtButton
                           type="delete"
                           :disabled="question.options.length <= 1"
                           @click="removeOption(question, optionIndex)"
@@ -623,26 +623,26 @@ function handleSubmit() {
           <div
             class="mt-6 rounded-lg border border-(--art-card-border) p-4 flex flex-wrap gap-3 items-center"
           >
-            <ArtIconButton
+            <ArtButton
               type="add"
               @click="addQuestion"
             >
               添加问题
-            </ArtIconButton>
+            </ArtButton>
 
-            <ArtIconButton
+            <ArtButton
               type="add"
               @click="addParagraphDescription"
             >
               添加段落说明
-            </ArtIconButton>
+            </ArtButton>
 
-            <ArtIconButton
+            <ArtButton
               type="link"
               @click="batchAddQuestion"
             >
               批量添加问题
-            </ArtIconButton>
+            </ArtButton>
           </div>
         </el-form>
       </el-tab-pane>
@@ -1016,13 +1016,13 @@ function handleSubmit() {
       <div
         class="mx-auto flex max-w-7xl justify-end"
       >
-        <ArtIconButton
+        <ArtButton
           type="success"
           class="px-10 py-5 text-base"
           @click="handleSubmit"
         >
           完成
-        </ArtIconButton>
+        </ArtButton>
       </div>
     </div>
   </div>

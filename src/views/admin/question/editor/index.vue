@@ -498,12 +498,12 @@ function importQuestions() {
       <template
         #extra
       >
-        <ArtIconButton
+        <ArtButton
           type="success"
           @click="$router.back()"
         >
           完成
-        </ArtIconButton>
+        </ArtButton>
       </template>
     </AdminPageHeader>
 
@@ -575,14 +575,14 @@ function importQuestions() {
               <div
                 class="flex shrink-0 flex-wrap gap-2 items-center max-md:w-full max-md:justify-end"
               >
-                <ArtIconButton
+                <ArtButton
                   v-for="item in stageActions"
                   :key="item.action"
                   type="link"
                   @click="handleStageAction(item.action, stage, stageIndex)"
                 >
                   {{ item.label }}
-                </ArtIconButton>
+                </ArtButton>
               </div>
             </div>
 
@@ -641,12 +641,12 @@ function importQuestions() {
                 <div
                   class="flex gap-1 items-center justify-end"
                 >
-                  <ArtIconButton
+                  <ArtButton
                     type="add"
                     @click="addOption(stage, optionIndex)"
                   />
 
-                  <ArtIconButton
+                  <ArtButton
                     type="delete"
                     :disabled="(stage.answerOptions?.length ?? 0) <= 1"
                     @click="removeOption(stage, optionIndex)"
@@ -736,12 +736,12 @@ function importQuestions() {
                     <div
                       class="flex gap-2 items-center justify-end"
                     >
-                      <ArtIconButton
+                      <ArtButton
                         type="add"
                         @click="addStandardAnswer(stage, answerIndex)"
                       />
 
-                      <ArtIconButton
+                      <ArtButton
                         type="delete"
                         :disabled="(stage.standardAnswer?.length ?? 0) <= 1"
                         @click="removeStandardAnswer(stage, answerIndex)"
@@ -817,20 +817,20 @@ function importQuestions() {
             v-if="movingStageId"
             class="my-3 flex flex-wrap gap-3 items-center justify-center"
           >
-            <art-icon-button
+            <art-button
               type="warning"
               :disabled="movingStageId === stage.id"
               @click="moveQuestionTo(stageIndex)"
             >
               移动到此后
-            </art-icon-button>
+            </art-button>
 
-            <art-icon-button
+            <art-button
               type="error"
               @click="cancelMoveQuestion"
             >
               取消
-            </art-icon-button>
+            </art-button>
 
           </div>
         </div>
@@ -839,19 +839,19 @@ function importQuestions() {
         <div
           class="rounded-lg border p-5 flex flex-wrap gap-3 items-center justify-end !border-(--art-card-border) !bg-(--art-gray-100) max-sm:flex-col max-sm:items-stretch"
         >
-          <art-icon-button
+          <art-button
             type="import"
             @click="importQuestions"
           >
             批量导入问题
-          </art-icon-button>
+          </art-button>
 
-          <art-icon-button
+          <art-button
             type="add"
             @click="addQuestion"
           >
             添加问题
-          </art-icon-button>
+          </art-button>
         </div>
       </el-form>
     </div>

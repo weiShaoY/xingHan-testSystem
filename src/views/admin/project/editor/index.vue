@@ -334,12 +334,12 @@ function moveCourse(stageIndex: number, courseIndex: number, direction: 'up' | '
       <template
         #extra
       >
-        <ArtIconButton
+        <ArtButton
           type="success"
           @click="handleSubmitProject"
         >
           完成
-        </ArtIconButton>
+        </ArtButton>
       </template>
     </AdminPageHeader>
 
@@ -468,25 +468,25 @@ function moveCourse(stageIndex: number, courseIndex: number, direction: 'up' | '
                             <div
                               class="flex items-center gap-2"
                             >
-                              <ArtIconButton
+                              <ArtButton
                                 icon="ri:arrow-up-line"
                                 tooltip="上移"
                                 :disabled="courseIndex === 0"
                                 @click="moveCourse(index, courseIndex, 'up')"
                               />
 
-                              <ArtIconButton
+                              <ArtButton
                                 icon="ri:arrow-down-line"
                                 tooltip="下移"
                                 :disabled="courseIndex === stage.courses.length - 1"
                                 @click="moveCourse(index, courseIndex, 'down')"
                               />
 
-                              <ArtIconButton
+                              <ArtButton
                                 type="view"
                               />
 
-                              <ArtIconButton
+                              <ArtButton
                                 type="delete"
                                 @click="removeCourse(index, courseIndex)"
                               />
@@ -504,12 +504,12 @@ function moveCourse(stageIndex: number, courseIndex: number, direction: 'up' | '
 
                     <el-divider />
 
-                    <ArtIconButton
+                    <ArtButton
                       type="add"
                       @click="addCourse(index)"
                     >
                       添加课程
-                    </ArtIconButton>
+                    </ArtButton>
                   </el-form-item>
                 </el-form>
               </el-tab-pane>
@@ -661,13 +661,13 @@ function moveCourse(stageIndex: number, courseIndex: number, direction: 'up' | '
       <div
         class="flex justify-end"
       >
-        <ArtIconButton
+        <ArtButton
           type="success"
           class="px-10 py-5 text-2xl!"
           @click="handleSubmitProject"
         >
           完成
-        </ArtIconButton>
+        </ArtButton>
 
       </div>
     </div>

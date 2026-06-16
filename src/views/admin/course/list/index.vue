@@ -226,12 +226,12 @@ getCourseList()
           </template>
         </el-input>
 
-        <ArtIconButton
+        <ArtButton
           type="add"
           @click="goToCreate"
         >
           创建课程
-        </ArtIconButton>
+        </ArtButton>
       </div>
     </div>
 
@@ -303,17 +303,17 @@ getCourseList()
               class="flex shrink-0 gap-2 items-center justify-center max-sm:w-full max-sm:justify-end"
               @click.stop
             >
-              <ArtIconButton
+              <ArtButton
                 type="edit"
                 @click="goToEdit(item)"
               />
 
-              <ArtIconButton
+              <ArtButton
                 type="delete"
                 @click="deleteCourse(item)"
               />
 
-              <ArtIconButton
+              <ArtButton
                 type="allocate"
                 @click="openAllocateCourseDialog(item)"
               />

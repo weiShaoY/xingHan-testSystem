@@ -164,12 +164,12 @@ function deleteQuestionBank(item: QuestionBank) {
         </p>
       </div>
 
-      <ArtIconButton
+      <ArtButton
         type="add"
         @click="goToCreateQuestion"
       >
         创建题库
-      </ArtIconButton>
+      </ArtButton>
     </div>
 
     <div
@@ -239,21 +239,21 @@ function deleteQuestionBank(item: QuestionBank) {
               class="flex shrink-0 gap-2 items-center justify-center max-sm:w-full max-sm:justify-end"
               @click.stop
             >
-              <ArtIconButton
+              <ArtButton
                 type="delete"
                 @click="deleteQuestionBank(item)"
               />
 
-              <ArtIconButton
+              <ArtButton
                 type="export"
               />
 
-              <ArtIconButton
+              <ArtButton
                 type="edit"
                 @click="goToEdit(item)"
               />
 
-              <ArtIconButton
+              <ArtButton
                 :loading="true"
               />
             </div>

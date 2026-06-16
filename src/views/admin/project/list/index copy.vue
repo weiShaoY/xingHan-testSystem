@@ -168,13 +168,13 @@ function goToEdit(item: StudyProject) {
           </template>
         </el-input>
 
-        <ArtIconButton
+        <ArtButton
           type="add"
           class="max-sm:w-full"
           @click="isShowCreateProjectDialog = true"
         >
           创建学习项目
-        </ArtIconButton>
+        </ArtButton>
       </div>
     </div>
 
@@ -238,12 +238,12 @@ function goToEdit(item: StudyProject) {
               class="flex shrink-0 gap-2 items-center justify-center max-sm:w-full max-sm:justify-end"
               @click.stop
             >
-              <ArtIconButton
+              <ArtButton
                 type="edit"
                 @click="goToEdit(item)"
               />
 
-              <ArtIconButton
+              <ArtButton
                 type="allocate"
                 @click="openAllocateDialog(item)"
               />

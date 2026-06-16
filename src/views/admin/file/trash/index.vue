@@ -136,21 +136,21 @@ function deleteForever(item: UserDocument) {
     <div
       class="flex items-center gap-5"
     >
-      <ArtIconButton
+      <ArtButton
         icon="ri:arrow-go-back-line"
         :disabled="!hasSelectedRows"
         @click="restoreSelectedFiles"
       >
         恢复选中文件
-      </ArtIconButton>
+      </ArtButton>
 
-      <ArtIconButton
+      <ArtButton
         type="delete"
         :disabled="!hasSelectedRows"
         @click="deleteSelectedForever"
       >
         彻底删除选中文件
-      </ArtIconButton>
+      </ArtButton>
     </div>
 
     <!-- 回收站表格 -->
@@ -227,13 +227,13 @@ function deleteForever(item: UserDocument) {
           class="flex items-center gap-5"
         >
 
-          <ArtIconButton
+          <ArtButton
             icon="ri:arrow-go-back-line"
             tooltip="恢复"
             @click="restoreFile(row)"
           />
 
-          <ArtIconButton
+          <ArtButton
             type="delete"
             tooltip="彻底删除"
             @click="deleteForever(row)"

@@ -1,7 +1,7 @@
 <!-- 按钮组件 -->
 <script lang="ts" setup>
 defineOptions({
-  name: 'ArtIconButton',
+  name: 'ArtButton',
   inheritAttrs: false,
 })
 

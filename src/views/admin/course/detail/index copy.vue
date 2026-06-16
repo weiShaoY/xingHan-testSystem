@@ -458,29 +458,29 @@ getCourseDetail()
       <template
         #extra
       >
-        <ArtIconButton
+        <ArtButton
           type="allocate"
           @click="isShowAllocateCourseDialog = true"
         />
 
-        <ArtIconButton
+        <ArtButton
           type="edit"
           @click="goToEdit()"
         />
 
-        <ArtIconButton
+        <ArtButton
           type="add"
           @click="openAddChapterDialog"
         >
           添加章节
-        </ArtIconButton>
+        </ArtButton>
 
-        <ArtIconButton
+        <ArtButton
           type="add"
           @click="openAddCourseSectionDialog"
         >
           添加课程小节
-        </ArtIconButton>
+        </ArtButton>
       </template>
     </AdminPageHeader>
 
@@ -528,18 +528,18 @@ getCourseDetail()
             class="flex flex-wrap gap-2 items-center justify-end pr-5 max-md:w-full max-md:justify-start max-sm:pr-0"
             @click.stop
           >
-            <ArtIconButton
+            <ArtButton
               type="add"
               @click="openAddChapterSectionDialog(item.id)"
             >
               添加课程小节
-            </ArtIconButton>
+            </ArtButton>
 
-            <ArtIconButton
+            <ArtButton
               type="delete"
             />
 
-            <ArtIconButton
+            <ArtButton
               type="edit"
               @click="editChapter(item.id)"
             />

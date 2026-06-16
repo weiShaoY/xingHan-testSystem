@@ -53,7 +53,7 @@ function handleClose() {
         class="aspect-square w-full flex flex-col items-center justify-center gap-2 rounded-lg border border-(--art-card-border) bg-(--default-box-color) transition-colors hover:border-primary hover:bg-primary/5"
         @click="handleSelect(item.sectionType)"
       >
-        <ArtIconButton
+        <ArtButton
           :icon="item.sectionIcon"
           icon-color="#ffffff"
           :bg-color="item.sectionIconBgColor"

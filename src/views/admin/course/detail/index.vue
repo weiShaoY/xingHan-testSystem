@@ -255,29 +255,29 @@ function editSection(section: AdminApi.Course.Section) {
       <template
         #extra
       >
-        <ArtIconButton
+        <ArtButton
           type="allocate"
           @click="isShowAllocateCourseDialog = true"
         />
 
-        <ArtIconButton
+        <ArtButton
           type="edit"
           @click="goToCourseEdit()"
         />
 
-        <ArtIconButton
+        <ArtButton
           type="add"
           @click="addSection()"
         >
           添加小节
-        </ArtIconButton>
+        </ArtButton>
 
-        <ArtIconButton
+        <ArtButton
           type="add"
           @click="addChapter"
         >
           添加章节
-        </ArtIconButton>
+        </ArtButton>
 
       </template>
     </AdminPageHeader>
@@ -326,26 +326,26 @@ function editSection(section: AdminApi.Course.Section) {
             class="flex flex-wrap gap-2 items-center justify-end pr-5 max-md:w-full max-md:justify-start max-sm:pr-0"
             @click.stop
           >
-            <ArtIconButton
+            <ArtButton
               type="add"
               @click="addSection(item)"
             >
               添加小节
-            </ArtIconButton>
+            </ArtButton>
 
-            <ArtIconButton
+            <ArtButton
               type="delete"
               @click="deleteChapter(item)"
             >
               删除章节
-            </ArtIconButton>
+            </ArtButton>
 
-            <ArtIconButton
+            <ArtButton
               type="edit"
               @click="editChapter(item)"
             >
               编辑章节
-            </ArtIconButton>
+            </ArtButton>
           </div>
         </div>
 

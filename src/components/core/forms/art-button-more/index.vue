@@ -62,7 +62,7 @@ function handleClick(item: ButtonMoreItem) {
     <ElDropdown
       v-if="hasAnyAuthItem"
     >
-      <ArtIconButton
+      <ArtButton
         icon="ri:more-2-fill"
         class="text-sm bg-g-200 dark:bg-g-300/45 !size-8"
       />

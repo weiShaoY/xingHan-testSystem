@@ -505,19 +505,19 @@ onMounted(() => {
         <div
           class="flex-c gap-2"
         >
-          <ArtIconButton
+          <ArtButton
             icon="ri:phone-line"
             circle
             class="size-11 text-g-600"
           />
 
-          <ArtIconButton
+          <ArtButton
             icon="ri:video-on-line"
             circle
             class="size-11 text-g-600"
           />
 
-          <ArtIconButton
+          <ArtButton
             icon="ri:more-2-fill"
             circle
             class="size-11 text-g-600"

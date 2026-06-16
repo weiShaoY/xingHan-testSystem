@@ -211,13 +211,13 @@ onMounted(() => {
       <template
         #extra
       >
-        <ArtIconButton
+        <ArtButton
           type="success"
           :loading="loading"
           @click="handleSubmit"
         >
           完成
-        </ArtIconButton>
+        </ArtButton>
       </template>
     </AdminPageHeader>
 

@@ -338,19 +338,19 @@ onMounted(() => {
         <div
           class="flex gap-2 items-center"
         >
-          <ArtIconButton
+          <ArtButton
             @click="$router.push({ name: 'AdminFileDocument' })"
           >
             去上传文档
-          </ArtIconButton>
+          </ArtButton>
 
-          <ArtIconButton
+          <ArtButton
             :disabled="!selectedDocument"
             type="primary"
             @click="confirmSelectDocument"
           >
             选择文档
-          </ArtIconButton>
+          </ArtButton>
         </div>
       </div>
 
@@ -407,21 +407,21 @@ onMounted(() => {
       <template
         #extra
       >
-        <ArtIconButton
+        <ArtButton
           v-if="!isShowDocumentUploadArea"
           type="warning"
           class="mr-2"
           @click="handleReplaceDocumentClick"
         >
           更换文档
-        </ArtIconButton>
+        </ArtButton>
 
-        <ArtIconButton
+        <ArtButton
           type="primary"
           @click="handleSubmit"
         >
           完成
-        </ArtIconButton>
+        </ArtButton>
       </template>
     </AdminPageHeader>
 
@@ -430,7 +430,7 @@ onMounted(() => {
       v-if="isShowDocumentUploadArea"
       class="art-card flex flex-col items-center justify-center"
     >
-      <ArtIconButton
+      <ArtButton
         icon="ri:upload-line"
         class="text-2xl w-20 h-20"
         @click="isShowFileSelectDialog = true"

@@ -73,12 +73,12 @@ function goPage(path: string): void {
 
       </div>
 
-      <ArtIconButton
+      <ArtButton
         type="primary"
         @click="goPage('/client/user-center')"
       >
         编辑中心
-      </ArtIconButton>
+      </ArtButton>
     </div>
   </div>
 </template>

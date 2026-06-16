@@ -193,16 +193,16 @@ function goToEdit() {
       <template
         #extra
       >
-        <ArtIconButton
+        <ArtButton
           type="edit"
           @click="goToEdit()"
         />
 
-        <ArtIconButton
+        <ArtButton
           type="export"
         />
 
-        <ArtIconButton
+        <ArtButton
           type="delete"
         />
       </template>

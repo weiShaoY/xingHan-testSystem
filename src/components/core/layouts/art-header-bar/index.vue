@@ -260,7 +260,7 @@ function openChat(): void {
         />
 
         <!-- 菜单按钮 -->
-        <ArtIconButton
+        <ArtButton
           v-if="isLeftMenu && shouldShowMenuButton"
           icon="ri:menu-2-fill"
           class="ml-3 max-sm:ml-[7px]"
@@ -268,7 +268,7 @@ function openChat(): void {
         />
 
         <!-- 刷新按钮 -->
-        <ArtIconButton
+        <ArtButton
           v-if="shouldShowRefreshButton"
           icon="ri:refresh-line"
           class="refresh-btn ml-3! max-sm:hidden!"
@@ -280,7 +280,7 @@ function openChat(): void {
         <ArtFastEnter
           v-if="shouldShowFastEnter && width >= headerBarFastEnterMinWidth"
         >
-          <ArtIconButton
+          <ArtButton
             icon="ri:function-line"
             class="ml-3"
           />
@@ -348,7 +348,7 @@ function openChat(): void {
         </div>
 
         <!-- 全屏按钮 -->
-        <ArtIconButton
+        <ArtButton
           v-if="shouldShowFullscreen"
           :icon="isFullscreen ? 'ri:fullscreen-exit-line' : 'ri:fullscreen-fill'"
           :class="[!isFullscreen ? 'full-screen-btn' : 'exit-full-screen-btn']"
@@ -362,7 +362,7 @@ function openChat(): void {
           popper-class="langDropDownStyle"
           @command="changeLanguage"
         >
-          <ArtIconButton
+          <ArtButton
             icon="ri:translate-2"
             class="language-btn text-[19px]"
           />
@@ -395,7 +395,7 @@ function openChat(): void {
         </ElDropdown>
 
         <!-- 通知按钮 -->
-        <ArtIconButton
+        <ArtButton
           v-if="shouldShowNotification"
           icon="ri:notification-2-line"
           class="notice-button relative"
@@ -404,10 +404,10 @@ function openChat(): void {
           <div
             class="rounded-full size-1.5 right-2 top-2 absolute bg-danger!"
           />
-        </ArtIconButton>
+        </ArtButton>
 
         <!-- 聊天按钮 -->
-        <ArtIconButton
+        <ArtButton
           v-if="shouldShowChat"
           icon="ri:message-3-line"
           class="chat-button relative"
@@ -416,7 +416,7 @@ function openChat(): void {
           <div
             class="breathing-dot rounded-full size-1.5 right-2 top-2 absolute bg-success!"
           />
-        </ArtIconButton>
+        </ArtButton>
 
         <!-- 设置按钮 -->
         <div
@@ -434,7 +434,7 @@ function openChat(): void {
               <div
                 class="flex-cc"
               >
-                <ArtIconButton
+                <ArtButton
                   icon="ri:settings-line"
                   class="setting-btn"
                   @click="openSetting"
@@ -460,7 +460,7 @@ function openChat(): void {
         </div>
 
         <!-- 主题切换按钮 -->
-        <ArtIconButton
+        <ArtButton
           v-if="shouldShowThemeToggle"
           :icon="isDark ? 'ri:sun-fill' : 'ri:moon-line'"
           @click="themeAnimation"

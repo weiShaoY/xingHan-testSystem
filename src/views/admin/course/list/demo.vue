@@ -162,12 +162,12 @@ function goToDetail(item: Course) {
         </p>
       </div>
 
-      <ArtIconButton
+      <ArtButton
         type="add"
         @click="goToCreate"
       >
         创建课程
-      </ArtIconButton>
+      </ArtButton>
     </div>
 
     <div
@@ -237,12 +237,12 @@ function goToDetail(item: Course) {
               class="flex shrink-0 gap-2 items-center justify-center max-sm:w-full max-sm:justify-end"
               @click.stop
             >
-              <ArtIconButton
+              <ArtButton
                 type="edit"
                 @click="goToEdit(item)"
               />
 
-              <ArtIconButton
+              <ArtButton
                 type="allocate"
                 @click="isShowAllocateCourseDialog = true"
               />

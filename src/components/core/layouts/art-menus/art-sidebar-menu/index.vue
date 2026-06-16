@@ -315,7 +315,7 @@ watch(menuOpen, (isMenuOpen: boolean) => {
         </ul>
       </ElScrollbar>
 
-      <ArtIconButton
+      <ArtButton
         class="switch-btn size-10"
         icon="ri:arrow-left-right-fill"
         @click="toggleDualMenuMode"

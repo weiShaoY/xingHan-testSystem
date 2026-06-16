@@ -84,12 +84,12 @@ function goToEdit() {
       <template
         #extra
       >
-        <ArtIconButton
+        <ArtButton
           type="edit"
           @click="goToEdit()"
         >
           编辑内容
-        </ArtIconButton>
+        </ArtButton>
       </template>
     </AdminPageHeader>
 
@@ -142,11 +142,11 @@ function goToEdit() {
           <div
             class="flex shrink-0 gap-2 items-center max-sm:w-full max-sm:justify-end"
           >
-            <ArtIconButton
+            <ArtButton
               type="edit"
             />
 
-            <ArtIconButton
+            <ArtButton
               type="view"
             />
           </div>
