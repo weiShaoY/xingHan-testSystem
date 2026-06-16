@@ -107,7 +107,6 @@ async function downloadDocument(item: FileApi.FileListItem) {
     loading.value = false
   }
   catch {
-    ElNotification.error('文件下载失败')
     loading.value = false
   }
 }
@@ -248,7 +247,7 @@ function handleSearch() {
         <span
           class="text-base text-g-900"
         >
-          {{ formatFileSize(row.asSize) }}
+          {{ fileSizeFormat(row.asSize) }}
         </span>
       </template>
 

@@ -396,7 +396,7 @@ onMounted(() => {
           <span
             class="text-base text-g-900"
           >
-            {{ formatFileSize(row.asSize) }}
+            {{ fileSizeFormat(row.asSize) }}
           </span>
         </template>
       </ArtTable>
@@ -512,7 +512,7 @@ onMounted(() => {
             </div>
 
             <div>
-              {{ formatFileSize(selectedDocument?.asSize || 0) }}
+              {{ fileSizeFormat(selectedDocument?.asSize || 0) }}
             </div>
           </div>
         </div>

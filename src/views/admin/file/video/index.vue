@@ -100,8 +100,20 @@ function handleUploadError(error: Error) {
   console.log('上传失败:', error)
 }
 
-function downloadDocument(item: FileApi.FileListItem) {
-  console.log('下载文档:', item)
+async function downloadVideo(item: FileApi.FileListItem) {
+  console.log('下载视频:', item)
+
+  // 根据blob 下载视频
+  loading.value = true
+  try {
+    const blob = await fetchAdminFileAttachment(item.asId)
+
+    await fileDownload(blob, item.asName)
+    loading.value = false
+  }
+  catch {
+    loading.value = false
+  }
 }
 
 function deleteDocument(_item: FileApi.FileListItem) {
@@ -288,7 +300,7 @@ async function playVideo(item: FileApi.FileListItem) {
         <span
           class="text-base text-g-900"
         >
-          {{ formatFileSize(row.asSize) }}
+          {{ fileSizeFormat(row.asSize) }}
         </span>
       </template>
 
@@ -300,7 +312,7 @@ async function playVideo(item: FileApi.FileListItem) {
         >
           <ArtButton
             type="download"
-            @click="downloadDocument(row)"
+            @click="downloadVideo(row)"
           />
 
           <ArtButton

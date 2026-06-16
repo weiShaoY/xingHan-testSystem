@@ -112,7 +112,6 @@ declare global {
   const fileDownload: typeof import('../../utils/file').fileDownload
   const fileSizeFormat: typeof import('../../utils/file').fileSizeFormat
   const formatDateTime: typeof import('../../utils/time').formatDateTime
-  const formatFileSize: typeof import('../../utils/file').fileSizeFormat
   const formatMenuTitle: typeof import('../../utils/router').formatMenuTitle
   const formatTimestampToChineseDate: typeof import('../../utils/time').formatTimestampToChineseDate
   const getActivePinia: typeof import('pinia').getActivePinia
