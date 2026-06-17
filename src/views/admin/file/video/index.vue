@@ -2,6 +2,9 @@
 <script lang="ts" setup>
 import type { ColumnOption } from '@/types'
 
+/**
+ * 加载状态
+ */
 const loading = ref(false)
 
 /**

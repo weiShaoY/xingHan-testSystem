@@ -90,7 +90,7 @@ const isShowFileSelectDialog = ref(false)
 /**
  * 是否显示文档选择上传区域
  */
-const isShowDocumentUploadArea = ref(!isEditMode.value)
+const isShowUploadArea = ref(!isEditMode.value)
 
 /**
  * 文件列表请求参数
@@ -103,9 +103,9 @@ const params = reactive<FileApi.FileListParams>({
 })
 
 /**
- * 文档列表
+ * 表格数据
  */
-const documentList = ref<FileApi.FileListResponse>({
+const table = ref<FileApi.FileListResponse>({
   rows: [],
   totals: 0,
 })
@@ -121,7 +121,7 @@ const selectedDocument = ref<FileApi.FileListItem>()
 const pagination = computed(() => ({
   current: params.currentPage,
   size: params.pageSize,
-  total: documentList.value.totals,
+  total: table.value.totals,
 }))
 
 /**
@@ -163,13 +163,13 @@ function clearSelectedDocument() {
 }
 
 /**
- * 获取可选择的文档列表
+ * 获取可选择的表格列表
  */
 async function getDocumentList() {
   loading.value = true
 
   try {
-    documentList.value = await fetchAdminFileList(params)
+    table.value = await fetchAdminFileList(params)
   }
   finally {
     loading.value = false
@@ -199,14 +199,14 @@ async function getSectionDetail() {
 }
 
 /**
- * 选择文档表格行
+ * 选择表格行
  */
 function handleDocumentCurrentChange(row?: FileApi.FileListItem) {
   selectedDocument.value = row
 }
 
 /**
- * 确认选择文档
+ * 确认选择
  */
 function confirmSelectDocument() {
   if (!selectedDocument.value) {
@@ -219,14 +219,14 @@ function confirmSelectDocument() {
   }
 
   isShowFileSelectDialog.value = false
-  isShowDocumentUploadArea.value = false
+  isShowUploadArea.value = false
 }
 
 /**
- * 更换文档
+ * 更换表格选中项
  */
-function handleReplaceDocumentClick() {
-  isShowDocumentUploadArea.value = true
+function handleReplaceTableClick() {
+  isShowUploadArea.value = true
   clearSelectedDocument()
   void getDocumentList()
   isShowFileSelectDialog.value = true
@@ -252,7 +252,7 @@ function handleCurrentChange(currentPage: number) {
 }
 
 /**
- * 搜索文档
+ * 搜索
  */
 function handleSearch() {
   params.currentPage = 1
@@ -262,7 +262,7 @@ function handleSearch() {
 }
 
 /**
- * 提交文档小节
+ * 提交小节
  */
 async function handleSubmit() {
   if (!formData.value.asId) {
@@ -353,7 +353,7 @@ onMounted(() => {
       <ArtTable
         class="max-h-[calc(100vh-400px)] overflow-auto"
         :loading="loading"
-        :data="documentList.rows"
+        :data="table.rows"
         :columns="columns"
         :pagination="pagination"
         row-key="asId"
@@ -413,10 +413,10 @@ onMounted(() => {
         #extra
       >
         <ArtButton
-          v-if="!isShowDocumentUploadArea"
+          v-if="!isShowUploadArea"
           type="warning"
           class="mr-2"
-          @click="handleReplaceDocumentClick"
+          @click="handleReplaceTableClick"
         >
           更换文档
         </ArtButton>
@@ -432,7 +432,7 @@ onMounted(() => {
 
     <!-- 文档选择上传区域 -->
     <div
-      v-if="isShowDocumentUploadArea"
+      v-if="isShowUploadArea"
       class="art-card flex flex-col items-center justify-center"
     >
       <ArtButton

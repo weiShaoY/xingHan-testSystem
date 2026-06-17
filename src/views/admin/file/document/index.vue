@@ -2,6 +2,9 @@
 <script lang="ts" setup>
 import type { ColumnOption } from '@/types'
 
+/**
+ * 加载状态
+ */
 const loading = ref(false)
 
 /**
@@ -22,6 +25,9 @@ const table = ref<FileApi.FileListResponse>({
   totals: 0,
 })
 
+/**
+ * 表格列配置
+ */
 const columns: ColumnOption<FileApi.FileListItem>[] = [
   {
     label: '文件名称',

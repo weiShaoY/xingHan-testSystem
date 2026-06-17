@@ -54,7 +54,7 @@ const pageTitle = computed(() => {
 })
 
 /**
- * 文档表格列配置
+ * 表格列配置
  */
 const columns: ColumnOption<FileApi.FileListItem>[] = [
   {
@@ -83,7 +83,7 @@ const columns: ColumnOption<FileApi.FileListItem>[] = [
 ]
 
 /**
- * 文档列表加载状态
+ * 加载状态
  */
 const loading = ref(false)
 
@@ -95,10 +95,10 @@ const isShowFileSelectDialog = ref(false)
 /**
  * 是否显示文档选择上传区域
  */
-const isShowDocumentUploadArea = ref(!isEditMode.value)
+const isShowUploadArea = ref(!isEditMode.value)
 
 /**
- * 文件列表请求参数
+ * 请求参数
  */
 const params = reactive<FileApi.FileListParams>({
   name: '',
@@ -108,9 +108,9 @@ const params = reactive<FileApi.FileListParams>({
 })
 
 /**
- * 视频列表
+ * 表格数据
  */
-const videoList = ref<FileApi.FileListResponse>({
+const table = ref<FileApi.FileListResponse>({
   rows: [],
   totals: 0,
 })
@@ -126,7 +126,7 @@ const selectedVideo = ref<FileApi.FileListItem>()
 const pagination = computed(() => ({
   current: params.currentPage,
   size: params.pageSize,
-  total: videoList.value.totals,
+  total: table.value.totals,
 }))
 
 /**
@@ -168,13 +168,13 @@ function clearSelectedDocument() {
 }
 
 /**
- * 获取可选择的视频列表
+ * 获取可选择的表格列表
  */
 async function getVideoList() {
   loading.value = true
 
   try {
-    videoList.value = await fetchAdminFileList(params)
+    table.value = await fetchAdminFileList(params)
   }
   finally {
     loading.value = false
@@ -224,14 +224,14 @@ function confirmSelectVideo() {
   }
 
   isShowFileSelectDialog.value = false
-  isShowDocumentUploadArea.value = false
+  isShowUploadArea.value = false
 }
 
 /**
- * 更换视频
+ * 更换表格选中项
  */
-function handleReplaceVideoClick() {
-  isShowDocumentUploadArea.value = true
+function handleReplaceTableClick() {
+  isShowUploadArea.value = true
   clearSelectedDocument()
   void getVideoList()
   isShowFileSelectDialog.value = true
@@ -267,7 +267,7 @@ function handleSearch() {
 }
 
 /**
- * 提交文档小节
+ * 提交小节
  */
 async function handleSubmit() {
   if (!formData.value.asId) {
@@ -404,7 +404,7 @@ async function playVideo(item: FileApi.FileListItem) {
       <!-- 视频表格 -->
       <ArtTable
         :loading="loading"
-        :data="videoList.rows"
+        :data="table.rows"
         :columns="columns"
         :pagination="pagination"
         row-key="asId"
@@ -466,10 +466,10 @@ async function playVideo(item: FileApi.FileListItem) {
         #extra
       >
         <ArtButton
-          v-if="!isShowDocumentUploadArea"
+          v-if="!isShowUploadArea"
           type="warning"
           class="mr-2"
-          @click="handleReplaceVideoClick"
+          @click="handleReplaceTableClick"
         >
           更换视频
         </ArtButton>
@@ -485,7 +485,7 @@ async function playVideo(item: FileApi.FileListItem) {
 
     <!-- 文档选择上传区域 -->
     <div
-      v-if="isShowDocumentUploadArea"
+      v-if="isShowUploadArea"
       class="art-card flex flex-col items-center justify-center"
     >
       <ArtButton
