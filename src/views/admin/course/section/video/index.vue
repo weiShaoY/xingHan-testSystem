@@ -203,6 +203,14 @@ async function getSectionDetail() {
 }
 
 /**
+ * 打开表格弹窗
+ */
+function handleOpenTableDialog() {
+  isShowFileSelectDialog.value = true
+  void getTable()
+}
+
+/**
  * 选择表格行
  */
 function handleTableCurrentChange(row?: FileApi.FileListItem) {
@@ -295,8 +303,6 @@ async function handleSubmit() {
 }
 
 onMounted(() => {
-  void getTable()
-
   if (isEditMode.value) {
     void getSectionDetail()
   }
@@ -496,7 +502,7 @@ async function playVideo(item: FileApi.FileListItem) {
       <ArtButton
         icon="ri:upload-line"
         class="text-2xl w-20 h-20"
-        @click="isShowFileSelectDialog = true"
+        @click="handleOpenTableDialog"
       />
 
       <div
