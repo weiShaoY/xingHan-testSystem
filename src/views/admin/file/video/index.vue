@@ -138,13 +138,6 @@ async function deleteTableItem(_item: FileApi.FileListItem) {
 }
 
 /**
- * 导出表格项
- */
-function exportTableItem(item: FileApi.FileListItem) {
-  console.log('导出表格项:', item)
-}
-
-/**
  * 每页条数变化
  */
 function handleSizeChange(size: number) {
@@ -333,21 +326,16 @@ getTable()
           class="flex items-center gap-2"
         >
           <ArtButton
-            type="download"
-            @click="downloadTableItem(row)"
-          />
-
-          <ArtButton
             type="delete"
             tooltip="删除"
             @click="deleteTableItem(row)"
           />
 
           <ArtButton
-            type="export"
-            tooltip="导出"
-            @click="exportTableItem(row)"
+            type="download"
+            @click="downloadTableItem(row)"
           />
+
         </div>
       </template>
     </ArtTable>
