@@ -49,3 +49,16 @@ export function fetchAdminFileDelete(asId: number) {
     },
   })
 }
+
+/**
+ *  获取文件回收站文件列表
+ */
+export function fetchAdminFileRecyclingList(params: FileApi.FileListParams) {
+  return request.post<FileApi.FileListResponse>({
+    url: '/admin/file/recyclingList',
+    data: {
+      ...params,
+      type: params.type === 'document' ? 1 : params.type === 'video' ? 2 : 0,
+    },
+  })
+}

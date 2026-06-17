@@ -33,7 +33,7 @@ declare namespace FileApi {
     /**
      * 文件类型
      */
-    type: 'document' | 'video'
+    type: 'document' | 'video' | 'all'
 
     /**
      * 文件名称

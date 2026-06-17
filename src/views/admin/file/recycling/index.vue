@@ -12,7 +12,7 @@ const loading = ref(false)
  */
 const params = reactive<FileApi.FileListParams>({
   name: '',
-  type: 'document',
+  type: 'all',
   pageSize: 10,
   currentPage: 1,
 })
@@ -76,7 +76,7 @@ async function getTable() {
   loading.value = true
 
   try {
-    table.value = await fetchAdminFileList(params)
+    table.value = await fetchAdminFileRecyclingList(params)
   }
   finally {
     loading.value = false
@@ -124,10 +124,10 @@ async function deleteTableItem(_item: FileApi.FileListItem) {
   try {
     await fetchAdminFileDelete(_item.asId)
     getTable()
-    ElNotification.success('删除成功')
+    ElMessage.success('删除成功')
   }
   catch {
-    ElNotification.error('删除失败')
+    ElMessage.error('删除失败')
   }
   finally {
     loading.value = false
@@ -180,7 +180,7 @@ function handleSearch() {
         <h2
           class="text-xl font-semibold text-g-900 max-sm:text-lg"
         >
-          我的文档
+          已删除文件
         </h2>
 
         <p

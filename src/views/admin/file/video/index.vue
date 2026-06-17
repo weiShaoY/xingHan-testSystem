@@ -127,10 +127,10 @@ async function deleteTableItem(_item: FileApi.FileListItem) {
   try {
     await fetchAdminFileDelete(_item.asId)
     getTable()
-    ElMessage.success('删除成功')
+    ElNotification.success('删除成功')
   }
   catch {
-    ElMessage.error('删除失败')
+    ElNotification.error('删除失败')
   }
   finally {
     loading.value = false
@@ -270,7 +270,7 @@ getTable()
       </div>
     </div>
 
-    <!-- 视频表格 -->
+    <!-- 数据表格 -->
     <ArtTable
       :loading="loading"
       :data="table.rows"

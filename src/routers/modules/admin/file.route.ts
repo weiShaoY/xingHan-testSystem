@@ -34,9 +34,9 @@ export const AdminUserFile: AppRouteRecord = {
       },
     },
     {
-      path: 'trash',
-      name: 'AdminFileTrash',
-      component: '/admin/file/trash',
+      path: 'recycling',
+      name: 'AdminFileRecycling',
+      component: '/admin/file/recycling',
       meta: {
         title: '回收站',
         icon: 'ri:align-item-left-fill',
