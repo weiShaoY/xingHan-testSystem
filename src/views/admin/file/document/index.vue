@@ -241,7 +241,7 @@ function handleSearch() {
           <div
             class="truncate text-sm font-medium text-g-900"
           >
-            {{ row.asName || row.asFileName || `未命名文件${row.asExtension || ''}` }}
+            {{ row.asName || '-' }}
           </div>
 
         </div>

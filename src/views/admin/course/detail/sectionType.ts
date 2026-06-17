@@ -52,6 +52,47 @@ export const sectionTypeConfigMap: Record<SectionType, SectionTypeConfig> = {
 }
 
 /**
+ * 创建小节路由映射
+ */
+const createSectionRouteMap: Record<SectionType, string> = {
+  0: 'AdminCourseSectionDocumentCreate',
+  1: 'AdminCourseSectionVideoCreate',
+  2: 'AdminCourseSectionExamCreate',
+  3: 'AdminCourseSectionSurveyCreate',
+}
+
+/**
+ * 编辑小节路由映射
+ */
+const editSectionRouteMap: Record<SectionType, string> = {
+  0: 'AdminCourseSectionDocumentEdit',
+  1: 'AdminCourseSectionVideoEdit',
+  2: 'AdminCourseSectionExamEdit',
+  3: 'AdminCourseSectionSurveyEdit',
+}
+
+/**
  * 小节类型选项列表
  */
 export const sectionTypeOptions = Object.values(sectionTypeConfigMap)
+
+/**
+ * 获取小节类型对应的图标配置
+ */
+export function getSectionTypeConfig(sectionType: SectionType) {
+  return sectionTypeConfigMap[sectionType]
+}
+
+/**
+ *  获取小节创建页路由
+ */
+export function getSectionCreateRoute(sectionType: SectionType) {
+  return createSectionRouteMap[sectionType]
+}
+
+/**
+ *  获取小节编辑页路由
+ */
+export function getSectionEditRoute(sectionType: SectionType) {
+  return editSectionRouteMap[sectionType]
+}

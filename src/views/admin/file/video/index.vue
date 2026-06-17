@@ -70,9 +70,9 @@ const pagination = computed(() => ({
 }))
 
 /**
-   *  获取文档列表
+   *  获取视频列表
    */
-async function getDocumentList() {
+async function getVideoList() {
   loading.value = true
 
   try {
@@ -86,14 +86,14 @@ async function getDocumentList() {
   }
 }
 
-getDocumentList()
+getVideoList()
 
 /**
  * 上传成功
  */
 function handleUploadSuccess() {
   params.currentPage = 1
-  getDocumentList()
+  getVideoList()
 }
 
 function handleUploadError(error: Error) {
@@ -130,7 +130,7 @@ function exportDocument(item: FileApi.FileListItem) {
 function handleSizeChange(size: number) {
   params.pageSize = size
   params.currentPage = 1
-  getDocumentList()
+  getVideoList()
 }
 
 /**
@@ -138,7 +138,7 @@ function handleSizeChange(size: number) {
  */
 function handleCurrentChange(currentPage: number) {
   params.currentPage = currentPage
-  getDocumentList()
+  getVideoList()
 }
 
 /**
@@ -147,7 +147,7 @@ function handleCurrentChange(currentPage: number) {
 function handleSearch() {
   params.currentPage = 1
   params.name = params.name.trim()
-  getDocumentList()
+  getVideoList()
 }
 
 /**
@@ -279,7 +279,7 @@ async function playVideo(item: FileApi.FileListItem) {
           <div
             class="truncate text-sm font-medium text-g-900"
           >
-            {{ row.asName || row.asFileName || `未命名文件${row.asExtension || ''}` }}
+            {{ row.asName || '-' }}
           </div>
 
         </div>

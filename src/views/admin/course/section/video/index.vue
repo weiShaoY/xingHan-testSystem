@@ -9,6 +9,11 @@ const route = useRoute()
 const router = useRouter()
 
 /**
+   *  是否显示播放弹窗
+   */
+const isShowVideoPlayDialog = ref(false)
+
+/**
  * 工作标签页 Store。
  */
 const workTabStore = useWorkTabStore()
@@ -97,15 +102,15 @@ const isShowDocumentUploadArea = ref(!isEditMode.value)
  */
 const params = reactive<FileApi.FileListParams>({
   name: '',
-  type: 'document',
+  type: 'video',
   pageSize: 10,
   currentPage: 1,
 })
 
 /**
- * 文档列表
+ * 视频列表
  */
-const documentTable = ref<FileApi.FileListResponse>({
+const videoList = ref<FileApi.FileListResponse>({
   rows: [],
   totals: 0,
 })
@@ -113,7 +118,7 @@ const documentTable = ref<FileApi.FileListResponse>({
 /**
  * 表格当前选中的文档。只有点击“选择文档”后才会写入 formData。
  */
-const selectedDocument = ref<FileApi.FileListItem>()
+const selectedVideo = ref<FileApi.FileListItem>()
 
 /**
  * 分页配置
@@ -121,7 +126,7 @@ const selectedDocument = ref<FileApi.FileListItem>()
 const pagination = computed(() => ({
   current: params.currentPage,
   size: params.pageSize,
-  total: documentTable.value.totals,
+  total: videoList.value.totals,
 }))
 
 /**
@@ -155,27 +160,20 @@ function createInitialFormData(): AdminApi.Course.CourseOutlineSectionEditor {
 }
 
 /**
- * 获取文档展示名称
- */
-function getDocumentName(document: FileApi.FileListItem) {
-  return document.asName || document.asFileName || `未命名文件${document.asExtension || ''}`
-}
-
-/**
  * 清空表格当前选择
  */
 function clearSelectedDocument() {
-  selectedDocument.value = undefined
+  selectedVideo.value = undefined
 }
 
 /**
- * 获取可选择的文档列表
+ * 获取可选择的视频列表
  */
-async function getDocumentList() {
+async function getVideoList() {
   loading.value = true
 
   try {
-    documentTable.value = await fetchAdminFileList(params)
+    videoList.value = await fetchAdminFileList(params)
   }
   finally {
     loading.value = false
@@ -197,7 +195,7 @@ async function getSectionDetail() {
       ...formData.value,
       ...section,
     }
-    selectedDocument.value = section.accessory
+    selectedVideo.value = section.accessory
   }
   catch {
     ElNotification.error('获取小节详情失败')
@@ -205,23 +203,23 @@ async function getSectionDetail() {
 }
 
 /**
- * 选择文档表格行
+ * 选择表格行
  */
-function handleDocumentCurrentChange(row?: FileApi.FileListItem) {
-  selectedDocument.value = row
+function handleVideoCurrentChange(row?: FileApi.FileListItem) {
+  selectedVideo.value = row
 }
 
 /**
- * 确认选择文档
+ * 确认选择
  */
-function confirmSelectDocument() {
-  if (!selectedDocument.value) {
+function confirmSelectVideo() {
+  if (!selectedVideo.value) {
     return
   }
 
   formData.value = {
     ...formData.value,
-    asId: selectedDocument.value.asId,
+    asId: selectedVideo.value.asId,
   }
 
   isShowFileSelectDialog.value = false
@@ -229,12 +227,12 @@ function confirmSelectDocument() {
 }
 
 /**
- * 更换文档
+ * 更换视频
  */
-function handleReplaceDocumentClick() {
+function handleReplaceVideoClick() {
   isShowDocumentUploadArea.value = true
   clearSelectedDocument()
-  void getDocumentList()
+  void getVideoList()
   isShowFileSelectDialog.value = true
 }
 
@@ -245,7 +243,7 @@ function handleSizeChange(size: number) {
   params.pageSize = size
   params.currentPage = 1
   clearSelectedDocument()
-  void getDocumentList()
+  void getVideoList()
 }
 
 /**
@@ -254,17 +252,17 @@ function handleSizeChange(size: number) {
 function handleCurrentChange(currentPage: number) {
   params.currentPage = currentPage
   clearSelectedDocument()
-  void getDocumentList()
+  void getVideoList()
 }
 
 /**
- * 搜索文档
+ * 搜索
  */
 function handleSearch() {
   params.currentPage = 1
   params.name = params.name.trim()
   clearSelectedDocument()
-  void getDocumentList()
+  void getVideoList()
 }
 
 /**
@@ -272,18 +270,18 @@ function handleSearch() {
  */
 async function handleSubmit() {
   if (!formData.value.asId) {
-    ElNotification.warning('请先选择文档')
+    ElNotification.warning('请先选择文件')
     return
   }
 
   try {
     if (isEditMode.value) {
       await fetchAdminCourseOutlineSectionUpdate(formData.value)
-      ElNotification.success('文档小节更新成功')
+      ElNotification.success('小节更新成功')
     }
     else {
       await fetchAdminCourseOutlineSectionAdd(formData.value)
-      ElNotification.success('文档小节创建成功')
+      ElNotification.success('小节创建成功')
     }
 
     // 关闭当前标签页
@@ -292,23 +290,70 @@ async function handleSubmit() {
     router.back()
   }
   catch {
-    ElNotification.error(isEditMode.value ? '文档小节更新失败' : '文档小节新增失败')
+    ElNotification.error(isEditMode.value ? '小节更新失败' : '小节新增失败')
   }
 }
 
 onMounted(() => {
-  void getDocumentList()
+  void getVideoList()
 
   if (isEditMode.value) {
     void getSectionDetail()
   }
 })
+
+/**
+   *  视频播放地址
+   */
+const videoPlayUrl = ref('')
+
+function resetVideoPlayer() {
+  isShowVideoPlayDialog.value = false
+
+  if (videoPlayUrl.value) {
+    URL.revokeObjectURL(videoPlayUrl.value)
+    videoPlayUrl.value = ''
+  }
+}
+
+/**
+ * 播放视频
+ */
+async function playVideo(item: FileApi.FileListItem) {
+  console.log('播放视频:', item)
+
+  try {
+    resetVideoPlayer()
+    videoPlayUrl.value = URL.createObjectURL(await fetchAdminFileAttachment(item.asId))
+    isShowVideoPlayDialog.value = true
+  }
+  catch {
+    ElNotification.error('播放视频失败')
+  }
+}
+
 </script>
 
 <template>
   <div
     class="mx-auto mb-10 flex w-full max-w-7xl flex-col gap-4 px-10 max-lg:px-6 max-sm:px-4"
   >
+    <el-dialog
+      v-if="isShowVideoPlayDialog && videoPlayUrl"
+      v-model="isShowVideoPlayDialog"
+      title="播放视频"
+      width="50%"
+      @close="resetVideoPlayer"
+    >
+      <ArtVideoPlayer
+        player-id="file-video-player"
+        :video-url="videoPlayUrl"
+        :autoplay="true"
+        :volume="0.5"
+      />
+
+    </el-dialog>
+
     <el-dialog
       v-if="isShowFileSelectDialog"
       v-model="isShowFileSelectDialog"
@@ -346,9 +391,9 @@ onMounted(() => {
           </ArtButton>
 
           <ArtButton
-            :disabled="!selectedDocument"
+            :disabled="!selectedVideo"
             type="primary"
-            @click="confirmSelectDocument"
+            @click="confirmSelectVideo"
           >
             选择视频
           </ArtButton>
@@ -358,12 +403,12 @@ onMounted(() => {
       <!-- 视频表格 -->
       <ArtTable
         :loading="loading"
-        :data="documentTable.rows"
+        :data="videoList.rows"
         :columns="columns"
         :pagination="pagination"
         row-key="asId"
         highlight-current-row
-        @current-change="handleDocumentCurrentChange"
+        @current-change="handleVideoCurrentChange"
         @pagination:size-change="handleSizeChange"
         @pagination:current-change="handleCurrentChange"
       >
@@ -371,12 +416,23 @@ onMounted(() => {
           #fileName="{ row }"
         >
           <div
-            class="min-w-0"
+            class="min-w-0 flex items-center gap-2"
           >
+            <div
+              class=""
+            >
+              <ArtPreviewImage
+                :path="row.asThumbnailPath"
+                class="w-15 h-20"
+                :preview="false"
+                @click="playVideo(row)"
+              />
+            </div>
+
             <div
               class="truncate text-sm font-medium text-g-900"
             >
-              {{ getDocumentName(row) }}
+              {{ row.asName || '-' }}
             </div>
 
           </div>
@@ -412,9 +468,9 @@ onMounted(() => {
           v-if="!isShowDocumentUploadArea"
           type="warning"
           class="mr-2"
-          @click="handleReplaceDocumentClick"
+          @click="handleReplaceVideoClick"
         >
-          更换文档
+          更换视频
         </ArtButton>
 
         <ArtButton
@@ -440,33 +496,30 @@ onMounted(() => {
       <div
         class="my-5"
       >
-        选择一个文档
+        选择一个视频
       </div>
 
       <div
         class="text-sm text-g-600"
       >
         <p>
-          1.点击上方图标，选取转码、审核完成的文档;
+          1.点击上方图标，选取转码、审核完成的视频;
         </p>
 
         <p>
-          2.文档支持pdf格式;
+          2.视频支持mp4格式;
         </p>
       </div>
     </div>
 
-    <!-- 文档编辑区 -->
+    <!-- 视频编辑区 -->
     <div
       v-else
       class="art-card flex items-center justify-between gap-20"
     >
       <aside
-        v-if="selectedDocument"
+        v-if="selectedVideo"
       >
-        <!-- <el-image
-          :src="getFileUrl(selectedDocument?.asThumbnailPath || '')"
-        /> -->
 
         <div
           class="space-y-4 text-sm text-g-600"
@@ -474,25 +527,27 @@ onMounted(() => {
           <div
             class="text-lg font-semibold text-g-900"
           >
-            文档信息
+            视频信息
           </div>
 
           <div
             class=""
           >
             <ArtPreviewImage
-              :path="selectedDocument?.asThumbnailPath"
+              :path="selectedVideo?.asThumbnailPath"
               class="w-15 h-20"
+              :preview="false"
+              @click="playVideo(selectedVideo)"
             />
           </div>
 
           <div>
             <div>
-              文档名称
+              视频名称
             </div>
 
             <div>
-              {{ getDocumentName(selectedDocument) || '-' }}
+              {{ selectedVideo?.asName || '-' }}
             </div>
           </div>
 
@@ -502,17 +557,17 @@ onMounted(() => {
             </div>
 
             <div>
-              {{ formatDateTime(selectedDocument?.createTime) || '' }}
+              {{ formatDateTime(selectedVideo?.createTime) || '' }}
             </div>
           </div>
 
           <div>
             <div>
-              文档大小
+              视频大小
             </div>
 
             <div>
-              {{ fileSizeFormat(selectedDocument?.asSize || 0) }}
+              {{ fileSizeFormat(selectedVideo?.asSize || 0) }}
             </div>
           </div>
         </div>

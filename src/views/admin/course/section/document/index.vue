@@ -155,13 +155,6 @@ function createInitialFormData(): AdminApi.Course.CourseOutlineSectionEditor {
 }
 
 /**
- * 获取文档展示名称
- */
-function getDocumentName(document: FileApi.FileListItem) {
-  return document.asName || document.asFileName || `未命名文件${document.asExtension || ''}`
-}
-
-/**
  * 清空表格当前选择
  */
 function clearSelectedDocument() {
@@ -272,18 +265,18 @@ function handleSearch() {
  */
 async function handleSubmit() {
   if (!formData.value.asId) {
-    ElNotification.warning('请先选择文档')
+    ElNotification.warning('请先选择文件')
     return
   }
 
   try {
     if (isEditMode.value) {
       await fetchAdminCourseOutlineSectionUpdate(formData.value)
-      ElNotification.success('文档小节更新成功')
+      ElNotification.success('小节更新成功')
     }
     else {
       await fetchAdminCourseOutlineSectionAdd(formData.value)
-      ElNotification.success('文档小节创建成功')
+      ElNotification.success('小节创建成功')
     }
 
     // 关闭当前标签页
@@ -292,7 +285,7 @@ async function handleSubmit() {
     router.back()
   }
   catch {
-    ElNotification.error(isEditMode.value ? '文档小节更新失败' : '文档小节新增失败')
+    ElNotification.error(isEditMode.value ? '小节更新失败' : '小节新增失败')
   }
 }
 
@@ -386,7 +379,7 @@ onMounted(() => {
             <div
               class="truncate text-sm font-medium text-g-900"
             >
-              {{ row.asName || row.asFileName || `未命名文件${row.asExtension || ''}` }}
+              {{ row.asName || '-' }}
             </div>
 
           </div>
@@ -502,7 +495,7 @@ onMounted(() => {
             </div>
 
             <div>
-              {{ getDocumentName(selectedDocument) || '-' }}
+              {{ selectedDocument.asName || '-' }}
             </div>
           </div>
 

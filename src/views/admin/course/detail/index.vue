@@ -13,7 +13,11 @@ import CourseSectionItem from './CourseSectionItem.vue'
 
 import CreateSectionDialog from './CreateSectionDialog.vue'
 
-import { sectionTypeConfigMap } from './sectionType'
+import {
+  getSectionCreateRoute,
+  getSectionEditRoute,
+  getSectionTypeConfig,
+} from './sectionType'
 
 const route = useRoute()
 
@@ -25,26 +29,6 @@ const router = useRouter()
 const couId = computed(() => {
   return Number(route.params.couId || 0)
 })
-
-/**
- * 创建小节路由映射
- */
-const createSectionRouteMap: Record<SectionType, string> = {
-  0: 'AdminCourseSectionDocumentCreate',
-  1: 'AdminCourseSectionVideoCreate',
-  2: 'AdminCourseSectionExamCreate',
-  3: 'AdminCourseSectionSurveyCreate',
-}
-
-/**
- * 编辑小节路由映射
- */
-const editSectionRouteMap: Record<SectionType, string> = {
-  0: 'AdminCourseSectionDocumentEdit',
-  1: 'AdminCourseSectionVideoEdit',
-  2: 'AdminCourseSectionExamEdit',
-  3: 'AdminCourseSectionSurveyEdit',
-}
 
 /**
  * 是否显示分配学习任务弹窗
@@ -112,13 +96,6 @@ async function getCourseDetail() {
 
 getCourseDetail()
 
-/**
- * 获取小节类型对应的图标配置
- */
-function getSectionTypeIcon(sectionType: SectionType) {
-  return sectionTypeConfigMap[sectionType]
-}
-
 // ! ////////////////////////////// 分配 ///////////////////////////////////////
 /**
  * 打开小节分配学习任务弹窗
@@ -177,7 +154,7 @@ function goToAddSection(sectionType: SectionType) {
   isShowCreateSectionDialog.value = false
 
   router.push({
-    name: createSectionRouteMap[sectionType],
+    name: getSectionCreateRoute(sectionType),
 
     params: {
       couId: couId.value,
@@ -210,7 +187,7 @@ async function deleteSection(section: AdminApi.Course.Section) {
  */
 function editSection(section: AdminApi.Course.Section) {
   router.push({
-    name: editSectionRouteMap[section.sectionType],
+    name: getSectionEditRoute(section.sectionType),
 
     params: {
       couId: couId.value,
@@ -365,7 +342,7 @@ function editSection(section: AdminApi.Course.Section) {
               :key="section.id"
               inner
               :section="section"
-              :type-config="getSectionTypeIcon(section.sectionType)"
+              :type-config="getSectionTypeConfig(section.sectionType)"
               @allocate="allocateSection"
               @delete="deleteSection"
               @edit="editSection"
@@ -388,7 +365,7 @@ function editSection(section: AdminApi.Course.Section) {
         <CourseSectionItem
           v-else-if="item.itemType === 'section'"
           :section="item"
-          :type-config="getSectionTypeIcon(item.sectionType)"
+          :type-config="getSectionTypeConfig(item.sectionType)"
           @allocate="allocateSection"
           @delete="deleteSection"
           @edit="editSection"
