@@ -138,6 +138,7 @@ function createInitialFormData(): AdminApi.Course.CourseOutlineSectionEditor {
     olName: '',
     olIntro: '',
     asId: 0,
+    olIsAccessory: 0,
   }
 
   if (isEditMode.value) {

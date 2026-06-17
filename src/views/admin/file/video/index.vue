@@ -5,9 +5,27 @@ import type { ColumnOption } from '@/types'
 const loading = ref(false)
 
 /**
-   *  是否显示播放弹窗
-   */
+ * 是否显示播放弹窗
+ */
 const isShowVideoPlayDialog = ref(false)
+
+/**
+ *  请求参数
+ */
+const params = reactive<FileApi.FileListParams>({
+  name: '',
+  type: 'video',
+  pageSize: 10,
+  currentPage: 1,
+})
+
+/**
+ * 表格数据
+ */
+const table = ref<FileApi.FileListResponse>({
+  rows: [],
+  totals: 0,
+})
 
 const columns: ColumnOption<FileApi.FileListItem>[] = [
   {
@@ -24,7 +42,6 @@ const columns: ColumnOption<FileApi.FileListItem>[] = [
     useSlot: true,
     sortable: true,
   },
-
   {
     label: '文件大小',
     prop: 'asSize',
@@ -43,85 +60,82 @@ const columns: ColumnOption<FileApi.FileListItem>[] = [
 ]
 
 /**
- *  请求参数
- */
-const params = reactive<FileApi.FileListParams>({
-  name: '',
-  type: 'video',
-  pageSize: 10,
-  currentPage: 1,
-})
-
-/**
- * 视频列表
- */
-const videoList = ref<FileApi.FileListResponse>({
-  rows: [],
-  totals: 0,
-})
-
-/**
  * 分页配置
  */
 const pagination = computed(() => ({
   current: params.currentPage,
   size: params.pageSize,
-  total: videoList.value.totals,
+  total: table.value.totals,
 }))
 
 /**
-   *  获取视频列表
-   */
-async function getVideoList() {
+ * 获取表格数据
+ */
+async function getTable() {
   loading.value = true
 
   try {
-    videoList.value = await fetchAdminFileList(params)
-  }
-  catch {
-    loading.value = false
+    table.value = await fetchAdminFileList(params)
   }
   finally {
     loading.value = false
   }
 }
 
-getVideoList()
-
 /**
  * 上传成功
  */
 function handleUploadSuccess() {
   params.currentPage = 1
-  getVideoList()
+  getTable()
 }
 
+/**
+ * 上传失败
+ */
 function handleUploadError(error: Error) {
   console.log('上传失败:', error)
 }
 
-async function downloadVideo(item: FileApi.FileListItem) {
-  console.log('下载视频:', item)
-
-  // 根据blob 下载视频
+/**
+ * 下载表格项
+ */
+async function downloadTableItem(item: FileApi.FileListItem) {
   loading.value = true
+
   try {
     const blob = await fetchAdminFileAttachment(item.asId)
 
     await fileDownload(blob, item.asName)
+  }
+  finally {
     loading.value = false
+  }
+}
+
+/**
+ * 删除表格项
+ */
+async function deleteTableItem(_item: FileApi.FileListItem) {
+  loading.value = true
+  try {
+    await fetchAdminFileDelete(_item.asId)
+    getTable()
+    ElMessage.success('删除成功')
   }
   catch {
+    ElMessage.error('删除失败')
+  }
+  finally {
     loading.value = false
   }
 }
 
-function deleteDocument(_item: FileApi.FileListItem) {
-
-}
-
-function exportDocument(item: FileApi.FileListItem) {
-  console.log('导出文档:', item)
+/**
+ * 导出表格项
+ */
+function exportTableItem(item: FileApi.FileListItem) {
+  console.log('导出表格项:', item)
 }
 
 /**
@@ -130,7 +144,7 @@ function exportDocument(item: FileApi.FileListItem) {
 function handleSizeChange(size: number) {
   params.pageSize = size
   params.currentPage = 1
-  getVideoList()
+  getTable()
 }
 
 /**
@@ -138,7 +152,7 @@ function handleSizeChange(size: number) {
  */
 function handleCurrentChange(currentPage: number) {
   params.currentPage = currentPage
-  getVideoList()
+  getTable()
 }
 
 /**
@@ -147,14 +161,17 @@ function handleCurrentChange(currentPage: number) {
 function handleSearch() {
   params.currentPage = 1
   params.name = params.name.trim()
-  getVideoList()
+  getTable()
 }
 
 /**
-   *  视频播放地址
-   */
+ * 视频播放地址
+ */
 const videoPlayUrl = ref('')
 
+/**
+ * 重置视频播放器
+ */
 function resetVideoPlayer() {
   isShowVideoPlayDialog.value = false
 
@@ -168,8 +185,6 @@ function resetVideoPlayer() {
  * 播放视频
  */
 async function playVideo(item: FileApi.FileListItem) {
-  console.log('播放视频:', item)
-
   try {
     resetVideoPlayer()
     videoPlayUrl.value = URL.createObjectURL(await fetchAdminFileAttachment(item.asId))
@@ -180,6 +195,7 @@ async function playVideo(item: FileApi.FileListItem) {
   }
 }
 
+getTable()
 </script>
 
 <template>
@@ -215,7 +231,7 @@ async function playVideo(item: FileApi.FileListItem) {
         <p
           class="mt-1 text-sm text-g-600"
         >
-          共 {{ videoList.totals }} 个文档
+          共 {{ table.totals }} 个文档
         </p>
       </div>
 
@@ -251,7 +267,7 @@ async function playVideo(item: FileApi.FileListItem) {
     <!-- 视频表格 -->
     <ArtTable
       :loading="loading"
-      :data="videoList.rows"
+      :data="table.rows"
       :columns="columns"
       :pagination="pagination"
       row-key="asId"
@@ -312,19 +328,19 @@ async function playVideo(item: FileApi.FileListItem) {
         >
           <ArtButton
             type="download"
-            @click="downloadVideo(row)"
+            @click="downloadTableItem(row)"
           />
 
           <ArtButton
             type="delete"
             tooltip="删除"
-            @click="deleteDocument(row)"
+            @click="deleteTableItem(row)"
           />
 
           <ArtButton
             type="export"
             tooltip="导出"
-            @click="exportDocument(row)"
+            @click="exportTableItem(row)"
           />
         </div>
       </template>

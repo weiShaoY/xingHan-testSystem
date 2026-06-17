@@ -4,6 +4,24 @@ import type { ColumnOption } from '@/types'
 
 const loading = ref(false)
 
+/**
+ *  请求参数
+ */
+const params = reactive<FileApi.FileListParams>({
+  name: '',
+  type: 'document',
+  pageSize: 10,
+  currentPage: 1,
+})
+
+/**
+ * 表格数据
+ */
+const table = ref<FileApi.FileListResponse>({
+  rows: [],
+  totals: 0,
+})
+
 const columns: ColumnOption<FileApi.FileListItem>[] = [
   {
     label: '文件名称',
@@ -19,7 +37,6 @@ const columns: ColumnOption<FileApi.FileListItem>[] = [
     useSlot: true,
     sortable: true,
   },
-
   {
     label: '文件大小',
     prop: 'asSize',
@@ -38,88 +55,69 @@ const columns: ColumnOption<FileApi.FileListItem>[] = [
 ]
 
 /**
- *  请求参数
- */
-const params = reactive<FileApi.FileListParams>({
-  name: '',
-  type: 'document',
-  pageSize: 10,
-  currentPage: 1,
-})
-
-/**
- * 文档列表
- */
-const documentList = ref<FileApi.FileListResponse>({
-  rows: [],
-  totals: 0,
-})
-
-/**
  * 分页配置
  */
 const pagination = computed(() => ({
   current: params.currentPage,
   size: params.pageSize,
-  total: documentList.value.totals,
+  total: table.value.totals,
 }))
 
 /**
-   *  获取文档列表
-   */
-async function getDocumentList() {
+ * 获取表格数据
+ */
+async function getTable() {
   loading.value = true
 
   try {
-    documentList.value = await fetchAdminFileList(params)
-  }
-  catch {
-    loading.value = false
+    table.value = await fetchAdminFileList(params)
   }
   finally {
     loading.value = false
   }
 }
 
-getDocumentList()
+getTable()
 
 /**
- * 上传文档
+ * 上传成功
  */
 function handleUploadSuccess() {
   params.currentPage = 1
-  getDocumentList()
+  getTable()
 }
 
+/**
+ * 上传失败
+ */
 function handleUploadError(error: Error) {
   console.log('上传失败:', error)
 }
 
 /**
- * 下载文档
+ * 下载表格项
  */
-async function downloadDocument(item: FileApi.FileListItem) {
-  // 根据blob 下载文档
+async function downloadTableItem(item: FileApi.FileListItem) {
   loading.value = true
+
   try {
     const blob = await fetchAdminFileAttachment(item.asId)
 
     await fileDownload(blob, item.asName)
-    loading.value = false
   }
-  catch {
+  finally {
     loading.value = false
   }
 }
 
 /**
- * 删除文档
+ * 删除表格项
  */
-async function deleteDocument(_item: FileApi.FileListItem) {
+async function deleteTableItem(_item: FileApi.FileListItem) {
   loading.value = true
   try {
     await fetchAdminFileDelete(_item.asId)
-    getDocumentList()
+    getTable()
     ElMessage.success('删除成功')
   }
   catch {
@@ -130,8 +128,11 @@ async function deleteDocument(_item: FileApi.FileListItem) {
   }
 }
 
-function exportDocument(item: FileApi.FileListItem) {
-  console.log('导出文档:', item)
+/**
+ * 导出表格项
+ */
+function exportTableItem(item: FileApi.FileListItem) {
+  console.log('导出表格项:', item)
 }
 
 /**
@@ -140,7 +141,7 @@ function exportDocument(item: FileApi.FileListItem) {
 function handleSizeChange(size: number) {
   params.pageSize = size
   params.currentPage = 1
-  getDocumentList()
+  getTable()
 }
 
 /**
@@ -148,7 +149,7 @@ function handleSizeChange(size: number) {
  */
 function handleCurrentChange(currentPage: number) {
   params.currentPage = currentPage
-  getDocumentList()
+  getTable()
 }
 
 /**
@@ -157,7 +158,7 @@ function handleCurrentChange(currentPage: number) {
 function handleSearch() {
   params.currentPage = 1
   params.name = params.name.trim()
-  getDocumentList()
+  getTable()
 }
 
 </script>
@@ -179,7 +180,7 @@ function handleSearch() {
         <p
           class="mt-1 text-sm text-g-600"
         >
-          共 {{ documentList.totals }} 个文档
+          共 {{ table.totals }} 个文档
         </p>
       </div>
 
@@ -215,7 +216,7 @@ function handleSearch() {
     <!-- 文档表格 -->
     <ArtTable
       :loading="loading"
-      :data="documentList.rows"
+      :data="table.rows"
       :columns="columns"
       :pagination="pagination"
       row-key="asId"
@@ -274,19 +275,19 @@ function handleSearch() {
         >
           <ArtButton
             type="download"
-            @click="downloadDocument(row)"
+            @click="downloadTableItem(row)"
           />
 
           <ArtButton
             type="delete"
             tooltip="删除"
-            @click="deleteDocument(row)"
+            @click="deleteTableItem(row)"
           />
 
           <ArtButton
             type="export"
             tooltip="导出"
-            @click="exportDocument(row)"
+            @click="exportTableItem(row)"
           />
         </div>
       </template>

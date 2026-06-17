@@ -628,6 +628,12 @@ declare namespace AdminApi {
       olId?: number
 
       /**
+       *  小节类型
+       * @description 0=文档，1=视频，2=考试，3=问卷。
+       */
+      olIsAccessory: 0 | 1 | 2 | 3
+
+      /**
        * 节点名称
        * @description 小节的展示名称。
        */
