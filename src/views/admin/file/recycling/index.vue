@@ -117,28 +117,20 @@ async function downloadTableItem(item: FileApi.FileListItem) {
 }
 
 /**
- * 删除表格项
+ * 恢复表格项
  */
-async function deleteTableItem(_item: FileApi.FileListItem) {
-  loading.value = true
+async function recoverTableItem(item: FileApi.FileListItem) {
   try {
-    await fetchAdminFileDelete(_item.asId)
+    await fetchAdminFileRecover(item.asId)
     getTable()
-    ElMessage.success('删除成功')
+    ElNotification.success('恢复成功')
   }
   catch {
-    ElMessage.error('删除失败')
+    ElNotification.error('恢复失败')
   }
   finally {
     loading.value = false
   }
-}
-
-/**
- * 导出表格项
- */
-function exportTableItem(item: FileApi.FileListItem) {
-  console.log('导出表格项:', item)
 }
 
 /**
@@ -285,15 +277,10 @@ function handleSearch() {
           />
 
           <ArtButton
-            type="delete"
-            tooltip="删除"
-            @click="deleteTableItem(row)"
-          />
-
-          <ArtButton
-            type="export"
-            tooltip="导出"
-            @click="exportTableItem(row)"
+            icon="game-icons:anticlockwise-rotation"
+            tooltip="恢复"
+            type="primary"
+            @click="recoverTableItem(row)"
           />
         </div>
       </template>

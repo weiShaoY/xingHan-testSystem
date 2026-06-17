@@ -90,8 +90,11 @@ declare global {
   const fetchAdminFileAttachment: typeof import('../../apis/file/index').fetchAdminFileAttachment
   const fetchAdminFileDelete: typeof import('../../apis/file/index').fetchAdminFileDelete
   const fetchAdminFileList: typeof import('../../apis/file/index').fetchAdminFileList
+  const fetchAdminFileRecover: typeof import('../../apis/file/index').fetchAdminFileRecover
   const fetchAdminFileRecyclingList: typeof import('../../apis/file/index').fetchAdminFileRecyclingList
   const fetchAdminFileResource: typeof import('../../apis/file/index').fetchAdminFileResource
+  const fetchAdminFileRestore: typeof import('../../apis/file/index').fetchAdminFileRestore
+  const fetchAdminFilerecover: typeof import('../../apis/file/index').fetchAdminFilerecover
   const fetchAdminGetCourseList: typeof import('../../apis/admin/index').fetchAdminGetCourseList
   const fetchAdminGetPublicKey: typeof import('../../apis/admin/auth').fetchAdminGetPublicKey
   const fetchAdminGetUserInfo: typeof import('../../apis/admin/auth').fetchAdminGetUserInfo
@@ -555,6 +558,7 @@ declare module 'vue' {
     readonly fetchAdminFileAttachment: UnwrapRef<typeof import('../../apis/file/index')['fetchAdminFileAttachment']>
     readonly fetchAdminFileDelete: UnwrapRef<typeof import('../../apis/file/index')['fetchAdminFileDelete']>
     readonly fetchAdminFileList: UnwrapRef<typeof import('../../apis/file/index')['fetchAdminFileList']>
+    readonly fetchAdminFileRecover: UnwrapRef<typeof import('../../apis/file/index')['fetchAdminFileRecover']>
     readonly fetchAdminFileRecyclingList: UnwrapRef<typeof import('../../apis/file/index')['fetchAdminFileRecyclingList']>
     readonly fetchAdminGetPublicKey: UnwrapRef<typeof import('../../apis/admin/auth')['fetchAdminGetPublicKey']>
     readonly fetchAdminGetUserInfo: UnwrapRef<typeof import('../../apis/admin/auth')['fetchAdminGetUserInfo']>

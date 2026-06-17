@@ -62,3 +62,15 @@ export function fetchAdminFileRecyclingList(params: FileApi.FileListParams) {
     },
   })
 }
+
+/**
+ *  恢复文件回收站文件
+ */
+export function fetchAdminFileRecover(asId: number) {
+  return request.post<boolean>({
+    url: '/admin/file/recoverFile',
+    data: {
+      asId,
+    },
+  })
+}
