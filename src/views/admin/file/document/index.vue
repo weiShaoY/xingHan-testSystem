@@ -95,9 +95,10 @@ function handleUploadError(error: Error) {
   console.log('上传失败:', error)
 }
 
+/**
+ * 下载文档
+ */
 async function downloadDocument(item: FileApi.FileListItem) {
-  console.log('下载文档:', item)
-
   // 根据blob 下载文档
   loading.value = true
   try {
@@ -111,8 +112,22 @@ async function downloadDocument(item: FileApi.FileListItem) {
   }
 }
 
-function deleteDocument(_item: FileApi.FileListItem) {
-
+/**
+ * 删除文档
+ */
+async function deleteDocument(_item: FileApi.FileListItem) {
+  loading.value = true
+  try {
+    await fetchAdminFileDelete(_item.asId)
+    getDocumentList()
+    ElMessage.success('删除成功')
+  }
+  catch {
+    ElMessage.error('删除失败')
+  }
+  finally {
+    loading.value = false
+  }
 }
 
 function exportDocument(item: FileApi.FileListItem) {

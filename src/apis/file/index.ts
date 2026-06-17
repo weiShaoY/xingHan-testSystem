@@ -36,3 +36,16 @@ export function fetchAdminFileAttachment(asId: number) {
     },
   })
 }
+
+/**
+ *  逻辑删除附件
+ *  @param asId 附件ID
+ */
+export function fetchAdminFileDelete(asId: number) {
+  return request.post<boolean>({
+    url: '/admin/file/deleteFile',
+    data: {
+      asId,
+    },
+  })
+}

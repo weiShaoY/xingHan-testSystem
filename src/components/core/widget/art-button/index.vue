@@ -291,7 +291,7 @@ const textStyle = computed(() => {
  * @param event 鼠标事件
  */
 async function handleClick(event: MouseEvent) {
-  event.stopPropagation()
+  // event.stopPropagation()
 
   if (props.disabled) {
     event.preventDefault()
