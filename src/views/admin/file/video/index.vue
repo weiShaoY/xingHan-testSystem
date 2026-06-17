@@ -1,4 +1,4 @@
-<!------------------------------------  文档列表  ------------------------------------------------->
+<!------------------------------------  视频列表  ------------------------------------------------->
 <script lang="ts" setup>
 import type { ColumnOption } from '@/types'
 
@@ -30,6 +30,9 @@ const table = ref<FileApi.FileListResponse>({
   totals: 0,
 })
 
+/**
+ * 表格列配置
+ */
 const columns: ColumnOption<FileApi.FileListItem>[] = [
   {
     label: '文件名称',
@@ -234,7 +237,7 @@ getTable()
         <p
           class="mt-1 text-sm text-g-600"
         >
-          共 {{ table.totals }} 个文档
+          共 {{ table.totals }} 个视频
         </p>
       </div>
 

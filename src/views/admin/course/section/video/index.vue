@@ -1,4 +1,4 @@
-<!------------------------------------  创建文档小节  ------------------------------------------------->
+<!------------------------------------  创建视频小节  ------------------------------------------------->
 <script lang="ts" setup>
 import type { ColumnOption } from '@/types'
 
@@ -7,11 +7,6 @@ import { useRoute } from 'vue-router'
 const route = useRoute()
 
 const router = useRouter()
-
-/**
-   *  是否显示播放弹窗
-   */
-const isShowVideoPlayDialog = ref(false)
 
 /**
  * 工作标签页 Store。
@@ -50,7 +45,7 @@ const isEditMode = computed(() => {
  * 页面标题
  */
 const pageTitle = computed(() => {
-  return isEditMode.value ? '编辑文档' : '添加文档'
+  return isEditMode.value ? '编辑视频' : '添加视频'
 })
 
 /**
@@ -93,7 +88,7 @@ const loading = ref(false)
 const isShowFileSelectDialog = ref(false)
 
 /**
- * 是否显示文档选择上传区域
+ * 是否显示上传区域
  */
 const isShowUploadArea = ref(!isEditMode.value)
 
@@ -116,9 +111,9 @@ const table = ref<FileApi.FileListResponse>({
 })
 
 /**
- * 表格当前选中的文档。只有点击“选择文档”后才会写入 formData。
+ * 表格当前选中的文件。只有点击“选择视频”后才会写入 formData。
  */
-const selectedVideo = ref<FileApi.FileListItem>()
+const selectedFile = ref<FileApi.FileListItem>()
 
 /**
  * 分页配置
@@ -163,14 +158,14 @@ function createInitialFormData(): AdminApi.Course.CourseOutlineSectionEditor {
 /**
  * 清空表格当前选择
  */
-function clearSelectedDocument() {
-  selectedVideo.value = undefined
+function clearSelectedFile() {
+  selectedFile.value = undefined
 }
 
 /**
- * 获取可选择的表格列表
+ * 获取表格数据
  */
-async function getVideoList() {
+async function getTable() {
   loading.value = true
 
   try {
@@ -185,6 +180,7 @@ async function getVideoList() {
  * 获取小节详情
  */
 async function getSectionDetail() {
+  loading.value = true
   if (!olId.value) {
     return
   }
@@ -196,31 +192,34 @@ async function getSectionDetail() {
       ...formData.value,
       ...section,
     }
-    selectedVideo.value = section.accessory
+    selectedFile.value = section.accessory
   }
   catch {
     ElNotification.error('获取小节详情失败')
+  }
+  finally {
+    loading.value = false
   }
 }
 
 /**
  * 选择表格行
  */
-function handleVideoCurrentChange(row?: FileApi.FileListItem) {
-  selectedVideo.value = row
+function handleTableCurrentChange(row?: FileApi.FileListItem) {
+  selectedFile.value = row
 }
 
 /**
  * 确认选择
  */
-function confirmSelectVideo() {
-  if (!selectedVideo.value) {
+function confirmSelectFile() {
+  if (!selectedFile.value) {
     return
   }
 
   formData.value = {
     ...formData.value,
-    asId: selectedVideo.value.asId,
+    asId: selectedFile.value.asId,
   }
 
   isShowFileSelectDialog.value = false
@@ -228,12 +227,12 @@ function confirmSelectVideo() {
 }
 
 /**
- * 更换表格选中项
+ * 更换文件
  */
-function handleReplaceTableClick() {
+function handleReplaceFileClick() {
   isShowUploadArea.value = true
-  clearSelectedDocument()
-  void getVideoList()
+  clearSelectedFile()
+  void getTable()
   isShowFileSelectDialog.value = true
 }
 
@@ -243,8 +242,8 @@ function handleReplaceTableClick() {
 function handleSizeChange(size: number) {
   params.pageSize = size
   params.currentPage = 1
-  clearSelectedDocument()
-  void getVideoList()
+  clearSelectedFile()
+  void getTable()
 }
 
 /**
@@ -252,8 +251,8 @@ function handleSizeChange(size: number) {
  */
 function handleCurrentChange(currentPage: number) {
   params.currentPage = currentPage
-  clearSelectedDocument()
-  void getVideoList()
+  clearSelectedFile()
+  void getTable()
 }
 
 /**
@@ -262,8 +261,8 @@ function handleCurrentChange(currentPage: number) {
 function handleSearch() {
   params.currentPage = 1
   params.name = params.name.trim()
-  clearSelectedDocument()
-  void getVideoList()
+  clearSelectedFile()
+  void getTable()
 }
 
 /**
@@ -296,7 +295,7 @@ async function handleSubmit() {
 }
 
 onMounted(() => {
-  void getVideoList()
+  void getTable()
 
   if (isEditMode.value) {
     void getSectionDetail()
@@ -304,10 +303,18 @@ onMounted(() => {
 })
 
 /**
-   *  视频播放地址
-   */
+ * 是否显示播放弹窗
+ */
+const isShowVideoPlayDialog = ref(false)
+
+/**
+ * 视频播放地址
+ */
 const videoPlayUrl = ref('')
 
+/**
+ * 重置视频播放器
+ */
 function resetVideoPlayer() {
   isShowVideoPlayDialog.value = false
 
@@ -321,8 +328,6 @@ function resetVideoPlayer() {
  * 播放视频
  */
 async function playVideo(item: FileApi.FileListItem) {
-  console.log('播放视频:', item)
-
   try {
     resetVideoPlayer()
     videoPlayUrl.value = URL.createObjectURL(await fetchAdminFileAttachment(item.asId))
@@ -386,15 +391,15 @@ async function playVideo(item: FileApi.FileListItem) {
           class="flex gap-2 items-center"
         >
           <ArtButton
-            @click="$router.push({ name: 'AdminFileDocument' })"
+            @click="$router.push({ name: 'AdminFileVideo' })"
           >
             去上传视频
           </ArtButton>
 
           <ArtButton
-            :disabled="!selectedVideo"
+            :disabled="!selectedFile"
             type="primary"
-            @click="confirmSelectVideo"
+            @click="confirmSelectFile"
           >
             选择视频
           </ArtButton>
@@ -409,7 +414,7 @@ async function playVideo(item: FileApi.FileListItem) {
         :pagination="pagination"
         row-key="asId"
         highlight-current-row
-        @current-change="handleVideoCurrentChange"
+        @current-change="handleTableCurrentChange"
         @pagination:size-change="handleSizeChange"
         @pagination:current-change="handleCurrentChange"
       >
@@ -469,7 +474,7 @@ async function playVideo(item: FileApi.FileListItem) {
           v-if="!isShowUploadArea"
           type="warning"
           class="mr-2"
-          @click="handleReplaceTableClick"
+          @click="handleReplaceFileClick"
         >
           更换视频
         </ArtButton>
@@ -483,7 +488,7 @@ async function playVideo(item: FileApi.FileListItem) {
       </template>
     </AdminPageHeader>
 
-    <!-- 文档选择上传区域 -->
+    <!-- 视频选择区域 -->
     <div
       v-if="isShowUploadArea"
       class="art-card flex flex-col items-center justify-center"
@@ -519,7 +524,7 @@ async function playVideo(item: FileApi.FileListItem) {
       class="art-card flex items-center justify-between gap-20"
     >
       <aside
-        v-if="selectedVideo"
+        v-if="selectedFile"
       >
 
         <div
@@ -535,10 +540,10 @@ async function playVideo(item: FileApi.FileListItem) {
             class=""
           >
             <ArtPreviewImage
-              :path="selectedVideo?.asThumbnailPath"
+              :path="selectedFile?.asThumbnailPath"
               class="w-15 h-20"
               :preview="false"
-              @click="playVideo(selectedVideo)"
+              @click="playVideo(selectedFile)"
             />
           </div>
 
@@ -548,7 +553,7 @@ async function playVideo(item: FileApi.FileListItem) {
             </div>
 
             <div>
-              {{ selectedVideo?.asName || '-' }}
+              {{ selectedFile?.asName || '-' }}
             </div>
           </div>
 
@@ -558,7 +563,7 @@ async function playVideo(item: FileApi.FileListItem) {
             </div>
 
             <div>
-              {{ formatDateTime(selectedVideo?.createTime) || '' }}
+              {{ formatDateTime(selectedFile?.createTime) || '' }}
             </div>
           </div>
 
@@ -568,7 +573,7 @@ async function playVideo(item: FileApi.FileListItem) {
             </div>
 
             <div>
-              {{ fileSizeFormat(selectedVideo?.asSize || 0) }}
+              {{ fileSizeFormat(selectedFile?.asSize || 0) }}
             </div>
           </div>
         </div>

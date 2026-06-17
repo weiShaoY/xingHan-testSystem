@@ -49,7 +49,7 @@ const pageTitle = computed(() => {
 })
 
 /**
- * 文档表格列配置
+ * 表格列配置
  */
 const columns: ColumnOption<FileApi.FileListItem>[] = [
   {
@@ -78,7 +78,7 @@ const columns: ColumnOption<FileApi.FileListItem>[] = [
 ]
 
 /**
- * 文档列表加载状态
+ * 加载状态
  */
 const loading = ref(false)
 
@@ -88,12 +88,12 @@ const loading = ref(false)
 const isShowFileSelectDialog = ref(false)
 
 /**
- * 是否显示文档选择上传区域
+ * 是否显示上传区域
  */
 const isShowUploadArea = ref(!isEditMode.value)
 
 /**
- * 文件列表请求参数
+ * 请求参数
  */
 const params = reactive<FileApi.FileListParams>({
   name: '',
@@ -111,9 +111,9 @@ const table = ref<FileApi.FileListResponse>({
 })
 
 /**
- * 表格当前选中的文档。只有点击“选择文档”后才会写入 formData。
+ * 表格当前选中的文件。只有点击“选择文档”后才会写入 formData。
  */
-const selectedDocument = ref<FileApi.FileListItem>()
+const selectedFile = ref<FileApi.FileListItem>()
 
 /**
  * 分页配置
@@ -133,7 +133,7 @@ const formData = ref<AdminApi.Course.CourseOutlineSectionEditor>(createInitialFo
  * 创建新增或编辑模式下的小节初始表单
  */
 function createInitialFormData(): AdminApi.Course.CourseOutlineSectionEditor {
-  const baseFormData: AdminApi.Course.CourseOutlineSectionEditor = {
+  const baseFormData = {
     couId: couId.value,
     olName: '',
     olIntro: '',
@@ -158,14 +158,14 @@ function createInitialFormData(): AdminApi.Course.CourseOutlineSectionEditor {
 /**
  * 清空表格当前选择
  */
-function clearSelectedDocument() {
-  selectedDocument.value = undefined
+function clearSelectedFile() {
+  selectedFile.value = undefined
 }
 
 /**
- * 获取可选择的表格列表
+ * 获取表格数据
  */
-async function getDocumentList() {
+async function getTable() {
   loading.value = true
 
   try {
@@ -180,6 +180,7 @@ async function getDocumentList() {
  * 获取小节详情
  */
 async function getSectionDetail() {
+  loading.value = true
   if (!olId.value) {
     return
   }
@@ -191,31 +192,34 @@ async function getSectionDetail() {
       ...formData.value,
       ...section,
     }
-    selectedDocument.value = section.accessory
+    selectedFile.value = section.accessory
   }
   catch {
     ElNotification.error('获取小节详情失败')
+  }
+  finally {
+    loading.value = false
   }
 }
 
 /**
  * 选择表格行
  */
-function handleDocumentCurrentChange(row?: FileApi.FileListItem) {
-  selectedDocument.value = row
+function handleTableCurrentChange(row?: FileApi.FileListItem) {
+  selectedFile.value = row
 }
 
 /**
  * 确认选择
  */
-function confirmSelectDocument() {
-  if (!selectedDocument.value) {
+function confirmSelectFile() {
+  if (!selectedFile.value) {
     return
   }
 
   formData.value = {
     ...formData.value,
-    asId: selectedDocument.value.asId,
+    asId: selectedFile.value.asId,
   }
 
   isShowFileSelectDialog.value = false
@@ -223,12 +227,12 @@ function confirmSelectDocument() {
 }
 
 /**
- * 更换表格选中项
+ * 更换文件
  */
-function handleReplaceTableClick() {
+function handleReplaceFileClick() {
   isShowUploadArea.value = true
-  clearSelectedDocument()
-  void getDocumentList()
+  clearSelectedFile()
+  void getTable()
   isShowFileSelectDialog.value = true
 }
 
@@ -238,8 +242,8 @@ function handleReplaceTableClick() {
 function handleSizeChange(size: number) {
   params.pageSize = size
   params.currentPage = 1
-  clearSelectedDocument()
-  void getDocumentList()
+  clearSelectedFile()
+  void getTable()
 }
 
 /**
@@ -247,8 +251,8 @@ function handleSizeChange(size: number) {
  */
 function handleCurrentChange(currentPage: number) {
   params.currentPage = currentPage
-  clearSelectedDocument()
-  void getDocumentList()
+  clearSelectedFile()
+  void getTable()
 }
 
 /**
@@ -257,8 +261,8 @@ function handleCurrentChange(currentPage: number) {
 function handleSearch() {
   params.currentPage = 1
   params.name = params.name.trim()
-  clearSelectedDocument()
-  void getDocumentList()
+  clearSelectedFile()
+  void getTable()
 }
 
 /**
@@ -291,7 +295,7 @@ async function handleSubmit() {
 }
 
 onMounted(() => {
-  void getDocumentList()
+  void getTable()
 
   if (isEditMode.value) {
     void getSectionDetail()
@@ -340,9 +344,9 @@ onMounted(() => {
           </ArtButton>
 
           <ArtButton
-            :disabled="!selectedDocument"
+            :disabled="!selectedFile"
             type="primary"
-            @click="confirmSelectDocument"
+            @click="confirmSelectFile"
           >
             选择文档
           </ArtButton>
@@ -358,7 +362,7 @@ onMounted(() => {
         :pagination="pagination"
         row-key="asId"
         highlight-current-row
-        @current-change="handleDocumentCurrentChange"
+        @current-change="handleTableCurrentChange"
         @pagination:size-change="handleSizeChange"
         @pagination:current-change="handleCurrentChange"
       >
@@ -416,7 +420,7 @@ onMounted(() => {
           v-if="!isShowUploadArea"
           type="warning"
           class="mr-2"
-          @click="handleReplaceTableClick"
+          @click="handleReplaceFileClick"
         >
           更换文档
         </ArtButton>
@@ -430,7 +434,7 @@ onMounted(() => {
       </template>
     </AdminPageHeader>
 
-    <!-- 文档选择上传区域 -->
+    <!-- 文档选择区域 -->
     <div
       v-if="isShowUploadArea"
       class="art-card flex flex-col items-center justify-center"
@@ -466,10 +470,10 @@ onMounted(() => {
       class="art-card flex items-center justify-between gap-20"
     >
       <aside
-        v-if="selectedDocument"
+        v-if="selectedFile"
       >
         <!-- <el-image
-          :src="getFileUrl(selectedDocument?.asThumbnailPath || '')"
+          :src="getFileUrl(selectedFile?.asThumbnailPath || '')"
         /> -->
 
         <div
@@ -485,7 +489,7 @@ onMounted(() => {
             class=""
           >
             <ArtPreviewImage
-              :path="selectedDocument?.asThumbnailPath"
+              :path="selectedFile?.asThumbnailPath"
               class="w-15 h-20"
             />
           </div>
@@ -496,7 +500,7 @@ onMounted(() => {
             </div>
 
             <div>
-              {{ selectedDocument.asName || '-' }}
+              {{ selectedFile?.asName || '-' }}
             </div>
           </div>
 
@@ -506,7 +510,7 @@ onMounted(() => {
             </div>
 
             <div>
-              {{ formatDateTime(selectedDocument?.createTime) || '' }}
+              {{ formatDateTime(selectedFile?.createTime) || '' }}
             </div>
           </div>
 
@@ -516,7 +520,7 @@ onMounted(() => {
             </div>
 
             <div>
-              {{ fileSizeFormat(selectedDocument?.asSize || 0) }}
+              {{ fileSizeFormat(selectedFile?.asSize || 0) }}
             </div>
           </div>
         </div>
