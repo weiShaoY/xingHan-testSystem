@@ -133,13 +133,13 @@ const formData = ref<AdminApi.Course.CourseOutlineSectionEditor>(createInitialFo
  * 创建新增或编辑模式下的小节初始表单
  */
 function createInitialFormData(): AdminApi.Course.CourseOutlineSectionEditor {
-  const baseFormData = {
+  const baseFormData: AdminApi.Course.CourseOutlineSectionEditor = {
     couId: couId.value,
     olName: '',
     olIntro: '',
     asId: 0,
     olIsAccessory: 0,
-  }
+  } as const
 
   if (isEditMode.value) {
     return {
