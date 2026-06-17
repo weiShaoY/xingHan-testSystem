@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { SectionTypeConfig } from './sectionType'
+import type { SectionTypeConfig } from '../constants/section-type'
 
 defineProps<{
 

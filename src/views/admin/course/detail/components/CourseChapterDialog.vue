@@ -49,8 +49,6 @@ const formData = ref<AdminApi.Course.CourseOutlineChapterEditor>({
   olIsUse: 1,
 })
 
-console.log('🚀 ~ file: ChapterEditorDialog.vue:53 ~ props.olId:', props.olId)
-
 /**
  * 是否为编辑模式
  */

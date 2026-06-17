@@ -1,23 +1,23 @@
 <!------  2026-04-15---16:08---星期三  ------>
 <!------------------------------------  课程详情页  ------------------------------------------------->
 <script lang="ts" setup>
-import type { SectionType } from './sectionType'
+import type { SectionType } from './constants/section-type'
 
 import { computed, ref } from 'vue'
 
 import AllocateCourseDialog from '../list/AllocateCourseDialog.vue'
 
-import ChapterEditorDialog from './ChapterEditorDialog.vue'
+import CourseChapterDialog from './components/CourseChapterDialog.vue'
 
-import CourseSectionItem from './CourseSectionItem.vue'
+import CourseSectionItem from './components/CourseSectionItem.vue'
 
-import CreateSectionDialog from './CreateSectionDialog.vue'
+import SectionTypeDialog from './components/SectionTypeDialog.vue'
 
 import {
   getSectionCreateRoute,
   getSectionEditRoute,
   getSectionTypeConfig,
-} from './sectionType'
+} from './constants/section-type'
 
 const route = useRoute()
 
@@ -199,7 +199,7 @@ function editSection(section: AdminApi.Course.Section) {
     class="mx-auto mb-10 flex w-full max-w-7xl flex-col gap-4 px-10 max-lg:px-6 max-sm:px-4"
   >
     <!-- 章节 新增或编辑 弹窗 -->
-    <ChapterEditorDialog
+    <CourseChapterDialog
       v-if="isShowChapterFormDialog"
       v-model="isShowChapterFormDialog"
       :mode="chapterFormMode"
@@ -209,7 +209,7 @@ function editSection(section: AdminApi.Course.Section) {
     />
 
     <!-- 创建小节 类型选择弹窗 -->
-    <CreateSectionDialog
+    <SectionTypeDialog
       v-if="isShowCreateSectionDialog"
       v-model="isShowCreateSectionDialog"
       @select="goToAddSection"
