@@ -23,6 +23,18 @@ const route = useRoute()
 
 const router = useRouter()
 
+const courseDetail = ref<AdminApi.Course.CourseOutlineListResponse>(
+  {
+    couId: 0,
+    couName: '',
+    couContent: '',
+    couIntro: '',
+    couChapterCount: 0,
+    couSectionCount: 0,
+    nodes: [],
+  },
+)
+
 /**
  * 当前课程 ID
  */
@@ -60,6 +72,18 @@ const currentEditChapterId = ref<number>()
  */
 const currentCreateSectionChapterId = ref<number>()
 
+const courseNodes = computed(() => courseDetail.value.nodes || [])
+
+/**
+ * 获取课程详情
+ */
+async function getCourseDetail() {
+  courseDetail.value = await fetchAdminCourseOutlineList(couId.value)
+  console.log('🚀 ~ file: index.vue:206 ~ courseDetail.value:', courseDetail.value)
+}
+
+getCourseDetail()
+
 /**
  * 跳转到课程编辑页
  */
@@ -71,40 +95,6 @@ function goToCourseEdit() {
     },
   })
 }
-
-const courseDetail = ref<AdminApi.Course.CourseOutlineListResponse>(
-  {
-    couId: 0,
-    couName: '',
-    couContent: '',
-    couIntro: '',
-    couChapterCount: 0,
-    couSectionCount: 0,
-    nodes: [],
-  },
-)
-
-const courseNodes = computed(() => courseDetail.value.nodes || [])
-
-/**
-   *  获取课程详情
-   */
-async function getCourseDetail() {
-  courseDetail.value = await fetchAdminCourseOutlineList(couId.value)
-  console.log('🚀 ~ file: index.vue:206 ~ courseDetail.value:', courseDetail.value)
-}
-
-getCourseDetail()
-
-// ! ////////////////////////////// 分配 ///////////////////////////////////////
-/**
- * 打开小节分配学习任务弹窗
- */
-function allocateSection() {
-  isShowAllocateCourseDialog.value = true
-}
-
-// # ////////////////////////////// 章节相关 ///////////////////////////////////////
 
 /**
  * 新增章节
@@ -138,13 +128,19 @@ function editChapter(chapter: AdminApi.Course.Chapter) {
   isShowChapterFormDialog.value = true
 }
 
-// $ ////////////////////////////// 小节相关 ///////////////////////////////////////
 /**
  * 新增小节
  */
 function addSection(chapter?: AdminApi.Course.Chapter) {
   currentCreateSectionChapterId.value = chapter?.id || undefined
   isShowCreateSectionDialog.value = true
+}
+
+/**
+ * 打开小节分配学习任务弹窗
+ */
+function allocateSection() {
+  isShowAllocateCourseDialog.value = true
 }
 
 /**

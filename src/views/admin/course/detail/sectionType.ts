@@ -7,92 +7,90 @@ export type SectionType = 0 | 1 | 2 | 3
  * 小节类型配置
  */
 export type SectionTypeConfig = {
-
-  /** 小节内容类型 */
   sectionType: SectionType
-
-  /** 小节类型名称 */
   sectionTypeName: string
-
-  /** 小节类型图标 */
   sectionIcon: string
-
-  /** 小节类型图标背景色 */
   sectionIconBgColor: string
 }
 
 /**
- * 小节类型配置映射
+ * 小节类型元数据
  */
-export const sectionTypeConfigMap: Record<SectionType, SectionTypeConfig> = {
+type SectionTypeMeta = SectionTypeConfig & {
+  createRoute: string
+  editRoute: string
+}
+
+/**
+ * 小节类型映射
+ */
+const sectionTypeMap: Record<SectionType, SectionTypeMeta> = {
   0: {
     sectionType: 0,
     sectionTypeName: '文档',
     sectionIcon: 'ri:article-line',
     sectionIconBgColor: '#fcbd2c',
+    createRoute: 'AdminCourseSectionDocumentCreate',
+    editRoute: 'AdminCourseSectionDocumentEdit',
   },
   1: {
     sectionType: 1,
     sectionTypeName: '视频',
     sectionIcon: 'ri:vidicon-line',
     sectionIconBgColor: '#ff2814',
+    createRoute: 'AdminCourseSectionVideoCreate',
+    editRoute: 'AdminCourseSectionVideoEdit',
   },
   2: {
     sectionType: 2,
     sectionTypeName: '考试',
     sectionIcon: 'ri:medal-line',
     sectionIconBgColor: '#673ab8',
+    createRoute: 'AdminCourseSectionExamCreate',
+    editRoute: 'AdminCourseSectionExamEdit',
   },
   3: {
     sectionType: 3,
     sectionTypeName: '问卷',
     sectionIcon: 'ri:survey-line',
     sectionIconBgColor: '#2cb870',
+    createRoute: 'AdminCourseSectionSurveyCreate',
+    editRoute: 'AdminCourseSectionSurveyEdit',
   },
 }
 
 /**
- * 创建小节路由映射
+ * 小节类型配置映射
  */
-const createSectionRouteMap: Record<SectionType, string> = {
-  0: 'AdminCourseSectionDocumentCreate',
-  1: 'AdminCourseSectionVideoCreate',
-  2: 'AdminCourseSectionExamCreate',
-  3: 'AdminCourseSectionSurveyCreate',
-}
-
-/**
- * 编辑小节路由映射
- */
-const editSectionRouteMap: Record<SectionType, string> = {
-  0: 'AdminCourseSectionDocumentEdit',
-  1: 'AdminCourseSectionVideoEdit',
-  2: 'AdminCourseSectionExamEdit',
-  3: 'AdminCourseSectionSurveyEdit',
+export const sectionTypeConfigMap: Record<SectionType, SectionTypeConfig> = {
+  0: sectionTypeMap[0],
+  1: sectionTypeMap[1],
+  2: sectionTypeMap[2],
+  3: sectionTypeMap[3],
 }
 
 /**
  * 小节类型选项列表
  */
-export const sectionTypeOptions = Object.values(sectionTypeConfigMap)
+export const sectionTypeOptions: SectionTypeConfig[] = Object.values(sectionTypeConfigMap)
 
 /**
  * 获取小节类型对应的图标配置
  */
 export function getSectionTypeConfig(sectionType: SectionType) {
-  return sectionTypeConfigMap[sectionType]
+  return sectionTypeMap[sectionType]
 }
 
 /**
- *  获取小节创建页路由
+ * 获取小节创建页路由
  */
 export function getSectionCreateRoute(sectionType: SectionType) {
-  return createSectionRouteMap[sectionType]
+  return sectionTypeMap[sectionType].createRoute
 }
 
 /**
- *  获取小节编辑页路由
+ * 获取小节编辑页路由
  */
 export function getSectionEditRoute(sectionType: SectionType) {
-  return editSectionRouteMap[sectionType]
+  return sectionTypeMap[sectionType].editRoute
 }
