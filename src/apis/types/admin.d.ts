@@ -855,5 +855,139 @@ declare namespace AdminApi {
      * 项目列表响应
      */
     type ProjectListResponse = CommonApi.PaginatedResponse<ProjectListItem>
+
+    /**
+     * 项目下学习阶段列表项下 课程项
+     */
+    type ProjectStageListItemCourseListItem = {
+
+      /**
+       * 课程ID
+       */
+      couID: number
+
+      /**
+       * 课程名称
+       */
+      couName: number
+
+      /**
+       * 是否可免费预览（0=不可预览，1=可预览）
+       */
+      isFree_Preview: number
+
+      /**
+       * 是否必修（1=必修，0=选修）
+       */
+      isRequired: number
+
+      /**
+       * 推荐学习顺序（同Sort_Order，冗余字段）
+       */
+      recommended_Order: number
+
+      /**
+       * 备注
+       */
+      remark: string
+
+      /**
+       * 关联ID（主键，自增）
+       */
+      scId: number
+
+      /**
+       * 课程在阶段中的排序（学习顺序）
+       */
+      sortOrder: number
+
+      /**
+       * 阶段ID
+       */
+      stageId: number
+    }
+
+    /**
+     *  项目下学习阶段列表项
+     */
+    type ProjectStageListItem = {
+
+      /**
+       * 数据状态
+       * @description 0=删除，1=正常。
+       */
+      active: number
+
+      /**
+       * 公司ID
+       */
+      companyId: number
+
+      /**
+       * 阶段下课程
+       */
+      course: ProjectStageListItemCourseListItem[]
+
+      /**
+       * 创建人ID
+       */
+      creater: number
+
+      /**
+       * 创建时间
+       */
+      createTime: string
+
+      /**
+       * 前置阶段ID（完成此阶段后才能学习下一阶段，自关联到Stage_Id）
+       */
+      prerequisiteStage_Id: number
+
+      /**
+       * 所属项目ID
+       */
+      projId: number
+
+      /**
+       * 阶段排序（学习顺序，升序）
+       */
+      sortOrder: number
+
+      /**
+       * 阶段ID（主键，自增）
+       */
+      stageId: number
+
+      /**
+       * 阶段介绍/学习目标
+       */
+      stageIntro: string
+
+      /**
+       * 阶段名称（如：第一阶段：Java基础）
+       */
+      stageName: string
+
+      /**
+       * 阶段类型（1=必修阶段，2=选修阶段）
+       */
+      stageType: number
+
+      /**
+       * 最后修改人ID
+       */
+      updater: number
+
+      /**
+       * 最后修改时间
+       */
+      updateTime: string
+
+    }
+
+    /**
+     * 项目下学习阶段列表响应
+     */
+    type ProjectStageListResponse = ProjectStageListItem[]
   }
 }

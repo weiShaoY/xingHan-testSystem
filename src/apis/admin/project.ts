@@ -22,3 +22,16 @@ export function fetchAdminProjectDelete(projId: number) {
     },
   })
 }
+
+/**
+ * 获取后台管理项目学习阶段列表
+ * @param projId 项目ID
+ */
+export function fetchAdminProjectStageList(projId: number) {
+  return request.post<AdminApi.Project.ProjectStageListResponse>({
+    url: '/admin/project/getStageDetail',
+    data: {
+      projId,
+    },
+  })
+}

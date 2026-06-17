@@ -23,7 +23,12 @@ const route = useRoute()
 
 const router = useRouter()
 
-const courseDetail = ref<AdminApi.Course.CourseOutlineListResponse>(
+/**
+ * 加载状态
+ */
+const loading = ref(false)
+
+const courseOutlineList = ref<AdminApi.Course.CourseOutlineListResponse>(
   {
     couId: 0,
     couName: '',
@@ -72,17 +77,22 @@ const currentEditChapterId = ref<number>()
  */
 const currentCreateSectionChapterId = ref<number>()
 
-const courseNodes = computed(() => courseDetail.value.nodes || [])
+const courseNodes = computed(() => courseOutlineList.value.nodes || [])
 
 /**
- * 获取课程详情
+ * 获取课程章节列表
  */
-async function getCourseDetail() {
-  courseDetail.value = await fetchAdminCourseOutlineList(couId.value)
-  console.log('🚀 ~ file: index.vue:206 ~ courseDetail.value:', courseDetail.value)
+async function getCourseOutlineList() {
+  loading.value = false
+  try {
+    courseOutlineList.value = await fetchAdminCourseOutlineList(couId.value)
+  }
+  finally {
+    loading.value = false
+  }
 }
 
-getCourseDetail()
+getCourseOutlineList()
 
 /**
  * 跳转到课程编辑页
@@ -109,13 +119,17 @@ function addChapter() {
  * 删除章节
  */
 async function deleteChapter(chapter: AdminApi.Course.Chapter) {
+  loading.value = false
   await fetchAdminCourseOutlineChapterDelete(chapter.id)
   try {
-    await getCourseDetail()
+    await getCourseOutlineList()
     ElNotification.success('删除成功')
   }
   catch {
     ElNotification.error('删除失败')
+  }
+  finally {
+    loading.value = false
   }
 }
 
@@ -170,7 +184,7 @@ function goToAddSection(sectionType: SectionType) {
 async function deleteSection(section: AdminApi.Course.Section) {
   await fetchAdminCourseOutlineSectionDelete(section.id)
   try {
-    await getCourseDetail()
+    await getCourseOutlineList()
     ElNotification.success('删除成功')
   }
   catch {
@@ -205,7 +219,7 @@ function editSection(section: AdminApi.Course.Section) {
       :mode="chapterFormMode"
       :cou-id="couId"
       :ol-id="currentEditChapterId"
-      @success="getCourseDetail"
+      @success="getCourseOutlineList"
     />
 
     <!-- 创建小节 类型选择弹窗 -->
@@ -222,10 +236,10 @@ function editSection(section: AdminApi.Course.Section) {
     />
 
     <AdminPageHeader
-      :title="` ${courseDetail.couName}`"
+      :title="` ${courseOutlineList.couName}`"
       :stats="[`
-        章节数量: ${courseDetail.couChapterCount}
-        小节数量: ${courseDetail.couSectionCount}`]"
+        章节数量: ${courseOutlineList.couChapterCount}
+        小节数量: ${courseOutlineList.couSectionCount}`]"
     >
       <template
         #extra
@@ -258,9 +272,10 @@ function editSection(section: AdminApi.Course.Section) {
     </AdminPageHeader>
 
     <!-- 课程内容列表 -->
-
-    <template
+    <div
       v-if="courseNodes.length"
+      v-loading="loading"
+      class="flex flex-col gap-4"
     >
       <div
         v-for="item in courseNodes"
@@ -367,7 +382,7 @@ function editSection(section: AdminApi.Course.Section) {
           @edit="editSection"
         />
       </div>
-    </template>
+    </div>
 
     <el-empty
       v-else
