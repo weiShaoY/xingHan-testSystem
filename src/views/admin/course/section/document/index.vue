@@ -105,7 +105,7 @@ const params = reactive<FileApi.FileListParams>({
 /**
  * 文档列表
  */
-const documentTable = ref<FileApi.FileListResponse>({
+const documentList = ref<FileApi.FileListResponse>({
   rows: [],
   totals: 0,
 })
@@ -121,7 +121,7 @@ const selectedDocument = ref<FileApi.FileListItem>()
 const pagination = computed(() => ({
   current: params.currentPage,
   size: params.pageSize,
-  total: documentTable.value.totals,
+  total: documentList.value.totals,
 }))
 
 /**
@@ -168,7 +168,7 @@ async function getDocumentList() {
   loading.value = true
 
   try {
-    documentTable.value = await fetchAdminFileList(params)
+    documentList.value = await fetchAdminFileList(params)
   }
   finally {
     loading.value = false
@@ -352,7 +352,7 @@ onMounted(() => {
       <ArtTable
         class="max-h-[calc(100vh-400px)] overflow-auto"
         :loading="loading"
-        :data="documentTable.rows"
+        :data="documentList.rows"
         :columns="columns"
         :pagination="pagination"
         row-key="asId"
