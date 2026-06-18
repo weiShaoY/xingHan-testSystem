@@ -24,10 +24,10 @@ export function fetchAdminCourseCreate(data: AdminApi.Course.CourseEditor) {
 }
 
 /**
- *  获取课程详情
+ *  获取课程设置
  *  @param couId 课程ID
  */
-export function fetchAdminCourseDetail(couId: number) {
+export function fetchAdminCourseSetting(couId: number) {
   return request.get<AdminApi.Course.CourseEditor>({
     url: '/admin/course/getCourse',
     params: {

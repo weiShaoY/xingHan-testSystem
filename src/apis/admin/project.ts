@@ -11,6 +11,25 @@ export function fetchAdminProjectList(data: AdminApi.Project.ProjectListParams) 
 }
 
 /**
+ *  新增项目
+ */
+export function fetchAdminProjectAdd(data: AdminApi.Project.ProjectEditor) {
+  return request.post<boolean>({
+    url: '/admin/project/add',
+    data,
+  })
+}
+
+/**
+ *  获取项目设置
+ */
+export function fetchAdminProjectSetting(projId: number) {
+  return request.get<AdminApi.Project.ProjectEditor>({
+    url: '/admin/project/getProject',
+  })
+}
+
+/**
  * 删除项目
  * @param projId 项目ID
  */
