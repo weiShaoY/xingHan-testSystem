@@ -69,5 +69,19 @@ export const Project: AppRouteRecord = {
         activePath: '/admin/project/list',
       },
     },
+    {
+      path: 'stageEditor/:projId',
+      name: 'AdminProjectStageEditor',
+      component: '/admin/project/stageEditor/index',
+      meta: {
+        title: '项目阶段编辑',
+        icon: 'ri:pencil-line',
+        keepAlive: true,
+        multiTab: true,
+        sort: 4,
+        isHide: true,
+        activePath: '/admin/project/list',
+      },
+    },
   ],
 }

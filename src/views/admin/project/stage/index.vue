@@ -14,41 +14,18 @@ const loading = ref(false)
 /**
  * 项目阶段列表
  */
-const projectStageList = ref<AdminApi.Project.ProjectStageListResponse>([])
+const projectStageList = ref<AdminApi.Project.ProjectStageListResponse>({
+  projName: '',
+  projSectionCount: 0,
+  projStageCourse: 0,
+  nodes: [],
+})
 
 /**
  * 当前项目 ID
  */
 const projId = computed(() => {
   return Number(route.params.projId || 0)
-})
-
-/**
- * 阶段数量
- */
-const stageCount = computed(() => projectStageList.value.length)
-
-/**
- * 课程总数
- */
-const courseCount = computed(() => {
-  return projectStageList.value.reduce((total, item) => total + item.course.length, 0)
-})
-
-/**
- * 必修课程数
- */
-const requiredCourseCount = computed(() => {
-  return projectStageList.value.reduce((total, item) => {
-    return total + item.course.filter(course => course.isRequired === 1).length
-  }, 0)
-})
-
-/**
- * 选修课程数
- */
-const optionalCourseCount = computed(() => {
-  return courseCount.value - requiredCourseCount.value
 })
 
 /**
@@ -75,7 +52,7 @@ getProjectStageList()
  */
 function goToEdit() {
   router.push({
-    name: 'AdminProjectSetting',
+    name: 'AdminProjectStageEditor',
     params: {
       projId: projId.value,
     },
@@ -114,10 +91,11 @@ function goToCourseEdit(course: AdminApi.Project.ProjectStageListItemCourseListI
     class="mx-auto mb-10 flex w-full max-w-7xl flex-col gap-4 px-10 max-lg:px-6 max-sm:px-4"
   >
     <AdminPageHeader
-      :title="projectStageList[0].stageName"
+      :title="projectStageList.projName"
       :stats="[`
-        学习阶段: ${stageCount}
-        课程总数: ${courseCount}`]"
+        课程总数: ${projectStageList.projStageCourse},
+        小节总数: ${projectStageList.projSectionCount}
+      `]"
     >
       <template
         #extra
@@ -126,84 +104,16 @@ function goToCourseEdit(course: AdminApi.Project.ProjectStageListItemCourseListI
           type="edit"
           @click="goToEdit()"
         >
-          项目设置
+          编辑项目学习阶段
         </ArtButton>
       </template>
     </AdminPageHeader>
 
-    <section
-      class="grid grid-cols-4 gap-4 max-lg:grid-cols-2 max-sm:grid-cols-1"
-    >
-      <div
-        class="art-card flex flex-col gap-2 py-5"
-      >
-        <div
-          class="text-sm text-g-600"
-        >
-          学习阶段
-        </div>
-
-        <div
-          class="text-2xl font-semibold text-g-900"
-        >
-          {{ stageCount }}
-        </div>
-      </div>
-
-      <div
-        class="art-card flex flex-col gap-2 py-5"
-      >
-        <div
-          class="text-sm text-g-600"
-        >
-          课程总数
-        </div>
-
-        <div
-          class="text-2xl font-semibold text-g-900"
-        >
-          {{ courseCount }}
-        </div>
-      </div>
-
-      <div
-        class="art-card flex flex-col gap-2 py-5"
-      >
-        <div
-          class="text-sm text-g-600"
-        >
-          必修课程
-        </div>
-
-        <div
-          class="text-2xl font-semibold text-g-900"
-        >
-          {{ requiredCourseCount }}
-        </div>
-      </div>
-
-      <div
-        class="art-card flex flex-col gap-2 py-5"
-      >
-        <div
-          class="text-sm text-g-600"
-        >
-          选修课程
-        </div>
-
-        <div
-          class="text-2xl font-semibold text-g-900"
-        >
-          {{ optionalCourseCount }}
-        </div>
-      </div>
-    </section>
-
     <template
-      v-if="projectStageList.length"
+      v-if="projectStageList.nodes.length"
     >
       <section
-        v-for="(item, index) in projectStageList"
+        v-for="(item, index) in projectStageList.nodes"
         :key="item.stageId"
         class="art-card flex flex-col gap-5"
       >

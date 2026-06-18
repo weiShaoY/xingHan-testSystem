@@ -1155,6 +1155,24 @@ declare namespace AdminApi {
     /**
      * 项目下学习阶段列表响应
      */
-    type ProjectStageListResponse = ProjectStageListItem[]
+    type ProjectStageListResponse = {
+
+      /**
+       * 项目名称
+       */
+      projName: string
+
+      /**
+       * 小节数量
+       */
+      projSectionCount: number
+
+      /**
+       * 课程数量
+       */
+      projStageCourse: number
+
+      nodes: ProjectStageListItem[]
+    }
   }
 }
