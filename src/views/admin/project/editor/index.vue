@@ -58,18 +58,11 @@ const activeTab = ref<'basic' | 'apply' | 'setting'>('basic')
 const loading = ref(false)
 
 /**
- * 表单数据。
- */
-const formData = ref<AdminApi.Project.ProjectEditor>(createDefaultFormData())
-
-/**
  * 当前学习项目 ID
  */
 const projId = computed(() => {
   return Number(route.params.projId || 0)
 })
-
-console.log('🚀 ~ file: index.vue:72 ~ projId.value:', projId.value)
 
 /**
  * 是否为编辑模式。
@@ -77,6 +70,11 @@ console.log('🚀 ~ file: index.vue:72 ~ projId.value:', projId.value)
 const isEditMode = computed(() => {
   return Boolean(route.params.projId)
 })
+
+/**
+ * 表单数据。
+ */
+const formData = ref<AdminApi.Project.ProjectEditor>(createDefaultFormData(isEditMode.value))
 
 /**
  * 页面标题。
@@ -88,11 +86,12 @@ const pageTitle = computed(() => {
 /**
  * 创建项目编辑表单默认值。
  *
+ * @param editMode 是否为编辑模式。
  * @returns 默认项目编辑表单数据。
  */
-function createDefaultFormData(): AdminApi.Project.ProjectEditor {
+function createDefaultFormData(editMode: boolean): AdminApi.Project.ProjectEditor {
   return {
-    projName: isEditMode.value ? '' : '未命名项目',
+    projName: editMode ? '' : '未命名项目',
     projIntro: '',
     projIsApply: 1,
     projIsRestrict: 1,
@@ -117,7 +116,6 @@ async function getProjectDetail() {
   loading.value = true
   try {
     formData.value = await fetchAdminProjectSetting(projId.value)
-    console.log('🚀 ~ file: index.vue:90 ~ formData.value:', formData.value)
   }
   catch {
     ElNotification.error('项目详情获取失败')

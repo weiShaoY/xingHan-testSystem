@@ -38,7 +38,7 @@ export function fetchAdminProjectSetting(projId: number) {
  */
 export function fetchAdminProjectUpdate(data: AdminApi.Project.ProjectEditor) {
   return request.post<boolean>({
-    url: '/admin/project/update',
+    url: '/admin/project/updateProject',
     data,
   })
 }
@@ -49,7 +49,7 @@ export function fetchAdminProjectUpdate(data: AdminApi.Project.ProjectEditor) {
  */
 export function fetchAdminProjectDelete(projId: number) {
   return request.post<boolean>({
-    url: '/admin/project/delete',
+    url: '/admin/project/deleteProject',
     data: {
       projId,
     },
