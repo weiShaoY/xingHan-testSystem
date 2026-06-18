@@ -139,7 +139,7 @@ async function getCourseDetail() {
 
   loading.value = true
   try {
-    formData.value = await fetchAdminCourseDetail(couId.value)
+    formData.value = await fetchAdminCourseSetting(couId.value)
   }
   catch {
     ElNotification.error('课程详情获取失败')

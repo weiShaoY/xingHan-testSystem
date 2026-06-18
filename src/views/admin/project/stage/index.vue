@@ -75,7 +75,7 @@ getProjectStageList()
  */
 function goToEdit() {
   router.push({
-    name: 'AdminProjectEdit',
+    name: 'AdminProjectSetting',
     params: {
       projId: projId.value,
     },
@@ -99,7 +99,7 @@ function goToCourseOutline(course: AdminApi.Project.ProjectStageListItemCourseLi
  */
 function goToCourseEdit(course: AdminApi.Project.ProjectStageListItemCourseListItem) {
   router.push({
-    name: 'AdminCourseEdit',
+    name: 'AdminCourseSetting',
     params: {
       couId: course.couID,
     },
@@ -126,7 +126,7 @@ function goToCourseEdit(course: AdminApi.Project.ProjectStageListItemCourseListI
           type="edit"
           @click="goToEdit()"
         >
-          编辑项目
+          项目设置
         </ArtButton>
       </template>
     </AdminPageHeader>

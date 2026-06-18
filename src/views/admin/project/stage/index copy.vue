@@ -66,7 +66,7 @@ const stages = ref<Stage[]>([
    */
 function goToEdit() {
   router.push({
-    name: 'AdminProjectEdit',
+    name: 'AdminProjectSetting',
     params: {
       id: route.params.id,
     },
@@ -88,7 +88,7 @@ function goToEdit() {
           type="edit"
           @click="goToEdit()"
         >
-          编辑内容
+          项目设置
         </ArtButton>
       </template>
     </AdminPageHeader>

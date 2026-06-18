@@ -116,7 +116,7 @@ const workTabStore = useWorkTabStore()
  */
 async function goToProjectPage(
   item: AdminApi.Project.ProjectListItem,
-  routeName: 'AdminProjectEdit' | 'AdminProjectStage',
+  routeName: 'AdminProjectSetting' | 'AdminProjectStage',
   titlePrefix: string,
 ) {
   /**
@@ -145,7 +145,7 @@ async function goToProjectPage(
  * 跳转到编辑页
  */
 function goToEdit(item: AdminApi.Project.ProjectListItem) {
-  void goToProjectPage(item, 'AdminProjectEdit', '编辑项目')
+  void goToProjectPage(item, 'AdminProjectSetting', '项目设置')
 }
 
 /**

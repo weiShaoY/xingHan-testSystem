@@ -100,10 +100,10 @@ export const Course: AppRouteRecord = {
     },
     {
       path: 'edit/:couId',
-      name: 'AdminCourseEdit',
+      name: 'AdminCourseSetting',
       component: '/admin/course/editor',
       meta: {
-        title: '课程编辑',
+        title: '课程设置',
         icon: 'ri:edit-line',
         keepAlive: true,
         multiTab: true,

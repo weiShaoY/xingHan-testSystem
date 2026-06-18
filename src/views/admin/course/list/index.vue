@@ -125,7 +125,7 @@ function openAllocateCourseDialog(item: AdminApi.Course.CourseListItem) {
  */
 async function goToCoursePage(
   item: AdminApi.Course.CourseListItem,
-  routeName: 'AdminCourseEdit' | 'AdminCourseOutline',
+  routeName: 'AdminCourseSetting' | 'AdminCourseOutline',
   titlePrefix: string,
 ) {
   /**
@@ -149,7 +149,7 @@ async function goToCoursePage(
  * @param item 需要编辑的课程。
  */
 function goToEdit(item: AdminApi.Course.CourseListItem) {
-  void goToCoursePage(item, 'AdminCourseEdit', '编辑课程')
+  void goToCoursePage(item, 'AdminCourseSetting', '课程设置')
 }
 
 /**

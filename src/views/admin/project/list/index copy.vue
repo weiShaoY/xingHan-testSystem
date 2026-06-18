@@ -111,7 +111,7 @@ function goToDetail(item: StudyProject) {
  */
 function goToEdit(item: StudyProject) {
   router.push({
-    name: 'AdminProjectEdit',
+    name: 'AdminProjectSetting',
     params: {
       id: item.id,
     },

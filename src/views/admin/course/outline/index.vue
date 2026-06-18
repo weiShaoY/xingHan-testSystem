@@ -99,7 +99,7 @@ getCourseOutlineList()
  */
 function goToCourseEdit() {
   router.push({
-    name: 'AdminCourseEdit',
+    name: 'AdminCourseSetting',
     params: {
       couId: couId.value,
     },
