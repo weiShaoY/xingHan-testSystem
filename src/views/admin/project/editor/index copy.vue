@@ -25,85 +25,12 @@ import AddCourseDialog from './AddCourseDialog.vue'
 const route = useRoute()
 
 /**
- * 页面提交和详情加载状态。
- */
-const loading = ref(false)
-
-/**
- * 表单数据。
- */
-const formData = ref<AdminApi.Project.ProjectEditor>(createDefaultFormData())
-
-/**
- * 当前学习项目 ID
- */
-const projId = computed(() => {
-  return Number(route.params.projId || 0)
-})
-
-/**
  * 是否为编辑模式。
  */
 const isEditMode = computed(() => {
   return Boolean(route.params.projId)
 })
 
-/**
- * 页面标题。
- */
-const pageTitle = computed(() => {
-  return isEditMode.value ? '编辑项目' : '创建项目'
-})
-
-/**
- * 创建项目编辑表单默认值。
- *
- * @returns 默认项目编辑表单数据。
- */
-function createDefaultFormData(): AdminApi.Project.ProjectEditor {
-  return {
-    projName: '未命名项目',
-    projIntro: '',
-    projIsApply: 1,
-    projIsRestrict: 1,
-    projRestrictCount: 5,
-    projIsRestrictTime: 1,
-    projApplyStartTime: '',
-    projApplyEndTime: '',
-    projIsApplyApproval: 1,
-  }
-}
-
-/**
- * 获取课程详情并回填表单。
- *
- * @returns 课程详情请求完成。
- */
-async function getProjectDetail() {
-  if (!projId.value) {
-    return
-  }
-
-  loading.value = true
-  try {
-    formData.value = await fetchAdminProjectDetail(projId.value)
-    console.log('🚀 ~ file: index.vue:90 ~ formData.value:', formData.value)
-  }
-  catch {
-    ElNotification.error('项目详情获取失败')
-  }
-  finally {
-    loading.value = false
-  }
-}
-
-onMounted(() => {
-  if (isEditMode.value) {
-    void getProjectDetail()
-  }
-})
-
-// / //////////////////////////////////// ////////////////////////  2026-06-18---11:14---星期四  ////////////////////////
 /**
    * 课程类型定义
    */
@@ -415,7 +342,7 @@ function moveCourse(stageIndex: number, courseIndex: number, direction: 'up' | '
     />
 
     <AdminPageHeader
-      :title="pageTitle"
+      title="编辑学习项目"
     >
       <template
         #extra

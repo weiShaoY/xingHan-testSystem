@@ -81,17 +81,17 @@ const loading = ref(false)
 const formData = ref<AdminApi.Course.CourseEditor>(createDefaultFormData())
 
 /**
- * 是否为编辑模式。
- */
-const isEditMode = computed(() => {
-  return Boolean(route.params.couId)
-})
-
-/**
  * 当前课程 ID
  */
 const couId = computed(() => {
   return Number(route.params.couId || 0)
+})
+
+/**
+ * 是否为编辑模式。
+ */
+const isEditMode = computed(() => {
+  return Boolean(route.params.couId)
 })
 
 /**

@@ -133,6 +133,7 @@ async function goToProjectPage(
    * 跳转到目标路由。
    */
   router.push(targetRoute)
+  console.log('🚀 ~ file: index.vue:137 ~ item:', item)
 
   /**
    * 更新工作标签标题。

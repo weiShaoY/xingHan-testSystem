@@ -22,10 +22,14 @@ export function fetchAdminProjectAdd(data: AdminApi.Project.ProjectEditor) {
 
 /**
  *  获取项目设置
+ *  @param projId 项目ID
  */
 export function fetchAdminProjectSetting(projId: number) {
   return request.get<AdminApi.Project.ProjectEditor>({
     url: '/admin/project/getProject',
+    params: {
+      projId,
+    },
   })
 }
 
@@ -42,6 +46,7 @@ export function fetchAdminProjectDelete(projId: number) {
   })
 }
 
+// / //// ////////////////////////   项目学习阶段  ////////////////////////
 /**
  * 获取后台管理项目学习阶段列表
  * @param projId 项目ID

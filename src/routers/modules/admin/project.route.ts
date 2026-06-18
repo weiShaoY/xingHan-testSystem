@@ -42,10 +42,10 @@ export const Project: AppRouteRecord = {
 
     {
       path: 'edit/:projId',
-      name: 'AdminProjectEdit',
+      name: 'AdminProjectSetting',
       component: '/admin/project/editor',
       meta: {
-        title: '项目编辑',
+        title: '项目设置',
         icon: 'ri:pencil-line',
         keepAlive: true,
         multiTab: true,
