@@ -56,11 +56,11 @@ export const Project: AppRouteRecord = {
     },
 
     {
-      path: 'detail/:projId',
-      name: 'AdminProjectDetail',
-      component: '/admin/project/detail',
+      path: 'stage/:projId',
+      name: 'AdminProjectStage',
+      component: '/admin/project/stage',
       meta: {
-        title: '项目详情',
+        title: '项目阶段',
         icon: 'ri:eye-line',
         keepAlive: false,
         multiTab: true,

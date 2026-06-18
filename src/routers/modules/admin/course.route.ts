@@ -115,11 +115,11 @@ export const Course: AppRouteRecord = {
     },
 
     {
-      path: 'detail/:couId',
-      name: 'AdminCourseDetail',
-      component: '/admin/course/detail',
+      path: 'outline/:couId',
+      name: 'AdminCourseOutline',
+      component: '/admin/course/outline',
       meta: {
-        title: '课程详情',
+        title: '课程大纲',
         icon: 'ri:eye-line',
         keepAlive: false,
         multiTab: true,

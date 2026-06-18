@@ -99,7 +99,7 @@ const router = useRouter()
  */
 function goToDetail(item: StudyProject) {
   router.push({
-    name: 'AdminProjectDetail',
+    name: 'AdminProjectStage',
     params: {
       id: item.id,
     },

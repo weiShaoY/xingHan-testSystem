@@ -116,7 +116,7 @@ const workTabStore = useWorkTabStore()
  */
 async function goToProjectPage(
   item: AdminApi.Project.ProjectListItem,
-  routeName: 'AdminProjectEdit' | 'AdminProjectDetail',
+  routeName: 'AdminProjectEdit' | 'AdminProjectStage',
   titlePrefix: string,
 ) {
   /**
@@ -153,7 +153,7 @@ function goToEdit(item: AdminApi.Project.ProjectListItem) {
  * @param item 需要查看详情的项目。
  */
 function goToDetail(item: AdminApi.Project.ProjectListItem) {
-  void goToProjectPage(item, 'AdminProjectDetail', '项目详情')
+  void goToProjectPage(item, 'AdminProjectStage', '项目详情')
 }
 
 /**

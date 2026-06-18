@@ -125,7 +125,7 @@ function openAllocateCourseDialog(item: AdminApi.Course.CourseListItem) {
  */
 async function goToCoursePage(
   item: AdminApi.Course.CourseListItem,
-  routeName: 'AdminCourseEdit' | 'AdminCourseDetail',
+  routeName: 'AdminCourseEdit' | 'AdminCourseOutline',
   titlePrefix: string,
 ) {
   /**
@@ -153,12 +153,12 @@ function goToEdit(item: AdminApi.Course.CourseListItem) {
 }
 
 /**
- * 跳转到课程详情页。
+ * 跳转到课程大纲页。
  *
- * @param item 需要查看详情的课程。
+ * @param item 需要查看大纲的课程。
  */
-function goToDetail(item: AdminApi.Course.CourseListItem) {
-  void goToCoursePage(item, 'AdminCourseDetail', '课程详情')
+function goToOutline(item: AdminApi.Course.CourseListItem) {
+  void goToCoursePage(item, 'AdminCourseOutline', '课程大纲')
 }
 
 /**
@@ -243,7 +243,7 @@ getCourseList()
         v-for="item in courseList.rows"
         :key="item.couId"
         class="grid grid-cols-[150px_8px_minmax(0,1fr)] gap-5 items-center max-md:grid-cols-1 max-md:gap-3"
-        @click="goToDetail(item)"
+        @click="goToOutline(item)"
       >
         <div
           class="flex flex-col items-end text-sm text-g-600 max-md:flex-row max-md:items-center max-md:justify-between max-md:rounded-custom-sm max-md:bg-box max-md:border-full-d max-md:px-4 max-md:py-3"

@@ -83,11 +83,11 @@ function goToEdit() {
 }
 
 /**
- * 跳转到课程详情页
+ * 跳转到课程大纲页
  */
-function goToCourseDetail(course: AdminApi.Project.ProjectStageListItemCourseListItem) {
+function goToCourseOutline(course: AdminApi.Project.ProjectStageListItemCourseListItem) {
   router.push({
-    name: 'AdminCourseDetail',
+    name: 'AdminCourseOutline',
     params: {
       couId: course.couID,
     },
@@ -319,7 +319,7 @@ function goToCourseEdit(course: AdminApi.Project.ProjectStageListItemCourseListI
 
                 <ArtButton
                   type="view"
-                  @click="goToCourseDetail(course)"
+                  @click="goToCourseOutline(course)"
                 />
               </div>
             </div>

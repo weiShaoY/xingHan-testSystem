@@ -60,7 +60,7 @@ export function fetchAdminCourseDelete(couId: number) {
 }
 
 /**
- *  获取后台管理课程章节列表
+ *  获取后台管理课程大纲列表
  *  @param couId 课程ID
  */
 export function fetchAdminCourseOutlineList(couId: number) {
