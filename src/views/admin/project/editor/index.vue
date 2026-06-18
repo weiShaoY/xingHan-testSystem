@@ -1,31 +1,56 @@
 <!------  2026-04-15---16:08---星期三  ------>
 <!------------------------------------    ------------------------------------------------->
 <script lang="ts" setup>
+const route = useRoute()
+
+const router = useRouter()
 
 /**
- * 是否为编辑模式。
+ * 默认项目展示图预览地址。
  */
-import type {
-  FormInstance,
-  FormItemRule,
-  FormRules,
-  TabPaneName,
-} from 'element-plus'
+const previewImageUrl = 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=autumn%20forest%20road%20scenery%20with%20colorful%20trees&image_size=landscape_4_3'
 
-import { QuestionFilled } from '@element-plus/icons-vue'
+/**
+ * 项目图片配置选项。
+ */
+const projectImageOptions = [
+  {
+    label: '项目封面图',
+    buttonText: '自定义 项目封面图',
+    alt: '项目封面图',
+  },
+  {
+    label: '项目背景图',
+    buttonText: '自定义 项目背景图',
+    alt: '项目背景图',
+  },
+]
 
-import {
-  nextTick,
-  onBeforeUpdate,
-  ref,
-} from 'vue'
+/**
+ * 工作标签页 Store。
+ */
+const workTabStore = useWorkTabStore()
+
+/**
+ * 项目列表页路径。
+ */
+const PROJECT_LIST_PATH = '/admin/project'
+
+/**
+ * 返回项目列表页并关闭当前编辑标签。
+ */
+function backToProjectList() {
+  workTabStore.removeTab(route.path)
+
+  router.push({
+    path: PROJECT_LIST_PATH,
+  })
+}
 
 /**
  * 当前激活的编辑页签。
  */
-const activeTab = ref('basic')
-
-const route = useRoute()
+const activeTab = ref<'basic' | 'apply' | 'setting'>('basic')
 
 /**
  * 页面提交和详情加载状态。
@@ -43,6 +68,8 @@ const formData = ref<AdminApi.Project.ProjectEditor>(createDefaultFormData())
 const projId = computed(() => {
   return Number(route.params.projId || 0)
 })
+
+console.log('🚀 ~ file: index.vue:72 ~ projId.value:', projId.value)
 
 /**
  * 是否为编辑模式。
@@ -65,7 +92,7 @@ const pageTitle = computed(() => {
  */
 function createDefaultFormData(): AdminApi.Project.ProjectEditor {
   return {
-    projName: '未命名项目',
+    projName: isEditMode.value ? '' : '未命名项目',
     projIntro: '',
     projIsApply: 1,
     projIsRestrict: 1,
@@ -78,9 +105,9 @@ function createDefaultFormData(): AdminApi.Project.ProjectEditor {
 }
 
 /**
- * 获取课程详情并回填表单。
+ * 获取项目详情并回填表单。
  *
- * @returns 课程详情请求完成。
+ * @returns 项目详情请求完成。
  */
 async function getProjectDetail() {
   if (!projId.value) {
@@ -89,7 +116,7 @@ async function getProjectDetail() {
 
   loading.value = true
   try {
-    formData.value = await fetchAdminProjectDetail(projId.value)
+    formData.value = await fetchAdminProjectSetting(projId.value)
     console.log('🚀 ~ file: index.vue:90 ~ formData.value:', formData.value)
   }
   catch {
@@ -101,13 +128,36 @@ async function getProjectDetail() {
 }
 
 onMounted(() => {
-  console.log('🚀 ~ file: index.vue:102 ~ projId.value:', projId.value)
   if (isEditMode.value) {
     void getProjectDetail()
   }
 })
+async function handleSubmit() {
+  if (loading.value) {
+    return
+  }
 
-// / //////////////////////////////////// ////////////////////////  2026-06-18---11:14---星期四  ////////////////////////
+  loading.value = true
+  try {
+    if (isEditMode.value) {
+      await fetchAdminProjectUpdate(formData.value)
+      ElNotification.success('项目更新成功')
+    }
+    else {
+      await fetchAdminProjectAdd(formData.value)
+      ElNotification.success('项目创建成功')
+    }
+
+    backToProjectList()
+  }
+  catch {
+    ElNotification.error(isEditMode.value ? '项目更新失败' : '项目创建失败')
+  }
+  finally {
+    loading.value = false
+  }
+}
+
 </script>
 
 <template>
@@ -116,6 +166,7 @@ onMounted(() => {
   >
     <AdminPageHeader
       :title="pageTitle"
+      @back="backToProjectList"
     >
       <template
         #extra
@@ -145,36 +196,36 @@ onMounted(() => {
           label-position="top"
         >
           <el-form-item
-            label="课程名称"
+            label="项目名称"
             required
           >
             <el-input
-              v-model="formData.couName"
-              placeholder="请输入课程名称"
+              v-model="formData.projName"
+              placeholder="请输入项目名称"
               class="w-full"
             />
           </el-form-item>
 
           <el-form-item
-            label="课程介绍"
+            label="项目介绍"
           >
             <el-input
-              v-model="formData.couIntro"
+              v-model="formData.projIntro"
               type="textarea"
               :rows="6"
-              placeholder="请输入课程介绍"
+              placeholder="请输入项目介绍"
               class="w-full"
             />
           </el-form-item>
 
           <el-form-item
-            label="课程展示图片设置"
+            label="项目展示图片设置"
           >
             <div
               class="grid w-full grid-cols-2 gap-8 max-md:grid-cols-1"
             >
               <div
-                v-for="item in courseImageOptions"
+                v-for="item in projectImageOptions"
                 :key="item.label"
                 class="flex flex-col items-start"
               >
@@ -206,7 +257,7 @@ onMounted(() => {
 
       <el-tab-pane
         label="报名"
-        name="enrollment"
+        name="apply"
         class="art-card"
       >
         <div
@@ -222,17 +273,16 @@ onMounted(() => {
             </span>
 
             <el-tooltip
-              content="开启报名后可以在小节的更多设置中开启小节试学，学员在报名之前可以完整学习试学小节的内容。"
+              content="- 开启报名后，可仅查看报名通过的学员数据，如完成率，积分排行榜等。"
             >
-              <el-icon
+              <ArtSvgIcon
+                icon="mingcute:question-fill"
                 class="cursor-help"
-              >
-                <QuestionFilled />
-              </el-icon>
+              />
             </el-tooltip>
 
             <el-switch
-              v-model="formData.couIsApply"
+              v-model="formData.projIsApply"
               :active-value="1"
               :inactive-value="0"
             />
@@ -240,20 +290,10 @@ onMounted(() => {
         </div>
 
         <el-form
-          v-if="formData.couIsApply === 1"
+          v-if="formData.projIsApply === 1"
           label-position="top"
           label-width="120px"
         >
-          <el-form-item
-            label="报名页标题"
-            required
-          >
-            <el-input
-              v-model="formData.couTitle"
-              placeholder="未命名课程"
-              class="w-full"
-            />
-          </el-form-item>
 
           <el-form-item
             label="报名名额"
@@ -262,7 +302,7 @@ onMounted(() => {
               class="flex w-full items-center gap-10"
             >
               <el-radio-group
-                v-model="formData.couIsRestrict"
+                v-model="formData.projIsRestrict"
                 class="flex flex-wrap gap-x-6 gap-y-2"
               >
                 <el-radio
@@ -279,11 +319,11 @@ onMounted(() => {
               </el-radio-group>
 
               <div
-                v-if="formData.couIsRestrict === 1"
+                v-if="formData.projIsRestrict === 1"
                 class="flex items-center gap-2"
               >
                 <el-input
-                  v-model="formData.couRestrictCount"
+                  v-model="formData.projRestrictCount"
                   type="number"
                   placeholder="请输入限制人数"
                   class="w-40 "
@@ -297,7 +337,10 @@ onMounted(() => {
                   <el-icon
                     class="cursor-help"
                   >
-                    <QuestionFilled />
+                    <ArtSvgIcon
+                      icon="mingcute:question-fill"
+                      class="cursor-help"
+                    />
                   </el-icon>
                 </el-tooltip>
               </div>
@@ -314,7 +357,7 @@ onMounted(() => {
                 class="flex flex-wrap gap-x-4 gap-y-2 items-center"
               >
                 <el-radio-group
-                  v-model="formData.couIsRestrictTime"
+                  v-model="formData.projIsRestrictTime"
                   class="flex flex-wrap gap-x-6 gap-y-2"
                 >
                   <el-radio
@@ -336,24 +379,27 @@ onMounted(() => {
                   <el-icon
                     class="cursor-help"
                   >
-                    <QuestionFilled />
+                    <ArtSvgIcon
+                      icon="mingcute:question-fill"
+                      class="cursor-help"
+                    />
                   </el-icon>
                 </el-tooltip>
               </div>
 
               <div
-                v-if="formData.couIsRestrictTime === 1"
+                v-if="formData.projIsRestrictTime === 1"
                 class="flex items-center gap-2"
               >
                 <el-date-picker
-                  v-model="formData.couApplyStartTime"
+                  v-model="formData.projApplyStartTime"
                   type="datetime"
                   placeholder="开始时间"
                   class="w-full!"
                 />
 
                 <el-date-picker
-                  v-model="formData.couApplyEndTime"
+                  v-model="formData.projApplyEndTime"
                   type="datetime"
                   placeholder="结束时间"
                   class="w-full!"
@@ -369,7 +415,7 @@ onMounted(() => {
               class="flex flex-wrap gap-x-4 gap-y-2 items-center"
             >
               <el-radio-group
-                v-model="formData.couIsApplyApproval"
+                v-model="formData.projIsApplyApproval"
                 class="flex flex-wrap gap-x-6 gap-y-2"
               >
                 <el-radio
@@ -391,7 +437,10 @@ onMounted(() => {
                 <el-icon
                   class="cursor-help"
                 >
-                  <QuestionFilled />
+                  <ArtSvgIcon
+                    icon="mingcute:question-fill"
+                    class="cursor-help"
+                  />
                 </el-icon>
               </el-tooltip>
             </div>
@@ -404,7 +453,7 @@ onMounted(() => {
               class="flex flex-wrap gap-x-4 gap-y-2 items-center"
             >
               <el-radio-group
-                v-model="formData.couIsCancel"
+                v-model="formData.projIsCancel"
                 class="flex flex-wrap gap-x-6 gap-y-2"
               >
                 <el-radio
@@ -426,7 +475,10 @@ onMounted(() => {
                 <el-icon
                   class="cursor-help"
                 >
-                  <QuestionFilled />
+                  <ArtSvgIcon
+                    icon="mingcute:question-fill"
+                    class="cursor-help"
+                  />
                 </el-icon>
               </el-tooltip>
             </div>
@@ -436,7 +488,7 @@ onMounted(() => {
             label="报名介绍"
           >
             <el-input
-              v-model="formData.couApplyContent"
+              v-model="formData.projApplyContent"
               type="textarea"
               :rows="6"
               placeholder="请输入报名介绍"
@@ -446,119 +498,11 @@ onMounted(() => {
         </el-form>
       </el-tab-pane>
 
-      <el-tab-pane
+      <!-- <el-tab-pane
         label="高级设置"
-        name="advanced"
+        name="setting"
         class="art-card"
-      >
-        <div>
-          <div
-            class="mb-6"
-          >
-            <p
-              class="text-4 text-g-600"
-            >
-              课程在您的个人主页默认为隐藏状态。您可以设置个人主页是否展示该课程。
-            </p>
-          </div>
-
-          <el-form
-            label-position="top"
-          >
-            <el-form-item
-              label="课程小节解锁方式"
-            >
-              <div
-                class="flex w-full items-center gap-10"
-              >
-                <el-radio-group
-                  v-model="formData.couUnlockMethod"
-                >
-                  <div
-                    class="flex flex-col gap-4"
-                  >
-                    <div
-                      v-for="item in unlockMethodOptions"
-                      :key="item.value"
-                      class="flex items-center"
-                    >
-                      <el-radio
-                        :value="item.value"
-                        class="w-30"
-                      >
-                        {{ item.label }}
-                      </el-radio>
-
-                      <div
-                        class="text-info text-sm"
-                      >
-                        {{ item.description }}
-                      </div>
-                    </div>
-                  </div>
-                </el-radio-group>
-              </div>
-            </el-form-item>
-
-            <el-form-item
-              label="视频和微课详情中显示已经学完的学员"
-            >
-              <el-checkbox
-                v-model="formData.couIsStudyInfo"
-                :true-value="1"
-                :false-value="0"
-              />
-
-              <div
-                class=" text-sm text-info "
-              >
-                开启时，学员可在视频和微课小节详情中查看"正在学习"与"已经学完"的学员。关闭时，"正在学习"与"已经学完"的学员将会被隐藏。
-              </div>
-            </el-form-item>
-
-            <el-form-item
-              label="课程学习时长统计上限"
-            >
-              <div
-                class="flex flex-col gap-4"
-              >
-                <div
-                  class="flex items-center gap-2"
-                >
-                  <el-checkbox
-                    v-model="formData.couIsLimitTime"
-                    :true-value="1"
-                    :false-value="0"
-                  />
-
-                  <div
-                    class="text-sm text-info"
-                  >
-                    设置学习时长上限后，学员在本课程有效学习时长的最大值为讲师设置值。实际学习时长会始终被记录。
-                  </div>
-
-                </div>
-
-                <div
-                  v-if="formData.couIsLimitTime"
-                  class="flex items-center gap-2"
-                >
-                  <el-input-number
-                    v-model="formData.couLimitTime"
-                    :min="1"
-                  />
-
-                  <span>小时</span>
-
-                </div>
-
-              </div>
-
-            </el-form-item>
-
-          </el-form>
-        </div>
-      </el-tab-pane>
+      /> -->
     </el-tabs>
   </div>
 </template>

@@ -99,15 +99,6 @@ function handleCurrentChange(currentPage: number) {
 }
 
 /**
- * 跳转到课程创建页。
- */
-function goToCreate() {
-  router.push({
-    name: 'AdminCourseCreate',
-  })
-}
-
-/**
  * 打开分配学习任务弹窗。
  */
 function openAllocateCourseDialog(item: AdminApi.Course.CourseListItem) {
@@ -118,23 +109,31 @@ function openAllocateCourseDialog(item: AdminApi.Course.CourseListItem) {
 /**
  * 跳转到课程相关页面，并按课程名称更新工作标签标题。
  *
- * @param item 课程列表项。
  * @param routeName 目标课程路由名称。
+ * @param item 课程列表项。
  * @param titlePrefix 标签标题前缀。
  * @returns 页面跳转和标签标题更新完成。
  */
 async function goToCoursePage(
-  item: AdminApi.Course.CourseListItem,
-  routeName: 'AdminCourseSetting' | 'AdminCourseOutline',
+  routeName: 'AdminCourseCreate' | 'AdminCourseSetting' | 'AdminCourseOutline',
   titlePrefix: string,
+  item?: AdminApi.Course.CourseListItem,
+
 ) {
+  if (routeName === 'AdminCourseCreate') {
+    router.push({
+      name: 'AdminCourseCreate',
+    })
+    return
+  }
+
   /**
    * 解析后的目标路由。
    */
   const targetRoute = router.resolve({
     name: routeName,
     params: {
-      couId: item.couId,
+      couId: item?.couId,
     },
   })
 
@@ -143,7 +142,14 @@ async function goToCoursePage(
   /**
    * 更新工作标签标题。
    */
-  workTabStore.updateTabTitle(targetRoute.path, `${titlePrefix}-${item.couName}`)
+  workTabStore.updateTabTitle(targetRoute.path, `${titlePrefix}-${item?.couName || ''}`)
+}
+
+/**
+ * 跳转到课程创建页。
+ */
+function goToCreate() {
+  void goToCoursePage('AdminCourseCreate', '创建课程')
 }
 
 /**
@@ -152,7 +158,7 @@ async function goToCoursePage(
  * @param item 需要设置的课程。
  */
 function goToSetting(item: AdminApi.Course.CourseListItem) {
-  void goToCoursePage(item, 'AdminCourseSetting', '课程设置')
+  void goToCoursePage('AdminCourseSetting', '课程设置', item)
 }
 
 /**
@@ -161,7 +167,7 @@ function goToSetting(item: AdminApi.Course.CourseListItem) {
  * @param item 需要查看大纲的课程。
  */
 function goToOutline(item: AdminApi.Course.CourseListItem) {
-  void goToCoursePage(item, 'AdminCourseOutline', '课程大纲')
+  void goToCoursePage('AdminCourseOutline', '课程大纲', item)
 }
 
 /**

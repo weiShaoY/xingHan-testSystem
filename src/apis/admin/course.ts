@@ -37,7 +37,7 @@ export function fetchAdminCourseSetting(couId: number) {
 }
 
 /**
- *  编辑课程
+ *  更新课程设置
  */
 export function fetchAdminCourseUpdate(data: AdminApi.Course.CourseEditor) {
   return request.post<boolean>({

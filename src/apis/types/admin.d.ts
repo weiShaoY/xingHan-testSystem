@@ -856,9 +856,21 @@ declare namespace AdminApi {
      */
     type ProjectEditor = {
 
-      // ////////////////////
       /**
-       * 数据状态（0=删除，1=正常）
+       * 项目名称
+       */
+      projName: string
+
+      /**
+       * 项目简介
+       */
+      projIntro?: null | string
+
+      // ////////////////////////////
+
+      /**
+       * 数据状态
+       *  @description
        */
       active?: number
 
@@ -875,7 +887,7 @@ declare namespace AdminApi {
       /**
        * 创建时间
        */
-      createTime?: Date
+      createTime?: string
 
       /**
        * 报名介绍/说明
@@ -923,44 +935,40 @@ declare namespace AdminApi {
       projId?: number
 
       /**
-       * 项目简介
+       * 是否需要报名
+       *  @description 0=不需要，1=需要
        */
-      projIntro?: null | string
+      projIsApply?: 0 | 1
 
       /**
-       * 是否需要报名（0=不需要，1=需要）
+       * 是否需要人工审批
+       *  @description 0=不需要，1=需要
        */
-      projIsApply?: number
+      projIsApplyApproval?: 0 | 1
 
       /**
-       * 是否需要人工审批（0=不需要，1=需要）
+       * 是否允许取消报名
+       *  @description 0=不允许，1=允许
        */
-      projIsApplyApproval?: number
+      projIsCancel?: 0 | 1
 
       /**
-       * 是否允许取消报名（0=不允许，1=允许）
+       * 是否限制报名人数
+       * @description 0=不限制，1=限制
        */
-      projIsCancel?: number
+      projIsRestrict?: 0 | 1
 
       /**
-       * 是否限制报名人数（0=不限制，1=限制）
+       * 是否限制报名时间
+       * @description 0=不限制，1=限制
        */
-      projIsRestrict?: number
+      projIsRestrictTime?: 0 | 1
 
       /**
-       * 是否限制报名时间（0=不限制，1=限制）
+       * 是否启用
+       * @description 0=禁用，1=启用
        */
-      projIsRestrictTime?: number
-
-      /**
-       * 是否启用（0=禁用，1=启用）
-       */
-      projIsUse?: number
-
-      /**
-       * 项目名称
-       */
-      projName?: null | string
+      projIsUse?: 0 | 1
 
       /**
        * 限制报名人数上限

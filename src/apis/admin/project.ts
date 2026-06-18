@@ -15,7 +15,7 @@ export function fetchAdminProjectList(data: AdminApi.Project.ProjectListParams) 
  */
 export function fetchAdminProjectAdd(data: AdminApi.Project.ProjectEditor) {
   return request.post<boolean>({
-    url: '/admin/project/add',
+    url: '/admin/project/addProject',
     data,
   })
 }
@@ -30,6 +30,16 @@ export function fetchAdminProjectSetting(projId: number) {
     params: {
       projId,
     },
+  })
+}
+
+/**
+ *  更新项目设置
+ */
+export function fetchAdminProjectUpdate(data: AdminApi.Project.ProjectEditor) {
+  return request.post<boolean>({
+    url: '/admin/project/update',
+    data,
   })
 }
 

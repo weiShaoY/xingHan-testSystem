@@ -102,11 +102,13 @@ declare global {
   const fetchAdminP: typeof import('../../apis/admin/project').fetchAdminP
   const fetchAdminProjectAdd: typeof import('../../apis/admin/project').fetchAdminProjectAdd
   const fetchAdminProjectCourseList: typeof import('../../apis/admin/project').fetchAdminProjectCourseList
+  const fetchAdminProjectCreate: typeof import('../../apis/admin/project').fetchAdminProjectCreate
   const fetchAdminProjectDelete: typeof import('../../apis/admin/project').fetchAdminProjectDelete
   const fetchAdminProjectDetail: typeof import('../../apis/admin/project').fetchAdminProjectDetail
   const fetchAdminProjectList: typeof import('../../apis/admin/project').fetchAdminProjectList
   const fetchAdminProjectSetting: typeof import('../../apis/admin/project').fetchAdminProjectSetting
   const fetchAdminProjectStageList: typeof import('../../apis/admin/project').fetchAdminProjectStageList
+  const fetchAdminProjectUpdate: typeof import('../../apis/admin/project').fetchAdminProjectUpdate
   const fetchAdminUpdateCourse: typeof import('../../apis/admin/index').fetchAdminCourseUpdate
   const fetchAdminUploadFile: typeof import('../../apis/file/index').fetchAdminUploadFile
   const fetchClientGetPublicKey: typeof import('../../apis/client/index').fetchClientGetPublicKey
@@ -574,6 +576,7 @@ declare module 'vue' {
     readonly fetchAdminProjectList: UnwrapRef<typeof import('../../apis/admin/project')['fetchAdminProjectList']>
     readonly fetchAdminProjectSetting: UnwrapRef<typeof import('../../apis/admin/project')['fetchAdminProjectSetting']>
     readonly fetchAdminProjectStageList: UnwrapRef<typeof import('../../apis/admin/project')['fetchAdminProjectStageList']>
+    readonly fetchAdminProjectUpdate: UnwrapRef<typeof import('../../apis/admin/project')['fetchAdminProjectUpdate']>
     readonly fetchAdminUploadFile: UnwrapRef<typeof import('../../apis/file/index')['fetchAdminUploadFile']>
     readonly fetchClientGetPublicKey: UnwrapRef<typeof import('../../apis/client/index')['fetchClientGetPublicKey']>
     readonly fetchClientGetUserInfo: UnwrapRef<typeof import('../../apis/client/index')['fetchClientGetUserInfo']>

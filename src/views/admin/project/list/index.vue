@@ -115,9 +115,9 @@ const workTabStore = useWorkTabStore()
  * @returns 页面跳转和标签标题更新完成。
  */
 async function goToProjectPage(
-  item: AdminApi.Project.ProjectListItem,
-  routeName: 'AdminProjectSetting' | 'AdminProjectStage',
+  routeName: 'AdminProjectCreate' | 'AdminProjectSetting' | 'AdminProjectStage',
   titlePrefix: string,
+  item?: AdminApi.Project.ProjectListItem,
 ) {
   /**
    * 解析后的目标路由。
@@ -125,7 +125,7 @@ async function goToProjectPage(
   const targetRoute = router.resolve({
     name: routeName,
     params: {
-      projId: item.projId,
+      projId: item?.projId,
     },
   })
 
@@ -137,14 +137,21 @@ async function goToProjectPage(
   /**
    * 更新工作标签标题。
    */
-  workTabStore.updateTabTitle(targetRoute.path, `${titlePrefix}-${item.projName}`)
+  workTabStore.updateTabTitle(targetRoute.path, `${titlePrefix}-${item?.projName || ''}`)
+}
+
+/**
+ * 跳转到项目创建页。
+ */
+function goToCreate() {
+  void goToProjectPage('AdminProjectCreate', '创建项目')
 }
 
 /**
  * 跳转到项目设置页
  */
 function goToSetting(item: AdminApi.Project.ProjectListItem) {
-  void goToProjectPage(item, 'AdminProjectSetting', '项目设置')
+  void goToProjectPage('AdminProjectSetting', '项目设置', item)
 }
 
 /**
@@ -153,7 +160,7 @@ function goToSetting(item: AdminApi.Project.ProjectListItem) {
  * @param item 需要查看详情的项目。
  */
 function goToDetail(item: AdminApi.Project.ProjectListItem) {
-  void goToProjectPage(item, 'AdminProjectStage', '项目详情')
+  void goToProjectPage('AdminProjectStage', '项目详情', item)
 }
 
 /**
@@ -225,7 +232,7 @@ async function deleteProject(item: AdminApi.Project.ProjectListItem) {
 
         <ArtButton
           type="add"
-          @click="isShowCreateProjectDialog = true"
+          @click="goToCreate"
         >
           创建项目
         </ArtButton>

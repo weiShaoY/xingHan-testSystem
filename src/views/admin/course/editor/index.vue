@@ -1,7 +1,6 @@
 <!------  2026-04-15---16:08---星期三  ------>
 <!------------------------------------  课程新增或者编辑编辑页  ------------------------------------------------->
 <script lang="ts" setup>
-import { QuestionFilled } from '@element-plus/icons-vue'
 
 /**
  * 课程列表页路径。
@@ -50,14 +49,8 @@ const unlockMethodOptions = [
   },
 ]
 
-/**
- * 当前路由对象。
- */
 const route = useRoute()
 
-/**
- * Vue Router 实例。
- */
 const router = useRouter()
 
 /**
@@ -68,7 +61,7 @@ const workTabStore = useWorkTabStore()
 /**
  * 当前激活的编辑页签。
  */
-const activeTab = ref('basic')
+const activeTab = ref<'basic' | 'apply' | 'setting'>('basic')
 
 /**
  * 页面提交和详情加载状态。
@@ -108,7 +101,7 @@ const pageTitle = computed(() => {
  */
 function createDefaultFormData(): AdminApi.Course.CourseEditor {
   return {
-    couName: '未命名课程',
+    couName: isEditMode.value ? '' : '未命名课程',
     couIntro: '',
     couIsApply: 1,
     couTitle: '',
@@ -183,8 +176,6 @@ async function handleSubmit() {
     }
 
     backToCourseList()
-
-    ElNotification.success(isEditMode.value ? '课程更新成功' : '课程创建成功')
   }
   catch {
     ElNotification.error(isEditMode.value ? '课程更新失败' : '课程创建失败')
@@ -207,6 +198,7 @@ onMounted(() => {
   >
     <AdminPageHeader
       :title="pageTitle"
+      @back="backToCourseList"
     >
       <template
         #extra
@@ -297,7 +289,7 @@ onMounted(() => {
 
       <el-tab-pane
         label="报名"
-        name="enrollment"
+        name="apply"
         class="art-card"
       >
         <div
@@ -315,11 +307,10 @@ onMounted(() => {
             <el-tooltip
               content="开启报名后可以在小节的更多设置中开启小节试学，学员在报名之前可以完整学习试学小节的内容。"
             >
-              <el-icon
+              <ArtSvgIcon
+                icon="mingcute:question-fill"
                 class="cursor-help"
-              >
-                <QuestionFilled />
-              </el-icon>
+              />
             </el-tooltip>
 
             <el-switch
@@ -388,7 +379,10 @@ onMounted(() => {
                   <el-icon
                     class="cursor-help"
                   >
-                    <QuestionFilled />
+                    <ArtSvgIcon
+                      icon="mingcute:question-fill"
+                      class="cursor-help"
+                    />
                   </el-icon>
                 </el-tooltip>
               </div>
@@ -427,7 +421,10 @@ onMounted(() => {
                   <el-icon
                     class="cursor-help"
                   >
-                    <QuestionFilled />
+                    <ArtSvgIcon
+                      icon="mingcute:question-fill"
+                      class="cursor-help"
+                    />
                   </el-icon>
                 </el-tooltip>
               </div>
@@ -482,7 +479,10 @@ onMounted(() => {
                 <el-icon
                   class="cursor-help"
                 >
-                  <QuestionFilled />
+                  <ArtSvgIcon
+                    icon="mingcute:question-fill"
+                    class="cursor-help"
+                  />
                 </el-icon>
               </el-tooltip>
             </div>
@@ -517,7 +517,10 @@ onMounted(() => {
                 <el-icon
                   class="cursor-help"
                 >
-                  <QuestionFilled />
+                  <ArtSvgIcon
+                    icon="mingcute:question-fill"
+                    class="cursor-help"
+                  />
                 </el-icon>
               </el-tooltip>
             </div>
@@ -539,7 +542,7 @@ onMounted(() => {
 
       <el-tab-pane
         label="高级设置"
-        name="advanced"
+        name="setting"
         class="art-card"
       >
         <div>

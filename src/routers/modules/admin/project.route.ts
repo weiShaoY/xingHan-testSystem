@@ -41,7 +41,7 @@ export const Project: AppRouteRecord = {
     },
 
     {
-      path: 'edit/:projId',
+      path: 'setting/:projId',
       name: 'AdminProjectSetting',
       component: '/admin/project/editor',
       meta: {
