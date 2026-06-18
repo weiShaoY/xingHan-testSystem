@@ -115,7 +115,7 @@ const workTabStore = useWorkTabStore()
  * @returns 页面跳转和标签标题更新完成。
  */
 async function goToProjectPage(
-  routeName: 'AdminProjectCreate' | 'AdminProjectSetting' | 'AdminProjectStage',
+  routeName: 'AdminProjectCreate' | 'AdminProjectSetting' | 'AdminProjectStages',
   titlePrefix: string,
   item?: AdminApi.Project.ProjectListItem,
 ) {
@@ -155,12 +155,12 @@ function goToSetting(item: AdminApi.Project.ProjectListItem) {
 }
 
 /**
- * 跳转到课程详情页。
+ * 跳转到项目阶段列表页。
  *
- * @param item 需要查看详情的项目。
+ * @param item 需要查看阶段的项目。
  */
 function goToDetail(item: AdminApi.Project.ProjectListItem) {
-  void goToProjectPage('AdminProjectStage', '项目详情', item)
+  void goToProjectPage('AdminProjectStages', '项目阶段', item)
 }
 
 /**

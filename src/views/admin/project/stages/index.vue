@@ -1,4 +1,4 @@
-<!------------------------------------  项目详情页  ------------------------------------------------->
+<!------------------------------------  项目阶段列表页  ------------------------------------------------->
 <script lang="ts" setup>
 import { computed, ref } from 'vue'
 
@@ -38,7 +38,7 @@ async function getProjectStageList() {
     projectStageList.value = await fetchAdminProjectStageList(projId.value)
   }
   catch {
-    ElNotification.error('项目详情获取失败')
+    ElNotification.error('项目阶段列表获取失败')
   }
   finally {
     loading.value = false
@@ -104,7 +104,7 @@ function goToCourseEdit(course: AdminApi.Project.ProjectStageListItemCourseListI
           type="edit"
           @click="goToEdit()"
         >
-          编辑项目学习阶段
+          编辑项目阶段
         </ArtButton>
       </template>
     </AdminPageHeader>
@@ -118,47 +118,38 @@ function goToCourseEdit(course: AdminApi.Project.ProjectStageListItemCourseListI
         class="art-card flex flex-col gap-5"
       >
         <div
-          class="flex items-start justify-between gap-4 max-md:flex-col"
+          class="flex items-start flex-col gap-4 max-md:flex-col"
         >
           <div
-            class="min-w-0"
+            class="flex flex-wrap items-center gap-3"
           >
             <div
-              class="flex flex-wrap items-center gap-3"
+              class="text-base font-semibold text-g-900"
             >
-              <div
-                class="text-base font-semibold text-g-900"
-              >
-                第 {{ index + 1 }} 阶段 · {{ item.stageName }}
-              </div>
-
-              <el-tag
-                :type="item.stageType === 1 ? 'danger' : 'info'"
-                size="small"
-              >
-                {{ item.stageType === 1 ? '必修阶段' : '选修阶段' }}
-              </el-tag>
-
-              <el-tag
-                type="primary"
-                size="small"
-              >
-                {{ item.course.length }} 门课程
-              </el-tag>
+              第 {{ index + 1 }} 阶段 · {{ item.stageName }}
             </div>
 
-            <div
-              class="mt-2 text-sm text-g-600 leading-relaxed"
+            <el-tag
+              :type="item.stageType === 1 ? 'danger' : 'info'"
+              size="small"
             >
-              {{ item.stageIntro || '暂无阶段说明' }}
-            </div>
+              {{ item.stageType === 1 ? '必修阶段' : '选修阶段' }}
+            </el-tag>
+
+            <el-tag
+              type="primary"
+              size="small"
+            >
+              {{ item.course.length }} 门课程
+            </el-tag>
           </div>
 
           <div
-            class="shrink-0 text-sm text-g-500"
+            class="mt-2 text-sm text-g-600 leading-relaxed"
           >
-            学习顺序 {{ item.sortOrder }}
+            {{ item.stageIntro || '暂无阶段说明' }}
           </div>
+
         </div>
 
         <div
@@ -199,16 +190,6 @@ function goToCourseEdit(course: AdminApi.Project.ProjectStageListItemCourseListI
                   >
                     支持预览
                   </el-tag>
-                </div>
-
-                <div
-                  class="mt-3 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-g-600"
-                >
-                  <span>课程 ID：{{ course.couID }}</span>
-
-                  <span>阶段排序：{{ course.sortOrder }}</span>
-
-                  <span>推荐顺序：{{ course.recommended_Order }}</span>
                 </div>
 
                 <div

@@ -56,11 +56,11 @@ export const Project: AppRouteRecord = {
     },
 
     {
-      path: 'stage/:projId',
-      name: 'AdminProjectStage',
-      component: '/admin/project/stage',
+      path: 'stages/:projId',
+      name: 'AdminProjectStages',
+      component: '/admin/project/stages',
       meta: {
-        title: '项目阶段',
+        title: '项目阶段列表',
         icon: 'ri:eye-line',
         keepAlive: false,
         multiTab: true,
@@ -70,9 +70,9 @@ export const Project: AppRouteRecord = {
       },
     },
     {
-      path: 'stageEditor/:projId',
+      path: 'stages/:projId/edit',
       name: 'AdminProjectStageEditor',
-      component: '/admin/project/stageEditor/index',
+      component: '/admin/project/stage-editor/index',
       meta: {
         title: '项目阶段编辑',
         icon: 'ri:pencil-line',
