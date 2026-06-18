@@ -98,7 +98,7 @@ const isEditMode = computed(() => {
  * 页面标题。
  */
 const pageTitle = computed(() => {
-  return isEditMode.value ? '编辑课程' : '创建课程'
+  return isEditMode.value ? `设置课程-${formData.value.couName}` : '创建课程'
 })
 
 /**

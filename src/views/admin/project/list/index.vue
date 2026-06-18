@@ -132,8 +132,7 @@ async function goToProjectPage(
   /**
    * 跳转到目标路由。
    */
-  router.push(targetRoute)
-  console.log('🚀 ~ file: index.vue:137 ~ item:', item)
+  await router.push(targetRoute)
 
   /**
    * 更新工作标签标题。
@@ -142,9 +141,9 @@ async function goToProjectPage(
 }
 
 /**
- * 跳转到编辑页
+ * 跳转到项目设置页
  */
-function goToEdit(item: AdminApi.Project.ProjectListItem) {
+function goToSetting(item: AdminApi.Project.ProjectListItem) {
   void goToProjectPage(item, 'AdminProjectSetting', '项目设置')
 }
 
@@ -304,7 +303,7 @@ async function deleteProject(item: AdminApi.Project.ProjectListItem) {
             >
               <ArtButton
                 type="edit"
-                @click="goToEdit(item)"
+                @click="goToSetting(item)"
               />
 
               <ArtButton

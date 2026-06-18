@@ -140,15 +140,18 @@ async function goToCoursePage(
 
   await router.push(targetRoute)
 
+  /**
+   * 更新工作标签标题。
+   */
   workTabStore.updateTabTitle(targetRoute.path, `${titlePrefix}-${item.couName}`)
 }
 
 /**
- * 跳转到课程编辑页。
+ * 跳转到课程设置页。
  *
- * @param item 需要编辑的课程。
+ * @param item 需要设置的课程。
  */
-function goToEdit(item: AdminApi.Course.CourseListItem) {
+function goToSetting(item: AdminApi.Course.CourseListItem) {
   void goToCoursePage(item, 'AdminCourseSetting', '课程设置')
 }
 
@@ -305,7 +308,7 @@ getCourseList()
             >
               <ArtButton
                 type="edit"
-                @click="goToEdit(item)"
+                @click="goToSetting(item)"
               />
 
               <ArtButton
