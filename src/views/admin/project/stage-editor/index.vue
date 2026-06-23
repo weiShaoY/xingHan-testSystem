@@ -405,6 +405,9 @@ function removeCourse(stageIndex: number, courseIndex: number) {
 function moveCourse(stageIndex: number, courseIndex: number, direction: 'up' | 'down') {
   const courses = projectStageList.value.nodes[stageIndex]?.course
 
+  console.log('🚀 ~ file: index.vue:410 ~ courses:', courses)
+  console.log('🚀 ~ file: index.vue:406 ~ courseIndex:', courseIndex)
+
   if (!courses) {
     return
   }
