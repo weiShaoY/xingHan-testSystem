@@ -85,7 +85,7 @@ async function getProjectStageList() {
   loading.value = true
 
   try {
-    projectStageList.value = await fetchAdminProjectStageList(projId.value)
+    projectStageList.value = normalizeProjectStageList(await fetchAdminProjectStageList(projId.value))
     activeStageId.value = projectStageList.value.nodes[0]?.stageId ?? ''
   }
   catch {
@@ -191,6 +191,44 @@ function setStageFormRef(formRef: FormInstance | undefined, index: number) {
   }
 
   stageFormRefs.value[index] = formRef
+}
+
+/**
+ * 获取排序值，接口字段为空时兜底到当前顺序。
+ */
+function getSortValue(value: number | undefined, fallback: number) {
+  return Number.isFinite(value) && value > 0 ? value : fallback + 1
+}
+
+/**
+ * 规整接口返回的阶段和课程顺序。
+ */
+function normalizeProjectStageList(data: AdminApi.Project.ProjectStageListResponse) {
+  const nodes = [...data.nodes]
+    .sort((a, b) => getSortValue(a.sortOrder, 0) - getSortValue(b.sortOrder, 0))
+    .map((stage, stageIndex) => ({
+      ...stage,
+      sortOrder: stageIndex + 1,
+      course: [...stage.course]
+        .sort((a, b) => {
+          const sortA = getSortValue(a.sortOrder || a.recommended_Order, 0)
+
+          const sortB = getSortValue(b.sortOrder || b.recommended_Order, 0)
+
+          return sortA - sortB
+        })
+        .map((course, courseIndex) => ({
+          ...course,
+          recommended_Order: courseIndex + 1,
+          sortOrder: courseIndex + 1,
+          stageId: stage.stageId,
+        })),
+    }))
+
+  return {
+    ...data,
+    nodes,
+  }
 }
 
 /**
@@ -379,7 +417,7 @@ function addCourseToStage(course: AdminApi.Course.CourseListItem, stageIndex: nu
     stageId: stage.stageId,
   }
 
-  stage.course.push(newCourse)
+  stage.course = [...stage.course, newCourse]
   stageFormRefs.value[stageIndex]?.validateField('course')
   ElMessage.success('课程已添加')
 }
@@ -394,7 +432,7 @@ function removeCourse(stageIndex: number, courseIndex: number) {
     return
   }
 
-  courses.splice(courseIndex, 1)
+  projectStageList.value.nodes[stageIndex].course = courses.filter((_course, index) => index !== courseIndex)
   refreshSortOrder()
   stageFormRefs.value[stageIndex]?.validateField('course')
 }
@@ -415,9 +453,12 @@ function moveCourse(stageIndex: number, courseIndex: number, direction: 'up' | '
     return
   }
 
-  const [course] = courses.splice(courseIndex, 1)
+  const movedCourses = [...courses]
 
-  courses.splice(targetIndex, 0, course)
+  const [course] = movedCourses.splice(courseIndex, 1)
+
+  movedCourses.splice(targetIndex, 0, course)
+  projectStageList.value.nodes[stageIndex].course = movedCourses
   refreshSortOrder()
 }
 </script>
@@ -607,14 +648,14 @@ function moveCourse(stageIndex: number, courseIndex: number, direction: 'up' | '
                                 icon="ri:arrow-up-line"
                                 tooltip="上移"
                                 :disabled="courseIndex === 0"
-                                @click="moveCourse(index, courseIndex, 'up')"
+                                @click.stop="moveCourse(index, courseIndex, 'up')"
                               />
 
                               <ArtButton
                                 icon="ri:arrow-down-line"
                                 tooltip="下移"
                                 :disabled="courseIndex === stage.course.length - 1"
-                                @click="moveCourse(index, courseIndex, 'down')"
+                                @click.stop="moveCourse(index, courseIndex, 'down')"
                               />
 
                               <ArtButton

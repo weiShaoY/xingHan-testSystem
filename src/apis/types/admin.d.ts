@@ -1036,7 +1036,7 @@ declare namespace AdminApi {
       /**
        * 课程名称
        */
-      couName: number
+      couName: string
 
       /**
        * 是否可免费预览（0=不可预览，1=可预览）

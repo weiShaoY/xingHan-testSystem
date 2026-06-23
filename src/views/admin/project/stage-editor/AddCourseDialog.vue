@@ -10,10 +10,12 @@ const props = withDefaults(defineProps<{
   /** 当前阶段索引 */
   stageIndex?: number
 
-  /** 当前       */
+  /** 当前阶段已添加的课程 ID */
+  addedCourseIds?: number[]
 
 }>(), {
   stageIndex: 0,
+  addedCourseIds: () => [],
 })
 
 const emit = defineEmits<{
@@ -21,6 +23,8 @@ const emit = defineEmits<{
   /** 添加课程事件 */
   'add-course': [course: AdminApi.Course.CourseListItem, stageIndex: number]
 }>()
+
+const router = useRouter()
 
 const loading = ref(false)
 
@@ -50,9 +54,9 @@ const columns: ColumnOption<AdminApi.Course.CourseListItem>[] = [
     fixed: 'right',
   },
   {
-    label: '已添加',
+    label: '操作',
     prop: 'isAdded',
-    width: 200,
+    width: 120,
     useSlot: true,
     fixed: 'right',
   },
@@ -62,9 +66,8 @@ const columns: ColumnOption<AdminApi.Course.CourseListItem>[] = [
 /**
  * 请求参数
  */
-const params = reactive<FileApi.FileListParams>({
+const params = reactive<AdminApi.Course.CourseListParams>({
   name: '',
-  type: 'document',
   pageSize: 10,
   currentPage: 1,
 })
@@ -97,14 +100,31 @@ const visible = defineModel<boolean>()
    * 添加课程
    */
 function addCourse(course: AdminApi.Course.CourseListItem) {
+  if (isCourseAdded(course)) {
+    ElMessage.warning('该课程已添加到当前阶段')
+    return
+  }
+
   emit('add-course', course, props.stageIndex)
+}
 
-  // // 更新课程列表中的状态
-  // const courseItem = courseList.value.find(item => item.accessCode === course.accessCode)
+/**
+ * 判断课程是否已添加。
+ */
+function isCourseAdded(course: AdminApi.Course.CourseListItem) {
+  return props.addedCourseIds.includes(course.couId)
+}
 
-  // if (courseItem) {
-  //   courseItem.isAdded = true
-  // }
+/**
+ * 跳转到课程大纲页。
+ */
+function goToCourseOutline(course: AdminApi.Course.CourseListItem) {
+  router.push({
+    name: 'AdminCourseOutline',
+    params: {
+      couId: course.couId,
+    },
+  })
 }
 
 /**
@@ -174,8 +194,8 @@ onMounted(() => {
     v-if="visible"
     v-model="visible"
     title="选择课程"
-    width="50%"
-    :show-close="false"
+    width="720px"
+    class="max-w-[calc(100vw-32px)]"
   >
     <div
       class="flex justify-between items-center"
@@ -183,7 +203,7 @@ onMounted(() => {
       <el-input
         v-model="params.name"
         class="max-w-110 max-md:max-w-none max-sm:w-full"
-        placeholder="请输入文件名称"
+        placeholder="请输入课程名称"
         clearable
         @keyup.enter="handleSearch"
         @clear="handleSearch"
@@ -206,7 +226,7 @@ onMounted(() => {
       :data="table.rows"
       :columns="columns"
       :pagination="pagination"
-      row-key="asId"
+      row-key="couId"
       highlight-current-row
       @current-change="handleTableCurrentChange"
       @pagination:size-change="handleSizeChange"
@@ -237,6 +257,7 @@ onMounted(() => {
         <el-button
           link
           size="small"
+          @click="goToCourseOutline(row)"
         >
           查看
         </el-button>
@@ -252,22 +273,25 @@ onMounted(() => {
           <ArtButton
             type="primary"
             size="small"
+            :disabled="isCourseAdded(row)"
             @click="addCourse(row)"
           >
-            添加
-          </ArtButton>
-
-          <ArtButton
-            type="warning"
-            size="small"
-            @click="addCourse(row)"
-          >
-            已添加
+            {{ isCourseAdded(row) ? '已添加' : '添加' }}
           </ArtButton>
 
         </div>
       </template>
     </ArtTable>
+
+    <template
+      #footer
+    >
+      <ArtButton
+        @click="visible = false"
+      >
+        关闭
+      </ArtButton>
+    </template>
   </el-dialog>
 </template>
 
