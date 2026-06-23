@@ -101,12 +101,12 @@ type Stage = {
 /**
    * 标签页激活状态
    */
-const activeTab = ref('basic')
+const activeTab = ref<'basic' | 'setting'>('basic')
 
 /**
    * 激活的阶段ID
    */
-const activeStageId = ref('1')
+const activeStageId = ref('0')
 
 /**
    * 阶段索引计数器
@@ -138,31 +138,6 @@ const currentStageIndex = ref(0)
  * 阶段表单实例
  */
 const stageFormRefs = ref<FormInstance[]>([])
-
-/**
-   * 阶段列表
-   */
-const stages = ref<Stage[]>([
-  {
-    id: '1',
-    name: '学习阶段一',
-    description: '学习阶段一阶段描述',
-    courses: [
-      {
-        id: '1',
-        name: '课程1',
-        type: '在线课程',
-        required: true,
-      },
-    ],
-  },
-  {
-    id: '2',
-    name: '学习阶段二',
-    description: '学习阶段二阶段描述',
-    courses: [],
-  },
-])
 
 /**
  * 校验阶段课程
@@ -378,7 +353,7 @@ function moveCourse(stageIndex: number, courseIndex: number, direction: 'up' | '
     />
 
     <AdminPageHeader
-      title="编辑学习项目"
+      :title="projectStageList.projName"
     >
       <template
         #extra
@@ -417,10 +392,10 @@ function moveCourse(stageIndex: number, courseIndex: number, direction: 'up' | '
               @edit="handleTabsEdit"
             >
               <el-tab-pane
-                v-for="(stage, index) in stages"
-                :key="stage.id"
-                :label="`阶段 ${stage.id}: ${stage.name}`"
-                :name="stage.id"
+                v-for="(stage, index) in projectStageList.nodes"
+                :key="stage.stageId"
+                :label="`阶段 ${index + 1}: ${stage.stageName}`"
+                :name="stage.stageId"
               >
                 <el-form
                   :ref="(formRef) => setStageFormRef(formRef as FormInstance | undefined, index)"
@@ -434,7 +409,7 @@ function moveCourse(stageIndex: number, courseIndex: number, direction: 'up' | '
                     required
                   >
                     <el-input
-                      v-model="stage.name"
+                      v-model="stage.stageName"
                       placeholder="请输入阶段名称"
                       class="w-full"
                     />
@@ -444,7 +419,7 @@ function moveCourse(stageIndex: number, courseIndex: number, direction: 'up' | '
                     label="阶段描述"
                   >
                     <el-input
-                      v-model="stage.description"
+                      v-model="stage.stageIntro"
                       type="textarea"
                       :rows="4"
                       placeholder="请输入阶段描述"
@@ -465,8 +440,8 @@ function moveCourse(stageIndex: number, courseIndex: number, direction: 'up' | '
                       >
                         <!-- 课程列表 -->
                         <div
-                          v-for="(course, courseIndex) in stage.courses"
-                          :key="course.id"
+                          v-for="(course, courseIndex) in stage.course"
+                          :key="course.couID"
                           class="rounded-lg border border-(--art-card-border) p-4"
                         >
                           <div
@@ -478,7 +453,7 @@ function moveCourse(stageIndex: number, courseIndex: number, direction: 'up' | '
                               <div
                                 class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary"
                               >
-                                {{ course.id }}
+                                {{ course.couID }}
                               </div>
 
                               <div
@@ -487,18 +462,19 @@ function moveCourse(stageIndex: number, courseIndex: number, direction: 'up' | '
                                 <div
                                   class="truncate text-sm font-medium text-g-900"
                                 >
-                                  {{ course.type }} {{ course.name }}
+                                  <!-- {{ course.type }} {{ course.name }} -->
+                                  111111111
                                 </div>
 
                                 <div
                                   class="mt-1 text-xs text-g-600"
                                 >
-                                  {{ course.required ? '必修课程' : '选修课程' }}
+                                  {{ course.isRequired ? '必修课程' : '选修课程' }}
                                 </div>
                               </div>
 
                               <el-select
-                                v-model="course.required"
+                                v-model="course.isRequired"
                                 placeholder="选择类型"
                                 class="w-24 max-sm:col-start-2"
                               >
@@ -527,7 +503,7 @@ function moveCourse(stageIndex: number, courseIndex: number, direction: 'up' | '
                               <ArtButton
                                 icon="ri:arrow-down-line"
                                 tooltip="下移"
-                                :disabled="courseIndex === stage.courses.length - 1"
+                                :disabled="courseIndex === stage.course.length - 1"
                                 @click="moveCourse(index, courseIndex, 'down')"
                               />
 
@@ -545,7 +521,7 @@ function moveCourse(stageIndex: number, courseIndex: number, direction: 'up' | '
                       </div>
 
                       <el-empty
-                        v-if="!stage.courses.length"
+                        v-if="!stage.course.length"
                         description="暂无课程"
                         :image-size="80"
                       />
@@ -568,7 +544,7 @@ function moveCourse(stageIndex: number, courseIndex: number, direction: 'up' | '
 
         <el-tab-pane
           label="高级设置"
-          name="advanced"
+          name="setting"
           class="art-card"
         >
           <!-- 高级设置内容 -->
@@ -602,7 +578,6 @@ function moveCourse(stageIndex: number, courseIndex: number, direction: 'up' | '
               </div>
 
               <el-switch
-                v-model="advancedSettings.enableMultipleStages"
                 active-text=""
                 inactive-text=""
               />
@@ -636,7 +611,6 @@ function moveCourse(stageIndex: number, courseIndex: number, direction: 'up' | '
               </div>
 
               <el-radio-group
-                v-model="advancedSettings.unlockCondition"
                 class="flex flex-wrap gap-x-6 gap-y-2"
               >
                 <el-radio
@@ -687,7 +661,6 @@ function moveCourse(stageIndex: number, courseIndex: number, direction: 'up' | '
               </div>
 
               <el-radio-group
-                v-model="advancedSettings.displayMode"
                 class="flex flex-wrap gap-x-6 gap-y-2"
               >
                 <el-radio
@@ -706,19 +679,6 @@ function moveCourse(stageIndex: number, courseIndex: number, direction: 'up' | '
           </div>
         </el-tab-pane>
       </el-tabs>
-
-      <div
-        class="flex justify-end"
-      >
-        <ArtButton
-          type="success"
-          class="px-10 py-5 text-2xl!"
-          @click="handleSubmitProject"
-        >
-          完成
-        </ArtButton>
-
-      </div>
     </div>
   </div>
 </template>
