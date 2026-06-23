@@ -7,6 +7,22 @@ const route = useRoute()
 const router = useRouter()
 
 /**
+ * 项目列表页路径。
+ */
+const PROJECT_LIST_PATH = '/admin/project'
+
+/**
+ * 返回项目列表页并关闭当前编辑标签。
+ */
+function backToProjectList() {
+  // workTabStore.removeTab(route.path)
+
+  router.push({
+    path: PROJECT_LIST_PATH,
+  })
+}
+
+/**
  * 加载状态
  */
 const loading = ref(false)
@@ -96,6 +112,7 @@ function goToCourseEdit(course: AdminApi.Project.ProjectStageListItemCourseListI
         课程总数: ${projectStageList.projStageCourse},
         小节总数: ${projectStageList.projSectionCount}
       `]"
+      @back="backToProjectList"
     >
       <template
         #extra

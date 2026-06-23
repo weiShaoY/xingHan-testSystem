@@ -25,47 +25,12 @@ import AddCourseDialog from './AddCourseDialog.vue'
 const route = useRoute()
 
 /**
- * 加载状态
- */
-const loading = ref(false)
-
-/**
  * 当前项目 ID
  */
 const projId = computed(() => {
   return Number(route.params.projId || 0)
 })
 
-/**
- * 项目阶段列表
- */
-const projectStageList = ref<AdminApi.Project.ProjectStageListResponse>({
-  projName: '',
-  projSectionCount: 0,
-  projStageCourse: 0,
-  nodes: [],
-})
-
-/**
- * 获取项目阶段列表
- */
-async function getProjectStageList() {
-  loading.value = true
-
-  try {
-    projectStageList.value = await fetchAdminProjectStageList(projId.value)
-  }
-  catch {
-    ElNotification.error('项目阶段列表获取失败')
-  }
-  finally {
-    loading.value = false
-  }
-}
-
-getProjectStageList()
-
-//  ////////////////////////  2026-06-23---10:28---星期二  ////////////////////////
 /**
    * 课程类型定义
    */
@@ -371,7 +336,6 @@ function moveCourse(stageIndex: number, courseIndex: number, direction: 'up' | '
   >
     <!-- 添加课程弹窗组件 -->
     <AddCourseDialog
-      v-if="isShowAddCourseDialog"
       v-model="isShowAddCourseDialog"
       :stage-index="currentStageIndex"
       @add-course="addCourseToStage"

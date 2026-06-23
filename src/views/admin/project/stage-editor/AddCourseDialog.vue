@@ -1,39 +1,17 @@
 <!------  2026-04-15---16:52---星期三  ------>
 <!------------------------------------    ------------------------------------------------->
 <script lang="ts" setup>
+import type { ColumnOption } from '@/types'
+
 import { ref } from 'vue'
-
-/**
- * 课程数据
- */
-type CourseOption = {
-
-  /** 访问码 */
-  accessCode: string
-
-  /** 课程名称 */
-  name: string
-
-  /** 课程类型 */
-  type: string
-
-  /** 课程拥有者 */
-  owner: string
-
-  /** 更新时间 */
-  updateTime: string
-
-  /** 课程简介 */
-  description: string
-
-  /** 是否已添加 */
-  isAdded: boolean
-}
 
 const props = withDefaults(defineProps<{
 
   /** 当前阶段索引 */
   stageIndex?: number
+
+  /** 当前       */
+
 }>(), {
   stageIndex: 0,
 })
@@ -41,333 +19,255 @@ const props = withDefaults(defineProps<{
 const emit = defineEmits<{
 
   /** 添加课程事件 */
-  addCourse: [course: CourseOption, stageIndex: number]
+  'add-course': [course: AdminApi.Course.CourseListItem, stageIndex: number]
 }>()
+
+const loading = ref(false)
+
+/**
+ * 表格列配置
+ */
+const columns: ColumnOption<AdminApi.Course.CourseListItem>[] = [
+  {
+    label: '课程名称',
+    prop: 'couName',
+    slotName: 'couName',
+    minWidth: 200,
+    useSlot: true,
+  },
+  {
+    label: '更新时间',
+    prop: 'updateTime',
+    minWidth: 140,
+    useSlot: true,
+    sortable: true,
+  },
+  {
+    label: '查看',
+    prop: 'view',
+    width: 100,
+    useSlot: true,
+    fixed: 'right',
+  },
+  {
+    label: '已添加',
+    prop: 'isAdded',
+    width: 200,
+    useSlot: true,
+    fixed: 'right',
+  },
+
+]
+
+/**
+ * 请求参数
+ */
+const params = reactive<FileApi.FileListParams>({
+  name: '',
+  type: 'document',
+  pageSize: 10,
+  currentPage: 1,
+})
+
+/**
+ * 表格数据
+ */
+const table = ref<AdminApi.Course.CourseListResponse>({
+  rows: [],
+  totals: 0,
+})
+
+/**
+ * 表格当前选中的课程
+ */
+const selectedCourse = ref<AdminApi.Course.CourseListItem>()
+
+/**
+ * 分页配置
+ */
+const pagination = computed(() => ({
+  current: params.currentPage,
+  size: params.pageSize,
+  total: table.value.totals,
+}))
 
 const visible = defineModel<boolean>()
 
 /**
-   * 课程搜索数据
-   */
-const searchForm = ref({
-  keyword: '',
-  owner: '',
-  updateTime: '',
-})
-
-/**
-   * 课程列表数据
-   */
-const courseList = ref<CourseOption[]>([
-  {
-    accessCode: 'bvh105',
-    name: '前端开发基础课程',
-    type: '在线课程',
-    owner: '张三',
-    updateTime: '2026-04-13 15:36',
-    description: '面向新手的 HTML、CSS、JavaScript 基础入门课程。',
-    isAdded: true,
-  },
-  {
-    accessCode: 'vue260',
-    name: 'Vue 3 项目实战',
-    type: '在线课程',
-    owner: '李四',
-    updateTime: '2026-04-16 09:20',
-    description: '从组件设计、状态管理到后台管理系统落地的完整实战课程。',
-    isAdded: false,
-  },
-  {
-    accessCode: 'ops318',
-    name: '企业安全规范培训',
-    type: '线下课程',
-    owner: '王五',
-    updateTime: '2026-04-18 14:05',
-    description: '覆盖账号安全、数据权限、合规流程等企业通用安全规范。',
-    isAdded: false,
-  },
-  {
-    accessCode: 'ai924',
-    name: 'AI 工具提效训练营',
-    type: '混合课程',
-    owner: '赵六',
-    updateTime: '2026-04-20 11:12',
-    description: '结合线上学习和线下演练，提升团队 AI 工具使用效率。',
-    isAdded: false,
-  },
-])
-
-/**
-   * 搜索课程
-   */
-function searchCourses() {
-  // 这里可以添加搜索逻辑
-  console.log('搜索课程:', searchForm.value)
-}
-
-/**
-   * 清空搜索
-   */
-function clearSearch() {
-  searchForm.value = {
-    keyword: '',
-    owner: '',
-    updateTime: '',
-  }
-}
-
-/**
-   * 查看课程详情
-   */
-function viewCourse(course: CourseOption) {
-  // 这里可以添加查看课程详情的逻辑
-  console.log('查看课程:', course)
-}
-
-/**
    * 添加课程
    */
-function addCourse(course: CourseOption) {
-  emit('addCourse', course, props.stageIndex)
+function addCourse(course: AdminApi.Course.CourseListItem) {
+  emit('add-course', course, props.stageIndex)
 
-  // 更新课程列表中的状态
-  const courseItem = courseList.value.find(item => item.accessCode === course.accessCode)
+  // // 更新课程列表中的状态
+  // const courseItem = courseList.value.find(item => item.accessCode === course.accessCode)
 
-  if (courseItem) {
-    courseItem.isAdded = true
+  // if (courseItem) {
+  //   courseItem.isAdded = true
+  // }
+}
+
+/**
+ * 选择表格行
+ */
+function handleTableCurrentChange(row?: AdminApi.Course.CourseListItem) {
+  selectedCourse.value = row
+}
+
+/**
+ * 清空表格当前选择
+ */
+function clearSelectedFile() {
+  selectedCourse.value = undefined
+}
+
+/**
+ * 获取表格数据
+ */
+async function getTable() {
+  loading.value = true
+
+  try {
+    table.value = await fetchAdminCourseList(params)
+  }
+  finally {
+    loading.value = false
   }
 }
 
 /**
-   * 关闭弹窗
-   */
-function closeDialog() {
-  visible.value = false
+ * 每页条数变化
+ */
+function handleSizeChange(size: number) {
+  params.pageSize = size
+  params.currentPage = 1
+  clearSelectedFile()
+  void getTable()
 }
+
+/**
+ * 当前页变化
+ */
+function handleCurrentChange(currentPage: number) {
+  params.currentPage = currentPage
+  clearSelectedFile()
+  void getTable()
+}
+
+/**
+ * 搜索
+ */
+function handleSearch() {
+  params.currentPage = 1
+  params.name = params.name.trim()
+  clearSelectedFile()
+  void getTable()
+}
+
+onMounted(() => {
+  void getTable()
+})
 </script>
 
 <template>
   <el-dialog
+    v-if="visible"
     v-model="visible"
-    title="添加课程到学习项目"
-    width="800px"
-    :close-on-click-modal="false"
+    title="选择课程"
+    width="50%"
+    :show-close="false"
   >
-    <!-- 搜索区域 -->
     <div
-      class="mb-4 flex flex-col gap-3"
+      class="flex justify-between items-center"
     >
       <el-input
-        v-model="searchForm.keyword"
-        placeholder="课程名称、介绍、标签和访问码"
-        class="w-full"
-      />
-
-      <div
-        class="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto_auto] gap-2 max-md:grid-cols-2 max-sm:grid-cols-1"
+        v-model="params.name"
+        class="max-w-110 max-md:max-w-none max-sm:w-full"
+        placeholder="请输入文件名称"
+        clearable
+        @keyup.enter="handleSearch"
+        @clear="handleSearch"
       >
-        <el-input
-          v-model="searchForm.owner"
-          placeholder="拥有者"
-        />
-
-        <el-input
-          v-model="searchForm.updateTime"
-          placeholder="课程更新时间"
-        />
-
-        <el-button
-          type="primary"
-          @click="searchCourses"
+        <template
+          #append
         >
-          搜索
-        </el-button>
+          <ArtSvgIcon
+            icon="tdesign:search"
+          />
+        </template>
+      </el-input>
 
-        <el-button
-          @click="clearSearch"
-        >
-          清空
-        </el-button>
-      </div>
     </div>
 
-    <!-- 课程列表 -->
-    <el-table
-      :data="courseList"
-      style="width: 100%"
-      border
-      class="max-sm:hidden"
+    <!-- 文档表格 -->
+    <ArtTable
+      class="max-h-[calc(100vh-400px)] overflow-auto"
+      :loading="loading"
+      :data="table.rows"
+      :columns="columns"
+      :pagination="pagination"
+      row-key="asId"
+      highlight-current-row
+      @current-change="handleTableCurrentChange"
+      @pagination:size-change="handleSizeChange"
+      @pagination:current-change="handleCurrentChange"
     >
-      <el-table-column
-        prop="accessCode"
-        label="访问码"
-        width="100"
-      />
-
-      <el-table-column
-        prop="name"
-        label="课程名称"
-        min-width="200"
-      />
-
-      <el-table-column
-        prop="type"
-        label="类型"
-        width="100"
-      />
-
-      <el-table-column
-        prop="owner"
-        label="拥有者"
-        width="100"
-      />
-
-      <el-table-column
-        prop="updateTime"
-        label="更新时间"
-        width="150"
-      />
-
-      <el-table-column
-        label="查看"
-        width="80"
-        align="center"
-      >
-        <template
-          #default="scope"
-        >
-          <el-button
-            link
-            size="small"
-            @click="viewCourse(scope.row)"
-          >
-            查看
-          </el-button>
-        </template>
-      </el-table-column>
-
-      <el-table-column
-        label="添加"
-        width="80"
-        align="center"
-      >
-        <template
-          #default="scope"
-        >
-          <el-button
-            v-if="!scope.row.isAdded"
-            type="primary"
-            size="small"
-            @click="addCourse(scope.row)"
-          >
-            添加
-          </el-button>
-
-          <el-button
-            v-else
-            type="info"
-            size="small"
-            disabled
-          >
-            已添加
-          </el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-
-    <div
-      class="hidden flex-col gap-3 max-sm:flex"
-    >
-      <div
-        v-for="course in courseList"
-        :key="course.accessCode"
-        class="rounded-lg border border-(--art-card-border) p-4"
+      <template
+        #couName="{ row }"
       >
         <div
-          class="flex items-start justify-between gap-3"
+          class="min-w-0 flex items-center gap-2"
         >
-          <div
-            class="min-w-0"
+          {{ row.couName || '-' }}
+
+        </div>
+      </template>
+
+      <template
+        #updateTime="{ row }"
+      >
+        <span>
+          {{ formatDateTime(row.updateTime) }}
+        </span>
+      </template>
+
+      <template
+        #view="{ row }"
+      >
+        <el-button
+          link
+          size="small"
+        >
+          查看
+        </el-button>
+      </template>
+
+      <template
+        #isAdded="{ row }"
+      >
+
+        <div
+          class="flex items-center gap-2"
+        >
+          <ArtButton
+            type="primary"
+            size="small"
+            @click="addCourse(row)"
           >
-            <div
-              class="font-medium text-g-900"
-            >
-              {{ course.name }}
-            </div>
-
-            <div
-              class="mt-2 flex flex-col gap-1 text-xs text-g-600"
-            >
-              <span>访问码：{{ course.accessCode }}</span>
-
-              <span>类型：{{ course.type }}</span>
-
-              <span>拥有者：{{ course.owner }}</span>
-
-              <span>更新时间：{{ course.updateTime }}</span>
-
-              <span>{{ course.description }}</span>
-            </div>
-          </div>
+            添加
+          </ArtButton>
 
           <ArtButton
-            type="view"
-            @click="viewCourse(course)"
-          />
-        </div>
-
-        <div
-          class="mt-4 flex justify-end"
-        >
-          <el-button
-            v-if="!course.isAdded"
-            type="primary"
+            type="warning"
             size="small"
-            @click="addCourse(course)"
-          >
-            添加
-          </el-button>
-
-          <el-button
-            v-else
-            type="info"
-            size="small"
-            disabled
+            @click="addCourse(row)"
           >
             已添加
-          </el-button>
+          </ArtButton>
+
         </div>
-      </div>
-    </div>
-
-    <!-- 分页信息 -->
-    <div
-      class="mt-4 flex justify-end"
-    >
-      <span>共 {{ courseList.length }} 条</span>
-    </div>
-
-    <!-- 底部按钮 -->
-    <template
-      #footer
-    >
-      <div
-        class="flex justify-end"
-      >
-        <el-button
-          @click="closeDialog"
-        >
-          取消
-        </el-button>
-
-        <el-button
-          type="primary"
-          @click="closeDialog"
-        >
-          完成
-        </el-button>
-      </div>
-    </template>
+      </template>
+    </ArtTable>
   </el-dialog>
 </template>
 

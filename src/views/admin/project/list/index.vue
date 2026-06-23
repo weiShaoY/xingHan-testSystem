@@ -178,6 +178,7 @@ async function deleteProject(item: AdminApi.Project.ProjectListItem) {
     ElNotification.error('删除失败')
   }
 }
+
 </script>
 
 <template>
