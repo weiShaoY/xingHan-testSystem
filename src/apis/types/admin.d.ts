@@ -852,6 +852,11 @@ declare namespace AdminApi {
     }
 
     /**
+     * 项目列表响应
+     */
+    type ProjectListResponse = CommonApi.PaginatedResponse<ProjectListItem>
+
+    /**
      * 项目新增或者编辑参数
      */
     type ProjectEditor = {
@@ -1016,63 +1021,7 @@ declare namespace AdminApi {
       updateTime?: string
     }
 
-    // / ///////// ////////////////////////  2026-06-17---17:47---星期三  ////////////////////////
-
-    /**
-     * 项目列表响应
-     */
-    type ProjectListResponse = CommonApi.PaginatedResponse<ProjectListItem>
-
-    /**
-     * 项目下学习阶段列表项下 课程项
-     */
-    type ProjectStageListItemCourseListItem = {
-
-      /**
-       * 课程ID
-       */
-      couID: number
-
-      /**
-       * 课程名称
-       */
-      couName: string
-
-      /**
-       * 是否可免费预览（0=不可预览，1=可预览）
-       */
-      isFree_Preview: number
-
-      /**
-       * 是否必修（1=必修，0=选修）
-       */
-      isRequired: number
-
-      /**
-       * 推荐学习顺序（同Sort_Order，冗余字段）
-       */
-      recommended_Order: number
-
-      /**
-       * 备注
-       */
-      remark: string
-
-      /**
-       * 关联ID（主键，自增）
-       */
-      scId: number
-
-      /**
-       * 课程在阶段中的排序（学习顺序）
-       */
-      sortOrder: number
-
-      /**
-       * 阶段ID
-       */
-      stageId: number
-    }
+    // / ///////// ////////////////////////  项目学习阶段  ////////////////////////
 
     /**
      *  项目下学习阶段列表项
@@ -1093,7 +1042,7 @@ declare namespace AdminApi {
       /**
        * 阶段下课程
        */
-      course: ProjectStageListItemCourseListItem[]
+      course: AdminApi.Course.CourseListItem[]
 
       /**
        * 创建人ID

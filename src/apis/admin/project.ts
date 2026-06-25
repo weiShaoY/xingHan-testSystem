@@ -75,7 +75,7 @@ export function fetchAdminProjectStageList(projId: number) {
  */
 export function fetchAdminProjectStageListUpdate(data: AdminApi.Project.ProjectStageListEditor) {
   return request.post<boolean>({
-    url: '/admin/learningstage/updateStagesWithCourses',
+    url: '/admin/project/updateStagesWithCourses',
     data,
   })
 }

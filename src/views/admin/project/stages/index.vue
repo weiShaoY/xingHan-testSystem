@@ -81,11 +81,11 @@ function goToEdit() {
 /**
  * 跳转到课程大纲页
  */
-function goToCourseOutline(course: AdminApi.Project.ProjectStageListItemCourseListItem) {
+function goToCourseOutline(course: AdminApi.Course.CourseListItem) {
   router.push({
     name: 'AdminCourseOutline',
     params: {
-      couId: course.couID,
+      couId: course.couId,
     },
   })
 }
@@ -93,11 +93,11 @@ function goToCourseOutline(course: AdminApi.Project.ProjectStageListItemCourseLi
 /**
  * 跳转到课程编辑页
  */
-function goToCourseEdit(course: AdminApi.Project.ProjectStageListItemCourseListItem) {
+function goToCourseEdit(course: AdminApi.Course.CourseListItem) {
   router.push({
     name: 'AdminCourseSetting',
     params: {
-      couId: course.couID,
+      couId: course.couId,
     },
   })
 }
@@ -178,7 +178,7 @@ function goToCourseEdit(course: AdminApi.Project.ProjectStageListItemCourseListI
         >
           <div
             v-for="course in item.course"
-            :key="course.scId"
+            :key="course.couId"
             class="rounded-custom-sm border-full-d bg-box px-4 py-4 transition-colors hover:border-primary/40"
           >
             <div
@@ -196,7 +196,7 @@ function goToCourseEdit(course: AdminApi.Project.ProjectStageListItemCourseListI
                     {{ course.couName || '-' }}
                   </div>
 
-                  <el-tag
+                  <!-- <el-tag
                     :type="course.isRequired === 1 ? 'danger' : 'info'"
                     size="small"
                   >
@@ -209,14 +209,14 @@ function goToCourseEdit(course: AdminApi.Project.ProjectStageListItemCourseListI
                     size="small"
                   >
                     支持预览
-                  </el-tag>
+                  </el-tag> -->
                 </div>
 
                 <div
-                  v-if="course.remark"
+                  v-if="course.couIntro"
                   class="mt-2 text-xs leading-relaxed text-g-500"
                 >
-                  {{ course.remark }}
+                  {{ course.couIntro }}
                 </div>
               </div>
 

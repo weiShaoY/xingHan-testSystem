@@ -26,8 +26,6 @@ const router = useRouter()
 
 type ProjectStage = AdminApi.Project.ProjectStageListItem
 
-type ProjectStageCourse = AdminApi.Project.ProjectStageListItemCourseListItem
-
 type StageCourseValidator = NonNullable<FormItemRule['validator']>
 
 /**
@@ -84,7 +82,7 @@ const currentStageIndex = ref(0)
  * 当前阶段已经添加的课程 ID。
  */
 const currentStageCourseIds = computed(() => {
-  return projectStageList.value.nodes[currentStageIndex.value]?.course.map(item => item.couID) ?? []
+  return projectStageList.value.nodes[currentStageIndex.value]?.course.map(item => item.couId) ?? []
 })
 
 /**
@@ -97,7 +95,7 @@ const stageFormRefs = ref<FormInstance[]>([])
  */
 function validateStageCourses(
   _rule: Parameters<StageCourseValidator>[0],
-  value: ProjectStageCourse[] | undefined,
+  value: AdminApi.Course.CourseListItem[] | undefined,
   callback: Parameters<StageCourseValidator>[2],
 ) {
   if (!value?.length) {
@@ -105,7 +103,7 @@ function validateStageCourses(
     return
   }
 
-  const hasInvalidCourse = value.some(course => !course.couID || !String(course.couName || '').trim())
+  const hasInvalidCourse = value.some(course => !course.couId || !String(course.couName || '').trim())
 
   if (hasInvalidCourse) {
     callback(new Error('请完善课程信息'))
@@ -184,11 +182,11 @@ function backToProjectStages() {
 /**
  * 跳转到课程大纲页
  */
-function goToCourseOutline(course: ProjectStageCourse) {
+function goToCourseOutline(course: AdminApi.Course.CourseListItem) {
   router.push({
     name: 'AdminCourseOutline',
     params: {
-      couId: course.couID,
+      couId: course.couId,
     },
   })
 }
@@ -493,27 +491,6 @@ function moveCourse(stageIndex: number, courseIndex: number, direction: 'up' | '
                   </el-form-item>
 
                   <el-form-item
-                    label="阶段类型"
-                    prop="stageType"
-                  >
-                    <el-radio-group
-                      v-model="stage.stageType"
-                    >
-                      <el-radio
-                        :value="1"
-                      >
-                        必修阶段
-                      </el-radio>
-
-                      <el-radio
-                        :value="2"
-                      >
-                        选修阶段
-                      </el-radio>
-                    </el-radio-group>
-                  </el-form-item>
-
-                  <el-form-item
                     label="阶段描述"
                   >
                     <el-input
@@ -539,7 +516,7 @@ function moveCourse(stageIndex: number, courseIndex: number, direction: 'up' | '
                         <!-- 课程列表 -->
                         <div
                           v-for="(course, courseIndex) in stage.course"
-                          :key="`${course.scId}-${course.couID}`"
+                          :key="`${course.couId}`"
                           class="rounded-lg border border-(--art-card-border) p-4"
                         >
                           <div
@@ -563,14 +540,14 @@ function moveCourse(stageIndex: number, courseIndex: number, direction: 'up' | '
                                   {{ course.couName || '-' }}
                                 </div>
 
-                                <div
+                                <!-- <div
                                   class="mt-1 text-xs text-g-600"
                                 >
                                   {{ course.isRequired === 1 ? '必修课程' : '选修课程' }}
-                                </div>
+                                </div> -->
                               </div>
 
-                              <el-select
+                              <!-- <el-select
                                 v-model="course.isRequired"
                                 placeholder="选择类型"
                                 class="w-24 max-sm:col-start-2"
@@ -584,7 +561,7 @@ function moveCourse(stageIndex: number, courseIndex: number, direction: 'up' | '
                                   label="选修"
                                   :value="0"
                                 />
-                              </el-select>
+                              </el-select> -->
                             </div>
 
                             <div
