@@ -30,10 +30,13 @@ const loading = ref(false)
 /**
  * 项目阶段列表
  */
-const projectStageList = ref<AdminApi.Project.ProjectStageListResponse>({
+const projectStageList = ref<AdminApi.Project.ProjectStageListEditor>({
   projName: '',
   projSectionCount: 0,
   projStageCourse: 0,
+  displayMethod: 0,
+  isLearningStages: 0,
+  unlockConditions: 2,
   nodes: [],
 })
 

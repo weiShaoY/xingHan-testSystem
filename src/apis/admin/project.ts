@@ -62,10 +62,20 @@ export function fetchAdminProjectDelete(projId: number) {
  * @param projId 项目ID
  */
 export function fetchAdminProjectStageList(projId: number) {
-  return request.post<AdminApi.Project.ProjectStageListResponse>({
+  return request.post<AdminApi.Project.ProjectStageListEditor>({
     url: '/admin/project/getStageDetail',
     data: {
       projId,
     },
+  })
+}
+
+/**
+ *  保存项目学习阶段信息
+ */
+export function fetchAdminProjectStageListUpdate(data: AdminApi.Project.ProjectStageListEditor) {
+  return request.post<boolean>({
+    url: '/admin/learningstage/updateStagesWithCourses',
+    data,
   })
 }

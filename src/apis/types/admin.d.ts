@@ -1155,7 +1155,7 @@ declare namespace AdminApi {
     /**
      * 项目下学习阶段列表响应
      */
-    type ProjectStageListResponse = {
+    type ProjectStageListEditor = {
 
       /**
        * 项目名称
@@ -1163,14 +1163,32 @@ declare namespace AdminApi {
       projName: string
 
       /**
+       * 课程数量
+       */
+      projStageCourse: number
+
+      /**
        * 小节数量
        */
       projSectionCount: number
 
       /**
-       * 课程数量
+       * 展示方式
+       * @description 0=展开 1=折叠
        */
-      projStageCourse: number
+      displayMethod: 0 | 1
+
+      /**
+       * 是否设置多个学习阶段
+       * @description 0=否，1=是。
+       */
+      isLearningStages: 0 | 1
+
+      /**
+       * 解锁条件
+       * @description 0=按学习阶段解锁 1=按课程解锁 2=不限定学习顺序
+       */
+      unlockConditions: 0 | 1 | 2
 
       nodes: ProjectStageListItem[]
     }

@@ -108,6 +108,8 @@ declare global {
   const fetchAdminProjectList: typeof import('../../apis/admin/project').fetchAdminProjectList
   const fetchAdminProjectSetting: typeof import('../../apis/admin/project').fetchAdminProjectSetting
   const fetchAdminProjectStageList: typeof import('../../apis/admin/project').fetchAdminProjectStageList
+  const fetchAdminProjectStageListUpdate: typeof import('../../apis/admin/project').fetchAdminProjectStageListUpdate
+  const fetchAdminProjectStageSave: typeof import('../../apis/admin/project').fetchAdminProjectStageSave
   const fetchAdminProjectUpdate: typeof import('../../apis/admin/project').fetchAdminProjectUpdate
   const fetchAdminUpdateCourse: typeof import('../../apis/admin/index').fetchAdminCourseUpdate
   const fetchAdminUploadFile: typeof import('../../apis/file/index').fetchAdminUploadFile
@@ -576,6 +578,7 @@ declare module 'vue' {
     readonly fetchAdminProjectList: UnwrapRef<typeof import('../../apis/admin/project')['fetchAdminProjectList']>
     readonly fetchAdminProjectSetting: UnwrapRef<typeof import('../../apis/admin/project')['fetchAdminProjectSetting']>
     readonly fetchAdminProjectStageList: UnwrapRef<typeof import('../../apis/admin/project')['fetchAdminProjectStageList']>
+    readonly fetchAdminProjectStageListUpdate: UnwrapRef<typeof import('../../apis/admin/project')['fetchAdminProjectStageListUpdate']>
     readonly fetchAdminProjectUpdate: UnwrapRef<typeof import('../../apis/admin/project')['fetchAdminProjectUpdate']>
     readonly fetchAdminUploadFile: UnwrapRef<typeof import('../../apis/file/index')['fetchAdminUploadFile']>
     readonly fetchClientGetPublicKey: UnwrapRef<typeof import('../../apis/client/index')['fetchClientGetPublicKey']>

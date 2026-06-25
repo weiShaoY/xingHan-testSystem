@@ -2,9 +2,6 @@
 <!------------------------------------    ------------------------------------------------->
 <script lang="ts" setup>
 
-/**
- * 是否为编辑模式。
- */
 import type {
   FormInstance,
   FormItemRule,
@@ -45,83 +42,42 @@ const projId = computed(() => {
   return Number(route.params.projId || 0)
 })
 
-//  ////////////////////////  2026-06-23---10:28---星期二  ////////////////////////
 /**
-   * 标签页激活状态
-   */
+ * 标签页激活状态
+ */
 const activeTab = ref<'basic' | 'setting'>('basic')
 
 /**
-   * 激活的阶段ID
-   */
-const activeStageId = ref<TabPaneName>('')
-
-/**
- * 返回项目阶段列表页。
+ * 激活的阶段 ID
  */
-function backToProjectStages() {
-  router.push({
-    name: 'AdminProjectStages',
-    params: {
-      projId: projId.value,
-    },
-  })
-}
+const activeStageId = ref<TabPaneName>('')
 
 /**
  * 项目阶段列表
  */
-const projectStageList = ref<AdminApi.Project.ProjectStageListResponse>({
+const projectStageList = ref<AdminApi.Project.ProjectStageListEditor>({
   projName: '',
   projSectionCount: 0,
   projStageCourse: 0,
+  displayMethod: 0,
+  isLearningStages: 0,
+  unlockConditions: 2,
   nodes: [],
 })
 
 /**
- * 获取项目阶段列表
+ * 新增阶段临时 ID
  */
-async function getProjectStageList() {
-  loading.value = true
-
-  try {
-    projectStageList.value = await fetchAdminProjectStageList(projId.value)
-    activeStageId.value = projectStageList.value.nodes[0]?.stageId ?? ''
-  }
-  catch {
-    ElNotification.error('项目阶段列表获取失败')
-  }
-  finally {
-    loading.value = false
-  }
-}
-
-getProjectStageList()
-
-/**
-   * 新增阶段临时 ID。
-   */
 let nextTempStageId = -1
 
 /**
-   * 高级设置
-   */
-const advancedSettings = ref({
-  // 是否启用多个学习阶段
-  enableMultipleStages: true,
-
-  // 解锁条件：stage-按学习阶段解锁，course-按课程解锁，none-不限定学习顺序
-  unlockCondition: 'stage',
-
-  // 展示方式：expanded-展开学习阶段下的课程，collapsed-折叠学习阶段下的课程
-  displayMode: 'expanded',
-})
-
-/**
-   * 弹窗相关数据
-   */
+ * 添加课程弹窗显示状态
+ */
 const isShowAddCourseDialog = ref(false)
 
+/**
+ * 当前操作的阶段索引
+ */
 const currentStageIndex = ref(0)
 
 /**
@@ -178,9 +134,29 @@ const stageRules: FormRules<ProjectStage> = {
   ],
 }
 
+/**
+ * 获取项目阶段列表
+ */
+async function getProjectStageList() {
+  loading.value = true
+
+  try {
+    projectStageList.value = await fetchAdminProjectStageList(projId.value)
+    activeStageId.value = projectStageList.value.nodes[0]?.stageId ?? ''
+  }
+  catch {
+    ElNotification.error('项目阶段列表获取失败')
+  }
+  finally {
+    loading.value = false
+  }
+}
+
 onBeforeUpdate(() => {
   stageFormRefs.value = []
 })
+
+getProjectStageList()
 
 /**
  * 设置阶段表单实例
@@ -194,7 +170,31 @@ function setStageFormRef(formRef: FormInstance | undefined, index: number) {
 }
 
 /**
- * 刷新阶段和课程排序。
+ * 返回项目阶段列表页
+ */
+function backToProjectStages() {
+  router.push({
+    name: 'AdminProjectStages',
+    params: {
+      projId: projId.value,
+    },
+  })
+}
+
+/**
+ * 跳转到课程大纲页
+ */
+function goToCourseOutline(course: ProjectStageCourse) {
+  router.push({
+    name: 'AdminCourseOutline',
+    params: {
+      couId: course.couID,
+    },
+  })
+}
+
+/**
+ * 刷新阶段和课程排序
  */
 function refreshSortOrder() {
   projectStageList.value.nodes.forEach((stage, stageIndex) => {
@@ -209,7 +209,7 @@ function refreshSortOrder() {
 }
 
 /**
- * 创建空学习阶段。
+ * 创建空学习阶段
  */
 function createStage(): ProjectStage {
   const sortOrder = projectStageList.value.nodes.length + 1
@@ -235,19 +235,20 @@ function createStage(): ProjectStage {
 }
 
 /**
- * 通过标签页 name 获取阶段索引。
+ * 通过标签页 name 获取阶段索引
  */
 function findStageIndexByName(targetName: TabPaneName) {
   return projectStageList.value.nodes.findIndex(stage => `${stage.stageId}` === `${targetName}`)
 }
 
 /**
- * 处理标签页的编辑（添加/删除）。
-   */
+ * 处理标签页的编辑（添加/删除）
+ */
 function handleTabsEdit(targetName: TabPaneName | undefined, action: 'remove' | 'add') {
   if (action === 'add') {
     const newStage = createStage()
 
+    projectStageList.value.isLearningStages = 1
     projectStageList.value.nodes.push(newStage)
     activeStageId.value = newStage.stageId
   }
@@ -284,73 +285,59 @@ async function handleSubmitProject() {
   }
 
   activeTab.value = 'basic'
+
   await nextTick()
 
-  for (const [index, stage] of projectStageList.value.nodes.entries()) {
-    activeStageId.value = stage.stageId
-    await nextTick()
+  // for (const [index, stage] of projectStageList.value.nodes.entries()) {
+  //   activeStageId.value = stage.stageId
+  //   await nextTick()
 
-    try {
-      await stageFormRefs.value[index]?.validate()
-    }
-    catch {
-      ElMessage.warning(`请完善阶段 ${index + 1} 的信息`)
-      return
-    }
-  }
+  //   try {
+  //     await stageFormRefs.value[index]?.validate()
+  //   }
+  //   catch {
+  //     ElMessage.warning(`请完善阶段 ${index + 1} 的信息`)
+  //     return
+  //   }
+  // }
 
   refreshSortOrder()
 
-  const formData = {
-    projId: projId.value,
+  const formData: AdminApi.Project.ProjectStageListEditor = {
+    ...projectStageList.value,
     nodes: projectStageList.value.nodes.map(stage => ({
-      stageId: stage.stageId,
+      ...stage,
       stageName: stage.stageName.trim(),
       stageIntro: stage.stageIntro.trim(),
-      stageType: stage.stageType,
-      sortOrder: stage.sortOrder,
-      prerequisiteStage_Id: stage.prerequisiteStage_Id,
       course: stage.course.map(course => ({
-        couID: course.couID,
-        scId: course.scId,
-        isRequired: course.isRequired,
-        sortOrder: course.sortOrder,
-        recommended_Order: course.recommended_Order,
-        remark: course.remark,
+        ...course,
+        remark: course.remark.trim(),
       })),
     })),
-    advancedSettings: {
-      ...advancedSettings.value,
-    },
   }
 
   console.log('学习项目表单数据:', formData)
-  ElMessage.success('表单验证通过，保存接口接入后即可提交')
+
+  try {
+    await fetchAdminProjectStageListUpdate(formData)
+    ElMessage.success('保存成功')
+  }
+  catch {
+    ElMessage.error('保存失败')
+  }
 }
 
 /**
-   * 打开添加课程弹窗
-   */
+ * 打开添加课程弹窗
+ */
 function addCourse(stageIndex: number) {
   currentStageIndex.value = stageIndex
   isShowAddCourseDialog.value = true
 }
 
 /**
- * 跳转到课程大纲页。
+ * 添加课程到阶段
  */
-function goToCourseOutline(course: ProjectStageCourse) {
-  router.push({
-    name: 'AdminCourseOutline',
-    params: {
-      couId: course.couID,
-    },
-  })
-}
-
-/**
-   * 添加课程到阶段
-   */
 function addCourseToStage(course: AdminApi.Course.CourseListItem, stageIndex: number) {
   const stage = projectStageList.value.nodes[stageIndex]
 
@@ -385,8 +372,8 @@ function addCourseToStage(course: AdminApi.Course.CourseListItem, stageIndex: nu
 }
 
 /**
-   * 删除课程
-   */
+ * 删除课程
+ */
 function removeCourse(stageIndex: number, courseIndex: number) {
   const courses = projectStageList.value.nodes[stageIndex]?.course
 
@@ -404,9 +391,6 @@ function removeCourse(stageIndex: number, courseIndex: number) {
  */
 function moveCourse(stageIndex: number, courseIndex: number, direction: 'up' | 'down') {
   const courses = projectStageList.value.nodes[stageIndex]?.course
-
-  console.log('🚀 ~ file: index.vue:410 ~ courses:', courses)
-  console.log('🚀 ~ file: index.vue:406 ~ courseIndex:', courseIndex)
 
   if (!courses) {
     return
@@ -481,7 +465,7 @@ function moveCourse(stageIndex: number, courseIndex: number, direction: 'up' | '
               v-model="activeStageId"
               class=""
               type="card"
-              :editable="advancedSettings.enableMultipleStages"
+              editable
               @edit="handleTabsEdit"
             >
               <el-tab-pane
@@ -698,7 +682,9 @@ function moveCourse(stageIndex: number, courseIndex: number, direction: 'up' | '
               </div>
 
               <el-switch
-                v-model="advancedSettings.enableMultipleStages"
+                v-model="projectStageList.isLearningStages"
+                :active-value="1"
+                :inactive-value="0"
                 active-text=""
                 inactive-text=""
               />
@@ -732,23 +718,23 @@ function moveCourse(stageIndex: number, courseIndex: number, direction: 'up' | '
               </div>
 
               <el-radio-group
-                v-model="advancedSettings.unlockCondition"
+                v-model="projectStageList.unlockConditions"
                 class="flex flex-wrap gap-x-6 gap-y-2"
               >
                 <el-radio
-                  value="stage"
+                  :value="0"
                 >
                   按学习阶段解锁
                 </el-radio>
 
                 <el-radio
-                  value="course"
+                  :value="1"
                 >
                   按课程解锁
                 </el-radio>
 
                 <el-radio
-                  value="none"
+                  :value="2"
                 >
                   不限定学习顺序
                 </el-radio>
@@ -783,17 +769,17 @@ function moveCourse(stageIndex: number, courseIndex: number, direction: 'up' | '
               </div>
 
               <el-radio-group
-                v-model="advancedSettings.displayMode"
+                v-model="projectStageList.displayMethod"
                 class="flex flex-wrap gap-x-6 gap-y-2"
               >
                 <el-radio
-                  value="expanded"
+                  :value="0"
                 >
                   展开学习阶段下的课程
                 </el-radio>
 
                 <el-radio
-                  value="collapsed"
+                  :value="1"
                 >
                   折叠学习阶段下的课程
                 </el-radio>
