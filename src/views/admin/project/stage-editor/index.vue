@@ -54,6 +54,7 @@ const activeStageId = ref<TabPaneName>('')
  * 项目阶段列表
  */
 const projectStageList = ref<AdminApi.Project.ProjectStageListEditor>({
+  projId: projId.value,
   projName: '',
   projSectionCount: 0,
   projStageCourse: 0,
@@ -197,12 +198,6 @@ function goToCourseOutline(course: AdminApi.Course.CourseListItem) {
 function refreshSortOrder() {
   projectStageList.value.nodes.forEach((stage, stageIndex) => {
     stage.sortOrder = stageIndex + 1
-
-    stage.course.forEach((course, courseIndex) => {
-      course.sortOrder = courseIndex + 1
-      course.recommended_Order = courseIndex + 1
-      course.stageId = stage.stageId
-    })
   })
 }
 
@@ -301,16 +296,16 @@ async function handleSubmitProject() {
 
   refreshSortOrder()
 
+  console.log('🚀 ~ file: index.vue:302 ~ projId.value:', projId.value)
+  console.log('🚀 ~ file: index.vue:302 ~ projectStageList.value:', projectStageList.value)
+
   const formData: AdminApi.Project.ProjectStageListEditor = {
     ...projectStageList.value,
     nodes: projectStageList.value.nodes.map(stage => ({
       ...stage,
       stageName: stage.stageName.trim(),
       stageIntro: stage.stageIntro.trim(),
-      course: stage.course.map(course => ({
-        ...course,
-        remark: course.remark.trim(),
-      })),
+      course: stage.course,
     })),
   }
 
@@ -343,28 +338,16 @@ function addCourseToStage(course: AdminApi.Course.CourseListItem, stageIndex: nu
     return
   }
 
-  const isExist = stage.course.some(item => item.couID === course.couId)
+  const isExist = stage.course.some(item => item.couId === course.couId)
 
   if (isExist) {
     ElMessage.warning('该课程已添加到当前阶段')
     return
   }
 
-  const sortOrder = stage.course.length + 1
-
-  const newCourse: ProjectStageCourse = {
-    couID: course.couId,
-    couName: course.couName,
-    isFree_Preview: 0,
-    isRequired: 1,
-    recommended_Order: sortOrder,
-    remark: '',
-    scId: -Date.now(),
-    sortOrder,
-    stageId: stage.stageId,
-  }
-
-  stage.course.push(newCourse)
+  stage.course.push({
+    ...course,
+  })
   stageFormRefs.value[stageIndex]?.validateField('course')
   ElMessage.success('课程已添加')
 }

@@ -28,9 +28,17 @@ function backToProjectList() {
 const loading = ref(false)
 
 /**
+ * 当前项目 ID
+ */
+const projId = computed(() => {
+  return Number(route.params.projId || 0)
+})
+
+/**
  * 项目阶段列表
  */
 const projectStageList = ref<AdminApi.Project.ProjectStageListEditor>({
+  projId: projId.value,
   projName: '',
   projSectionCount: 0,
   projStageCourse: 0,
@@ -38,13 +46,6 @@ const projectStageList = ref<AdminApi.Project.ProjectStageListEditor>({
   isLearningStages: 0,
   unlockConditions: 2,
   nodes: [],
-})
-
-/**
- * 当前项目 ID
- */
-const projId = computed(() => {
-  return Number(route.params.projId || 0)
 })
 
 /**

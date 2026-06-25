@@ -1107,6 +1107,11 @@ declare namespace AdminApi {
     type ProjectStageListEditor = {
 
       /**
+       * 项目Id
+       */
+      projId: number
+
+      /**
        * 项目名称
        */
       projName: string
