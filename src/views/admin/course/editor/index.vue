@@ -69,11 +69,6 @@ const activeTab = ref<'basic' | 'apply' | 'setting'>('basic')
 const loading = ref(false)
 
 /**
- * 表单数据。
- */
-const formData = ref<AdminApi.Course.CourseEditor>(createDefaultFormData())
-
-/**
  * 当前课程 ID
  */
 const couId = computed(() => {
@@ -86,6 +81,11 @@ const couId = computed(() => {
 const isEditMode = computed(() => {
   return Boolean(route.params.couId)
 })
+
+/**
+ * 表单数据。
+ */
+const formData = ref<AdminApi.Course.CourseEditor>(createDefaultFormData())
 
 /**
  * 页面标题。
@@ -133,6 +133,7 @@ async function getCourseDetail() {
   loading.value = true
   try {
     formData.value = await fetchAdminCourseSetting(couId.value)
+    console.log('🚀 ~ file: index.vue:136 ~ formData.value:', formData.value)
   }
   catch {
     ElNotification.error('课程详情获取失败')

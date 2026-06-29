@@ -121,7 +121,7 @@ async function goToCoursePage(
   isBlank?: boolean,
 ) {
   if (routeName !== 'AdminCourseCreate' && !item?.couId) {
-    ElNotification.warning('项目信息缺失，无法跳转')
+    ElNotification.warning('课程信息缺失，无法跳转')
     return
   }
 
@@ -197,8 +197,9 @@ function goToOutline(item: AdminApi.Course.CourseListItem) {
  * @param item 需要删除的课程。
  */
 async function deleteCourse(item: AdminApi.Course.CourseListItem) {
+  console.log('🚀 ~ file: index.vue:200 ~ item:', item.couId)
   try {
-    await fetchAdminDeleteCourse(item.couId)
+    await fetchAdminCourseDelete(item.couId)
     await getCourseList()
     ElNotification.success('删除成功')
   }
