@@ -5,7 +5,7 @@ import request from '@/apis/http'
  */
 export function fetchAdminQuestionList(data: AdminApi.Question.QuestionListParams) {
   return request.post<AdminApi.Question.QuestionListResponse>({
-    url: '/admin/question/list',
+    url: '/admin/questionbank/list',
     data,
   })
 }

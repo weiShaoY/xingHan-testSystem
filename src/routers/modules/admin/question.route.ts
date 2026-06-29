@@ -39,7 +39,7 @@ export const Question: AppRouteRecord = {
       },
     },
     {
-      path: 'edit/:id',
+      path: 'edit/:qbId',
       name: 'AdminQuestionEdit',
       component: '/admin/question/editor',
       meta: {
@@ -52,7 +52,7 @@ export const Question: AppRouteRecord = {
       },
     },
     {
-      path: 'detail/:id',
+      path: 'detail/:qbId',
       name: 'AdminQuestionDetail',
       component: '/admin/question/detail',
       meta: {

@@ -3,142 +3,185 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 
+/**
+ * 分页条数选项。
+ */
+const PAGE_SIZE_OPTIONS = [10, 20, 30, 50]
+
 const router = useRouter()
 
 /**
- * 题库类型定义
+ * 工作标签页 Store，用于更新动态页面标签标题。
  */
-type QuestionBank = {
-  id: number
+const workTabStore = useWorkTabStore()
 
-  name: string
+/**
+ * 列表查询参数。
+ */
+const params = reactive<AdminApi.Question.QuestionListParams>({
+  qbName: '',
+  pageSize: PAGE_SIZE_OPTIONS[0],
+  currentPage: 1,
+})
 
-  /** 单选题数量 */
-  singleChoiceCount: number
-
-  /** 多选题数量 */
-  multipleChoiceCount: number
-
-  /** 开放式题数量 */
-  openEndedCount: number
-
-  /** 图标 */
-  icon: string
-
-  time: {
-    year: number
-    month: number
-    day: number
-    hour: number
-    minute: number
-  }
-}
+/**
+ * 列表加载状态。
+ */
+const loading = ref(false)
 
 /**
  * 题库列表
  */
-const sourceList = ref<QuestionBank[]>([
-  {
-    id: 1,
-    name: '前端基础通用题库',
-    singleChoiceCount: 100,
-    multipleChoiceCount: 50,
-    openEndedCount: 20,
-    icon: 'question',
-    time: {
-      year: 2026,
-      month: 4,
-      day: 15,
-      hour: 16,
-      minute: 8,
-    },
-  },
-  {
-    id: 2,
-    name: '前端基础通用题库2',
-    singleChoiceCount: 100,
-    multipleChoiceCount: 50,
-    openEndedCount: 20,
-    icon: 'question',
-    time: {
-      year: 2026,
-      month: 4,
-      day: 15,
-      hour: 16,
-      minute: 8,
-    },
-  },
-  {
-    id: 3,
-    name: '前端基础通用题库3',
-    singleChoiceCount: 100,
-    multipleChoiceCount: 50,
-    openEndedCount: 20,
-    icon: 'question',
-    time: {
-      year: 2026,
-      month: 4,
-      day: 15,
-      hour: 16,
-      minute: 8,
-    },
-  },
-])
+const questionList = ref<AdminApi.Question.QuestionListResponse>({
+  rows: [],
+  totals: 0,
+})
 
 /**
- * 获取题库题目总数
+ * 获取题库列表
  */
-function getQuestionTotal(item: QuestionBank) {
-  return item.singleChoiceCount + item.multipleChoiceCount + item.openEndedCount
+async function getQuestionList() {
+  loading.value = true
+
+  try {
+    questionList.value = await fetchAdminQuestionList(params)
+  }
+  catch {
+    ElNotification.error('题库列表获取失败')
+  }
+  finally {
+    loading.value = false
+  }
+}
+
+getQuestionList()
+
+/**
+ * 重置到第一页并刷新题库列表。
+ */
+function refreshFirstPage() {
+  params.currentPage = 1
+  getQuestionList()
 }
 
 /**
- * 获取题库创建时间文本
+ * 按题库名称搜索题库。
  */
-function getCreateTimeText(item: QuestionBank) {
-  const minute = item.time.minute < 10 ? `0${item.time.minute}` : item.time.minute
-
-  return `${item.time.hour}:${minute}`
+function handleSearch() {
+  params.qbName = (params.qbName || '').trim()
+  refreshFirstPage()
 }
 
 /**
- * 跳转到创建题库
+ * 处理每页条数变化。
+ *
+ * @param pageSize 新的每页条数。
+ */
+function handleSizeChange(pageSize: number) {
+  params.pageSize = pageSize
+  refreshFirstPage()
+}
+
+/**
+ * 处理当前页变化。
+ *
+ * @param currentPage 新的当前页码。
+ */
+function handleCurrentChange(currentPage: number) {
+  params.currentPage = currentPage
+  getQuestionList()
+}
+
+type QuestionRouteName = 'AdminQuestionCreate' | 'AdminQuestionEdit' | 'AdminQuestionDetail'
+
+/**
+ * 跳转到题库相关页面，并按题库名称更新工作标签标题。
+ *
+ * @param routeName 目标题库路由名称。
+ * @param titlePrefix 标签标题前缀。
+ * @param item 题库列表项。
+ */
+async function goToQuestionPage(
+  routeName: QuestionRouteName,
+  titlePrefix: string,
+  item?: AdminApi.Question.QuestionListItem,
+) {
+  if (routeName !== 'AdminQuestionCreate' && !item?.qbId) {
+    ElNotification.warning('题库信息缺失，无法跳转')
+    return
+  }
+
+  /**
+   * 解析后的目标路由。
+   */
+  const targetRoute = router.resolve({
+    name: routeName,
+    params: {
+      qbId: item?.qbId,
+    },
+  })
+
+  /**
+   * 跳转到目标路由。
+   */
+  await router.push(targetRoute)
+
+  const tabTitle = item?.qbName ? `${titlePrefix}-${item.qbName}` : titlePrefix
+
+  /**
+   * 更新工作标签标题。
+   */
+  workTabStore.updateTabTitle(targetRoute.path, tabTitle)
+}
+
+/**
+ * 跳转到创建题库。
  */
 function goToCreateQuestion() {
-  router.push({
-    name: 'AdminQuestionCreate',
-  })
+  void goToQuestionPage('AdminQuestionCreate', '创建题库')
 }
 
 /**
- * 跳转到编辑页
+ * 跳转到编辑页。
+ *
+ * @param item 需要编辑的题库。
  */
-function goToEdit(item: QuestionBank) {
-  router.push({
-    name: 'AdminQuestionEdit',
-    params: {
-      id: item.id,
-    },
-  })
+function goToEdit(item: AdminApi.Question.QuestionListItem) {
+  void goToQuestionPage('AdminQuestionEdit', '题库编辑', item)
 }
 
 /**
- * 跳转到详情页
+ * 跳转到详情页。
+ *
+ * @param item 需要查看详情的题库。
  */
-function goToDetail(item: QuestionBank) {
-  router.push({
-    name: 'AdminQuestionDetail',
-    params: {
-      id: item.id,
-    },
-  })
+function goToDetail(item: AdminApi.Question.QuestionListItem) {
+  void goToQuestionPage('AdminQuestionDetail', '题库详情', item)
 }
 
 /**
- * 删除题库
+ * 获取题库题目总数。
+ *
+ * @param item 题库列表项。
  */
-function deleteQuestionBank(item: QuestionBank) {
-  sourceList.value = sourceList.value.filter(i => i.id !== item.id)
+function getQuestionTotal(item: AdminApi.Question.QuestionListItem) {
+  return item.singleChoiceQuestionCount + item.multipleChoiceQuestionsCount
+}
+
+/**
+ * 删除题库。
+ *
+ * @param _item 需要删除的题库。
+ */
+function deleteQuestionBank(_item: AdminApi.Question.QuestionListItem) {
+  ElNotification.warning('删除接口暂未接入')
+}
+
+/**
+ * 导出题库。
+ */
+function exportQuestionBank() {
+  ElNotification.warning('导出功能暂未接入')
 }
 
 </script>
@@ -148,9 +191,11 @@ function deleteQuestionBank(item: QuestionBank) {
     class="mx-auto max-w-7xl px-10 relative max-lg:px-6 max-sm:px-4"
   >
     <div
-      class="my-5 flex w-full items-center justify-between gap-4 max-sm:items-start"
+      class="my-5 flex w-full items-center justify-between gap-4 max-md:flex-col max-md:items-stretch"
     >
-      <div>
+      <div
+        class="flex-1"
+      >
         <h2
           class="text-xl font-semibold text-g-900 max-sm:text-lg"
         >
@@ -160,24 +205,55 @@ function deleteQuestionBank(item: QuestionBank) {
         <p
           class="mt-1 text-sm text-g-600"
         >
-          共 {{ sourceList.length }} 个题库
+          共 {{ questionList.totals }} 个题库
         </p>
       </div>
 
-      <ArtButton
-        type="add"
-        @click="goToCreateQuestion"
+      <div
+        class="flex flex-1 items-center justify-end gap-3 max-md:w-full max-md:justify-start max-sm:flex-col"
       >
-        创建题库
-      </ArtButton>
+        <el-input
+          v-model="params.qbName"
+          class="max-w-110 max-md:max-w-none max-sm:w-full"
+          placeholder="请输入题库名称"
+          clearable
+          @keyup.enter="handleSearch"
+          @clear="handleSearch"
+        >
+          <template
+            #append
+          >
+            <ArtSvgIcon
+              icon="tdesign:search"
+            />
+          </template>
+        </el-input>
+
+        <ArtButton
+          type="add"
+          @click="goToCreateQuestion"
+        >
+          创建题库
+        </ArtButton>
+      </div>
     </div>
 
     <div
+      v-loading="loading"
       class="flex flex-col gap-4"
     >
       <div
-        v-for="item in sourceList"
-        :key="item.id"
+        v-if="!loading && questionList.rows.length === 0"
+        class="py-18"
+      >
+        <ElEmpty
+          description="暂无题库"
+        />
+      </div>
+
+      <div
+        v-for="item in questionList.rows"
+        :key="item.qbId"
         class="grid grid-cols-[150px_8px_minmax(0,1fr)] gap-5 items-center max-md:grid-cols-1 max-md:gap-3"
       >
         <div
@@ -189,20 +265,20 @@ function deleteQuestionBank(item: QuestionBank) {
             <span
               class="font-medium text-primary"
             >
-              {{ item.time.year }} 年
+              {{ getDateSegment(item.createTime, 'year') }} 年
             </span>
 
             <span
               class="font-medium text-primary"
             >
-              {{ item.time.month }} 月 {{ item.time.day }} 日
+              {{ getDateSegment(item.createTime, 'month') }} 月 {{ getDateSegment(item.createTime, 'day') }} 日
             </span>
           </div>
 
           <div
             class="mt-1 max-md:mt-0"
           >
-            创建时间 {{ getCreateTimeText(item) }}
+            创建时间 {{ getDateSegment(item.createTime, 'hour') }}:{{ getDateSegment(item.createTime, 'minute') }}
           </div>
         </div>
 
@@ -225,13 +301,13 @@ function deleteQuestionBank(item: QuestionBank) {
               <h3
                 class="truncate text-base font-semibold text-g-900"
               >
-                {{ item.name }}
+                {{ item.qbName }}
               </h3>
 
               <p
-                class="mt-2 text-sm text-g-600"
+                class="mt-2 line-clamp-2 text-sm text-g-600"
               >
-                共 {{ getQuestionTotal(item) }} 道题
+                {{ item.qbDesc || '暂无描述' }}
               </p>
             </div>
 
@@ -246,15 +322,12 @@ function deleteQuestionBank(item: QuestionBank) {
 
               <ArtButton
                 type="export"
+                @click="exportQuestionBank"
               />
 
               <ArtButton
                 type="edit"
                 @click="goToEdit(item)"
-              />
-
-              <ArtButton
-                :loading="true"
               />
             </div>
           </div>
@@ -270,7 +343,7 @@ function deleteQuestionBank(item: QuestionBank) {
               <p
                 class="text-lg font-semibold"
               >
-                {{ item.singleChoiceCount }}
+                {{ item.singleChoiceQuestionCount }}
               </p>
 
               <p
@@ -286,7 +359,7 @@ function deleteQuestionBank(item: QuestionBank) {
               <p
                 class="text-lg font-semibold"
               >
-                {{ item.multipleChoiceCount }}
+                {{ item.multipleChoiceQuestionsCount }}
               </p>
 
               <p
@@ -300,20 +373,54 @@ function deleteQuestionBank(item: QuestionBank) {
               class="rounded-custom-sm bg-primary/10 px-4 py-3"
             >
               <p
-                class="text-lg font-semibold"
+                class="truncate text-lg font-semibold"
               >
-                {{ item.openEndedCount }}
+                {{ item.qbTypeName || '-' }}
               </p>
 
               <p
                 class="mt-1 text-sm text-g-600"
               >
-                开放式题
+                题库类型
               </p>
             </div>
           </div>
+
+          <div
+            class="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-sm text-g-600"
+          >
+            <span>
+              共 {{ getQuestionTotal(item) }} 道题
+            </span>
+
+            <span>
+              父级题库: {{ item.parentName || '无' }}
+            </span>
+
+            <span>
+              更新时间: {{ formatDateTime(item.updateTime) }}
+            </span>
+          </div>
         </div>
       </div>
+    </div>
+
+    <!-- 分页组件 -->
+    <div
+      v-if="questionList.totals > 0"
+      class="mt-6 flex justify-center overflow-x-auto pb-4"
+    >
+      <ElPagination
+        v-model:current-page="params.currentPage"
+        v-model:page-size="params.pageSize"
+        background
+        :page-sizes="PAGE_SIZE_OPTIONS"
+        :pager-count="7"
+        layout="total, prev, pager, next, sizes, jumper"
+        :total="questionList.totals"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+      />
     </div>
 
   </div>

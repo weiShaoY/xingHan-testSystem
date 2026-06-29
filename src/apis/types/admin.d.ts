@@ -1156,12 +1156,108 @@ declare namespace AdminApi {
     /**
      * 项目列表请求参数
      */
-    type ProjectListParams = CommonApi.PaginationParams & {
+    type QuestionListParams = CommonApi.PaginationParams & {
 
       /**
-       * 项目名称
+       * 题库名称
        */
-      projName?: string
+      qbName?: string
     }
+
+    /**
+     *  题库列表项
+     */
+    type QuestionListItem = {
+
+      /**
+       * 公司ID
+       */
+      companyId: number
+
+      /**
+       * 课程ID
+       */
+      couId: number
+
+      /**
+       * 创建人ID
+       */
+      creater: number
+
+      /**
+       * 创建时间
+       */
+      createTime: string
+
+      /**
+       * 多选题个数
+       */
+      multipleChoiceQuestionsCount: number
+
+      /**
+       * 父级题库ID
+       */
+      parentId: number
+
+      /**
+       * 父级题库名称
+       */
+      parentName: string
+
+      /**
+       * 项目ID
+       */
+      projId: number
+
+      /**
+       * 题库编码
+       */
+      qbCode: string
+
+      /**
+       * 题库描述
+       */
+      qbDesc: string
+
+      /**
+       * 题库ID
+       */
+      qbId: number
+
+      /**
+       * 题库名称
+       */
+      qbName: string
+
+      /**
+       * 题库类型
+       */
+      qbType: number
+
+      /**
+       * 题库类型名称
+       */
+      qbTypeName: string
+
+      /**
+       * 学科ID
+       */
+      sbjId: number
+
+      /**
+       * 单选题个数
+       */
+      singleChoiceQuestionCount: number
+
+      /**
+       * 最后修改时间
+       */
+      updateTime: string
+    }
+
+    /**
+     *  题库列表响应
+     */
+    type QuestionListResponse = CommonApi.PaginatedResponse<QuestionListItem>
   }
 }
