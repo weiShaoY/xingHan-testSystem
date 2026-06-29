@@ -106,19 +106,32 @@ getProjectList()
  */
 const workTabStore = useWorkTabStore()
 
+type ProjectRouteName
+  = | 'AdminProjectCreate'
+    | 'AdminProjectSetting'
+    | 'AdminProjectPreview'
+    | 'AdminProjectStages'
+
 /**
  * 跳转到项目相关页面，并按项目名称更新工作标签标题。
  *
  * @param item 项目列表项。
  * @param routeName 目标项目路由名称。
  * @param titlePrefix 标签标题前缀。
+ * @param isBlank 是否新标签页打开
  * @returns 页面跳转和标签标题更新完成。
  */
 async function goToProjectPage(
-  routeName: 'AdminProjectCreate' | 'AdminProjectSetting' | 'AdminProjectPreview' | 'AdminProjectStages',
+  routeName: ProjectRouteName,
   titlePrefix: string,
   item?: AdminApi.Project.ProjectListItem,
+  isBlank?: boolean,
 ) {
+  if (routeName !== 'AdminProjectCreate' && !item?.projId) {
+    ElNotification.warning('项目信息缺失，无法跳转')
+    return
+  }
+
   /**
    * 解析后的目标路由。
    */
@@ -129,15 +142,29 @@ async function goToProjectPage(
     },
   })
 
+  if (isBlank) {
+    const openedWindow = window.open(targetRoute.href, '_blank')
+
+    if (!openedWindow) {
+      ElNotification.warning('浏览器阻止了新标签页打开')
+      return
+    }
+
+    openedWindow.opener = null
+    return
+  }
+
   /**
    * 跳转到目标路由。
    */
   await router.push(targetRoute)
 
+  const tabTitle = item?.projName ? `${titlePrefix}-${item.projName}` : titlePrefix
+
   /**
    * 更新工作标签标题。
    */
-  workTabStore.updateTabTitle(targetRoute.path, `${titlePrefix}-${item?.projName || ''}`)
+  workTabStore.updateTabTitle(targetRoute.path, tabTitle)
 }
 
 /**
@@ -151,7 +178,7 @@ function goToCreate() {
    *  跳转到项目预览页
    */
 function goToPreview(item: AdminApi.Project.ProjectListItem) {
-  void goToProjectPage('AdminProjectPreview', '项目预览', item)
+  void goToProjectPage('AdminProjectPreview', '项目预览', item, true)
 }
 
 /**

@@ -65,6 +65,7 @@ export const Project: AppRouteRecord = {
         multiTab: true,
         sort: 3,
         isHide: true,
+        isFullPage: true,
         activePath: '/admin/project/list',
       },
     },

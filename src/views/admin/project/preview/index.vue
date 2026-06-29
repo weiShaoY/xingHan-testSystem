@@ -1,6 +1,8 @@
 <!------  2026-06-29---11:50---星期一  ------>
 <!------------------------------------    ------------------------------------------------->
 <script lang="ts" setup>
+import ClientLayout from '@/views/client/layout/index.vue'
+
 const activeTab = ref<'outline' | 'detail'>('outline')
 
 const loading = ref(false)
@@ -54,53 +56,14 @@ onMounted(() => {
 </script>
 
 <template>
-  <div
-    class="mx-auto mb-10 flex w-full max-w-7xl flex-col gap-4 px-10 max-lg:px-6 max-sm:px-4"
-  >
-    <AdminPageHeader
-      :title="projectStageList.projName"
-      :stats="[`
-        课程总数: ${projectStageList.projStageCourse},
-        小节总数: ${projectStageList.projSectionCount},
-        课程时长: ${projectStageList.projStageCourse} 分钟
-      `]"
-      @back="backToProjectList"
+  <ClientLayout>
+    <!-- <template
+      #content
     >
-      <template
-        #extra
-      >
-        <!-- <ArtButton
-          type="success"
-          :loading="loading"
-          @click="handleSubmit"
-        >
-          完成
-        </ArtButton> -->
-      </template>
-    </AdminPageHeader>
-
-    <el-tabs
-      v-model="activeTab"
-      v-loading="loading"
-      class="course-editor-tabs"
-    >
-      <el-tab-pane
-        label="项目目录"
-        name="outline"
-        class="art-card"
-      >
-        111
-      </el-tab-pane>
-
-      <el-tab-pane
-        label="项目详情"
-        name="detail"
-        class="art-card"
-      >
-        111
-      </el-tab-pane>
-    </el-tabs>
-  </div>
+      1
+    </template> -->
+    2222222222222222
+  </ClientLayout>
 </template>
 
 <style lang="scss" scoped>
