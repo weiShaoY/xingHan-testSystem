@@ -112,18 +112,16 @@ function openAllocateCourseDialog(item: AdminApi.Course.CourseListItem) {
  * @param routeName 目标课程路由名称。
  * @param item 课程列表项。
  * @param titlePrefix 标签标题前缀。
- * @returns 页面跳转和标签标题更新完成。
+ * @param isBlank 是否新标签页打开
  */
 async function goToCoursePage(
-  routeName: 'AdminCourseCreate' | 'AdminCourseSetting' | 'AdminCourseOutline',
+  routeName: 'AdminCourseCreate' | 'AdminCourseSetting' | 'AdminCoursePreview' | 'AdminCourseOutline',
   titlePrefix: string,
   item?: AdminApi.Course.CourseListItem,
-
+  isBlank?: boolean,
 ) {
-  if (routeName === 'AdminCourseCreate') {
-    router.push({
-      name: 'AdminCourseCreate',
-    })
+  if (routeName !== 'AdminCourseCreate' && !item?.couId) {
+    ElNotification.warning('项目信息缺失，无法跳转')
     return
   }
 
@@ -137,12 +135,29 @@ async function goToCoursePage(
     },
   })
 
+  if (isBlank) {
+    const openedWindow = window.open(targetRoute.href, '_blank')
+
+    if (!openedWindow) {
+      ElNotification.warning('浏览器阻止了新标签页打开')
+      return
+    }
+
+    openedWindow.opener = null
+    return
+  }
+
+  /**
+   * 跳转到目标路由。
+   */
   await router.push(targetRoute)
+
+  const tabTitle = item?.couName ? `${titlePrefix}-${item.couName}` : titlePrefix
 
   /**
    * 更新工作标签标题。
    */
-  workTabStore.updateTabTitle(targetRoute.path, `${titlePrefix}-${item?.couName || ''}`)
+  workTabStore.updateTabTitle(targetRoute.path, tabTitle)
 }
 
 /**
@@ -159,6 +174,13 @@ function goToCreate() {
  */
 function goToSetting(item: AdminApi.Course.CourseListItem) {
   void goToCoursePage('AdminCourseSetting', '课程设置', item)
+}
+
+/**
+ * 跳转到课程预览页
+ */
+function goToPreview(item: AdminApi.Course.CourseListItem) {
+  void goToCoursePage('AdminCoursePreview', '课程预览', item, true)
 }
 
 /**
@@ -312,6 +334,11 @@ getCourseList()
               class="flex shrink-0 gap-2 items-center justify-center max-sm:w-full max-sm:justify-end"
               @click.stop
             >
+              <ArtButton
+                type="preview"
+                @click="goToPreview(item)"
+              />
+
               <ArtButton
                 type="edit"
                 @click="goToSetting(item)"

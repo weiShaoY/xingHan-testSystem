@@ -1,7 +1,6 @@
 <!------  2026-06-29---11:50---星期一  ------>
 <!------------------------------------    ------------------------------------------------->
 <script lang="ts" setup>
-
 import cover6 from '@imgs/cover/img6.webp'
 
 import ClientLayout from '@/views/client/layout/index.vue'
@@ -200,19 +199,6 @@ onMounted(() => {
               </p>
             </div>
 
-            <section
-              class="mt-5 "
-            >
-              <h2>
-                项目介绍
-              </h2>
-
-              <p
-                class="mt-3 mb-0 text-sm leading-7 text-g-600"
-              >
-                {{ projectIntro }}
-              </p>
-            </section>
           </div>
 
           <div
@@ -246,16 +232,65 @@ onMounted(() => {
               {{ displayLabel }}
             </el-tag>
           </div>
+
+          <section
+            class="mt-5 rounded-custom-sm bg-g-100/70 px-4 py-4"
+          >
+            <div
+              class="mb-2 flex items-center gap-2"
+            >
+              <ArtSvgIcon
+                icon="ri:file-list-3-line"
+                class="text-[18px] text-primary"
+              />
+
+              <h2
+                class="m-0 text-base font-semibold text-g-900"
+              >
+                项目介绍
+              </h2>
+            </div>
+
+            <p
+              class="m-0 line-clamp-3 text-sm leading-7 text-g-600"
+            >
+              {{ projectIntro }}
+            </p>
+          </section>
         </div>
       </div>
 
       <section
-        class="mt-5 flex flex-col gap-5"
+        class="mt-6"
       >
+        <div
+          class="mb-4 flex items-end justify-between gap-4"
+        >
+          <div>
+            <h2
+              class="m-0 text-xl font-semibold leading-8 text-g-900 max-sm:text-lg"
+            >
+              学习内容
+            </h2>
+
+            <p
+              class="mt-1 mb-0 text-sm leading-5 text-g-600"
+            >
+              {{ projectStageList.nodes.length }} 个阶段 · {{ projectStageList.projStageCourse }} 门课程
+            </p>
+          </div>
+
+          <div
+            class="shrink-0 rounded-full bg-primary/10 px-3 py-1 text-xs font-600 text-primary"
+          >
+            {{ unlockLabel }}
+          </div>
+        </div>
+
         <div
           v-for="(stage, stageIndex) in sortedStages"
           :key="stage.stageId"
-          class="art-card p-0"
+          class="mb-5 overflow-hidden art-card p-0 last:mb-0"
         >
           <div
             class="px-5 pt-5 max-sm:px-4 max-sm:pt-4"
@@ -291,16 +326,16 @@ onMounted(() => {
               </div>
 
               <div
-                class="shrink-0 text-right flex items-center gap-2"
+                class="flex min-w-18 shrink-0 items-center justify-center gap-1 rounded-custom-sm bg-g-100 px-3 py-2 text-center"
               >
                 <div
-                  class="text-xl font-semibold leading-6 text-g-900"
+                  class="text-lg font-semibold leading-5 text-g-900"
                 >
                   {{ stage.course.length }}
                 </div>
 
                 <div
-                  class="mt-1 text-xs text-g-500"
+                  class="text-xs leading-4 text-g-500"
                 >
                   门课程
                 </div>
@@ -319,20 +354,40 @@ onMounted(() => {
             class="mt-4 flex flex-col"
           >
             <button
-              v-for="(course,) in stage.course"
+              v-for="(course, courseIndex) in stage.course"
               :key="course.couId"
               type="button"
-              class="group grid grid-cols-[112px_minmax(0,1fr)] gap-3 border-0 border-t border-solid border-(--el-border-color-lighter) bg-transparent px-5 py-4 text-left transition cursor-pointer hover:bg-primary/5 active:opacity-80 max-sm:grid-cols-[96px_minmax(0,1fr)] max-sm:px-4"
+              class="group grid grid-cols-[40px_minmax(0,1fr)_24px] items-center gap-3 border-0 border-t border-solid border-(--el-border-color-lighter) bg-transparent px-5 py-4 text-left transition cursor-pointer hover:bg-primary/5 active:opacity-80 max-sm:px-4"
             >
-              <!-- <img
-                :src="getCourseCover(course, stageIndex + courseIndex)"
-                :alt="course.couName || '课程封面'"
-                class="aspect-16/9 w-full rounded-custom-sm object-cover"
-              > -->
+              <div
+                class="flex h-10 w-10 items-center justify-center rounded-custom-sm bg-primary/10 text-primary transition group-hover:bg-primary group-hover:text-white"
+              >
+                <ArtSvgIcon
+                  icon="ri:play-circle-line"
+                  class="text-[20px]"
+                />
+              </div>
 
               <div
                 class="min-w-0"
               >
+                <div
+                  class="mb-1 flex items-center gap-2 text-xs text-g-500"
+                >
+                  <span>课程 {{ courseIndex + 1 }}</span>
+
+                  <span
+                    v-if="course.couLevel"
+                    class="h-1 w-1 rounded-full bg-g-300"
+                  />
+
+                  <span
+                    v-if="course.couLevel"
+                  >
+                    难度 {{ course.couLevel }}
+                  </span>
+                </div>
+
                 <h3
                   class="m-0 line-clamp-2 text-sm font-semibold leading-5 text-g-900 group-hover:text-primary"
                 >
@@ -349,12 +404,17 @@ onMounted(() => {
                   class="mt-2 flex items-center gap-2 text-xs text-g-500"
                 >
                   <ArtSvgIcon
-                    icon="ri:play-circle-line"
+                    icon="ri:eye-line"
                     class="text-[15px] text-primary"
                   />
                   {{ course.couViewNum || 0 }} 次学习
                 </div>
               </div>
+
+              <ArtSvgIcon
+                icon="ri:arrow-right-s-line"
+                class="text-[22px] text-g-400 transition group-hover:translate-x-0.5 group-hover:text-primary"
+              />
             </button>
           </div>
 
@@ -365,6 +425,12 @@ onMounted(() => {
             暂未配置课程
           </div>
         </div>
+
+        <el-empty
+          v-if="!sortedStages.length"
+          class="mt-10"
+          description="暂未配置学习内容"
+        />
       </section>
 
     </div>

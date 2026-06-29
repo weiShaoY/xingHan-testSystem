@@ -175,17 +175,17 @@ function goToCreate() {
 }
 
 /**
-   *  跳转到项目预览页
-   */
-function goToPreview(item: AdminApi.Project.ProjectListItem) {
-  void goToProjectPage('AdminProjectPreview', '项目预览', item, true)
-}
-
-/**
  * 跳转到项目设置页
  */
 function goToSetting(item: AdminApi.Project.ProjectListItem) {
   void goToProjectPage('AdminProjectSetting', '项目设置', item)
+}
+
+/**
+ * 跳转到项目预览页
+ */
+function goToPreview(item: AdminApi.Project.ProjectListItem) {
+  void goToProjectPage('AdminProjectPreview', '项目预览', item, true)
 }
 
 /**

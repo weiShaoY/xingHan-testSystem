@@ -113,6 +113,21 @@ export const Course: AppRouteRecord = {
 
       },
     },
+    {
+      path: 'preview/:couId',
+      name: 'AdminCoursePreview',
+      component: '/admin/course/preview',
+      meta: {
+        title: '项目预览',
+        icon: 'ri:eye-line',
+        keepAlive: false,
+        multiTab: true,
+        sort: 3,
+        isHide: true,
+        isFullPage: true,
+        activePath: '/admin/course/list',
+      },
+    },
 
     {
       path: 'outline/:couId',
