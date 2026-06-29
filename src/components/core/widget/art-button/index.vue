@@ -38,7 +38,7 @@ type Props = {
    * 按钮预设类型
    * @description 内置不同的图标、颜色和 tooltip 配置
    */
-  type?: 'default' | 'view' | 'more' | 'add' | 'edit' | 'delete' | 'import' | 'export' | 'link' | 'primary' | 'success' | 'warning' | 'error' | 'allocate' | 'download'
+  type?: 'default' | 'preview' | 'more' | 'add' | 'edit' | 'delete' | 'import' | 'export' | 'link' | 'primary' | 'success' | 'warning' | 'error' | 'allocate' | 'download'
 
   /**
    * 图标颜色
@@ -132,10 +132,10 @@ const defaultButtons: Record<NonNullable<Props['type']>, ButtonPreset> = {
     class: 'bg-info/6 text-info',
   },
 
-  view: {
+  preview: {
     icon: 'ri:eye-line',
     class: 'bg-info/12 text-info',
-    tooltip: '查看',
+    tooltip: '预览',
   },
 
   more: {

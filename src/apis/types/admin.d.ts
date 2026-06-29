@@ -1021,6 +1021,13 @@ declare namespace AdminApi {
       updateTime?: string
     }
 
+    /**
+     *  项目预览详情
+     */
+    type ProjectPreview = {
+
+    }
+
     // / ///////// ////////////////////////  项目学习阶段  ////////////////////////
 
     /**

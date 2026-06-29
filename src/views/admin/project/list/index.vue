@@ -115,7 +115,7 @@ const workTabStore = useWorkTabStore()
  * @returns 页面跳转和标签标题更新完成。
  */
 async function goToProjectPage(
-  routeName: 'AdminProjectCreate' | 'AdminProjectSetting' | 'AdminProjectStages',
+  routeName: 'AdminProjectCreate' | 'AdminProjectSetting' | 'AdminProjectPreview' | 'AdminProjectStages',
   titlePrefix: string,
   item?: AdminApi.Project.ProjectListItem,
 ) {
@@ -145,6 +145,13 @@ async function goToProjectPage(
  */
 function goToCreate() {
   void goToProjectPage('AdminProjectCreate', '创建项目')
+}
+
+/**
+   *  跳转到项目预览页
+   */
+function goToPreview(item: AdminApi.Project.ProjectListItem) {
+  void goToProjectPage('AdminProjectPreview', '项目预览', item)
 }
 
 /**
@@ -309,6 +316,11 @@ async function deleteProject(item: AdminApi.Project.ProjectListItem) {
               class="flex shrink-0 gap-2 items-center justify-center max-sm:w-full max-sm:justify-end"
               @click.stop
             >
+              <ArtButton
+                type="preview"
+                @click="goToPreview(item)"
+              />
+
               <ArtButton
                 type="edit"
                 @click="goToSetting(item)"

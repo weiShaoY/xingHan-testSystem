@@ -565,7 +565,7 @@ function moveCourse(stageIndex: number, courseIndex: number, direction: 'up' | '
                               />
 
                               <ArtButton
-                                type="view"
+                                type="preview"
                                 @click="goToCourseOutline(course)"
                               />
 

@@ -54,6 +54,20 @@ export const Project: AppRouteRecord = {
         activePath: '/admin/project/list',
       },
     },
+    {
+      path: 'preview/:projId',
+      name: 'AdminProjectPreview',
+      component: '/admin/project/preview',
+      meta: {
+        title: '项目预览',
+        icon: 'ri:eye-line',
+        keepAlive: false,
+        multiTab: true,
+        sort: 3,
+        isHide: true,
+        activePath: '/admin/project/list',
+      },
+    },
 
     {
       path: 'stages/:projId',

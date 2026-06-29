@@ -230,7 +230,7 @@ function goToCourseEdit(course: AdminApi.Course.CourseListItem) {
                 />
 
                 <ArtButton
-                  type="view"
+                  type="preview"
                   @click="goToCourseOutline(course)"
                 />
               </div>
