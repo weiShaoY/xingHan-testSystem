@@ -5,8 +5,6 @@ import AllocateProjectDialog from './AllocateProjectDialog.vue'
 
 import CreateProjectDialog from './CreateProjectDialog.vue'
 
-const inputVModel = ref('')
-
 /**
  * 是否显示创建学习项目弹窗
  */
@@ -25,8 +23,8 @@ const PAGE_SIZE_OPTIONS = [10, 20, 30, 50]
 /**
  * 列表查询参数。
  */
-const params = reactive<AdminApi.Course.CourseListParams>({
-  name: '',
+const params = reactive<AdminApi.Project.ProjectListParams>({
+  projName: '',
   pageSize: PAGE_SIZE_OPTIONS[0],
   currentPage: 1,
 })
@@ -36,7 +34,15 @@ const params = reactive<AdminApi.Course.CourseListParams>({
  */
 function refreshFirstPage() {
   params.currentPage = 1
-  getCourseList()
+  getProjectList()
+}
+
+/**
+ * 按项目名称搜索项目。
+ */
+function handleSearch() {
+  params.projName = (params.projName || '').trim()
+  refreshFirstPage()
 }
 
 /**
@@ -56,7 +62,7 @@ function handleSizeChange(pageSize: number) {
  */
 function handleCurrentChange(currentPage: number) {
   params.currentPage = currentPage
-  getCourseList()
+  getProjectList()
 }
 
 /**
@@ -252,9 +258,12 @@ async function deleteProject(item: AdminApi.Project.ProjectListItem) {
         class="flex flex-1 items-center justify-end gap-3 max-md:w-full max-md:justify-start max-sm:flex-col"
       >
         <el-input
-          v-model="inputVModel"
+          v-model="params.projName"
           class="max-w-110 max-md:max-w-none max-sm:w-full"
           placeholder="请输入项目名称"
+          clearable
+          @keyup.enter="handleSearch"
+          @clear="handleSearch"
         >
           <template
             #append
@@ -278,6 +287,14 @@ async function deleteProject(item: AdminApi.Project.ProjectListItem) {
       v-loading="loading"
       class="flex flex-col gap-4"
     >
+      <div
+        v-if="!loading && projectList.rows.length === 0"
+        class="py-18"
+      >
+        <ElEmpty
+          description="暂无项目"
+        />
+      </div>
 
       <div
         v-for="item in projectList.rows"

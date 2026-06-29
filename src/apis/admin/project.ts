@@ -56,19 +56,6 @@ export function fetchAdminProjectDelete(projId: number) {
   })
 }
 
-/**
- *  获取项目预览详情
- *  @param projId 项目ID
- */
-export function fetchAdminProjectPreview(projId: number) {
-  return request.get<AdminApi.Project.ProjectPreview>({
-    url: '/admin/project/getProjectPreview',
-    params: {
-      projId,
-    },
-  })
-}
-
 // / //// ////////////////////////   项目学习阶段  ////////////////////////
 /**
  * 获取后台管理项目学习阶段列表

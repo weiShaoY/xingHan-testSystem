@@ -685,7 +685,7 @@ declare namespace AdminApi {
       /**
        * 项目名称
        */
-      name: string
+      projName: string
     }
 
     /**
@@ -1021,13 +1021,6 @@ declare namespace AdminApi {
       updateTime?: string
     }
 
-    /**
-     *  项目预览详情
-     */
-    type ProjectPreview = {
-
-    }
-
     // / ///////// ////////////////////////  项目学习阶段  ////////////////////////
 
     /**
@@ -1152,6 +1145,23 @@ declare namespace AdminApi {
       unlockConditions: 0 | 1 | 2
 
       nodes: ProjectStageListItem[]
+    }
+  }
+
+  /**
+   *  题库类型
+   */
+  namespace Question {
+
+    /**
+     * 项目列表请求参数
+     */
+    type ProjectListParams = CommonApi.PaginationParams & {
+
+      /**
+       * 项目名称
+       */
+      projName?: string
     }
   }
 }

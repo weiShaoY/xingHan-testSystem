@@ -272,6 +272,15 @@ getCourseList()
       class="flex flex-col gap-4"
     >
       <div
+        v-if="!loading && courseList.rows.length === 0"
+        class="py-18"
+      >
+        <ElEmpty
+          description="暂无课程"
+        />
+      </div>
+
+      <div
         v-for="item in courseList.rows"
         :key="item.couId"
         class="grid grid-cols-[150px_8px_minmax(0,1fr)] gap-5 items-center max-md:grid-cols-1 max-md:gap-3"
