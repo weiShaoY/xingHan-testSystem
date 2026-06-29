@@ -8,10 +8,19 @@ import ClientPageContent from './components/client-page-content/index.vue'
 defineOptions({
   name: 'ClientLayout',
 })
+
+const props = withDefaults(defineProps<{
+
+  /** 是否显示客户端顶部栏；不传时保持客户端首页默认显示规则。 */
+  showHeader?: boolean | null
+}>(), {
+  showHeader: null,
+})
+
 const router = useRouter()
 
 const isShowClientHeaderBar = computed(() => {
-  return router.currentRoute.value.path === '/client/home'
+  return props.showHeader ?? router.currentRoute.value.path === '/client/home'
 })
 </script>
 
@@ -38,7 +47,9 @@ const isShowClientHeaderBar = computed(() => {
       <div
         id="app-content"
       >
-        <ClientPageContent />
+        <slot>
+          <ClientPageContent />
+        </slot>
       </div>
     </main>
 

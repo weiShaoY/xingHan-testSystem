@@ -113,6 +113,7 @@ function goToCourseEdit(course: AdminApi.Course.CourseListItem) {
     <AdminPageHeader
       :title="projectStageList.projName"
       :stats="[`
+        项目阶段总数: ${projectStageList.nodes.length},
         课程总数: ${projectStageList.projStageCourse},
         小节总数: ${projectStageList.projSectionCount}
       `]"
