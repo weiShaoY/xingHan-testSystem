@@ -1259,5 +1259,75 @@ declare namespace AdminApi {
      *  题库列表响应
      */
     type QuestionListResponse = CommonApi.PaginatedResponse<QuestionListItem>
+
+    /**
+     *  题目选项
+     */
+    type QuestionItem = {
+
+      /**
+       *  选项ID
+       */
+      ansId?: number
+
+      /**
+       *  题目ID
+       */
+      qusId?: number
+
+      /**
+       * 选项内容
+       */
+      ansContext: string
+
+      /**
+       * 是否为正确答案
+       */
+      ansIsCorrect: boolean
+    }
+
+    /**
+     *  题目列表项
+     */
+    type QuestionListItem = {
+
+      /**
+       *  题目ID
+       */
+      qusId?: number
+
+      /**
+       * 题目标题
+       */
+      qusTitle: string
+
+      /**
+       * 题目类型
+       * @description 1=单选，2=多选，3=判断，4=填空，5=问答
+       */
+      qusType: 1 | 2 | 3 | 4 | 5
+
+      /**
+       * 题目选项列表
+       */
+      qusItems: QuestionItem[]
+    }
+
+    /**
+     * 题库新增或编辑请求参数
+     * @description 新增和编辑题库时的参数
+     */
+    type QuestionEditor = {
+
+      /**
+       * 题库名称
+       */
+      qbName: string
+
+      /**
+       * 题目列表
+       */
+      questions: QuestionListItem[]
+    }
   }
 }

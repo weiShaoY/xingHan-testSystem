@@ -9,3 +9,13 @@ export function fetchAdminQuestionList(data: AdminApi.Question.QuestionListParam
     data,
   })
 }
+
+/**
+ *  新增题库
+ */
+export function fetchAdminQuestionAdd(data: AdminApi.Question.QuestionEditor) {
+  return request.post<boolean> ({
+    url: '/admin/questionbank/addQuestionBank',
+    data,
+  })
+}

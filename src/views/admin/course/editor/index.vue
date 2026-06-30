@@ -172,7 +172,7 @@ async function handleSubmit() {
       ElNotification.success('课程更新成功')
     }
     else {
-      await fetchAdminCourseCreate(formData.value)
+      await fetchAdminCourseAdd(formData.value)
       ElNotification.success('课程创建成功')
     }
 

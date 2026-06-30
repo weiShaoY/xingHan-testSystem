@@ -16,7 +16,7 @@ export function fetchAdminCourseList(data: AdminApi.Course.CourseListParams) {
  *  新增课程
  */
 
-export function fetchAdminCourseCreate(data: AdminApi.Course.CourseEditor) {
+export function fetchAdminCourseAdd(data: AdminApi.Course.CourseEditor) {
   return request.post<boolean>({
     url: '/admin/course/addCourse',
     data,

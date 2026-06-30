@@ -6,6 +6,16 @@ import { computed, ref } from 'vue'
 const route = useRoute()
 
 /**
+ * 题库列表页路径。
+ */
+const QUESTION_LIST_PATH = '/admin/question'
+
+/**
+ * 工作标签页 Store。
+ */
+const workTabStore = useWorkTabStore()
+
+/**
  * 是否为编辑模式
  */
 const isEditMode = computed(() => {

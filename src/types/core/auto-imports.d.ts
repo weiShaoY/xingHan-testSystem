@@ -55,12 +55,14 @@ declare global {
   const emojo: typeof import('../../utils/ui/emojo').default
   const extendRef: typeof import('@vueuse/core').extendRef
   const f: typeof import('../../apis/admin/index').f
+  const fe: typeof import('../../apis/admin/question').fe
   const fetch: typeof import('../../apis/admin/index').fetch
   const fetchAdmin: typeof import('../../apis/admin/index').fetchAdmin
   const fetchAdminAddCourse: typeof import('../../apis/admin/index').fetchAdminCourseCreate
   const fetchAdminAddCourseOutline: typeof import('../../apis/admin/index').fetchAdminCourseOutlineAdd
+  const fetchAdminCourseAdd: typeof import('../../apis/admin/course').fetchAdminCourseAdd
   const fetchAdminCourseChapterDetail: typeof import('../../apis/admin/index').fetchAdminCourseOutlineChapterDetail
-  const fetchAdminCourseCreate: typeof import('../../apis/admin/course').fetchAdminCourseCreate
+  const fetchAdminCourseCreate: typeof import('../../apis/admin/course').fetchAdminCourseAdd
   const fetchAdminCourseDelete: typeof import('../../apis/admin/course').fetchAdminCourseDelete
   const fetchAdminCourseDetail: typeof import('../../apis/admin/course').fetchAdminCourseSetting
   const fetchAdminCourseList: typeof import('../../apis/admin/course').fetchAdminCourseList
@@ -112,6 +114,7 @@ declare global {
   const fetchAdminProjectStageListUpdate: typeof import('../../apis/admin/project').fetchAdminProjectStageListUpdate
   const fetchAdminProjectStageSave: typeof import('../../apis/admin/project').fetchAdminProjectStageSave
   const fetchAdminProjectUpdate: typeof import('../../apis/admin/project').fetchAdminProjectUpdate
+  const fetchAdminQuestionAdd: typeof import('../../apis/admin/question').fetchAdminQuestionAdd
   const fetchAdminQuestionList: typeof import('../../apis/admin/question').fetchAdminQuestionList
   const fetchAdminUpdateCourse: typeof import('../../apis/admin/index').fetchAdminCourseUpdate
   const fetchAdminUploadFile: typeof import('../../apis/file/index').fetchAdminUploadFile
@@ -553,7 +556,7 @@ declare module 'vue' {
     readonly effectScope: UnwrapRef<typeof import('vue')['effectScope']>
     readonly emojo: UnwrapRef<typeof import('../../utils/ui/emojo')['default']>
     readonly extendRef: UnwrapRef<typeof import('@vueuse/core')['extendRef']>
-    readonly fetchAdminCourseCreate: UnwrapRef<typeof import('../../apis/admin/course')['fetchAdminCourseCreate']>
+    readonly fetchAdminCourseAdd: UnwrapRef<typeof import('../../apis/admin/course')['fetchAdminCourseAdd']>
     readonly fetchAdminCourseDelete: UnwrapRef<typeof import('../../apis/admin/course')['fetchAdminCourseDelete']>
     readonly fetchAdminCourseList: UnwrapRef<typeof import('../../apis/admin/course')['fetchAdminCourseList']>
     readonly fetchAdminCourseOutlineChapterAdd: UnwrapRef<typeof import('../../apis/admin/course')['fetchAdminCourseOutlineChapterAdd']>
@@ -582,6 +585,7 @@ declare module 'vue' {
     readonly fetchAdminProjectStageList: UnwrapRef<typeof import('../../apis/admin/project')['fetchAdminProjectStageList']>
     readonly fetchAdminProjectStageListUpdate: UnwrapRef<typeof import('../../apis/admin/project')['fetchAdminProjectStageListUpdate']>
     readonly fetchAdminProjectUpdate: UnwrapRef<typeof import('../../apis/admin/project')['fetchAdminProjectUpdate']>
+    readonly fetchAdminQuestionAdd: UnwrapRef<typeof import('../../apis/admin/question')['fetchAdminQuestionAdd']>
     readonly fetchAdminQuestionList: UnwrapRef<typeof import('../../apis/admin/question')['fetchAdminQuestionList']>
     readonly fetchAdminUploadFile: UnwrapRef<typeof import('../../apis/file/index')['fetchAdminUploadFile']>
     readonly fetchClientGetPublicKey: UnwrapRef<typeof import('../../apis/client/index')['fetchClientGetPublicKey']>
