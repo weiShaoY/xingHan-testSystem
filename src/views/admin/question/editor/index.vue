@@ -695,76 +695,127 @@ onMounted(() => {
       </template>
     </AdminPageHeader>
 
-    <div
+    <el-form
       v-loading="loading"
-      class="art-card"
+      label-position="top"
+      class="flex flex-col gap-4"
     >
-      <el-form
-        label-position="top"
+      <div
+        class="art-card"
       >
+        <div
+          class="mb-4 flex items-center justify-between gap-4 max-sm:flex-col max-sm:items-start"
+        >
+          <div>
+            <h3
+              class="text-base font-semibold text-g-900"
+            >
+              题库信息
+            </h3>
 
-        <!-- 标题 -->
+            <p
+              class="mt-1 text-sm text-g-600"
+            >
+              共 {{ formData.questions.length }} 道题
+            </p>
+          </div>
+        </div>
+
         <el-form-item
           required
-          label="标题"
-          class="mb-10!"
+          label="题库标题"
+          class="mb-0!"
         >
           <el-input
             v-model="formData.qbName"
             placeholder="请输入题库标题"
           />
         </el-form-item>
+      </div>
+
+      <div
+        class="flex items-center justify-between gap-4 max-md:flex-col max-md:items-stretch"
+      >
+        <div>
+          <h3
+            class="text-base font-semibold text-g-900"
+          >
+            题目列表
+          </h3>
+
+          <p
+            class="mt-1 text-sm text-g-600"
+          >
+            单选 {{ formData.questions.filter(question => question.qusType === 1).length }} / 多选 {{ formData.questions.filter(question => question.qusType === 2).length }}
+          </p>
+        </div>
 
         <div
-          v-for="(question, questionIndex) in formData.questions"
-          :key="question.clientId"
-          class="mb-10"
+          class="flex flex-wrap gap-3 max-sm:flex-col"
+        >
+          <art-button
+            type="import"
+            @click="importQuestions"
+          >
+            批量导入问题
+          </art-button>
+
+          <art-button
+            type="add"
+            @click="addQuestion"
+          >
+            添加问题
+          </art-button>
+        </div>
+      </div>
+
+      <div
+        v-for="(question, questionIndex) in formData.questions"
+        :key="question.clientId"
+      >
+        <div
+          class="art-card flex flex-col gap-4 transition"
+          :class="[
+            movingQuestionId === question.clientId
+              ? 'border-primary/30 bg-primary/10!'
+              : '',
+          ]"
         >
           <div
-            class="art-card flex flex-col gap-3"
-            :class="[
-              movingQuestionId === question.clientId
-                ? 'bg-primary/10!'
-                : '',
-            ]"
+            class="flex gap-4 items-start max-md:flex-col"
           >
             <div
-              class="flex gap-4 items-start max-md:flex-col"
+              class="flex size-10 shrink-0 items-center justify-center rounded-custom-sm bg-primary/10 text-sm font-semibold text-primary"
             >
-              <el-input
-                v-model="question.qusTitle"
-                placeholder="请输入题目"
-                class="w-full flex-1"
-              >
-                <template
-                  #prefix
-                >
-                  <div
-                    class="text-primary pr-5"
-                  >
-                    Q{{ questionIndex + 1 }}.
-                  </div>
-                </template>
-              </el-input>
-
-              <div
-                class="flex shrink-0 flex-wrap gap-2 items-center max-md:w-full max-md:justify-end"
-              >
-                <ArtButton
-                  v-for="item in questionActions"
-                  :key="item.action"
-                  type="link"
-                  @click="handleQuestionAction(item.action, question, questionIndex)"
-                >
-                  {{ item.label }}
-                </ArtButton>
-              </div>
+              Q{{ questionIndex + 1 }}
             </div>
 
-            <!-- 题目类型选择 -->
+            <el-input
+              v-model="question.qusTitle"
+              placeholder="请输入题目"
+              class="w-full flex-1"
+            />
+
+            <div
+              class="flex shrink-0 flex-wrap gap-2 items-center max-md:w-full max-md:justify-end"
+            >
+              <ArtButton
+                v-for="item in questionActions"
+                :key="item.action"
+                type="link"
+                @click="handleQuestionAction(item.action, question, questionIndex)"
+              >
+                {{ item.label }}
+              </ArtButton>
+            </div>
+          </div>
+
+          <div
+            class="rounded-custom-sm bg-(--art-gray-100) px-4 py-3"
+          >
             <el-radio-group
               v-model="question.qusType"
-              class="mt-5.5 flex flex-wrap gap-x-12 gap-y-2"
+              class="flex flex-wrap gap-x-12 gap-y-2"
               @change="handleQuestionTypeChange(question)"
             >
               <el-radio
@@ -775,12 +826,15 @@ onMounted(() => {
                 {{ item.label }}
               </el-radio>
             </el-radio-group>
+          </div>
 
-            <!-- 单选题和多选题 -->
+          <div
+            class="flex flex-col gap-2"
+          >
             <div
               v-for="(option, optionIndex) in question.qusItems"
               :key="optionIndex"
-              class="mb-2 flex gap-2 items-center justify-between max-sm:flex-col max-sm:items-stretch"
+              class="flex gap-2 items-center justify-between max-sm:flex-col max-sm:items-stretch"
             >
               <el-input
                 v-model="option.ansContext"
@@ -826,11 +880,15 @@ onMounted(() => {
               </div>
 
             </div>
+          </div>
 
+          <div
+            class="grid grid-cols-2 gap-5 max-md:grid-cols-1"
+          >
             <el-form-item
               label="正确答案"
               required
-              class="mt-4.5 [&_.el-select]:w-full"
+              class="mb-0! [&_.el-select]:w-full"
             >
               <!-- 单选题 -->
               <el-select
@@ -868,55 +926,50 @@ onMounted(() => {
               </el-select>
             </el-form-item>
 
-            <div
-              class="grid grid-cols-2 gap-5 max-sm:grid-cols-1"
+            <!-- 分值 -->
+            <el-form-item
+              label="分值"
+              class="mb-0! w-full!"
+              required
             >
-              <!-- 分值 -->
-              <el-form-item
-                label="分值"
+              <el-input-number
+                v-model="question.qusScore"
+                :min="0"
+                :controls="true"
+                placeholder="本题分值"
                 class="w-full!"
-                required
-              >
-                <el-input-number
-                  v-model="question.qusScore"
-                  :min="0"
-                  :controls="true"
-                  placeholder="本题分值"
-                  class="w-full!"
-                />
-              </el-form-item>
+              />
+            </el-form-item>
+          </div>
 
-              <!-- 难度 -->
-              <el-form-item
-                label="难度"
-                class="w-full!"
-                required
+          <div
+            class="grid grid-cols-2 gap-5 max-md:grid-cols-1"
+          >
+            <!-- 难度 -->
+            <el-form-item
+              label="难度"
+              class="mb-0! w-full!"
+              required
+            >
+              <el-radio-group
+                v-model="question.qusDiff"
+                @update:model-value="value => setDiff(question, value)"
               >
-                <el-radio-group
-                  v-model="question.qusDiff"
-                  @update:model-value="value => setDiff(question, value)"
+                <el-radio
+                  v-for="item in diffOptions"
+                  :key="item.value"
+                  :value="item.value"
                 >
-                  <el-radio
-                    v-for="item in diffOptions"
-                    :key="item.value"
-                    :value="item.value"
-                  >
-                    {{ item.label }}
-                  </el-radio>
-                </el-radio-group>
-              </el-form-item>
-            </div>
+                  {{ item.label }}
+                </el-radio>
+              </el-radio-group>
+            </el-form-item>
 
             <!-- 答案说明 -->
             <el-form-item
               label="答案说明(选填)"
+              class="mb-0!"
             >
-              <p
-                class="text-3 text-g-600"
-              >
-                填写答题思路，帮助学员理解考试内容，提升考试成绩。
-              </p>
-
               <el-input
                 v-model="question.qusExplain"
                 type="textarea"
@@ -924,51 +977,31 @@ onMounted(() => {
                 placeholder="请输入答案说明"
               />
             </el-form-item>
-
-          </div>
-
-          <div
-            v-if="movingQuestionId"
-            class="my-3 flex flex-wrap gap-3 items-center justify-center"
-          >
-            <art-button
-              type="warning"
-              :disabled="movingQuestionId === question.clientId"
-              @click="moveQuestionTo(questionIndex)"
-            >
-              移动到此后
-            </art-button>
-
-            <art-button
-              type="error"
-              @click="cancelMoveQuestion"
-            >
-              取消
-            </art-button>
-
           </div>
         </div>
 
-        <!-- 底部 -->
         <div
-          class="rounded-lg border p-5 flex flex-wrap gap-3 items-center justify-end border-(--art-card-border)! bg-(--art-gray-100)! max-sm:flex-col max-sm:items-stretch"
+          v-if="movingQuestionId"
+          class="my-3 flex flex-wrap gap-3 items-center justify-center"
         >
           <art-button
-            type="import"
-            @click="importQuestions"
+            type="warning"
+            :disabled="movingQuestionId === question.clientId"
+            @click="moveQuestionTo(questionIndex)"
           >
-            批量导入问题
+            移动到此后
           </art-button>
 
           <art-button
-            type="add"
-            @click="addQuestion"
+            type="error"
+            @click="cancelMoveQuestion"
           >
-            添加问题
+            取消
           </art-button>
+
         </div>
-      </el-form>
-    </div>
+      </div>
+    </el-form>
 
   </div>
 </template>
