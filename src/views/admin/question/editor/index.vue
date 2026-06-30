@@ -620,6 +620,11 @@ function validateFormData() {
       return false
     }
 
+    if (!Number.isFinite(Number(question.qusScore))) {
+      ElNotification.warning(`${questionNumber} 请填写题目分值`)
+      return false
+    }
+
     const correctOptionCount = question.qusItems.filter(option => option.ansIsCorrect).length
 
     if (question.qusType === 1 && correctOptionCount !== 1) {
@@ -645,16 +650,17 @@ function createSubmitData(): AdminApi.Question.QuestionEditor {
   const submitData: AdminApi.Question.QuestionEditor = {
     qbName: formData.value.qbName.trim(),
     questions: formData.value.questions.map((question) => {
-      const { clientId: _clientId, ...submitQuestion } = question
-
       return {
-        ...submitQuestion,
-        qusTitle: submitQuestion.qusTitle.trim(),
-        qusExplain: submitQuestion.qusExplain?.trim() ?? '',
-        qusItems: submitQuestion.qusItems.map(option => ({
+        qusDiff: question.qusDiff,
+        qusExplain: question.qusExplain?.trim() ?? '',
+        qusId: question.qusId,
+        qusItems: question.qusItems.map(option => ({
           ...option,
           ansContext: option.ansContext.trim(),
         })),
+        qusScore: Number(question.qusScore),
+        qusTitle: question.qusTitle.trim(),
+        qusType: question.qusType,
       }
     }),
   }
@@ -845,22 +851,6 @@ onMounted(() => {
                   #prepend
                 >
                   {{ getOptionLabel(optionIndex) }}.
-                </template>
-
-                <template
-                  #suffix
-                >
-                  <div
-                    class="text-4.5 inline-flex gap-3"
-                  >
-                    <ArtSvgIcon
-                      icon="ri:image-line"
-                    />
-
-                    <ArtSvgIcon
-                      icon="ri:superscript"
-                    />
-                  </div>
                 </template>
               </el-input>
 

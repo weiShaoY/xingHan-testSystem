@@ -1,63 +1,127 @@
 <!------  2026-04-15---16:08---星期三  ------>
 <!------------------------------------    ------------------------------------------------->
 <script lang="ts" setup>
-import { ref } from 'vue'
+import {
+  computed,
+  ref,
+} from 'vue'
 
 const route = useRoute()
 
 const router = useRouter()
 
-type QuestionOption = {
+type Question = AdminApi.Question.QuestionEditorQuestion
 
-  /** 选项内容 */
-  content: string
+type QuestionType = 1 | 2
 
-  /** 是否为正确答案 */
-  isCorrect: boolean
+type QuestionDifficulty = Question['qusDiff']
+
+type SupportedQuestion = Omit<Question, 'qusType'> & {
+  qusType: QuestionType
 }
 
 /**
-   * 阶段类型定义
-   */
-type Stage = {
-
-  /** 阶段ID */
-  id: string
-
-  /** 阶段名称 */
-  name: string
-
-  /** 题目类型 */
-  type: '单选题' | '多选题' | '开放式题'
-
-  /** 分值 */
-  score: number
-
-  /** 难度 */
-  difficulty: '简单' | '中等' | '困难'
-
-  /** 标准答案 */
-  standardAnswer?: string[]
-
-  /** 单选或多选选项和答案 */
-  answerOptions?: QuestionOption[]
-}
-
-/**
- * 获取题目类型标签颜色
+ * 页面加载状态。
  */
-function getQuestionTypeTagType(type: Stage['type']) {
-  const tagTypeMap: Record<Stage['type'], 'primary' | 'success' | 'warning'> = {
-    单选题: 'primary',
-    多选题: 'success',
-    开放式题: 'warning',
+const loading = ref(false)
+
+/**
+ * 当前题库 ID。
+ */
+const qbId = computed(() => {
+  return Number(route.params.qbId || 0)
+})
+
+/**
+ * 题库详情。
+ */
+const formData = ref<AdminApi.Question.QuestionEditor>({
+  qbId: qbId.value || undefined,
+  qbName: '',
+  questions: [],
+})
+
+/**
+ * 当前页面只展示单选题和多选题。
+ */
+const questions = computed<SupportedQuestion[]>(() => {
+  return formData.value.questions.filter((question): question is SupportedQuestion => {
+    return isSupportedQuestionType(question.qusType)
+  })
+})
+
+/**
+ * 页面标题。
+ */
+const pageTitle = computed(() => {
+  return formData.value.qbName ? `${formData.value.qbName} 详情页` : '题库详情'
+})
+
+/**
+ * 页面统计。
+ */
+const questionStats = computed(() => {
+  return [
+    `单选题数量: ${questions.value.filter(question => question.qusType === 1).length}`,
+    `多选题数量: ${questions.value.filter(question => question.qusType === 2).length}`,
+  ]
+})
+
+/**
+ * 选项序号标签。
+ */
+const optionLabels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
+
+/**
+ * 获取选项展示序号。
+ *
+ * @param index 选项索引。
+ */
+function getOptionLabel(index: number) {
+  return optionLabels[index] ?? `${index + 1}`
+}
+
+/**
+ * 判断题目类型是否为当前支持的单选或多选。
+ *
+ * @param type 接口题目类型。
+ */
+function isSupportedQuestionType(type: Question['qusType']): type is QuestionType {
+  return type === 1 || type === 2
+}
+
+/**
+ * 获取题目类型名称。
+ *
+ * @param type 题目类型。
+ */
+function getQuestionTypeLabel(type: QuestionType) {
+  const labelMap: Record<QuestionType, string> = {
+    1: '单选题',
+    2: '多选题',
+  }
+
+  return labelMap[type]
+}
+
+/**
+ * 获取题目类型标签颜色。
+ *
+ * @param type 题目类型。
+ */
+function getQuestionTypeTagType(type: QuestionType) {
+  const tagTypeMap: Record<QuestionType, 'primary' | 'success'> = {
+    1: 'primary',
+    2: 'success',
   }
 
   return tagTypeMap[type]
 }
 
 /**
- * 获取题目分值标签颜色
+ * 获取题目分值标签颜色。
+ *
+ * @param score 分值。
  */
 function getScoreTagType(score: number) {
   if (score >= 20) {
@@ -72,110 +136,91 @@ function getScoreTagType(score: number) {
 }
 
 /**
- * 获取题目难度标签颜色
+ * 获取题目难度名称。
+ *
+ * @param difficulty 题目难度。
  */
-function getDifficultyTagType(difficulty: Stage['difficulty']) {
-  const tagTypeMap: Record<Stage['difficulty'], 'success' | 'warning' | 'danger'> = {
-    简单: 'success',
-    中等: 'warning',
-    困难: 'danger',
+function getDifficultyLabel(difficulty: QuestionDifficulty) {
+  const labelMap: Record<QuestionDifficulty, string> = {
+    1: '简单',
+    2: '中等',
+    3: '困难',
   }
 
-  return tagTypeMap[difficulty]
+  return labelMap[difficulty] ?? '中等'
 }
 
 /**
-   * 阶段列表数据
-   */
-const stages = ref<Stage[]>([
-  {
-    id: '1',
-    name: '学习阶段一',
-    type: '单选题',
-    score: 10,
-    difficulty: '简单',
-    answerOptions: [
-      {
-        content: '选项A',
-        isCorrect: true,
-      },
-      {
-        content: '选项B',
-        isCorrect: false,
-      },
-      {
-        content: '选项C',
-        isCorrect: false,
-      },
-    ],
-  },
-  {
-    id: '2',
-    name: '学习阶段二',
-    type: '多选题',
-    score: 10,
-    difficulty: '中等',
-    answerOptions: [
-      {
-        content: '选项A',
-        isCorrect: true,
-      },
-      {
-        content: '选项B',
-        isCorrect: true,
-      },
-      {
-        content: '选项C',
-        isCorrect: false,
-      },
-    ],
-  },
-  {
-    id: '3',
-    name: '学习阶段三',
-    type: '开放式题',
-    score: 20,
-    difficulty: '困难',
-    standardAnswer: ['学习阶段三标准答案1', '学习阶段三标准答案2'],
-  },
-  {
-    id: '4',
-    name: '学习阶段四',
-
-    type: '开放式题',
-    score: 20,
-    difficulty: '困难',
-    standardAnswer: ['学习阶段四标准答案1', '学习阶段四标准答案2'],
-  },
-])
-
-/**
- * 获取正确选项内容列表
+ * 获取题目难度标签颜色。
+ *
+ * @param difficulty 题目难度。
  */
-function getCorrectOptionContents(stage: Stage) {
-  return stage.answerOptions
-    ?.filter(option => option.isCorrect)
-    .map(option => option.content) ?? []
+function getDifficultyTagType(difficulty: QuestionDifficulty) {
+  const tagTypeMap: Record<QuestionDifficulty, 'success' | 'warning' | 'danger'> = {
+    1: 'success',
+    2: 'warning',
+    3: 'danger',
+  }
+
+  return tagTypeMap[difficulty] ?? 'warning'
 }
 
 /**
- * 获取单选题正确选项内容
+ * 获取正确选项索引列表。
+ *
+ * @param question 题目数据。
  */
-function getCorrectSingleOption(stage: Stage) {
-  return getCorrectOptionContents(stage)[0] ?? ''
+function getCorrectOptionIndexes(question: Question) {
+  return question.qusItems
+    ?.map((option, index) => option.ansIsCorrect ? index : -1)
+    .filter(index => index !== -1) ?? []
 }
 
 /**
-   * 跳转到编辑页
-   */
+ * 获取单选题正确选项索引。
+ *
+ * @param question 题目数据。
+ */
+function getCorrectSingleOptionIndex(question: Question) {
+  return getCorrectOptionIndexes(question)[0]
+}
+
+/**
+ * 跳转到编辑页。
+ */
 function goToEdit() {
   router.push({
     name: 'AdminQuestionEdit',
     params: {
-      id: route.params.id,
+      qbId: qbId.value,
     },
   })
 }
+
+/**
+ * 获取题库详情。
+ *
+ * @returns 题库详情请求完成。
+ */
+async function getQuestionSetting() {
+  if (!qbId.value) {
+    return
+  }
+
+  loading.value = true
+  try {
+    formData.value = await fetchAdminQuestionSetting(qbId.value)
+    console.log('🚀 ~ file: index.vue:213 ~ formData.value:', formData.value)
+  }
+  catch {
+    ElNotification.error('题库详情获取失败')
+  }
+  finally {
+    loading.value = false
+  }
+}
+
+getQuestionSetting()
 </script>
 
 <template>
@@ -183,19 +228,15 @@ function goToEdit() {
     class="mx-auto mb-10 flex w-full max-w-7xl flex-col gap-4 px-10 max-lg:px-6 max-sm:px-4"
   >
     <AdminPageHeader
-      title="题库1 详情页"
-      :stats="[
-        `单选题数量: ${stages.filter(stage => stage.type === '单选题').length}`,
-        `多选题数量: ${stages.filter(stage => stage.type === '多选题').length}`,
-        `开放式题数量: ${stages.filter(stage => stage.type === '开放式题').length}`,
-      ]"
+      :title="pageTitle"
+      :stats="questionStats"
     >
       <template
         #extra
       >
         <ArtButton
           type="edit"
-          @click="goToEdit()"
+          @click="goToEdit"
         />
 
         <ArtButton
@@ -209,18 +250,25 @@ function goToEdit() {
     </AdminPageHeader>
 
     <div
+      v-loading="loading"
       class="flex flex-col gap-4"
     >
+      <ElEmpty
+        v-if="!loading && questions.length === 0"
+        description="暂无题目"
+        class="py-18"
+      />
+
       <div
-        v-for="(stage, index) in stages"
-        :key="stage.id"
+        v-for="(question, index) in questions"
+        :key="question.qusId || index"
         class="art-card"
       >
         <div
           class="flex gap-6 items-start max-sm:flex-col"
         >
           <div
-            class="flex h-9 w-12 shrink-0 items-center justify-center rounded-lg bg-primary/10 font-semibold text-primary"
+            class="flex h-9 w-12 shrink-0 items-center justify-center rounded-custom-sm bg-primary/10 font-semibold text-primary"
           >
             Q{{ index + 1 }}
           </div>
@@ -234,91 +282,81 @@ function goToEdit() {
               <div
                 class="text-base font-semibold text-g-900"
               >
-                {{ stage.name }}
+                {{ question.qusTitle || '未命名题目' }}
               </div>
 
               <el-tag
-                :type="getQuestionTypeTagType(stage.type)"
+                :type="getQuestionTypeTagType(question.qusType)"
                 size="small"
               >
-                {{ stage.type }}
+                {{ getQuestionTypeLabel(question.qusType) }}
               </el-tag>
 
               <el-tag
-                :type="getScoreTagType(stage.score)"
+                :type="getScoreTagType(question.qusScore)"
                 size="small"
               >
-                {{ stage.score }} 分
+                {{ question.qusScore }} 分
               </el-tag>
 
               <el-tag
-                :type="getDifficultyTagType(stage.difficulty)"
+                :type="getDifficultyTagType(question.qusDiff)"
                 size="small"
               >
-                {{ stage.difficulty }}
+                {{ getDifficultyLabel(question.qusDiff) }}
               </el-tag>
             </div>
 
-            <!-- 选项 -->
             <div
-              v-if="stage.type !== '开放式题'"
-              class="rounded-lg bg-(--art-gray-100) p-4"
+              class="rounded-custom-sm bg-(--art-gray-100) p-4"
             >
-              <!-- 单选题 -->
               <el-radio-group
-                v-if="stage.type === '单选题'"
-                :model-value="getCorrectSingleOption(stage)"
+                v-if="question.qusType === 1"
+                :model-value="getCorrectSingleOptionIndex(question)"
                 disabled
-                class="flex flex-col gap-2"
+                class="question-option-group flex flex-col gap-2"
               >
                 <el-radio
-                  v-for="option in stage.answerOptions"
-                  :key="option.content"
-                  :value="option.content"
+                  v-for="(option, optionIndex) in question.qusItems"
+                  :key="option.ansId || optionIndex"
+                  :value="optionIndex"
                   size="large"
                 >
-                  {{ option.content }}
+                  {{ getOptionLabel(optionIndex) }}. {{ option.ansContext || '未填写选项内容' }}
                 </el-radio>
-
               </el-radio-group>
-              <!-- 多选题 -->
+
               <el-checkbox-group
-                v-if="stage.type === '多选题'"
-                :model-value="getCorrectOptionContents(stage)"
+                v-else
+                :model-value="getCorrectOptionIndexes(question)"
                 disabled
-                class="flex flex-col gap-2"
+                class="question-option-group flex flex-col gap-2"
               >
                 <el-checkbox
-                  v-for="option in stage.answerOptions"
-                  :key="option.content"
-                  :value="option.content"
+                  v-for="(option, optionIndex) in question.qusItems"
+                  :key="option.ansId || optionIndex"
+                  :value="optionIndex"
                   size="large"
                 >
-                  {{ option.content }}
+                  {{ getOptionLabel(optionIndex) }}. {{ option.ansContext || '未填写选项内容' }}
                 </el-checkbox>
-
               </el-checkbox-group>
             </div>
 
             <div
-              v-if="stage.standardAnswer"
-              class="rounded-lg bg-(--art-gray-100) p-4"
+              v-if="question.qusExplain"
+              class="rounded-custom-sm bg-(--art-gray-100) p-4"
             >
               <div
                 class="mb-2 text-sm font-medium text-g-900"
               >
-                标准答案
+                答案说明
               </div>
 
               <div
-                class="flex flex-col gap-2 text-sm text-g-700"
+                class="text-sm text-g-700"
               >
-                <span
-                  v-for="answer in stage.standardAnswer"
-                  :key="answer"
-                >
-                  {{ answer }}
-                </span>
+                {{ question.qusExplain }}
               </div>
             </div>
           </div>
@@ -329,4 +367,15 @@ function goToEdit() {
   </div>
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.question-option-group {
+  align-items: flex-start;
+}
+
+.question-option-group :deep(.el-radio),
+.question-option-group :deep(.el-checkbox) {
+  justify-content: flex-start;
+  width: 100%;
+  margin-right: 0;
+}
+</style>
