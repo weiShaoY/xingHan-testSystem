@@ -364,21 +364,6 @@ function exportQuestionBank() {
               </p>
             </div>
 
-            <div
-              class="rounded-custom-sm bg-primary/10 px-4 py-3"
-            >
-              <p
-                class="truncate text-lg font-semibold"
-              >
-                {{ item.qbTypeName || '-' }}
-              </p>
-
-              <p
-                class="mt-1 text-sm text-g-600"
-              >
-                题库类型
-              </p>
-            </div>
           </div>
 
           <div
@@ -386,10 +371,6 @@ function exportQuestionBank() {
           >
             <span>
               共 {{ getQuestionTotal(item) }} 道题
-            </span>
-
-            <span>
-              父级题库: {{ item.parentName || '无' }}
             </span>
 
             <span>
