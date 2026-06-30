@@ -868,40 +868,44 @@ onMounted(() => {
               </el-select>
             </el-form-item>
 
-            <!-- 分值 -->
-            <el-form-item
-              label="分值"
-              class="w-full!"
-              required
+            <div
+              class="grid grid-cols-2 gap-5 max-sm:grid-cols-1"
             >
-              <el-input-number
-                v-model="question.qusScore"
-                :min="0"
-                :controls="true"
-                placeholder="本题分值"
+              <!-- 分值 -->
+              <el-form-item
+                label="分值"
                 class="w-full!"
-              />
-            </el-form-item>
-
-            <!-- 难度 -->
-            <el-form-item
-              label="难度"
-              class="w-full!"
-              required
-            >
-              <el-radio-group
-                v-model="question.qusDiff"
-                @update:model-value="value => setDiff(question, value)"
+                required
               >
-                <el-radio
-                  v-for="item in diffOptions"
-                  :key="item.value"
-                  :value="item.value"
+                <el-input-number
+                  v-model="question.qusScore"
+                  :min="0"
+                  :controls="true"
+                  placeholder="本题分值"
+                  class="w-full!"
+                />
+              </el-form-item>
+
+              <!-- 难度 -->
+              <el-form-item
+                label="难度"
+                class="w-full!"
+                required
+              >
+                <el-radio-group
+                  v-model="question.qusDiff"
+                  @update:model-value="value => setDiff(question, value)"
                 >
-                  {{ item.label }}
-                </el-radio>
-              </el-radio-group>
-            </el-form-item>
+                  <el-radio
+                    v-for="item in diffOptions"
+                    :key="item.value"
+                    :value="item.value"
+                  >
+                    {{ item.label }}
+                  </el-radio>
+                </el-radio-group>
+              </el-form-item>
+            </div>
 
             <!-- 答案说明 -->
             <el-form-item
