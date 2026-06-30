@@ -1144,6 +1144,11 @@ declare namespace AdminApi {
        */
       unlockConditions: 0 | 1 | 2
 
+      /**
+       *  时长
+       */
+      allDuration: number
+
       nodes: ProjectStageListItem[]
     }
   }

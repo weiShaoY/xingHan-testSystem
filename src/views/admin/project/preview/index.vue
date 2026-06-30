@@ -27,6 +27,7 @@ const projectStageList = ref<AdminApi.Project.ProjectStageListEditor>({
   displayMethod: 0,
   isLearningStages: 0,
   unlockConditions: 2,
+  allDuration: 0,
   nodes: [],
 })
 
@@ -40,10 +41,6 @@ const requiredStageCount = computed(() => {
 
 const optionalStageCount = computed(() => {
   return projectStageList.value.nodes.filter(item => item.stageType !== 1).length
-})
-
-const estimatedMinutes = computed(() => {
-  return projectStageList.value.projSectionCount * 5
 })
 
 const unlockLabel = computed(() => {
@@ -189,13 +186,13 @@ onMounted(() => {
               <p
                 class="m-0 text-xl font-semibold leading-6"
               >
-                {{ estimatedMinutes }}
+                {{ projectStageList.allDuration }}
               </p>
 
               <p
                 class="mt-1 mb-0 text-xs text-g-600"
               >
-                预计分钟
+                分钟
               </p>
             </div>
 

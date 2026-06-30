@@ -45,6 +45,7 @@ const projectStageList = ref<AdminApi.Project.ProjectStageListEditor>({
   displayMethod: 0,
   isLearningStages: 0,
   unlockConditions: 2,
+  allDuration: 0,
   nodes: [],
 })
 
@@ -115,7 +116,8 @@ function goToCourseEdit(course: AdminApi.Course.CourseListItem) {
       :stats="[`
         项目阶段总数: ${projectStageList.nodes.length},
         课程总数: ${projectStageList.projStageCourse},
-        小节总数: ${projectStageList.projSectionCount}
+        小节总数: ${projectStageList.projSectionCount},
+        时长: ${projectStageList.allDuration} 分钟
       `]"
       @back="backToProjectList"
     >
