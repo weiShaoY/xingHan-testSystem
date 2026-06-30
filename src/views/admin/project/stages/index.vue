@@ -83,25 +83,15 @@ function goToEdit() {
 /**
  * 跳转到课程大纲页
  */
-function goToCourseOutline(course: AdminApi.Course.CourseListItem) {
-  router.push({
-    name: 'AdminCourseOutline',
+function goToCoursePreview(course: AdminApi.Course.CourseListItem) {
+  const targetRoute = router.resolve({
+    name: 'AdminCoursePreview',
     params: {
       couId: course.couId,
     },
   })
-}
 
-/**
- * 跳转到课程编辑页
- */
-function goToCourseEdit(course: AdminApi.Course.CourseListItem) {
-  router.push({
-    name: 'AdminCourseSetting',
-    params: {
-      couId: course.couId,
-    },
-  })
+  window.open(targetRoute.href, '_blank')
 }
 
 </script>
@@ -199,21 +189,6 @@ function goToCourseEdit(course: AdminApi.Course.CourseListItem) {
                   >
                     {{ course.couName || '-' }}
                   </div>
-
-                  <!-- <el-tag
-                    :type="course.isRequired === 1 ? 'danger' : 'info'"
-                    size="small"
-                  >
-                    {{ course.isRequired === 1 ? '必修课程' : '选修课程' }}
-                  </el-tag>
-
-                  <el-tag
-                    v-if="course.isFree_Preview === 1"
-                    type="success"
-                    size="small"
-                  >
-                    支持预览
-                  </el-tag> -->
                 </div>
 
                 <div
@@ -228,13 +203,8 @@ function goToCourseEdit(course: AdminApi.Course.CourseListItem) {
                 class="flex shrink-0 items-center gap-2 max-md:w-full max-md:justify-end"
               >
                 <ArtButton
-                  type="edit"
-                  @click="goToCourseEdit(course)"
-                />
-
-                <ArtButton
                   type="preview"
-                  @click="goToCourseOutline(course)"
+                  @click="goToCoursePreview(course)"
                 />
               </div>
             </div>

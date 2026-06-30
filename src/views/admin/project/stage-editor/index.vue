@@ -26,6 +26,15 @@ const router = useRouter()
 
 type ProjectStage = AdminApi.Project.ProjectStageListItem
 
+type StageCourse = AdminApi.Course.CourseListItem & {
+
+  /** 课程小节数，接口可能随课程列表或阶段详情返回。 */
+  couSectionCount?: number
+
+  /** 兼容可能的通用小节数字段。 */
+  sectionCount?: number
+}
+
 type StageCourseValidator = NonNullable<FormItemRule['validator']>
 
 /**
@@ -85,6 +94,38 @@ const currentStageIndex = ref(0)
  */
 const currentStageCourseIds = computed(() => {
   return projectStageList.value.nodes[currentStageIndex.value]?.course.map(item => item.couId) ?? []
+})
+
+/**
+ * 获取课程小节数量。
+ *
+ * @param course 课程数据。
+ */
+function getCourseSectionCount(course: AdminApi.Course.CourseListItem) {
+  const stageCourse = course as StageCourse
+
+  return Number(stageCourse.couSectionCount ?? stageCourse.sectionCount ?? 0) || 0
+}
+
+/**
+ * 页面阶段统计。
+ */
+const projectStageStats = computed(() => {
+  const courses = projectStageList.value.nodes.flatMap(stage => stage.course ?? [])
+
+  const hasCourseSectionCount = courses.some((course) => {
+    const stageCourse = course as StageCourse
+
+    return stageCourse.couSectionCount !== undefined || stageCourse.sectionCount !== undefined
+  })
+
+  return {
+    courseCount: courses.length,
+    sectionCount: hasCourseSectionCount
+      ? courses.reduce((total, course) => total + getCourseSectionCount(course), 0)
+      : projectStageList.value.projSectionCount,
+    stageCount: projectStageList.value.nodes.length,
+  }
 })
 
 /**
@@ -184,13 +225,15 @@ function backToProjectStages() {
 /**
  * 跳转到课程大纲页
  */
-function goToCourseOutline(course: AdminApi.Course.CourseListItem) {
-  router.push({
-    name: 'AdminCourseOutline',
+function goToCoursePreview(course: AdminApi.Course.CourseListItem) {
+  const targetRoute = router.resolve({
+    name: 'AdminCoursePreview',
     params: {
       couId: course.couId,
     },
   })
+
+  window.open(targetRoute.href, '_blank')
 }
 
 /**
@@ -302,6 +345,8 @@ async function handleSubmitProject() {
 
   const formData: AdminApi.Project.ProjectStageListEditor = {
     ...projectStageList.value,
+    projSectionCount: projectStageStats.value.sectionCount,
+    projStageCourse: projectStageStats.value.courseCount,
     nodes: projectStageList.value.nodes.map(stage => ({
       ...stage,
       stageName: stage.stageName.trim(),
@@ -407,9 +452,9 @@ function moveCourse(stageIndex: number, courseIndex: number, direction: 'up' | '
     <AdminPageHeader
       :title="projectStageList.projName"
       :stats="[`
-        项目阶段总数: ${projectStageList.nodes.length},
-        课程总数: ${projectStageList.projStageCourse},
-        小节总数: ${projectStageList.projSectionCount},
+        项目阶段总数: ${projectStageStats.stageCount},
+        课程总数: ${projectStageStats.courseCount},
+        小节总数: ${projectStageStats.sectionCount},
       `]"
       @back="backToProjectStages"
     >
@@ -568,7 +613,7 @@ function moveCourse(stageIndex: number, courseIndex: number, direction: 'up' | '
 
                               <ArtButton
                                 type="preview"
-                                @click="goToCourseOutline(course)"
+                                @click="goToCoursePreview(course)"
                               />
 
                               <ArtButton
