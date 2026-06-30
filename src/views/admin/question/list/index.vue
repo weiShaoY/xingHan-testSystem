@@ -304,11 +304,6 @@ function exportQuestionBank() {
                 {{ item.qbName }}
               </h3>
 
-              <p
-                class="mt-2 line-clamp-2 text-sm text-g-600"
-              >
-                {{ item.qbDesc || '暂无描述' }}
-              </p>
             </div>
 
             <div

@@ -93,6 +93,7 @@ async function getQuestionSetting() {
   loading.value = true
   try {
     formData.value = normalizeFormData(await fetchAdminQuestionSetting(qbId.value))
+    console.log('🚀 ~ file: index.vue:96 ~ formData.value:', formData.value)
   }
   catch {
     ElNotification.error('题库详情获取失败')
