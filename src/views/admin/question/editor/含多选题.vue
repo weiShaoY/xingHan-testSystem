@@ -5,8 +5,6 @@ import { computed, ref } from 'vue'
 
 const route = useRoute()
 
-const router = useRouter()
-
 /**
  * 题库列表页路径。
  */
@@ -18,112 +16,18 @@ const QUESTION_LIST_PATH = '/admin/question'
 const workTabStore = useWorkTabStore()
 
 /**
- * 页面提交和详情加载状态。
- */
-const loading = ref(false)
-
-/**
- * 当前题库 ID
- */
-const qbId = computed(() => {
-  return Number(route.params.qbId || 0)
-})
-
-/**
  * 是否为编辑模式
  */
 const isEditMode = computed(() => {
-  return Boolean(route.params.qbId)
+  return Boolean(route.params.id)
 })
-
-/**
- * 表单数据。
- */
-const formData = ref<AdminApi.Question.QuestionEditor>(createDefaultFormData())
 
 /**
  * 页面标题
  */
 const pageTitle = computed(() => {
-  return isEditMode.value ? `设置题库-${formData.value.qbName}` : '创建题库'
+  return isEditMode.value ? '题库1 编辑页' : '创建题库'
 })
-
-/**
- * 创建题库编辑表单默认值。
- *
- * @returns 默认题库编辑表单数据。
- */
-function createDefaultFormData(): AdminApi.Question.QuestionEditor {
-  return {
-    qbName: isEditMode.value ? '' : '未命名题库',
-    questions: [],
-  }
-}
-
-/**
- * 获取题库设置并回填表单。
- * @returns 题库设置请求完成。
- */
-async function getQuestionSetting() {
-  if (!qbId.value) {
-    return
-  }
-
-  loading.value = true
-  try {
-    formData.value = await fetchAdminQuestionSetting(qbId.value)
-    console.log('🚀 ~ file: index.vue:136 ~ formData.value:', formData.value)
-  }
-  catch {
-    ElNotification.error('题库详情获取失败')
-  }
-  finally {
-    loading.value = false
-  }
-}
-
-/**
- * 返回课程列表页并关闭当前编辑标签。
- */
-function backToQuestionList() {
-  workTabStore.removeTab(route.path)
-
-  router.push({
-    path: QUESTION_LIST_PATH,
-  })
-}
-
-/**
- * 保存或创建课程。
- *
- * @returns 提交请求完成。
- */
-async function handleSubmit() {
-  if (loading.value) {
-    return
-  }
-
-  loading.value = true
-
-  try {
-    if (isEditMode.value) {
-      await fetchAdminQuestionUpdate(formData.value)
-      ElNotification.success('题库更新成功')
-    }
-    else {
-      await fetchAdminQuestionAdd(formData.value)
-      ElNotification.success('题库创建成功')
-    }
-
-    backToQuestionList()
-  }
-  catch {
-    ElNotification.error(isEditMode.value ? '题库更新失败' : '题库创建失败')
-  }
-  finally {
-    loading.value = false
-  }
-}
 
 /**
  * 题目选项数据
@@ -803,6 +707,63 @@ function importQuestions() {
                   />
                 </el-select>
               </el-form-item>
+            </template>
+
+            <template
+              v-else
+            >
+              <el-form-item
+                label="标准答案 (选填)"
+                required
+              >
+                <p
+                  class="text-3 text-g-600"
+                >
+                  设置一个或多个标准答案，学员提交的答案和任何一个标准答案一致则自动得分，否则不得分；不设置标准答案时，学员提交答案后不会立即得分，需您手动给学员评分。
+                </p>
+
+                <div
+                  class="flex flex-col gap-3 w-full items-center"
+                >
+                  <div
+                    v-for="(_, answerIndex) in stage.standardAnswer"
+                    :key="answerIndex"
+                    class="flex gap-3 w-full items-center max-sm:flex-col max-sm:items-stretch"
+                  >
+                    <el-input
+                      v-model="stage.standardAnswer![answerIndex]"
+                      class="!flex-1"
+                      placeholder="请输入标准答案"
+                    >
+                      <template
+                        v-if="answerIndex > 0"
+                        #prepend
+                      >
+                        或
+                      </template>
+                    </el-input>
+
+                    <div
+                      class="flex gap-2 items-center justify-end"
+                    >
+                      <ArtButton
+                        type="add"
+                        @click="addStandardAnswer(stage, answerIndex)"
+                      />
+
+                      <ArtButton
+                        type="delete"
+                        :disabled="(stage.standardAnswer?.length ?? 0) <= 1"
+                        @click="removeStandardAnswer(stage, answerIndex)"
+                      />
+                    </div>
+
+                  </div>
+
+                </div>
+
+              </el-form-item>
+
             </template>
 
             <!-- 分值和难度 -->

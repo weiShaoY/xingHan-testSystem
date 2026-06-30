@@ -1308,6 +1308,16 @@ declare namespace AdminApi {
       qusType: 1 | 2 | 3 | 4 | 5
 
       /**
+       *  题目分数
+       */
+      qusScore: number
+
+      /**
+       *  题目说明
+       */
+      qusExplain: string
+
+      /**
        * 题目选项列表
        */
       qusItems: QuestionItem[]

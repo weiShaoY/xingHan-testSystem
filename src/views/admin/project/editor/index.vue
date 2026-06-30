@@ -104,11 +104,11 @@ function createDefaultFormData(editMode: boolean): AdminApi.Project.ProjectEdito
 }
 
 /**
- * 获取项目详情并回填表单。
+ * 获取项目设置并回填表单。
  *
- * @returns 项目详情请求完成。
+ * @returns 项目设置请求完成。
  */
-async function getProjectDetail() {
+async function getProjectSetting() {
   if (!projId.value) {
     return
   }
@@ -127,7 +127,7 @@ async function getProjectDetail() {
 
 onMounted(() => {
   if (isEditMode.value) {
-    void getProjectDetail()
+    void getProjectSetting()
   }
 })
 async function handleSubmit() {

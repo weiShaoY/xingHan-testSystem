@@ -34,7 +34,7 @@ export function fetchAdminProjectSetting(projId: number) {
 }
 
 /**
- *  更新项目设置
+ *  修改项目设置
  */
 export function fetchAdminProjectUpdate(data: AdminApi.Project.ProjectEditor) {
   return request.post<boolean>({

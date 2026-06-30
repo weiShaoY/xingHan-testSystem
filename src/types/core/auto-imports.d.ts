@@ -116,6 +116,8 @@ declare global {
   const fetchAdminProjectUpdate: typeof import('../../apis/admin/project').fetchAdminProjectUpdate
   const fetchAdminQuestionAdd: typeof import('../../apis/admin/question').fetchAdminQuestionAdd
   const fetchAdminQuestionList: typeof import('../../apis/admin/question').fetchAdminQuestionList
+  const fetchAdminQuestionSetting: typeof import('../../apis/admin/question').fetchAdminQuestionSetting
+  const fetchAdminQuestionUpdate: typeof import('../../apis/admin/question').fetchAdminQuestionUpdate
   const fetchAdminUpdateCourse: typeof import('../../apis/admin/index').fetchAdminCourseUpdate
   const fetchAdminUploadFile: typeof import('../../apis/file/index').fetchAdminUploadFile
   const fetchClientGetPublicKey: typeof import('../../apis/client/index').fetchClientGetPublicKey
@@ -587,6 +589,8 @@ declare module 'vue' {
     readonly fetchAdminProjectUpdate: UnwrapRef<typeof import('../../apis/admin/project')['fetchAdminProjectUpdate']>
     readonly fetchAdminQuestionAdd: UnwrapRef<typeof import('../../apis/admin/question')['fetchAdminQuestionAdd']>
     readonly fetchAdminQuestionList: UnwrapRef<typeof import('../../apis/admin/question')['fetchAdminQuestionList']>
+    readonly fetchAdminQuestionSetting: UnwrapRef<typeof import('../../apis/admin/question')['fetchAdminQuestionSetting']>
+    readonly fetchAdminQuestionUpdate: UnwrapRef<typeof import('../../apis/admin/question')['fetchAdminQuestionUpdate']>
     readonly fetchAdminUploadFile: UnwrapRef<typeof import('../../apis/file/index')['fetchAdminUploadFile']>
     readonly fetchClientGetPublicKey: UnwrapRef<typeof import('../../apis/client/index')['fetchClientGetPublicKey']>
     readonly fetchClientGetUserInfo: UnwrapRef<typeof import('../../apis/client/index')['fetchClientGetUserInfo']>

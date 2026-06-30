@@ -121,11 +121,11 @@ function createDefaultFormData(): AdminApi.Course.CourseEditor {
 }
 
 /**
- * 获取课程详情并回填表单。
+ * 获取课程设置并回填表单。
  *
- * @returns 课程详情请求完成。
+ * @returns 课程设置请求完成。
  */
-async function getCourseDetail() {
+async function getCourseSetting() {
   if (!couId.value) {
     return
   }
@@ -188,7 +188,7 @@ async function handleSubmit() {
 
 onMounted(() => {
   if (isEditMode.value) {
-    void getCourseDetail()
+    void getCourseSetting()
   }
 })
 </script>
