@@ -1289,7 +1289,7 @@ declare namespace AdminApi {
     /**
      *  题目列表项
      */
-    type QuestionListItem = {
+    type QuestionEditorQuestion = {
 
       /**
        *  题目ID
@@ -1318,6 +1318,12 @@ declare namespace AdminApi {
       qusExplain: string
 
       /**
+       *  题目难度
+       * @description 1=简单，2=中等，3=困难
+       */
+      qusDiff: 1 | 2 | 3
+
+      /**
        * 题目选项列表
        */
       qusItems: QuestionItem[]
@@ -1330,6 +1336,11 @@ declare namespace AdminApi {
     type QuestionEditor = {
 
       /**
+       * 题库ID
+       */
+      qbId?: number
+
+      /**
        * 题库名称
        */
       qbName: string
@@ -1337,7 +1348,7 @@ declare namespace AdminApi {
       /**
        * 题目列表
        */
-      questions: QuestionListItem[]
+      questions: QuestionEditorQuestion[]
     }
   }
 }

@@ -1,7 +1,11 @@
 <!------  2026-04-15---16:08---星期三  ------>
 <!------------------------------------    ------------------------------------------------->
 <script lang="ts" setup>
-import { computed, ref } from 'vue'
+import {
+  computed,
+  onMounted,
+  ref,
+} from 'vue'
 
 const route = useRoute()
 
@@ -39,7 +43,23 @@ const isEditMode = computed(() => {
 /**
  * 表单数据。
  */
-const formData = ref<AdminApi.Question.QuestionEditor>(createDefaultFormData())
+type QuestionType = 1 | 2
+
+type QuestionDifficulty = AdminApi.Question.QuestionEditorQuestion['qusDiff']
+
+type QuestionOption = AdminApi.Question.QuestionItem
+
+type EditorQuestion = Omit<AdminApi.Question.QuestionEditorQuestion, 'qusType' | 'qusItems'> & {
+  clientId: string
+  qusType: QuestionType
+  qusItems: QuestionOption[]
+}
+
+type QuestionEditorForm = Omit<AdminApi.Question.QuestionEditor, 'questions'> & {
+  questions: EditorQuestion[]
+}
+
+const formData = ref<QuestionEditorForm>(createDefaultFormData())
 
 /**
  * 页面标题
@@ -53,10 +73,11 @@ const pageTitle = computed(() => {
  *
  * @returns 默认题库编辑表单数据。
  */
-function createDefaultFormData(): AdminApi.Question.QuestionEditor {
+function createDefaultFormData(): QuestionEditorForm {
   return {
+    qbId: isEditMode.value ? qbId.value : undefined,
     qbName: isEditMode.value ? '' : '未命名题库',
-    questions: [],
+    questions: isEditMode.value ? [] : [createQuestion()],
   }
 }
 
@@ -71,8 +92,7 @@ async function getQuestionSetting() {
 
   loading.value = true
   try {
-    formData.value = await fetchAdminQuestionSetting(qbId.value)
-    console.log('🚀 ~ file: index.vue:136 ~ formData.value:', formData.value)
+    formData.value = normalizeFormData(await fetchAdminQuestionSetting(qbId.value))
   }
   catch {
     ElNotification.error('题库详情获取失败')
@@ -83,7 +103,7 @@ async function getQuestionSetting() {
 }
 
 /**
- * 返回课程列表页并关闭当前编辑标签。
+ * 返回题库列表页并关闭当前编辑标签。
  */
 function backToQuestionList() {
   workTabStore.removeTab(route.path)
@@ -94,7 +114,7 @@ function backToQuestionList() {
 }
 
 /**
- * 保存或创建课程。
+ * 保存或创建题库。
  *
  * @returns 提交请求完成。
  */
@@ -103,15 +123,21 @@ async function handleSubmit() {
     return
   }
 
+  if (!validateFormData()) {
+    return
+  }
+
   loading.value = true
 
   try {
+    const submitData = createSubmitData()
+
     if (isEditMode.value) {
-      await fetchAdminQuestionUpdate(formData.value)
+      await fetchAdminQuestionUpdate(submitData)
       ElNotification.success('题库更新成功')
     }
     else {
-      await fetchAdminQuestionAdd(formData.value)
+      await fetchAdminQuestionAdd(submitData)
       ElNotification.success('题库创建成功')
     }
 
@@ -126,144 +152,46 @@ async function handleSubmit() {
 }
 
 /**
- * 题目选项数据
- */
-type QuestionOption = {
-
-  /** 选项内容 */
-  content: string
-
-  /** 是否为正确答案 */
-  isCorrect: boolean
-}
-
-/**
- * 题目类型
- */
-type QuestionType = '单选题' | '多选题' | '开放式题'
-
-/**
- * 题目难度
- */
-type Difficulty = '易' | '中' | '难'
-
-/**
- * 题目数据
- */
-type Stage = {
-
-  /** 阶段ID */
-  id: string
-
-  /** 阶段名称 */
-  name: string
-
-  /** 题目类型 */
-  type: QuestionType
-
-  /** 分值 */
-  score: number
-
-  /** 难度 */
-  difficulty: Difficulty
-
-  /** 标准答案 */
-  standardAnswer?: string[]
-
-  /** 单选或多选选项和答案 */
-  answerOptions?: QuestionOption[]
-
-  /** 答案说明 */
-  answerExplanation?: string
-}
-
-/**
- * 题目列表数据
- */
-const stages = ref<Stage[]>([
-  {
-    id: '1',
-    name: '学习阶段一',
-    type: '单选题',
-    score: 10,
-    difficulty: '中',
-    answerOptions: [
-      {
-        content: '1',
-        isCorrect: true,
-      },
-      {
-        content: '2',
-        isCorrect: false,
-      },
-      {
-        content: '3',
-        isCorrect: false,
-      },
-      {
-        content: '4',
-        isCorrect: false,
-      },
-    ],
-  },
-  {
-    id: '2',
-    name: '学习阶段二',
-    type: '多选题',
-    score: 10,
-    difficulty: '易',
-    answerOptions: [
-      {
-        content: '1',
-        isCorrect: true,
-      },
-      {
-        content: '12',
-        isCorrect: true,
-      },
-      {
-        content: '3',
-        isCorrect: false,
-      },
-    ],
-  },
-  {
-    id: '3',
-    name: '学习阶段三',
-    type: '开放式题',
-    score: 10,
-    difficulty: '中',
-    standardAnswer: ['开放式问题答案1', '开放式问题答案2'],
-  },
-])
-
-/**
- * 题库标题
- */
-const questionBankTitle = ref(isEditMode.value ? '题库1' : '未命名题库')
-
-/**
  * 题目类型选项
  */
 const questionTypes: { label: string, value: QuestionType }[] = [
   {
     label: '单选题',
-    value: '单选题',
+    value: 1,
   },
   {
     label: '多选题',
-    value: '多选题',
-  },
-  {
-    label: '开放式问题',
-    value: '开放式题',
+    value: 2,
   },
 ]
 
 /**
- * 难度选项
+ * 题目难度选项
  */
-const difficultyOptions: Difficulty[] = ['易', '中', '难']
+const diffOptions: { label: string, value: QuestionDifficulty }[] = [
+  {
+    label: '简单',
+    value: 1,
+  },
+  {
+    label: '中等',
+    value: 2,
+  },
+  {
+    label: '困难',
+    value: 3,
+  },
+]
+
+/**
+ * 页面统计
+ */
+const questionStats = computed(() => {
+  return [
+    `单选题数量: ${formData.value.questions.filter(question => question.qusType === 1).length}`,
+    `多选题数量: ${formData.value.questions.filter(question => question.qusType === 2).length}`,
+  ]
+})
 
 /**
  * 选项序号标签
@@ -273,7 +201,7 @@ const optionLabels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
 /**
  * 题目操作按钮配置
  */
-const stageActions = [
+const questionActions = [
   {
     label: '移动',
     action: 'move',
@@ -289,30 +217,34 @@ const stageActions = [
 ]
 
 /**
- * 题干右侧工具图标
- */
-const questionTools = [
-  'ri:mic-line',
-  'ri:video-line',
-  'ri:image-line',
-  'ri:superscript',
-]
-
-/**
  * 当前正在移动的题目 ID
  */
-const movingStageId = ref('')
+const movingQuestionId = ref('')
+
+/**
+ * 创建前端临时题目 ID。
+ *
+ * @returns 临时题目 ID。
+ */
+function createClientId() {
+  const randomValue = Math.random().toString(36)
+
+  const randomId = randomValue.slice(2)
+
+  return `${Date.now()}-${randomId}`
+}
 
 /**
  * 创建题目选项
  *
- * @param content 选项内容
+ * @param ansContext 选项内容
+ * @param ansIsCorrect 是否为正确答案
  * @returns 题目选项数据
  */
-function createOption(content = ''): QuestionOption {
+function createOption(ansContext = '', ansIsCorrect = false): QuestionOption {
   return {
-    content,
-    isCorrect: false,
+    ansContext,
+    ansIsCorrect,
   }
 }
 
@@ -322,30 +254,85 @@ function createOption(content = ''): QuestionOption {
  * @param type 题目类型
  * @returns 题目数据
  */
-function createStage(type: QuestionType = '单选题'): Stage {
-  const id = `${Date.now()}`
-
+function createQuestion(type: QuestionType = 1): EditorQuestion {
   return {
-    id,
-    name: '',
-    type,
-    score: 10,
-    difficulty: '中',
-    answerOptions: type === '开放式题'
-      ? undefined
-      : [
-          createOption(''),
-          createOption(''),
-          createOption(''),
-          createOption(''),
-        ],
-    standardAnswer: type === '开放式题' ? [''] : undefined,
-    answerExplanation: '',
+    clientId: createClientId(),
+    qusTitle: '',
+    qusType: type,
+    qusScore: 10,
+    qusExplain: '',
+    qusDiff: 2,
+    qusItems: [
+      createOption(),
+      createOption(),
+      createOption(),
+      createOption(),
+    ],
   }
 }
 
-if (!isEditMode.value) {
-  stages.value = [createStage()]
+/**
+ * 确保题目只包含当前支持的单选、多选类型。
+ *
+ * @param type 接口返回的题目类型。
+ * @returns 当前页面支持的题目类型。
+ */
+function isSupportedQuestionType(type: AdminApi.Question.QuestionEditorQuestion['qusType']): type is QuestionType {
+  return type === 1 || type === 2
+}
+
+/**
+ * 规范化接口题目数据。
+ *
+ * @param question 接口题目数据。
+ * @returns 编辑页题目数据。
+ */
+function normalizeQuestion(question: AdminApi.Question.QuestionEditorQuestion): EditorQuestion {
+  const qusType = isSupportedQuestionType(question.qusType) ? question.qusType : 1
+
+  const normalizedQuestion: EditorQuestion = {
+    ...question,
+    clientId: createClientId(),
+    qusType,
+    qusTitle: question.qusTitle ?? '',
+    qusScore: question.qusScore ?? 10,
+    qusExplain: question.qusExplain ?? '',
+    qusDiff: question.qusDiff ?? 2,
+    qusItems: question.qusItems?.length
+      ? question.qusItems.map(item => ({
+          ...item,
+          ansContext: item.ansContext ?? '',
+          ansIsCorrect: Boolean(item.ansIsCorrect),
+        }))
+      : [
+          createOption(),
+          createOption(),
+          createOption(),
+          createOption(),
+        ],
+  }
+
+  handleQuestionTypeChange(normalizedQuestion)
+
+  return normalizedQuestion
+}
+
+/**
+ * 规范化接口题库数据。
+ *
+ * @param data 接口题库数据。
+ * @returns 编辑页题库数据。
+ */
+function normalizeFormData(data: AdminApi.Question.QuestionEditor): QuestionEditorForm {
+  const questions = data.questions
+    .filter(question => isSupportedQuestionType(question.qusType))
+    .map(normalizeQuestion)
+
+  return {
+    qbId: data.qbId ?? (qbId.value || undefined),
+    qbName: data.qbName ?? '',
+    questions: questions.length ? questions : [createQuestion()],
+  }
 }
 
 /**
@@ -359,176 +346,182 @@ function getOptionLabel(index: number) {
 }
 
 /**
- * 获取题目的所有正确选项内容
+ * 获取题目的所有正确选项索引
  *
- * @param stage 题目数据
- * @returns 正确选项内容列表
+ * @param question 题目数据
+ * @returns 正确选项索引列表
  */
-function getCorrectOptionContents(stage: Stage) {
-  return stage.answerOptions
-    ?.filter(option => option.isCorrect)
-    .map(option => option.content)
-    .filter(Boolean) ?? []
+function getCorrectOptionIndexes(question: EditorQuestion) {
+  return question.qusItems
+    .map((option, index) => option.ansIsCorrect ? index : -1)
+    .filter(index => index !== -1)
 }
 
 /**
- * 获取单选题的正确选项内容
+ * 获取单选题的正确选项索引
  *
- * @param stage 题目数据
- * @returns 正确选项内容
+ * @param question 题目数据
+ * @returns 正确选项索引
  */
-function getCorrectSingleOption(stage: Stage) {
-  return getCorrectOptionContents(stage)[0] ?? ''
+function getCorrectSingleOptionIndex(question: EditorQuestion) {
+  return getCorrectOptionIndexes(question)[0]
 }
 
 /**
  * 设置单选题正确答案
  *
- * @param stage 题目数据
- * @param value 正确选项内容
+ * @param question 题目数据
+ * @param optionIndex 正确选项索引
  */
-function setCorrectSingleOption(stage: Stage, value: string) {
-  stage.answerOptions?.forEach((option) => {
-    option.isCorrect = option.content === value
+function setCorrectSingleOption(question: EditorQuestion, optionIndex: number | string) {
+  const selectedIndex = Number(optionIndex)
+
+  question.qusItems.forEach((option, index) => {
+    option.ansIsCorrect = index === selectedIndex
   })
 }
 
 /**
  * 设置多选题正确答案
  *
- * @param stage 题目数据
- * @param values 正确选项内容列表
+ * @param question 题目数据
+ * @param optionIndexes 正确选项索引列表
  */
-function setCorrectMultipleOptions(stage: Stage, values: string[]) {
-  stage.answerOptions?.forEach((option) => {
-    option.isCorrect = values.includes(option.content)
+function setCorrectMultipleOptions(question: EditorQuestion, optionIndexes: Array<number | string>) {
+  const selectedIndexes = optionIndexes.map(Number)
+
+  question.qusItems.forEach((option, index) => {
+    option.ansIsCorrect = selectedIndexes.includes(index)
   })
+}
+
+/**
+ * 设置题目难度。
+ *
+ * @param question 题目数据
+ * @param value 题目难度
+ */
+function setDiff(question: EditorQuestion, value: number | string | boolean | undefined) {
+  const diff = Number(value)
+
+  question.qusDiff = diffOptions.some(item => item.value === diff)
+    ? diff as QuestionDifficulty
+    : 2
 }
 
 /**
  * 处理题目类型切换
  *
- * @param stage 题目数据
+ * @param question 题目数据
  */
-function handleQuestionTypeChange(stage: Stage) {
-  if (stage.type === '开放式题') {
-    stage.answerOptions = undefined
-    stage.standardAnswer = stage.standardAnswer?.length ? stage.standardAnswer : ['']
-    return
+function handleQuestionTypeChange(question: EditorQuestion) {
+  if (!question.qusItems?.length) {
+    question.qusItems = [
+      createOption(),
+      createOption(),
+      createOption(),
+      createOption(),
+    ]
   }
 
-  stage.standardAnswer = undefined
-  stage.answerOptions = stage.answerOptions?.length
-    ? stage.answerOptions
-    : [createOption(''), createOption(''), createOption(''), createOption('')]
+  if (question.qusType === 1) {
+    let hasCorrectOption = false
+
+    question.qusItems.forEach((option) => {
+      if (!option.ansIsCorrect) {
+        return
+      }
+
+      if (hasCorrectOption) {
+        option.ansIsCorrect = false
+        return
+      }
+
+      hasCorrectOption = true
+    })
+  }
 }
 
 /**
  * 添加选项
  *
- * @param stage 题目数据
+ * @param question 题目数据
  * @param index 当前选项索引，不传则添加到末尾
  */
-function addOption(stage: Stage, index?: number) {
-  if (!stage.answerOptions) {
-    stage.answerOptions = []
-  }
+function addOption(question: EditorQuestion, index?: number) {
+  const insertIndex = typeof index === 'number' ? index + 1 : question.qusItems.length
 
-  const insertIndex = typeof index === 'number' ? index + 1 : stage.answerOptions.length
-
-  stage.answerOptions.splice(insertIndex, 0, createOption(''))
+  question.qusItems.splice(insertIndex, 0, createOption())
 }
 
 /**
  * 删除选项
  *
- * @param stage 题目数据
+ * @param question 题目数据
  * @param index 选项索引
  */
-function removeOption(stage: Stage, index: number) {
-  if (!stage.answerOptions || stage.answerOptions.length <= 1) {
+function removeOption(question: EditorQuestion, index: number) {
+  if (question.qusItems.length <= 2) {
     return
   }
 
-  stage.answerOptions.splice(index, 1)
-}
-
-/**
- * 添加开放式题标准答案
- *
- * @param stage 题目数据
- * @param index 当前答案索引，不传则添加到末尾
- */
-function addStandardAnswer(stage: Stage, index?: number) {
-  if (!stage.standardAnswer) {
-    stage.standardAnswer = []
-  }
-
-  const insertIndex = typeof index === 'number' ? index + 1 : stage.standardAnswer.length
-
-  stage.standardAnswer.splice(insertIndex, 0, '')
-}
-
-/**
- * 删除开放式题标准答案
- *
- * @param stage 题目数据
- * @param index 答案索引
- */
-function removeStandardAnswer(stage: Stage, index: number) {
-  if (!stage.standardAnswer || stage.standardAnswer.length <= 1) {
-    return
-  }
-
-  stage.standardAnswer.splice(index, 1)
+  question.qusItems.splice(index, 1)
 }
 
 /**
  * 添加新题目
  */
 function addQuestion() {
-  stages.value.push(createStage())
+  formData.value.questions.push(createQuestion())
 }
 
 /**
  * 复制题目
  *
- * @param stage 被复制的题目数据
+ * @param question 被复制的题目数据
  */
-function copyQuestion(stage: Stage) {
-  stages.value.push({
-    ...structuredClone(stage),
-    id: `${Date.now()}`,
+function copyQuestion(question: EditorQuestion) {
+  formData.value.questions.push({
+    clientId: createClientId(),
+    qusTitle: question.qusTitle,
+    qusType: question.qusType,
+    qusScore: question.qusScore,
+    qusExplain: question.qusExplain,
+    qusDiff: question.qusDiff,
+    qusItems: question.qusItems.map(option => ({
+      ansContext: option.ansContext,
+      ansIsCorrect: option.ansIsCorrect,
+    })),
   })
 }
 
 /**
  * 删除题目
  *
- * @param stageIndex 题目索引
+ * @param questionIndex 题目索引
  */
-function deleteQuestion(stageIndex: number) {
-  if (stages.value.length <= 1) {
+function deleteQuestion(questionIndex: number) {
+  if (formData.value.questions.length <= 1) {
     return
   }
 
-  stages.value.splice(stageIndex, 1)
+  formData.value.questions.splice(questionIndex, 1)
 }
 
 /**
  * 进入题目移动模式
  *
- * @param stageIndex 要移动的题目索引
+ * @param questionIndex 要移动的题目索引
  */
-function moveQuestion(stageIndex: number) {
-  movingStageId.value = stages.value[stageIndex]?.id ?? ''
+function moveQuestion(questionIndex: number) {
+  movingQuestionId.value = formData.value.questions[questionIndex]?.clientId ?? ''
 }
 
 /**
  * 取消题目移动模式
  */
 function cancelMoveQuestion() {
-  movingStageId.value = ''
+  movingQuestionId.value = ''
 }
 
 /**
@@ -537,22 +530,22 @@ function cancelMoveQuestion() {
  * @param targetIndex 目标题目索引
  */
 function moveQuestionTo(targetIndex: number) {
-  if (!movingStageId.value) {
+  if (!movingQuestionId.value) {
     return
   }
 
-  const sourceIndex = stages.value.findIndex(stage => stage.id === movingStageId.value)
+  const sourceIndex = formData.value.questions.findIndex(question => question.clientId === movingQuestionId.value)
 
   if (sourceIndex === -1) {
     cancelMoveQuestion()
     return
   }
 
-  const [stage] = stages.value.splice(sourceIndex, 1)
+  const [question] = formData.value.questions.splice(sourceIndex, 1)
 
   const insertIndex = sourceIndex < targetIndex ? targetIndex : targetIndex + 1
 
-  stages.value.splice(insertIndex, 0, stage)
+  formData.value.questions.splice(insertIndex, 0, question)
 
   cancelMoveQuestion()
 }
@@ -561,21 +554,21 @@ function moveQuestionTo(targetIndex: number) {
  * 处理题目操作按钮点击
  *
  * @param action 操作类型
- * @param stage 当前题目数据
- * @param stageIndex 当前题目索引
+ * @param question 当前题目数据
+ * @param questionIndex 当前题目索引
  */
-function handleStageAction(action: string, stage: Stage, stageIndex: number) {
+function handleQuestionAction(action: string, question: EditorQuestion, questionIndex: number) {
   //  移动
   if (action === 'move') {
-    moveQuestion(stageIndex)
+    moveQuestion(questionIndex)
   }
 
   if (action === 'copy') {
-    copyQuestion(stage)
+    copyQuestion(question)
   }
 
   if (action === 'delete') {
-    deleteQuestion(stageIndex)
+    deleteQuestion(questionIndex)
   }
 }
 
@@ -583,9 +576,100 @@ function handleStageAction(action: string, stage: Stage, stageIndex: number) {
  * 批量导入题目示例
  */
 function importQuestions() {
-  stages.value.push(createStage('单选题'))
-  stages.value.push(createStage('多选题'))
+  formData.value.questions.push(createQuestion(1))
+  formData.value.questions.push(createQuestion(2))
 }
+
+/**
+ * 校验表单数据。
+ *
+ * @returns 是否校验通过。
+ */
+function validateFormData() {
+  if (!formData.value.qbName.trim()) {
+    ElNotification.warning('请输入题库标题')
+    return false
+  }
+
+  if (!formData.value.questions.length) {
+    ElNotification.warning('请至少添加一道题目')
+    return false
+  }
+
+  for (const [questionIndex, question] of formData.value.questions.entries()) {
+    const questionNumber = `第 ${questionIndex + 1} 题`
+
+    if (!question.qusTitle.trim()) {
+      ElNotification.warning(`${questionNumber} 请输入题目`)
+      return false
+    }
+
+    if (question.qusItems.length < 2) {
+      ElNotification.warning(`${questionNumber} 至少需要两个选项`)
+      return false
+    }
+
+    if (question.qusItems.some(option => !option.ansContext.trim())) {
+      ElNotification.warning(`${questionNumber} 请完善选项内容`)
+      return false
+    }
+
+    if (!diffOptions.some(item => item.value === question.qusDiff)) {
+      ElNotification.warning(`${questionNumber} 请选择题目难度`)
+      return false
+    }
+
+    const correctOptionCount = question.qusItems.filter(option => option.ansIsCorrect).length
+
+    if (question.qusType === 1 && correctOptionCount !== 1) {
+      ElNotification.warning(`${questionNumber} 单选题需要且只能设置一个正确答案`)
+      return false
+    }
+
+    if (question.qusType === 2 && correctOptionCount === 0) {
+      ElNotification.warning(`${questionNumber} 多选题请至少设置一个正确答案`)
+      return false
+    }
+  }
+
+  return true
+}
+
+/**
+ * 创建提交给接口的数据，剔除前端临时字段。
+ *
+ * @returns 接口提交数据。
+ */
+function createSubmitData(): AdminApi.Question.QuestionEditor {
+  const submitData: AdminApi.Question.QuestionEditor = {
+    qbName: formData.value.qbName.trim(),
+    questions: formData.value.questions.map((question) => {
+      const { clientId: _clientId, ...submitQuestion } = question
+
+      return {
+        ...submitQuestion,
+        qusTitle: submitQuestion.qusTitle.trim(),
+        qusExplain: submitQuestion.qusExplain?.trim() ?? '',
+        qusItems: submitQuestion.qusItems.map(option => ({
+          ...option,
+          ansContext: option.ansContext.trim(),
+        })),
+      }
+    }),
+  }
+
+  if (isEditMode.value) {
+    submitData.qbId = formData.value.qbId ?? qbId.value
+  }
+
+  return submitData
+}
+
+onMounted(() => {
+  if (isEditMode.value) {
+    void getQuestionSetting()
+  }
+})
 
 </script>
 
@@ -595,18 +679,16 @@ function importQuestions() {
   >
     <AdminPageHeader
       :title="pageTitle"
-      :stats="[
-        `单选题数量: ${stages.filter(stage => stage.type === '单选题').length}`,
-        `多选题数量: ${stages.filter(stage => stage.type === '多选题').length}`,
-        `开放式题数量: ${stages.filter(stage => stage.type === '开放式题').length}`,
-      ]"
+      :stats="questionStats"
+      @back="backToQuestionList"
     >
       <template
         #extra
       >
         <ArtButton
           type="success"
-          @click="$router.back()"
+          :loading="loading"
+          @click="handleSubmit"
         >
           完成
         </ArtButton>
@@ -614,6 +696,7 @@ function importQuestions() {
     </AdminPageHeader>
 
     <div
+      v-loading="loading"
       class="art-card"
     >
       <el-form
@@ -624,24 +707,24 @@ function importQuestions() {
         <el-form-item
           required
           label="标题"
-          class="!mb-10"
+          class="mb-10!"
         >
           <el-input
-            v-model="questionBankTitle"
+            v-model="formData.qbName"
             placeholder="请输入题库标题"
           />
         </el-form-item>
 
         <div
-          v-for="(stage, stageIndex) in stages"
-          :key="stage.id"
+          v-for="(question, questionIndex) in formData.questions"
+          :key="question.clientId"
           class="mb-10"
         >
           <div
             class="art-card flex flex-col gap-3"
             :class="[
-              movingStageId === stage.id
-                ? '!bg-primary/10'
+              movingQuestionId === question.clientId
+                ? 'bg-primary/10!'
                 : '',
             ]"
           >
@@ -649,7 +732,7 @@ function importQuestions() {
               class="flex gap-4 items-start max-md:flex-col"
             >
               <el-input
-                v-model="stage.name"
+                v-model="question.qusTitle"
                 placeholder="请输入题目"
                 class="w-full flex-1"
               >
@@ -659,21 +742,7 @@ function importQuestions() {
                   <div
                     class="text-primary pr-5"
                   >
-                    Q{{ stageIndex + 1 }}.
-                  </div>
-                </template>
-
-                <template
-                  #append
-                >
-                  <div
-                    class="text-5 text-[var(--art-gray-800)] flex gap-3.5 items-center"
-                  >
-                    <ArtSvgIcon
-                      v-for="tool in questionTools"
-                      :key="tool"
-                      :icon="tool"
-                    />
+                    Q{{ questionIndex + 1 }}.
                   </div>
                 </template>
               </el-input>
@@ -682,10 +751,10 @@ function importQuestions() {
                 class="flex shrink-0 flex-wrap gap-2 items-center max-md:w-full max-md:justify-end"
               >
                 <ArtButton
-                  v-for="item in stageActions"
+                  v-for="item in questionActions"
                   :key="item.action"
                   type="link"
-                  @click="handleStageAction(item.action, stage, stageIndex)"
+                  @click="handleQuestionAction(item.action, question, questionIndex)"
                 >
                   {{ item.label }}
                 </ArtButton>
@@ -694,9 +763,9 @@ function importQuestions() {
 
             <!-- 题目类型选择 -->
             <el-radio-group
-              v-model="stage.type"
+              v-model="question.qusType"
               class="mt-5.5 flex flex-wrap gap-x-12 gap-y-2"
-              @change="handleQuestionTypeChange(stage)"
+              @change="handleQuestionTypeChange(question)"
             >
               <el-radio
                 v-for="item in questionTypes"
@@ -708,143 +777,135 @@ function importQuestions() {
             </el-radio-group>
 
             <!-- 单选题和多选题 -->
-            <template
-              v-if="stage.type !== '开放式题'"
+            <div
+              v-for="(option, optionIndex) in question.qusItems"
+              :key="optionIndex"
+              class="mb-2 flex gap-2 items-center justify-between max-sm:flex-col max-sm:items-stretch"
             >
-              <!-- 选项 -->
-              <div
-                v-for="(option, optionIndex) in stage.answerOptions"
-                :key="optionIndex"
-                class="mb-2 flex gap-2 items-center justify-between max-sm:flex-col max-sm:items-stretch"
+              <el-input
+                v-model="option.ansContext"
+                placeholder="请输入选项内容"
               >
-                <el-input
-                  v-model="option.content"
-                  placeholder="请输入选项内容"
+                <template
+                  #prepend
                 >
-                  <template
-                    #prepend
-                  >
-                    {{ getOptionLabel(optionIndex) }}.
-                  </template>
+                  {{ getOptionLabel(optionIndex) }}.
+                </template>
 
-                  <template
-                    #suffix
-                  >
-                    <div
-                      class="text-4.5 inline-flex gap-3"
-                    >
-                      <ArtSvgIcon
-                        icon="ri:image-line"
-                      />
-
-                      <ArtSvgIcon
-                        icon="ri:superscript"
-                      />
-                    </div>
-                  </template>
-                </el-input>
-
-                <div
-                  class="flex gap-1 items-center justify-end"
+                <template
+                  #suffix
                 >
-                  <ArtButton
-                    type="add"
-                    @click="addOption(stage, optionIndex)"
-                  />
+                  <div
+                    class="text-4.5 inline-flex gap-3"
+                  >
+                    <ArtSvgIcon
+                      icon="ri:image-line"
+                    />
 
-                  <ArtButton
-                    type="delete"
-                    :disabled="(stage.answerOptions?.length ?? 0) <= 1"
-                    @click="removeOption(stage, optionIndex)"
-                  />
+                    <ArtSvgIcon
+                      icon="ri:superscript"
+                    />
+                  </div>
+                </template>
+              </el-input>
 
-                </div>
+              <div
+                class="flex gap-1 items-center justify-end"
+              >
+                <ArtButton
+                  type="add"
+                  @click="addOption(question, optionIndex)"
+                />
+
+                <ArtButton
+                  type="delete"
+                  :disabled="question.qusItems.length <= 2"
+                  @click="removeOption(question, optionIndex)"
+                />
 
               </div>
 
-              <el-form-item
-                label="正确答案"
-                required
-                class="mt-4.5 [&_.el-select]:w-full"
-              >
-                <!-- 单选题 -->
-                <el-select
-                  v-if="stage.type === '单选题'"
-                  :model-value="getCorrectSingleOption(stage)"
-                  placeholder="请选择正确答案"
-                  @update:model-value="value => setCorrectSingleOption(stage, value)"
-                >
-                  <el-option
-                    v-for="option in stage.answerOptions"
-                    :key="option.content"
-                    :label="option.content"
-                    :value="option.content"
-                  />
-
-                  <template
-                    #header
-                  />
-                </el-select>
-
-                <!-- 多选题 -->
-                <el-select
-                  v-else
-                  :model-value="getCorrectOptionContents(stage)"
-                  multiple
-
-                  placeholder="请选择正确答案"
-                  @update:model-value="value => setCorrectMultipleOptions(stage, value)"
-                >
-                  <el-option
-                    v-for="option in stage.answerOptions"
-                    :key="option.content"
-                    :label="option.content"
-                    :value="option.content"
-                  />
-                </el-select>
-              </el-form-item>
-            </template>
-
-            <!-- 分值和难度 -->
-            <div
-              class="grid grid-cols-2 gap-5 max-sm:grid-cols-1"
-            >
-              <el-form-item
-                label="分值"
-                class="!w-full"
-                required
-              >
-                <el-input-number
-                  v-model="stage.score"
-                  :min="0"
-                  :controls="true"
-                  placeholder="本题分值"
-                  class="w-full!"
-                />
-              </el-form-item>
-
-              <el-form-item
-                label="难度"
-                class="!w-full"
-                required
-              >
-                <el-select
-                  v-model="stage.difficulty"
-                >
-                  <el-option
-                    v-for="item in difficultyOptions"
-                    :key="item"
-                    :label="item"
-                    :value="item"
-                  />
-                </el-select>
-              </el-form-item>
             </div>
+
+            <el-form-item
+              label="正确答案"
+              required
+              class="mt-4.5 [&_.el-select]:w-full"
+            >
+              <!-- 单选题 -->
+              <el-select
+                v-if="question.qusType === 1"
+                :model-value="getCorrectSingleOptionIndex(question)"
+                placeholder="请选择正确答案"
+                @update:model-value="value => setCorrectSingleOption(question, value)"
+              >
+                <el-option
+                  v-for="(option, optionIndex) in question.qusItems"
+                  :key="optionIndex"
+                  :label="option.ansContext || `选项${getOptionLabel(optionIndex)}`"
+                  :value="optionIndex"
+                />
+
+                <template
+                  #header
+                />
+              </el-select>
+
+              <!-- 多选题 -->
+              <el-select
+                v-else
+                :model-value="getCorrectOptionIndexes(question)"
+                multiple
+                placeholder="请选择正确答案"
+                @update:model-value="value => setCorrectMultipleOptions(question, value)"
+              >
+                <el-option
+                  v-for="(option, optionIndex) in question.qusItems"
+                  :key="optionIndex"
+                  :label="option.ansContext || `选项${getOptionLabel(optionIndex)}`"
+                  :value="optionIndex"
+                />
+              </el-select>
+            </el-form-item>
+
+            <!-- 分值 -->
+            <el-form-item
+              label="分值"
+              class="w-full!"
+              required
+            >
+              <el-input-number
+                v-model="question.qusScore"
+                :min="0"
+                :controls="true"
+                placeholder="本题分值"
+                class="w-full!"
+              />
+            </el-form-item>
+
+            <!-- 难度 -->
+            <el-form-item
+              label="难度"
+              class="w-full!"
+              required
+            >
+              <el-radio-group
+                v-model="question.qusDiff"
+                @update:model-value="value => setDiff(question, value)"
+              >
+                <el-radio
+                  v-for="item in diffOptions"
+                  :key="item.value"
+                  :value="item.value"
+                >
+                  {{ item.label }}
+                </el-radio>
+              </el-radio-group>
+            </el-form-item>
 
             <!-- 答案说明 -->
             <el-form-item
               label="答案说明(选填)"
-              required
             >
               <p
                 class="text-3 text-g-600"
@@ -853,7 +914,7 @@ function importQuestions() {
               </p>
 
               <el-input
-                v-model="stage.answerExplanation"
+                v-model="question.qusExplain"
                 type="textarea"
                 :rows="3"
                 placeholder="请输入答案说明"
@@ -863,13 +924,13 @@ function importQuestions() {
           </div>
 
           <div
-            v-if="movingStageId"
+            v-if="movingQuestionId"
             class="my-3 flex flex-wrap gap-3 items-center justify-center"
           >
             <art-button
               type="warning"
-              :disabled="movingStageId === stage.id"
-              @click="moveQuestionTo(stageIndex)"
+              :disabled="movingQuestionId === question.clientId"
+              @click="moveQuestionTo(questionIndex)"
             >
               移动到此后
             </art-button>
@@ -886,7 +947,7 @@ function importQuestions() {
 
         <!-- 底部 -->
         <div
-          class="rounded-lg border p-5 flex flex-wrap gap-3 items-center justify-end !border-(--art-card-border) !bg-(--art-gray-100) max-sm:flex-col max-sm:items-stretch"
+          class="rounded-lg border p-5 flex flex-wrap gap-3 items-center justify-end border-(--art-card-border)! bg-(--art-gray-100)! max-sm:flex-col max-sm:items-stretch"
         >
           <art-button
             type="import"
