@@ -646,7 +646,7 @@ function validateFormData() {
  *
  * @returns 接口提交数据。
  */
-function createSubmitData(): AdminApi.Question.QuestionEditor {
+function createSubmitData(): AdminApi.Questio1n.QuestionEditor {
   const submitData: AdminApi.Question.QuestionEditor = {
     qbName: formData.value.qbName.trim(),
     questions: formData.value.questions.map((question) => {
