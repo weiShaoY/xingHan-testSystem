@@ -303,8 +303,6 @@ async function handleSubmit() {
 }
 
 onMounted(() => {
-  void getTable()
-
   if (isEditMode.value) {
     void getSectionDetail()
   }
@@ -481,9 +479,6 @@ onMounted(() => {
       <aside
         v-if="selectedFile"
       >
-        <!-- <el-image
-          :src="getFileUrl(selectedFile?.asThumbnailPath || '')"
-        /> -->
 
         <div
           class="space-y-4 text-sm text-g-600"
