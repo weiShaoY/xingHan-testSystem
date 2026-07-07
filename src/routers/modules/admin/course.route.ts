@@ -38,11 +38,11 @@ const createSectionRoutes: AppRouteRecord[] = sectionRouteConfigs.map((item, ind
   meta: {
     title: `添加${item.title}小节`,
     icon: item.icon,
-    keepAlive: false,
+    keepAlive: true,
     sort: 4 + index,
     isHide: true,
     activePath: '/admin/course/list',
-
+    multiTab: true,
   },
 }))
 
@@ -53,11 +53,11 @@ const editSectionRoutes: AppRouteRecord[] = sectionRouteConfigs.map((item, index
   meta: {
     title: `编辑${item.title}小节`,
     icon: item.icon,
-    keepAlive: false,
+    keepAlive: true,
     sort: 8 + index,
     isHide: true,
     activePath: '/admin/course/list',
-
+    multiTab: true,
   },
 }))
 

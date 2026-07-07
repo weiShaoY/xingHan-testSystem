@@ -18,7 +18,9 @@ export type SectionTypeConfig = {
  */
 type SectionTypeMeta = SectionTypeConfig & {
   createRoute: string
+  createRouteTitle: string
   editRoute: string
+  editRouteTitle: string
 }
 
 /**
@@ -31,7 +33,9 @@ const sectionTypeMap: Record<SectionType, SectionTypeMeta> = {
     sectionIcon: 'ri:article-line',
     sectionIconBgColor: '#fcbd2c',
     createRoute: 'AdminCourseSectionDocumentCreate',
+    createRouteTitle: '新增文档小节',
     editRoute: 'AdminCourseSectionDocumentEdit',
+    editRouteTitle: '编辑文档小节',
   },
   1: {
     sectionType: 1,
@@ -39,7 +43,9 @@ const sectionTypeMap: Record<SectionType, SectionTypeMeta> = {
     sectionIcon: 'ri:vidicon-line',
     sectionIconBgColor: '#ff2814',
     createRoute: 'AdminCourseSectionVideoCreate',
+    createRouteTitle: '新增视频小节',
     editRoute: 'AdminCourseSectionVideoEdit',
+    editRouteTitle: '编辑视频小节',
   },
   2: {
     sectionType: 2,
@@ -47,7 +53,9 @@ const sectionTypeMap: Record<SectionType, SectionTypeMeta> = {
     sectionIcon: 'ri:medal-line',
     sectionIconBgColor: '#673ab8',
     createRoute: 'AdminCourseSectionExamCreate',
+    createRouteTitle: '新增考试小节',
     editRoute: 'AdminCourseSectionExamEdit',
+    editRouteTitle: '编辑考试小节',
   },
   3: {
     sectionType: 3,
@@ -55,7 +63,9 @@ const sectionTypeMap: Record<SectionType, SectionTypeMeta> = {
     sectionIcon: 'ri:survey-line',
     sectionIconBgColor: '#2cb870',
     createRoute: 'AdminCourseSectionSurveyCreate',
+    createRouteTitle: '新增问卷小节',
     editRoute: 'AdminCourseSectionSurveyEdit',
+    editRouteTitle: '编辑问卷小节',
   },
 }
 
@@ -89,8 +99,22 @@ export function getSectionCreateRoute(sectionType: SectionType) {
 }
 
 /**
+ * 获取小节创建页路由标题
+ */
+export function getSectionCreateRouteTitle(sectionType: SectionType) {
+  return sectionTypeMap[sectionType].createRouteTitle
+}
+
+/**
  * 获取小节编辑页路由
  */
 export function getSectionEditRoute(sectionType: SectionType) {
   return sectionTypeMap[sectionType].editRoute
+}
+
+/**
+ * 获取小节编辑页路由标题
+ */
+export function getSectionEditRouteTitle(sectionType: SectionType) {
+  return sectionTypeMap[sectionType].editRouteTitle
 }

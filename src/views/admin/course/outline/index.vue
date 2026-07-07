@@ -15,13 +15,20 @@ import SectionTypeDialog from './components/SectionTypeDialog.vue'
 
 import {
   getSectionCreateRoute,
+  getSectionCreateRouteTitle,
   getSectionEditRoute,
+  getSectionEditRouteTitle,
   getSectionTypeConfig,
 } from './constants/section-type'
 
 const route = useRoute()
 
 const router = useRouter()
+
+/**
+ * 工作标签页 Store，用于更新动态页面标签标题。
+ */
+const workTabStore = useWorkTabStore()
 
 /**
  * 加载状态
@@ -73,9 +80,9 @@ const chapterFormMode = ref<'add' | 'edit'>('add')
 const currentEditChapterId = ref<number>()
 
 /**
- * 当前要添加小节的章节 ID，空值表示添加课程直属小节
+ * 当前要添加小节的章节
  */
-const currentCreateSectionChapterId = ref<number>()
+const currentCreateSectionChapter = ref<AdminApi.Course.Chapter>()
 
 const courseNodes = computed(() => courseOutlineList.value.nodes || [])
 
@@ -146,7 +153,7 @@ function editChapter(chapter: AdminApi.Course.Chapter) {
  * 新增小节
  */
 function addSection(chapter?: AdminApi.Course.Chapter) {
-  currentCreateSectionChapterId.value = chapter?.id || undefined
+  currentCreateSectionChapter.value = chapter || undefined
   isShowCreateSectionDialog.value = true
 }
 
@@ -155,27 +162,6 @@ function addSection(chapter?: AdminApi.Course.Chapter) {
  */
 function allocateSection() {
   isShowAllocateCourseDialog.value = true
-}
-
-/**
- * 跳转到添加小节（根据类型）
- */
-function goToAddSection(sectionType: SectionType) {
-  isShowCreateSectionDialog.value = false
-
-  router.push({
-    name: getSectionCreateRoute(sectionType),
-
-    params: {
-      couId: couId.value,
-    },
-
-    query: currentCreateSectionChapterId.value
-      ? {
-          olPID: currentCreateSectionChapterId.value,
-        }
-      : undefined,
-  })
 }
 
 /**
@@ -193,17 +179,80 @@ async function deleteSection(section: AdminApi.Course.Section) {
 }
 
 /**
- * 编辑小节
+ * 跳转到添加小节（根据类型）
  */
-function editSection(section: AdminApi.Course.Section) {
-  router.push({
-    name: getSectionEditRoute(section.sectionType),
+async function goToAddSection(sectionType: SectionType) {
+  // isShowCreateSectionDialog.value = false
 
+  // router.push({
+  //   name: getSectionCreateRoute(sectionType),
+
+  //   params: {
+  //     couId: couId.value,
+  //   },
+
+  //   query: currentCreateSectionChapterId.value
+  //     ? {
+  //         olPID: currentCreateSectionChapterId.value,
+  //       }
+  //     : undefined,
+  // })
+
+  const targetRoute = router.resolve({
+    name: getSectionCreateRoute(sectionType),
+    params: {
+      couId: couId.value,
+    },
+
+    query: currentCreateSectionChapter.value
+      ? {
+          olPID: currentCreateSectionChapter.value.id,
+        }
+      : undefined,
+  })
+
+  await router.push(targetRoute)
+
+  // 章节下的添加小节
+  if (currentCreateSectionChapter.value) {
+    workTabStore.updateTabTitle(targetRoute.path, `${courseOutlineList.value.couName}-${currentCreateSectionChapter.value?.name}-${getSectionCreateRouteTitle(sectionType)}`)
+  }
+
+  // 独立小节
+  else {
+    workTabStore.updateTabTitle(targetRoute.path, `${courseOutlineList.value.couName}-${getSectionCreateRouteTitle(sectionType)}`)
+  }
+}
+
+/**
+ * 跳转到编辑小节
+ */
+async function editSection({
+  section,
+  chapter,
+}: {
+  section: AdminApi.Course.Section
+  chapter?: AdminApi.Course.Chapter
+}) {
+  const targetRoute = router.resolve({
+    name: getSectionEditRoute(section.sectionType),
     params: {
       couId: couId.value,
       olId: section.id,
     },
   })
+
+  await router.push(targetRoute)
+
+  // 章节下的小节
+  if (chapter) {
+    workTabStore.updateTabTitle(targetRoute.path, `${courseOutlineList.value.couName}-${chapter?.name}-${section.name}-${getSectionEditRouteTitle(section.sectionType)}`)
+  }
+
+  // 独立小节
+  else {
+    workTabStore.updateTabTitle(targetRoute.path, `${courseOutlineList.value.couName}-${section.name}-${getSectionEditRouteTitle(section.sectionType)}`)
+  }
 }
 
 </script>
@@ -356,7 +405,10 @@ function editSection(section: AdminApi.Course.Section) {
               :type-config="getSectionTypeConfig(section.sectionType)"
               @allocate="allocateSection"
               @delete="deleteSection"
-              @edit="editSection"
+              @edit="editSection({
+                section,
+                chapter: item,
+              })"
             />
           </div>
 
@@ -379,7 +431,9 @@ function editSection(section: AdminApi.Course.Section) {
           :type-config="getSectionTypeConfig(item.sectionType)"
           @allocate="allocateSection"
           @delete="deleteSection"
-          @edit="editSection"
+          @edit="editSection({
+            section: item,
+          })"
         />
       </div>
     </div>
