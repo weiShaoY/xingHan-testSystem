@@ -182,33 +182,18 @@ async function deleteSection(section: AdminApi.Course.Section) {
  * 跳转到添加小节（根据类型）
  */
 async function goToAddSection(sectionType: SectionType) {
-  // isShowCreateSectionDialog.value = false
-
-  // router.push({
-  //   name: getSectionCreateRoute(sectionType),
-
-  //   params: {
-  //     couId: couId.value,
-  //   },
-
-  //   query: currentCreateSectionChapterId.value
-  //     ? {
-  //         olPID: currentCreateSectionChapterId.value,
-  //       }
-  //     : undefined,
-  // })
+  isShowCreateSectionDialog.value = false
 
   const targetRoute = router.resolve({
     name: getSectionCreateRoute(sectionType),
-    params: {
-      couId: couId.value,
-    },
-
-    query: currentCreateSectionChapter.value
+    params: currentCreateSectionChapter.value
       ? {
+          couId: couId.value,
           olPID: currentCreateSectionChapter.value.id,
         }
-      : undefined,
+      : {
+          couId: couId.value,
+        },
   })
 
   await router.push(targetRoute)

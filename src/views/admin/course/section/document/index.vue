@@ -31,7 +31,7 @@ const olId = computed(() => {
  * 新增小节时所属的章节 ID；为空时表示课程直属小节。
  */
 const olPID = computed(() => {
-  return Number(route.query.olPID || 0)
+  return Number(route.params.olPID || 0)
 })
 
 /**
