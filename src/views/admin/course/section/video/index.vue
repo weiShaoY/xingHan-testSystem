@@ -295,7 +295,7 @@ async function handleSubmit() {
     // 关闭当前标签页
     workTabStore.removeTab(route.path)
 
-    router.back()
+    backToCourseOutline()
   }
   catch {
     ElNotification.error(isEditMode.value ? '小节更新失败' : '小节新增失败')
@@ -344,6 +344,16 @@ async function playVideo(item: FileApi.FileListItem) {
   }
 }
 
+const COURSE_OUTLINE_PATH = '/admin/course/outline'
+
+/**
+ * 返回课程大纲页。
+ */
+function backToCourseOutline() {
+  router.push({
+    path: COURSE_OUTLINE_PATH,
+  })
+}
 </script>
 
 <template>
@@ -472,6 +482,7 @@ async function playVideo(item: FileApi.FileListItem) {
 
     <AdminPageHeader
       :title="pageTitle"
+      @back="backToCourseOutline"
     >
       <template
         #extra
