@@ -121,15 +121,6 @@ export function fetchAdminCourseOutlineChapterUpdate(data: AdminApi.Course.Cours
 }
 
 // / /////////////////////////////////////////////////////   课程小节  /////////////////////////////////////////////////////
-/**
- * 新增 课程小节
- */
-export function fetchAdminCourseOutlineSectionAdd(data: AdminApi.Course.CourseOutlineSectionEditor) {
-  return request.post<boolean>({
-    url: '/admin/outline/addSection',
-    data,
-  })
-}
 
 /**
  *  删除 课程小节
@@ -140,6 +131,21 @@ export function fetchAdminCourseOutlineSectionDelete(olId: number) {
     data: {
       olId,
     },
+  })
+}
+
+/**
+ *  新增视频小节
+ */
+
+// / //////////////////////////////////// ////////////////////////  2026-07-07---17:42---星期二  ////////////////////////
+/**
+ * 新增 课程小节
+ */
+export function fetchAdminCourseOutlineSectionAdd(data: AdminApi.Course.CourseOutlineSectionEditor) {
+  return request.post<boolean>({
+    url: '/admin/outline/addSection',
+    data,
   })
 }
 
