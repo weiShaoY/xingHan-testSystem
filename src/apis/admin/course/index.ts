@@ -124,6 +124,7 @@ export function fetchAdminCourseOutlineChapterUpdate(data: AdminApi.Course.Cours
 
 /**
  *  删除 课程小节
+ *  @param olId 小节ID
  */
 export function fetchAdminCourseOutlineSectionDelete(olId: number) {
   return request.post<boolean>({
@@ -135,27 +136,21 @@ export function fetchAdminCourseOutlineSectionDelete(olId: number) {
 }
 
 /**
- *  新增视频小节
+ *  新增文档小节
  */
-
-// / //////////////////////////////////// ////////////////////////  2026-07-07---17:42---星期二  ////////////////////////
-/**
- * 新增 课程小节
- */
-export function fetchAdminCourseOutlineSectionAdd(data: AdminApi.Course.CourseOutlineSectionEditor) {
+export function fetchAdminCourseOutlineSectionDocumentAdd(data: AdminApi.Course.CourseOutlineSectionDocumentEditor) {
   return request.post<boolean>({
-    url: '/admin/outline/addSection',
+    url: '/admin/outline/addPdfSection',
     data,
   })
 }
 
 /**
- *  获取 课程小节 详情
- *  @param olId 小节ID
+ *  获取文档小节
  */
-export function fetchAdminCourseOutlineSectionDetail(olId: number) {
-  return request.get<AdminApi.Course.CourseOutlineSectionEditor>({
-    url: '/admin/outline/getSection',
+export function fetchAdminCourseOutlineSectionDocumentDetail(olId: number) {
+  return request.get<AdminApi.Course.CourseOutlineSectionDocumentEditor>({
+    url: '/admin/outline/getPdfSection',
     params: {
       olId,
     },
@@ -163,11 +158,21 @@ export function fetchAdminCourseOutlineSectionDetail(olId: number) {
 }
 
 /**
- *  编辑 课程小节
+ *  修改文档小节
  */
-export function fetchAdminCourseOutlineSectionUpdate(data: AdminApi.Course.CourseOutlineSectionEditor) {
+export function fetchAdminCourseOutlineSectionDocumentUpdate(data: AdminApi.Course.CourseOutlineSectionDocumentEditor) {
   return request.post<boolean>({
-    url: '/admin/outline/updateSection',
+    url: '/admin/outline/updatePdfSection',
+    data,
+  })
+}
+
+/**
+ *  新增视频小节
+ */
+export function fetchAdminCourseOutlineSectionVideoAdd(data: AdminApi.Course.CourseOutlineSectionVideoEditor) {
+  return request.post<boolean>({
+    url: '/admin/video/addVideoSection',
     data,
   })
 }

@@ -45,8 +45,6 @@ import NProgress from 'nprogress'
 
 import { nextTick } from 'vue'
 
-import { fetchClientGetUserInfo } from '@/apis/client'
-
 import { isHttpError } from '@/apis/http/error'
 
 import { ApiStatus } from '@/apis/http/status'

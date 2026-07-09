@@ -518,9 +518,9 @@ export namespace Course {
   }
 
   /**
-   *  课程小节 新增或编辑请求参数
+   *  文档小节 新增或编辑请求参数
    */
-  type CourseOutlineSectionEditor = {
+  type CourseOutlineSectionDocumentEditor = {
 
     /**
      * 课程ID
@@ -554,6 +554,16 @@ export namespace Course {
     olIntro: string
 
     /**
+     *  附件ID
+     */
+    asId: number
+
+    /**
+     * 附件信息
+     */
+    accessory?: FileApi.FileListItem
+
+    /**
      * 父级节点ID
      * @description 小节所属的章节ID , 只有在章节深度为2时才需要。
      * @description 只有新建时需要。
@@ -566,16 +576,9 @@ export namespace Course {
      * @description 只有新建时需要。
      */
     olLevel?: 1 | 2
-
-    /**
-     *  附件ID
-     */
-    asId: number
-
-    /**
-     * 附件信息
-     */
-    accessory?: FileApi.FileListItem
   }
 
-}
+  /**
+   *  视频小节 新增或编辑请求参数
+   */
+   type CourseOutlineSectionVideoEditor  = CourseOutlineSectionDocumentEditor
