@@ -1,399 +1,27 @@
-<!------  2026-04-16---20:42---星期四  ------>
-<!------------------------------------    ------------------------------------------------->
+<!------  2026-07-09---考试小节编辑  ------>
 <script lang="ts" setup>
 import type { ColumnOption } from '@/types'
 
 import { computed, ref } from 'vue'
 
-const activeTab = ref<'edit' | 'preview'>('edit')
-
 const route = useRoute()
 
 const router = useRouter()
 
-/**
- * 题目类型
- */
-type QuestionType = 'single' | 'multiple'
+const activeTab = ref<'edit' | 'setting'>('edit')
 
-/**
- * 难度
- */
-type Difficulty = 'easy' | 'medium' | 'hard'
-
-/**
- * 选项
- */
-type Option = {
-  id: number
-  title: string
-  image: string
+type QuestionType = 1 | 2
+type QuestionDifficulty = 1 | 2 | 3
+type QuestionOption = AdminApi.Question.QuestionItem
+type QuestionListItem = AdminApi.Question.QuestionEditorQuestion
+type ExamQuestion = Omit<QuestionListItem, 'qusType'> & {
+  clientId: string
+  qusType: QuestionType
+}
+type ExamEditorForm = Omit<AdminApi.Course.CourseOutlineSectionExamEditor, 'questions'> & {
+  questions: ExamQuestion[]
 }
 
-/**
- * 题目
- */
-type Question = {
-  id: number
-
-  /** 题目名称 */
-  title: string
-
-  /** 题目类型 */
-  type: QuestionType
-
-  /** 正确答案 */
-  correctAnswer: string | string[]
-
-  /** 答案解析 */
-  explanation: string
-
-  /** 分值 */
-  score: number
-
-  /** 难度 */
-  difficulty: Difficulty
-
-  /** 多选题得分规则 */
-  multipleScoreRule: 'each' | 'all'
-
-  /** 选项列表 */
-  options: Option[]
-
-  /** 是否展开高级设置 */
-  showAdvanced: boolean
-
-}
-
-/**
- * 表单数据
- */
-const formData1 = ref<{
-
-  /** 考试标题 */
-  title: string
-
-  /** 总分值 */
-  totalScore: number
-
-  /** 题目列表 */
-  questions: Question[]
-
-  /** 考试设置 */
-  examSettings: {
-
-    /** 考试时间（分钟） */
-    duration: number
-
-    /** 考试次数限制 */
-    attemptLimit: number
-
-    /** 考试通过分数 */
-    passingScore: number
-
-    /** 考试开始时间 */
-    startTime: string
-
-    /** 考试结束时间 */
-    endTime: string
-
-    /** 考试说明 */
-    description: string
-
-    /** 考试规则 */
-    rules: string
-
-    /** 允许重复考试 */
-    allowRetake: boolean
-
-    /** 考试后显示答案 */
-    showAnswers: boolean
-
-    /** 考试后显示解析 */
-    showExplanations: boolean
-
-    /** 防作弊设置 */
-    antiCheat: {
-
-      /** 禁止复制粘贴 */
-      disableCopy: boolean
-
-      /** 禁止切换窗口 */
-      disableWindowSwitch: boolean
-
-      /** 开启摄像头监控 */
-      enableCamera: boolean
-    }
-
-    /** 考试结果通知 */
-    notification: {
-
-      /** 通知考生 */
-      notifyStudent: boolean
-
-      /** 通知教师 */
-      notifyTeacher: boolean
-
-      /** 通知管理员 */
-      notifyAdmin: boolean
-    }
-
-    /** 考试数据分析 */
-    analytics: {
-
-      /** 启用数据分析 */
-      enable: boolean
-
-      /** 分析维度 */
-      dimensions: string[]
-    }
-
-    /** 其他设置 */
-    other: {
-
-      /** 允许断点续考 */
-      allowResume: boolean
-
-      /** 随机出题 */
-      randomQuestions: boolean
-
-      /** 题目乱序 */
-      randomOrder: boolean
-
-      /** 选项乱序 */
-      randomOptions: boolean
-
-      /** 显示倒计时 */
-      showCountdown: boolean
-
-      /** 自动提交 */
-      autoSubmit: boolean
-    }
-  }
-}>({
-  title: '',
-
-  totalScore: 0,
-  questions: [
-    {
-      id: 1,
-      title: '',
-      type: 'single',
-      correctAnswer: '',
-      explanation: '',
-      score: 10,
-      difficulty: 'medium',
-      multipleScoreRule: 'each',
-      options: [
-        {
-          id: 1,
-          title: '',
-          image: '',
-        },
-        {
-          id: 2,
-          title: '',
-          image: '',
-        },
-        {
-          id: 3,
-          title: '',
-          image: '',
-        },
-      ],
-      showAdvanced: false,
-    },
-  ],
-  examSettings: {
-    duration: 60,
-    attemptLimit: 1,
-    passingScore: 60,
-    startTime: '',
-    endTime: '',
-    description: '',
-    rules: '',
-    allowRetake: false,
-    showAnswers: true,
-    showExplanations: true,
-    antiCheat: {
-      disableCopy: true,
-      disableWindowSwitch: true,
-      enableCamera: false,
-    },
-    notification: {
-      notifyStudent: true,
-      notifyTeacher: true,
-      notifyAdmin: false,
-    },
-    analytics: {
-      enable: true,
-      dimensions: ['score', 'time', 'difficulty'],
-    },
-    other: {
-      allowResume: true,
-      randomQuestions: false,
-      randomOrder: false,
-      randomOptions: true,
-      showCountdown: true,
-      autoSubmit: true,
-    },
-  },
-})
-
-/**
- * 计算满分
- */
-const totalScore = computed(() => {
-  return formData1.value.questions.reduce((sum, question) => sum + (question.score || 0), 0)
-})
-
-/**
- * 添加问题
- */
-function addQuestion() {
-  const newId = Math.max(...formData1.value.questions.map(q => q.id)) + 1
-
-  formData1.value.questions.push({
-    id: newId,
-    title: '',
-    type: 'single',
-    correctAnswer: '',
-    explanation: '',
-    score: 10,
-    difficulty: 'medium',
-    multipleScoreRule: 'each',
-    options: [
-      {
-        id: 1,
-        title: '',
-        image: '',
-      },
-      {
-        id: 2,
-        title: '',
-        image: '',
-      },
-      {
-        id: 3,
-        title: '',
-        image: '',
-      },
-    ],
-    showAdvanced: false,
-  })
-
-  // 强制更新视图
-  formData1.value = {
-    ...formData1.value,
-  }
-}
-
-/**
- * 删除问题
- */
-function deleteQuestion(id: number) {
-  formData1.value.questions = formData1.value.questions.filter(q => q.id !== id)
-
-  // 强制更新视图
-  formData1.value = {
-    ...formData1.value,
-  }
-}
-
-/**
- * 复制问题
- */
-function duplicateQuestion(id: number) {
-  const question = formData1.value.questions.find(q => q.id === id)
-
-  if (question) {
-    const newId = Math.max(...formData1.value.questions.map(q => q.id)) + 1
-
-    const newQuestion = {
-      ...question,
-      id: newId,
-    }
-
-    newQuestion.options = newQuestion.options.map((opt, index) => ({
-      ...opt,
-      id: index + 1,
-    }))
-    formData1.value.questions.push(newQuestion)
-
-    // 强制更新视图
-    formData1.value = {
-      ...formData1.value,
-    }
-  }
-}
-
-/**
- * 添加选项
- */
-function addOption(questionIndex: number) {
-  const question = formData1.value.questions[questionIndex]
-
-  const newId = Math.max(...question.options.map(opt => opt.id)) + 1
-
-  question.options.push({
-    id: newId,
-    title: '',
-    image: '',
-  })
-
-  // 强制更新视图
-  formData1.value = {
-    ...formData1.value,
-  }
-}
-
-/**
- * 删除选项
- */
-function deleteOption(questionIndex: number, optionId: number) {
-  const question = formData1.value.questions[questionIndex]
-
-  question.options = question.options.filter(opt => opt.id !== optionId)
-
-  // 重新编号选项
-  question.options.forEach((opt, index) => {
-    opt.id = index + 1
-  })
-
-  // 强制更新视图
-  formData1.value = {
-    ...formData1.value,
-  }
-}
-
-/**
- * 完成考试创建
- */
-function completeExam() {
-  console.log('完成考试创建', formData1.value)
-
-  // 这里可以添加提交逻辑
-}
-
-// 日期范围
-const dateRange = ref<[string, string]>(['', ''])
-
-// 处理日期范围变化
-function handleDateRangeChange(val: [string, string] | null) {
-  if (val) {
-    formData1.value.examSettings.startTime = val[0]
-    formData1.value.examSettings.endTime = val[1]
-  }
-  else {
-    formData1.value.examSettings.startTime = ''
-    formData1.value.examSettings.endTime = ''
-  }
-}
-
-// / ///// ////////////////////////  2026-07-09---14:50---星期四  ////////////////////////
-/**
- * 工作标签页 Store。
- */
 const workTabStore = useWorkTabStore()
 
 /**
@@ -432,146 +60,17 @@ const pageTitle = computed(() => {
 })
 
 /**
- * 表格列配置
- */
-const columns: ColumnOption<AdminApi.Question.QuestionEditorQuestion>[] = [
-  {
-    label: '题目名称',
-    prop: 'qusTitle',
-    slotName: 'qusTitle',
-    minWidth: 200,
-    useSlot: true,
-  },
-  {
-    label: '题目类型',
-    prop: 'qusType',
-    minWidth: 140,
-    useSlot: true,
-    sortable: true,
-  },
-
-  {
-    label: '难度',
-    prop: 'qusType',
-    slotName: 'qusType',
-    minWidth: 140,
-    useSlot: true,
-    sortable: true,
-  },
-  {
-    label: '分值',
-    prop: 'qusType',
-    slotName: 'qusType',
-    minWidth: 140,
-    useSlot: true,
-    sortable: true,
-  },
-]
-
-/**
  * 加载状态
  */
 const loading = ref(false)
 
 /**
- * 是否显示文件选择弹窗
+ * 是否显示题库弹窗
  */
 const isShowExamSelectDialog = ref(false)
 
 /**
- * 小节表单数据
- */
-const formData = ref<AdminApi.Course.CourseOutlineSectionExamEditor>(createInitialFormData())
-
-/**
- * 创建新增或编辑模式下的小节初始表单
- */
-function createInitialFormData(): AdminApi.Course.CourseOutlineSectionExamEditor {
-  const baseFormData = {
-    couId: couId.value,
-    olName: '',
-    olIntro: '',
-    asId: 0,
-    olIsAccessory: 0,
-    attemptLimit: 10,
-    durationMinutes: 0,
-    endTime: '',
-    examIntro: '',
-    examType: 0,
-    isShowAnswer: 0,
-    isShowScore: 1,
-    passScore: 0,
-    retakeIntervalHours: 0,
-    score: 0,
-    startTime: '',
-
-    testPaperName: '',
-    testPaperType: 1,
-  } as const
-
-  if (isEditMode.value) {
-    return {
-      questions: [],
-      ...baseFormData,
-
-      olId: olId.value,
-    }
-  }
-
-  return {
-    questions: [],
-    ...baseFormData,
-
-    olPID: olPID.value || 0,
-    olLevel: olPID.value ? 2 : 1,
-  }
-}
-
-/**
- * 获取小节详情
- */
-async function getSectionDetail() {
-  loading.value = true
-  if (!olId.value) {
-    return
-  }
-
-  try {
-    const section = await fetchAdminCourseOutlineSectionExamDetail(olId.value)
-
-    formData.value = {
-      ...formData.value,
-      ...section,
-    }
-  }
-  catch {
-    ElNotification.error('获取小节详情失败')
-  }
-  finally {
-    loading.value = false
-  }
-}
-
-onMounted(() => {
-  if (isEditMode.value) {
-    void getSectionDetail()
-  }
-})
-
-const COURSE_OUTLINE_PATH = '/admin/course/outline'
-
-/**
- * 返回课程大纲页。
- */
-function backToCourseOutline() {
-  router.push({
-    path: COURSE_OUTLINE_PATH,
-  })
-}
-
-// / ////////////////////////  2026-07-09---15:58---星期四  ////////////////////////
-/**
- * 请求参数
+ * 题库列表请求参数
  */
 const params = ref<AdminApi.Course.CourseOutlineSectionExamQuestionListParams>({
   pageSize: 10,
@@ -580,12 +79,22 @@ const params = ref<AdminApi.Course.CourseOutlineSectionExamQuestionListParams>({
 })
 
 /**
- * 表格数据
+ * 题库列表数据
  */
 const table = ref<AdminApi.Course.CourseOutlineSectionExamQuestionListResponse>({
   rows: [],
   totals: 0,
 })
+
+/**
+ * 题库下拉列表
+ */
+const questionBankList = ref<AdminApi.Course.CourseOutlineSectionExamQuestionBankItem[]>([])
+
+/**
+ * 弹窗内选中的题目
+ */
+const selectedBankQuestions = ref<QuestionListItem[]>([])
 
 /**
  * 分页配置
@@ -597,56 +106,506 @@ const pagination = computed(() => ({
 }))
 
 /**
- * 选择表格行
+ * 小节表单数据
  */
-function handleTableCurrentChange(row?: AdminApi.Question.QuestionEditorQuestion) {
+const formData = ref<ExamEditorForm>(createInitialFormData())
+
+const optionLabels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
+
+const questionTypes: { label: string, value: QuestionType }[] = [
+  {
+    label: '单选题',
+    value: 1,
+  },
+  {
+    label: '多选题',
+    value: 2,
+  },
+]
+
+const diffOptions: { label: string, value: QuestionDifficulty }[] = [
+  {
+    label: '简单',
+    value: 1,
+  },
+  {
+    label: '中等',
+    value: 2,
+  },
+  {
+    label: '困难',
+    value: 3,
+  },
+]
+
+const questionActions = [
+  {
+    label: '移动',
+    action: 'move',
+  },
+  {
+    label: '复制',
+    action: 'copy',
+  },
+  {
+    label: '删除',
+    action: 'delete',
+  },
+]
+
+const movingQuestionId = ref('')
+
+const columns: ColumnOption<QuestionListItem>[] = [
+  {
+    label: '题目名称',
+    prop: 'qusTitle',
+    slotName: 'qusTitle',
+    minWidth: 260,
+    useSlot: true,
+  },
+  {
+    label: '题目类型',
+    prop: 'qusType',
+    slotName: 'qusType',
+    minWidth: 120,
+    useSlot: true,
+  },
+  {
+    label: '难度',
+    prop: 'qusDiff',
+    slotName: 'qusDiff',
+    minWidth: 100,
+    useSlot: true,
+  },
+  {
+    label: '分值',
+    prop: 'qusScore',
+    slotName: 'qusScore',
+    minWidth: 100,
+    useSlot: true,
+  },
+]
+
+/**
+ * 考试总分
+ */
+const totalScore = computed(() => {
+  return formData.value.questions.reduce((sum, question) => sum + Number(question.qusScore || 0), 0)
+})
+
+/**
+ * 考试统计
+ */
+const examStats = computed(() => {
+  return [
+    `题目数 ${formData.value.questions.length}`,
+    `总分 ${totalScore.value}`,
+    `单选 ${formData.value.questions.filter(question => question.qusType === 1).length}`,
+    `多选 ${formData.value.questions.filter(question => question.qusType === 2).length}`,
+  ]
+})
+
+/**
+ * 时间范围
+ */
+const dateRange = computed<[string, string] | []>({
+  get() {
+    if (formData.value.startTime && formData.value.endTime) {
+      return [formData.value.startTime, formData.value.endTime] as [string, string]
+    }
+
+    return [] as []
+  },
+  set(value: [string, string] | []) {
+    if (!value?.length) {
+      formData.value.startTime = ''
+      formData.value.endTime = ''
+      return
+    }
+
+    formData.value.startTime = value[0]
+    formData.value.endTime = value[1]
+  },
+})
+
+/**
+ * 创建新增或编辑模式下的小节初始表单
+ */
+function createInitialFormData(): ExamEditorForm {
+  const baseFormData: Omit<ExamEditorForm, 'olId' | 'olPID' | 'olLevel'> = {
+    couId: couId.value,
+    attemptLimit: 1,
+    durationMinutes: 60,
+    endTime: '',
+    examIntro: '',
+    examType: 0,
+    isShowAnswer: 1,
+    isShowScore: 1,
+    passScore: 60,
+    retakeIntervalHours: 0,
+    score: 0,
+    startTime: '',
+    testPaperName: '',
+    testPaperType: 1,
+    questions: [createQuestion()],
+  }
+
+  if (isEditMode.value) {
+    return {
+      ...baseFormData,
+      olId: olId.value,
+    }
+  }
+
+  return {
+    ...baseFormData,
+    olPID: olPID.value || 0,
+    olLevel: olPID.value ? 2 : 1,
+  }
+}
+
+function createClientId() {
+  const randomValue = Math.random().toString(36)
+
+  const randomId = randomValue.slice(2)
+
+  return `${Date.now()}-${randomId}`
+}
+
+function createOption(ansContext = '', ansIsCorrect = false): QuestionOption {
+  return {
+    ansContext,
+    ansIsCorrect,
+  }
+}
+
+function createQuestion(type: QuestionType = 1): ExamQuestion {
+  return {
+    clientId: createClientId(),
+    qusTitle: '',
+    qusType: type,
+    qusScore: 10,
+    qusExplain: '',
+    qusDiff: 2,
+    qusItems: [
+      createOption(),
+      createOption(),
+      createOption(),
+      createOption(),
+    ],
+  }
+}
+
+function isSupportedQuestionType(type: AdminApi.Question.QuestionEditorQuestion['qusType']): type is QuestionType {
+  return type === 1 || type === 2
+}
+
+function normalizeQuestion(question: AdminApi.Question.QuestionEditorQuestion): ExamQuestion {
+  const qusType = isSupportedQuestionType(question.qusType) ? question.qusType : 1
+
+  const normalizedQuestion: ExamQuestion = {
+    ...question,
+    clientId: createClientId(),
+    qusType,
+    qusTitle: question.qusTitle ?? '',
+    qusScore: question.qusScore ?? 10,
+    qusExplain: question.qusExplain ?? '',
+    qusDiff: ([1, 2, 3].includes(Number(question.qusDiff)) ? question.qusDiff : 2) as QuestionDifficulty,
+    qusItems: question.qusItems?.length
+      ? question.qusItems.map(item => ({
+          ...item,
+          ansContext: item.ansContext ?? '',
+          ansIsCorrect: Boolean(item.ansIsCorrect),
+        }))
+      : [
+          createOption(),
+          createOption(),
+          createOption(),
+          createOption(),
+        ],
+  }
+
+  ensureQuestionTypeConsistency(normalizedQuestion)
+
+  return normalizedQuestion
+}
+
+function normalizeFormData(data: AdminApi.Course.CourseOutlineSectionExamEditor): ExamEditorForm {
+  const questions = (data.questions ?? [])
+    .filter(question => isSupportedQuestionType(question.qusType))
+    .map(normalizeQuestion)
+
+  return {
+    ...createInitialFormData(),
+    ...data,
+    questions: questions.length ? questions : [createQuestion()],
+  }
+}
+
+function getOptionLabel(index: number) {
+  return optionLabels[index] ?? `${index + 1}`
+}
+
+function getQuestionTypeLabel(type: number) {
+  return type === 1 ? '单选题' : type === 2 ? '多选题' : '其他题型'
+}
+
+function getDiffLabel(diff: number) {
+  return diff === 1 ? '简单' : diff === 2 ? '中等' : diff === 3 ? '困难' : '-'
+}
+
+function getDiffTagType(diff: number) {
+  return diff === 1 ? 'success' : diff === 2 ? 'warning' : 'danger'
+}
+
+function getCorrectOptionIndexes(question: ExamQuestion) {
+  return question.qusItems
+    .map((option, index) => option.ansIsCorrect ? index : -1)
+    .filter(index => index !== -1)
+}
+
+function getCorrectSingleOptionIndex(question: ExamQuestion) {
+  return getCorrectOptionIndexes(question)[0]
+}
+
+function setCorrectSingleOption(question: ExamQuestion, optionIndex: number | string) {
+  const selectedIndex = Number(optionIndex)
+
+  question.qusItems.forEach((option, index) => {
+    option.ansIsCorrect = index === selectedIndex
+  })
+}
+
+function setCorrectMultipleOptions(question: ExamQuestion, optionIndexes: Array<number | string>) {
+  const selectedIndexes = optionIndexes.map(Number)
+
+  question.qusItems.forEach((option, index) => {
+    option.ansIsCorrect = selectedIndexes.includes(index)
+  })
+}
+
+function ensureQuestionTypeConsistency(question: ExamQuestion) {
+  if (!question.qusItems?.length) {
+    question.qusItems = [
+      createOption(),
+      createOption(),
+      createOption(),
+      createOption(),
+    ]
+  }
+
+  if (question.qusType !== 1) {
+    return
+  }
+
+  let hasCorrectOption = false
+
+  question.qusItems.forEach((option) => {
+    if (!option.ansIsCorrect) {
+      return
+    }
+
+    if (hasCorrectOption) {
+      option.ansIsCorrect = false
+      return
+    }
+
+    hasCorrectOption = true
+  })
+}
+
+function addQuestion() {
+  formData.value.questions.push(createQuestion())
+}
+
+function copyQuestion(question: ExamQuestion) {
+  formData.value.questions.push({
+    clientId: createClientId(),
+    qusId: undefined,
+    qusTitle: question.qusTitle,
+    qusType: question.qusType,
+    qusScore: question.qusScore,
+    qusExplain: question.qusExplain,
+    qusDiff: question.qusDiff,
+    qusItems: question.qusItems.map(option => ({
+      ansId: undefined,
+      qusId: undefined,
+      ansContext: option.ansContext,
+      ansIsCorrect: option.ansIsCorrect,
+    })),
+  })
+}
+
+function deleteQuestion(questionIndex: number) {
+  if (formData.value.questions.length <= 1) {
+    ElNotification.warning('至少保留一道题目')
+    return
+  }
+
+  formData.value.questions.splice(questionIndex, 1)
+}
+
+function moveQuestion(questionIndex: number) {
+  movingQuestionId.value = formData.value.questions[questionIndex]?.clientId ?? ''
+}
+
+function cancelMoveQuestion() {
+  movingQuestionId.value = ''
+}
+
+function moveQuestionTo(targetIndex: number) {
+  if (!movingQuestionId.value) {
+    return
+  }
+
+  const sourceIndex = formData.value.questions.findIndex(question => question.clientId === movingQuestionId.value)
+
+  if (sourceIndex === -1) {
+    cancelMoveQuestion()
+    return
+  }
+
+  const [question] = formData.value.questions.splice(sourceIndex, 1)
+
+  const insertIndex = sourceIndex < targetIndex ? targetIndex : targetIndex + 1
+
+  formData.value.questions.splice(insertIndex, 0, question)
+  cancelMoveQuestion()
+}
+
+function handleQuestionAction(action: string, question: ExamQuestion, questionIndex: number) {
+  if (action === 'move') {
+    moveQuestion(questionIndex)
+  }
+
+  if (action === 'copy') {
+    copyQuestion(question)
+  }
+
+  if (action === 'delete') {
+    deleteQuestion(questionIndex)
+  }
+}
+
+function addOption(question: ExamQuestion, index?: number) {
+  const insertIndex = typeof index === 'number' ? index + 1 : question.qusItems.length
+
+  question.qusItems.splice(insertIndex, 0, createOption())
+}
+
+function removeOption(question: ExamQuestion, index: number) {
+  if (question.qusItems.length <= 2) {
+    ElNotification.warning('每道题至少保留两个选项')
+    return
+  }
+
+  question.qusItems.splice(index, 1)
+}
+
+function validateFormData() {
+  if (!formData.value.testPaperName.trim()) {
+    ElNotification.warning('请输入考试标题')
+    return false
+  }
+
+  if (!formData.value.questions.length) {
+    ElNotification.warning('请至少添加一道题目')
+    return false
+  }
+
+  for (const [questionIndex, question] of formData.value.questions.entries()) {
+    const questionNumber = `第 ${questionIndex + 1} 题`
+
+    if (!question.qusTitle.trim()) {
+      ElNotification.warning(`${questionNumber} 请输入题目内容`)
+      return false
+    }
+
+    if (question.qusItems.length < 2) {
+      ElNotification.warning(`${questionNumber} 至少需要两个选项`)
+      return false
+    }
+
+    if (question.qusItems.some(option => !option.ansContext.trim())) {
+      ElNotification.warning(`${questionNumber} 请完善选项内容`)
+      return false
+    }
+
+    if (!Number.isFinite(Number(question.qusScore)) || Number(question.qusScore) <= 0) {
+      ElNotification.warning(`${questionNumber} 请填写有效分值`)
+      return false
+    }
+
+    const correctOptionCount = question.qusItems.filter(option => option.ansIsCorrect).length
+
+    if (question.qusType === 1 && correctOptionCount !== 1) {
+      ElNotification.warning(`${questionNumber} 单选题需要且只能设置一个正确答案`)
+      return false
+    }
+
+    if (question.qusType === 2 && correctOptionCount === 0) {
+      ElNotification.warning(`${questionNumber} 多选题请至少设置一个正确答案`)
+      return false
+    }
+  }
+
+  return true
+}
+
+function createSubmitData(): AdminApi.Course.CourseOutlineSectionExamEditor {
+  return {
+    ...formData.value,
+    testPaperName: formData.value.testPaperName.trim(),
+    examIntro: formData.value.examIntro.trim(),
+    score: totalScore.value,
+    questions: formData.value.questions.map((question) => {
+      return {
+        qusId: question.qusId,
+        qusTitle: question.qusTitle.trim(),
+        qusType: question.qusType,
+        qusScore: Number(question.qusScore),
+        qusExplain: question.qusExplain?.trim() ?? '',
+        qusDiff: question.qusDiff,
+        qusItems: question.qusItems.map(option => ({
+          ansId: option.ansId,
+          qusId: option.qusId,
+          ansContext: option.ansContext.trim(),
+          ansIsCorrect: Boolean(option.ansIsCorrect),
+        })),
+      }
+    }),
+  }
 }
 
 /**
- * 每页条数变化
+ * 获取小节详情
  */
-function handleSizeChange(size: number) {
-  params.value.pageSize = size
-  params.value.currentPage = 1
+async function getSectionDetail() {
+  if (!olId.value) {
+    return
+  }
 
-  // clearSelectedFile()
-  void getTable()
-}
-
-/**
- * 当前页变化
- */
-function handleCurrentChange(currentPage: number) {
-  params.value.currentPage = currentPage
-
-  // clearSelectedFile()
-  void getTable()
-}
-
-/**
- * 获取表格数据
- */
-async function getTable() {
   loading.value = true
 
   try {
-    table.value = await fetchAdminCourseOutlineSectionExamQuestionList(params.value)
+    const section = await fetchAdminCourseOutlineSectionExamDetail(olId.value)
+
+    formData.value = normalizeFormData(section)
+  }
+  catch {
+    ElNotification.error('获取考试详情失败')
   }
   finally {
     loading.value = false
   }
 }
 
-const questionBankList = ref<AdminApi.Course.CourseOutlineSectionExamQuestionBankItem[]>([])
-
 /**
-   *  获取题库下拉列表
-   */
+ * 获取题库下拉列表
+ */
 async function getQuestionBankList() {
   try {
     questionBankList.value = await fetchAdminCourseOutlineSectionExamQuestionBank()
-
-    console.log('题库下拉列表', questionBankList)
   }
   catch {
     ElNotification.error('获取题库下拉列表失败')
@@ -654,14 +613,140 @@ async function getQuestionBankList() {
 }
 
 /**
- * 打开表格弹窗
+ * 获取题目列表
  */
-async function handleOpenTableDialog() {
-  await getQuestionBankList()
-  await getTable()
-  isShowExamSelectDialog.value = true
+async function getTable() {
+  loading.value = true
+
+  try {
+    table.value = await fetchAdminCourseOutlineSectionExamQuestionList(params.value)
+  }
+  catch {
+    ElNotification.error('获取题目列表失败')
+  }
+  finally {
+    loading.value = false
+  }
 }
 
+async function handleOpenTableDialog() {
+  selectedBankQuestions.value = []
+  isShowExamSelectDialog.value = true
+  await getQuestionBankList()
+  await getTable()
+}
+
+function handleTableSelectionChange(rows: QuestionListItem[]) {
+  selectedBankQuestions.value = rows
+}
+
+function handleSearch() {
+  params.value.currentPage = 1
+  void getTable()
+}
+
+function handleSizeChange(size: number) {
+  params.value.pageSize = size
+  params.value.currentPage = 1
+  selectedBankQuestions.value = []
+  void getTable()
+}
+
+function handleCurrentChange(currentPage: number) {
+  params.value.currentPage = currentPage
+  selectedBankQuestions.value = []
+  void getTable()
+}
+
+function appendQuestions(questions: QuestionListItem[]) {
+  const existingQuestionIds = new Set(
+    formData.value.questions
+      .map(question => question.qusId)
+      .filter((id): id is number => Number.isFinite(Number(id))),
+  )
+
+  const normalizedQuestions = questions
+    .filter((question) => {
+      if (!question.qusId) {
+        return true
+      }
+
+      return !existingQuestionIds.has(question.qusId)
+    })
+    .map(normalizeQuestion)
+
+  if (!normalizedQuestions.length) {
+    ElNotification.warning('所选题目已全部存在于当前试卷')
+    return
+  }
+
+  formData.value.questions.push(...normalizedQuestions)
+  ElNotification.success(`已添加 ${normalizedQuestions.length} 道题目`)
+}
+
+function confirmSelectQuestions() {
+  if (!selectedBankQuestions.value.length) {
+    ElNotification.warning('请先选择题目')
+    return
+  }
+
+  appendQuestions(selectedBankQuestions.value)
+  isShowExamSelectDialog.value = false
+}
+
+/**
+ * 提交小节
+ */
+async function handleSubmit() {
+  if (loading.value) {
+    return
+  }
+
+  if (!validateFormData()) {
+    return
+  }
+
+  loading.value = true
+
+  try {
+    const submitData = createSubmitData()
+
+    if (isEditMode.value) {
+      await fetchAdminCourseOutlineSectionExamUpdate(submitData)
+      ElNotification.success('考试更新成功')
+    }
+    else {
+      await fetchAdminCourseOutlineSectionExamAdd(submitData)
+      ElNotification.success('考试创建成功')
+    }
+
+    workTabStore.removeTab(route.path)
+    backToCourseOutline()
+  }
+  catch {
+    ElNotification.error(isEditMode.value ? '考试更新失败' : '考试创建失败')
+  }
+  finally {
+    loading.value = false
+  }
+}
+
+const COURSE_OUTLINE_PATH = '/admin/course/outline'
+
+function backToCourseOutline() {
+  router.push({
+    path: COURSE_OUTLINE_PATH,
+  })
+}
+
+onMounted(() => {
+  if (isEditMode.value) {
+    void getSectionDetail()
+    return
+  }
+
+  formData.value = normalizeFormData(formData.value)
+})
 </script>
 
 <template>
@@ -669,28 +754,29 @@ async function handleOpenTableDialog() {
     class="mx-auto mb-10 flex w-full max-w-7xl flex-col gap-4 px-10 max-lg:px-6 max-sm:px-4"
   >
     <el-dialog
-      v-if="isShowExamSelectDialog"
       v-model="isShowExamSelectDialog"
-      title="从题库选题"
-      width="50%"
-      :show-close="false"
+      title="从题库添加题目"
+      width="72%"
+      destroy-on-close
     >
       <div
-        class="flex justify-between items-center"
+        class="mb-4 flex flex-wrap items-center justify-between gap-3"
       >
-
         <div
-          class="flex gap-2 items-center"
+          class="flex flex-wrap items-center gap-3"
         >
           <el-select
             v-model="params.qbIds"
-            :placeholder="`${params.qbIds.length ? '' : '所有题库'} `"
-            style="width: 240px"
             multiple
+            clearable
+            collapse-tags
+            collapse-tags-tooltip
+            placeholder="筛选题库"
+            style="width: 320px"
           >
             <el-option
               v-for="item in questionBankList"
-              :key="item.couId"
+              :key="item.qbId"
               :label="item.qbName"
               :value="item.qbId"
             />
@@ -698,625 +784,666 @@ async function handleOpenTableDialog() {
 
           <ArtButton
             type="primary"
+            :loading="loading"
+            @click="handleSearch"
           >
-            保存
+            查询
           </ArtButton>
         </div>
+
+        <div
+          class="text-sm text-g-600"
+        >
+          已选 {{ selectedBankQuestions.length }} 道
+        </div>
       </div>
-      <!-- 文档表格 -->
+
       <ArtTable
-        class="max-h-[calc(100vh-400px)] overflow-auto"
+        class="max-h-[calc(100vh-360px)] overflow-auto"
         :loading="loading"
         :data="table.rows"
         :columns="columns"
         :pagination="pagination"
-        row-key="asId"
-        highlight-current-row
-        @current-change="handleTableCurrentChange"
+        row-key="qusId"
+        @selection-change="handleTableSelectionChange"
         @pagination:size-change="handleSizeChange"
         @pagination:current-change="handleCurrentChange"
       >
         <template
-          #fileName="{ row }"
+          #default
+        >
+          <el-table-column
+            type="selection"
+            width="55"
+          />
+        </template>
+
+        <template
+          #qusTitle="{ row }"
         >
           <div
-            class="min-w-0 flex items-center gap-2"
+            class="min-w-0"
           >
-            <div
-              class=""
-            >
-              <ArtPreviewImage
-                :path="row.asThumbnailPath"
-                class="w-15 h-20"
-              />
-            </div>
-
             <div
               class="truncate text-sm font-medium text-g-900"
             >
-              {{ row.asName || '-' }}
+              {{ row.qusTitle || '-' }}
             </div>
 
+            <div
+              class="mt-1 text-xs text-g-500"
+            >
+              ID: {{ row.qusId || '-' }}
+            </div>
           </div>
         </template>
 
         <template
-          #createTime="{ row }"
+          #qusType="{ row }"
         >
-          <span>
-            {{ formatDateTime(row.createTime) }}
-          </span>
+          <el-tag
+            size="small"
+            :type="row.qusType === 1 ? 'primary' : 'success'"
+          >
+            {{ getQuestionTypeLabel(row.qusType) }}
+          </el-tag>
         </template>
 
         <template
-          #fileSize="{ row }"
+          #qusDiff="{ row }"
         >
-          <span
-            class="text-base text-g-900"
+          <el-tag
+            size="small"
+            :type="getDiffTagType(row.qusDiff)"
           >
-            {{ fileSizeFormat(row.asSize) }}
-          </span>
+            {{ getDiffLabel(row.qusDiff) }}
+          </el-tag>
+        </template>
+
+        <template
+          #qusScore="{ row }"
+        >
+          <span>{{ row.qusScore || 0 }} 分</span>
         </template>
       </ArtTable>
+
+      <template
+        #footer
+      >
+        <div
+          class="flex items-center justify-end gap-3"
+        >
+          <el-button
+            @click="isShowExamSelectDialog = false"
+          >
+            取消
+          </el-button>
+
+          <ArtButton
+            type="primary"
+            @click="confirmSelectQuestions"
+          >
+            添加所选题目
+          </ArtButton>
+        </div>
+      </template>
     </el-dialog>
 
     <AdminPageHeader
       :title="pageTitle"
+      :stats="examStats"
       @back="backToCourseOutline"
     >
       <template
         #extra
       >
-        <el-button
-          type="primary"
-          class="flex items-center justify-center"
-          @click="completeExam"
+        <ArtButton
+          type="success"
+          :loading="loading"
+          @click="handleSubmit"
         >
           完成
-        </el-button>
+        </ArtButton>
       </template>
     </AdminPageHeader>
 
-    <el-tabs
-      v-model="activeTab"
-      class="mt-5"
+    <div
+      v-loading="loading"
+      class="flex flex-col gap-4"
     >
-      <el-tab-pane
-        label="考试编辑"
-        name="edit"
+      <el-tabs
+        v-model="activeTab"
+        class="exam-tabs"
       >
-        <div
-          class="mb-10 flex items-center gap-4"
-        >
-          <div
-            class=""
-          >
-            问题总数 {{ formData1.questions.length }}
-          </div>
-
-          <div
-            class=""
-          >
-            满分 : {{ totalScore }}
-          </div>
-        </div>
-
-        <el-form
-          :model="formData1"
-          label-position="top"
-        >
-          <el-form-item
-            prop="title"
-            label="标题"
-            required
-            class="mb-10"
-          >
-            <el-input
-              v-model="formData1.title"
-              placeholder="请输入考试名称"
-            />
-          </el-form-item>
-
-          <!-- 问题列表 -->
-          <div
-            v-for="(item, index) in formData1.questions"
-            :key="item.id"
-            class="mb-6 border rounded-lg p-4"
-          >
-            <div
-              class="mb-4 flex items-center justify-between"
-            >
-              <h3
-                class="text-lg font-medium"
-              >
-                Q{{ index + 1 }}. {{ item.title || '请输入问题' }}
-              </h3>
-
-              <div
-                class="flex items-center gap-2"
-              >
-                <el-button
-                  @click="duplicateQuestion(item.id)"
-                >
-                  复制
-                </el-button>
-
-                <el-button
-                  @click="deleteQuestion(item.id)"
-                >
-                  删除
-                </el-button>
-              </div>
-            </div>
-
-            <el-input
-              v-model="item.title"
-              placeholder="请输入问题名称"
-              class="mb-4"
-            />
-
-            <el-radio-group
-              v-model="item.type"
-              class="mb-4"
-            >
-              <el-radio
-                value="single"
-              >
-                单选题
-              </el-radio>
-
-              <el-radio
-                value="multiple"
-              >
-                多选题
-              </el-radio>
-            </el-radio-group>
-
-            <!-- 选项列表 -->
-            <div
-              class="mb-4"
-            >
-              <div
-                v-for="(option, optIndex) in item.options"
-                :key="option.id"
-                class="mb-2 flex items-center gap-2"
-              >
-                <div
-                  class="w-6 text-center font-medium"
-                >
-                  {{ String.fromCharCode(65 + optIndex) }}.
-                </div>
-
-                <el-input
-                  v-model="option.title"
-                  placeholder="点击创建选项, 回车自动创建下一个选项"
-                  class="flex-1"
-                  @keyup.enter="addOption(index)"
-                />
-
-                <el-button
-                  size="small"
-                  :disabled="item.options.length <= 2"
-                  @click="deleteOption(index, option.id)"
-                >
-                  -
-                </el-button>
-              </div>
-
-              <div
-                class="mt-2 flex justify-end"
-              >
-                <el-button
-                  size="small"
-                  @click="addOption(index)"
-                >
-                  + 添加选项
-                </el-button>
-              </div>
-            </div>
-
-            <!-- 正确答案 -->
-            <div
-              class="mb-4"
-            >
-              <label
-                class="mb-2 block font-medium"
-              >
-                正确答案
-              </label>
-
-              <el-select
-                v-if="item.type === 'single'"
-                v-model="item.correctAnswer"
-                placeholder="请选择正确答案"
-                class="w-40"
-              >
-                <el-option
-                  v-for="(option, optIndex) in item.options"
-                  :key="option.id"
-                  :label="String.fromCharCode(65 + optIndex)"
-                  :value="String.fromCharCode(65 + optIndex)"
-                />
-              </el-select>
-
-              <el-select
-                v-else
-                v-model="item.correctAnswer"
-                placeholder="请选择正确答案"
-                multiple
-                class="w-60"
-              >
-                <el-option
-                  v-for="(option, optIndex) in item.options"
-                  :key="option.id"
-                  :label="String.fromCharCode(65 + optIndex)"
-                  :value="String.fromCharCode(65 + optIndex)"
-                />
-              </el-select>
-            </div>
-
-            <!-- 分值和难度 -->
-            <div
-              class="mb-4 flex items-center gap-4"
-            >
-              <div>
-                <label
-                  class="mb-1 block font-medium"
-                >分值 / 满分</label>
-
-                <div
-                  class="flex items-center gap-2"
-                >
-                  <el-input-number
-                    v-model="item.score"
-                    :min="0"
-                    :max="100"
-                  />
-
-                  <span>/ {{ totalScore }}</span>
-                </div>
-              </div>
-
-              <div>
-                <label
-                  class="mb-1 block font-medium"
-                >
-                  难度
-                </label>
-
-                <el-select
-                  v-model="item.difficulty"
-                  class="w-24"
-                >
-                  <el-option
-                    label="易"
-                    value="easy"
-                  />
-
-                  <el-option
-                    label="中"
-                    value="medium"
-                  />
-
-                  <el-option
-                    label="难"
-                    value="hard"
-                  />
-                </el-select>
-              </div>
-            </div>
-
-            <!-- 答案说明 -->
-            <div
-              class="mb-4"
-            >
-              <label
-                class="mb-2 block font-medium"
-              >
-                答案说明 (选填)
-              </label>
-
-              <el-input
-                v-model="item.explanation"
-                type="textarea"
-                placeholder="填写答题思路，帮助学员理解考试内容，提升考试成绩。"
-                :rows="3"
-              />
-            </div>
-
-          </div>
-
-          <!-- 添加问题按钮 -->
-          <div
-            class="mt-6 flex items-center gap-4"
-          >
-            <el-button
-              type="primary"
-              @click="addQuestion"
-            >
-              + 添加问题
-            </el-button>
-
-            <el-button
-              type="info"
-              @click="handleOpenTableDialog"
-            >
-              从题库添加
-            </el-button>
-          </div>
-        </el-form>
-
-      </el-tab-pane>
-
-      <el-tab-pane
-        label="考试设置"
-        name="setting"
-      >
-        <div
-          class="mt-5 border rounded-3 p-6"
+        <el-tab-pane
+          label="考试编辑"
+          name="edit"
         >
           <el-form
-            :model="formData1.examSettings"
-            label-width="150px"
-            class="space-y-4"
+            :model="formData"
+            label-position="top"
+            class="flex flex-col gap-4"
           >
-            <!-- 考试时间设置 -->
-            <el-form-item
-              label="考试时间（分钟）"
-            >
-              <el-input-number
-                v-model="formData1.examSettings.duration"
-                :min="1"
-                :max="360"
-                class="w-40"
-              />
-            </el-form-item>
-
-            <!-- 考试次数限制 -->
-            <el-form-item
-              label="考试次数限制"
-            >
-              <el-input-number
-                v-model="formData1.examSettings.attemptLimit"
-                :min="1"
-                :max="10"
-                class="w-40"
-              />
-
-              <el-checkbox
-                v-model="formData1.examSettings.allowRetake"
-                class="ml-4"
-              >
-                允许重复考试
-              </el-checkbox>
-            </el-form-item>
-
-            <!-- 考试通过分数 -->
-            <el-form-item
-              label="考试通过分数"
-            >
-              <el-input-number
-                v-model="formData1.examSettings.passingScore"
-                :min="0"
-                :max="100"
-                class="w-40"
-              />
-
-              <span
-                class="ml-2"
-              >分</span>
-            </el-form-item>
-
-            <!-- 考试时间范围 -->
-            <el-form-item
-              label="考试时间范围"
-            >
-              <el-date-picker
-                v-model="dateRange"
-                type="daterange"
-                range-separator="至"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期"
-                class="w-96"
-                @change="handleDateRangeChange"
-              />
-            </el-form-item>
-
-            <!-- 考试说明 -->
-            <el-form-item
-              label="考试说明"
-            >
-              <el-input
-                v-model="formData1.examSettings.description"
-                type="textarea"
-                :rows="3"
-                placeholder="请输入考试说明"
-                class="w-full"
-              />
-            </el-form-item>
-
-            <!-- 考试规则 -->
-            <el-form-item
-              label="考试规则"
-            >
-              <el-input
-                v-model="formData1.examSettings.rules"
-                type="textarea"
-                :rows="3"
-                placeholder="请输入考试规则"
-                class="w-full"
-              />
-            </el-form-item>
-
-            <!-- 考试后显示设置 -->
-            <el-form-item
-              label="考试后显示设置"
+            <div
+              class="art-card"
             >
               <div
-                class="flex items-center gap-4"
+                class="mb-4 flex items-center justify-between gap-4 max-sm:flex-col max-sm:items-start"
               >
-                <el-checkbox
-                  v-model="formData1.examSettings.showAnswers"
-                >
-                  显示答案
-                </el-checkbox>
+                <div>
+                  <h3
+                    class="text-base font-semibold text-g-900"
+                  >
+                    考试信息
+                  </h3>
 
-                <el-checkbox
-                  v-model="formData1.examSettings.showExplanations"
-                >
-                  显示解析
-                </el-checkbox>
+                  <p
+                    class="mt-1 text-sm text-g-600"
+                  >
+                    问题总数 {{ formData.questions.length }} / 满分 {{ totalScore }}
+                  </p>
+                </div>
               </div>
-            </el-form-item>
 
-            <!-- 防作弊设置 -->
-            <el-form-item
-              label="防作弊设置"
-            >
-              <div
-                class="flex items-center gap-4"
+              <el-form-item
+                label="标题"
+                required
+                class="mb-0!"
               >
-                <el-checkbox
-                  v-model="formData1.examSettings.antiCheat.disableCopy"
-                >
-                  禁止复制粘贴
-                </el-checkbox>
+                <el-input
+                  v-model="formData.testPaperName"
+                  placeholder="请填写考试名称"
+                  size="large"
+                />
+              </el-form-item>
 
-                <el-checkbox
-                  v-model="formData1.examSettings.antiCheat.disableWindowSwitch"
-                >
-                  禁止切换窗口
-                </el-checkbox>
+              <el-form-item
+                label="考试说明"
+                class="mb-0! mt-4"
+              >
+                <el-input
+                  v-model="formData.examIntro"
+                  type="textarea"
+                  :rows="4"
+                  placeholder="请输入考试说明"
+                />
+              </el-form-item>
+            </div>
 
-                <el-checkbox
-                  v-model="formData1.examSettings.antiCheat.enableCamera"
+            <div
+              class="flex items-center justify-between gap-4 max-md:flex-col max-md:items-stretch"
+            >
+              <div>
+                <h3
+                  class="text-base font-semibold text-g-900"
                 >
-                  开启摄像头监控
-                </el-checkbox>
+                  题目列表
+                </h3>
+
+                <p
+                  class="mt-1 text-sm text-g-600"
+                >
+                  单选 {{ formData.questions.filter(question => question.qusType === 1).length }} / 多选 {{ formData.questions.filter(question => question.qusType === 2).length }}
+                </p>
               </div>
-            </el-form-item>
 
-            <!-- 考试结果通知 -->
-            <el-form-item
-              label="考试结果通知"
-            >
               <div
-                class="flex items-center gap-4"
+                class="flex flex-wrap gap-3 max-sm:flex-col"
               >
-                <el-checkbox
-                  v-model="formData1.examSettings.notification.notifyStudent"
+                <art-button
+                  type="add"
+                  @click="addQuestion"
                 >
-                  通知考生
-                </el-checkbox>
+                  添加问题
+                </art-button>
 
-                <el-checkbox
-                  v-model="formData1.examSettings.notification.notifyTeacher"
+                <ArtButton
+                  type="import"
+                  @click="handleOpenTableDialog"
                 >
-                  通知教师
-                </el-checkbox>
-
-                <el-checkbox
-                  v-model="formData1.examSettings.notification.notifyAdmin"
-                >
-                  通知管理员
-                </el-checkbox>
+                  从题库添加
+                </ArtButton>
               </div>
-            </el-form-item>
+            </div>
 
-            <!-- 考试数据分析 -->
-            <el-form-item
-              label="考试数据分析"
+            <div
+              v-for="(question, questionIndex) in formData.questions"
+              :key="question.clientId"
             >
               <div
-                class="flex items-center gap-4"
+                class="art-card flex flex-col gap-4 transition"
+                :class="[
+                  movingQuestionId === question.clientId
+                    ? 'border-primary/30 bg-primary/10!'
+                    : '',
+                ]"
               >
-                <el-checkbox
-                  v-model="formData1.examSettings.analytics.enable"
+                <div
+                  class="flex gap-4 items-start max-md:flex-col"
                 >
-                  启用数据分析
-                </el-checkbox>
+                  <div
+                    class="flex size-10 shrink-0 items-center justify-center rounded-custom-sm bg-primary/10 text-sm font-semibold text-primary"
+                  >
+                    Q{{ questionIndex + 1 }}
+                  </div>
 
-                <el-select
-                  v-model="formData1.examSettings.analytics.dimensions"
-                  multiple
-                  placeholder="选择分析维度"
-                  class="w-64"
-                >
-                  <el-option
-                    label="分数分析"
-                    value="score"
+                  <el-input
+                    v-model="question.qusTitle"
+                    placeholder="请输入问题"
+                    class="w-full flex-1"
                   />
 
-                  <el-option
-                    label="时间分析"
-                    value="time"
-                  />
+                  <div
+                    class="flex shrink-0 flex-wrap gap-2 items-center max-md:w-full max-md:justify-end"
+                  >
+                    <ArtButton
+                      v-for="item in questionActions"
+                      :key="item.action"
+                      type="link"
+                      @click="handleQuestionAction(item.action, question, questionIndex)"
+                    >
+                      {{ item.label }}
+                    </ArtButton>
+                  </div>
+                </div>
 
-                  <el-option
-                    label="难度分析"
-                    value="difficulty"
-                  />
+                <div
+                  class="rounded-custom-sm bg-(--art-gray-100) px-4 py-3"
+                >
+                  <el-radio-group
+                    v-model="question.qusType"
+                    class="flex flex-wrap gap-x-12 gap-y-2"
+                    @change="ensureQuestionTypeConsistency(question)"
+                  >
+                    <el-radio
+                      v-for="item in questionTypes"
+                      :key="item.value"
+                      :value="item.value"
+                    >
+                      {{ item.label }}
+                    </el-radio>
+                  </el-radio-group>
+                </div>
 
-                  <el-option
-                    label="题型分析"
-                    value="type"
-                  />
-                </el-select>
+                <div
+                  class="flex flex-col gap-2"
+                >
+                  <div
+                    v-for="(option, optionIndex) in question.qusItems"
+                    :key="optionIndex"
+                    class="flex gap-2 items-center justify-between max-sm:flex-col max-sm:items-stretch"
+                  >
+                    <el-input
+                      v-model="option.ansContext"
+                      placeholder="请输入选项内容"
+                      @keyup.enter="addOption(question, optionIndex)"
+                    >
+                      <template
+                        #prepend
+                      >
+                        {{ getOptionLabel(optionIndex) }}.
+                      </template>
+                    </el-input>
+
+                    <div
+                      class="flex gap-1 items-center justify-end"
+                    >
+                      <ArtButton
+                        type="add"
+                        @click="addOption(question, optionIndex)"
+                      />
+
+                      <ArtButton
+                        type="delete"
+                        :disabled="question.qusItems.length <= 2"
+                        @click="removeOption(question, optionIndex)"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  class="grid grid-cols-2 gap-5 max-md:grid-cols-1"
+                >
+                  <el-form-item
+                    label="正确答案"
+                    required
+                    class="mb-0! [&_.el-select]:w-full"
+                  >
+                    <el-select
+                      v-if="question.qusType === 1"
+                      :model-value="getCorrectSingleOptionIndex(question)"
+                      placeholder="请选择正确答案"
+                      @update:model-value="value => setCorrectSingleOption(question, value)"
+                    >
+                      <el-option
+                        v-for="(option, optionIndex) in question.qusItems"
+                        :key="optionIndex"
+                        :label="option.ansContext || `选项${getOptionLabel(optionIndex)}`"
+                        :value="optionIndex"
+                      />
+                    </el-select>
+
+                    <el-select
+                      v-else
+                      :model-value="getCorrectOptionIndexes(question)"
+                      multiple
+                      placeholder="请选择正确答案"
+                      @update:model-value="value => setCorrectMultipleOptions(question, value)"
+                    >
+                      <el-option
+                        v-for="(option, optionIndex) in question.qusItems"
+                        :key="optionIndex"
+                        :label="option.ansContext || `选项${getOptionLabel(optionIndex)}`"
+                        :value="optionIndex"
+                      />
+                    </el-select>
+                  </el-form-item>
+
+                  <el-form-item
+                    label="分值"
+                    class="mb-0! w-full!"
+                    required
+                  >
+                    <el-input-number
+                      v-model="question.qusScore"
+                      :min="1"
+                      :max="100"
+                      :controls="true"
+                      placeholder="本题分值"
+                      class="w-full!"
+                    />
+                  </el-form-item>
+                </div>
+
+                <div
+                  class="grid grid-cols-2 gap-5 max-md:grid-cols-1"
+                >
+                  <el-form-item
+                    label="难度"
+                    class="mb-0! w-full!"
+                    required
+                  >
+                    <el-radio-group
+                      v-model="question.qusDiff"
+                      class="flex flex-wrap gap-x-8 gap-y-2"
+                    >
+                      <el-radio
+                        v-for="item in diffOptions"
+                        :key="item.value"
+                        :value="item.value"
+                      >
+                        {{ item.label }}
+                      </el-radio>
+                    </el-radio-group>
+                  </el-form-item>
+
+                  <el-form-item
+                    label="答案说明(选填)"
+                    class="mb-0!"
+                  >
+                    <el-input
+                      v-model="question.qusExplain"
+                      type="textarea"
+                      :rows="3"
+                      placeholder="请输入答案说明"
+                    />
+                  </el-form-item>
+                </div>
               </div>
-            </el-form-item>
 
-            <!-- 其他设置 -->
-            <el-form-item
-              label="其他设置"
-            >
               <div
-                class="grid grid-cols-2 gap-4"
+                v-if="movingQuestionId"
+                class="my-3 flex flex-wrap gap-3 items-center justify-center"
               >
-                <el-checkbox
-                  v-model="formData1.examSettings.other.allowResume"
+                <art-button
+                  type="warning"
+                  :disabled="movingQuestionId === question.clientId"
+                  @click="moveQuestionTo(questionIndex)"
                 >
-                  允许断点续考
-                </el-checkbox>
+                  移到第 {{ questionIndex + 1 }} 题后
+                </art-button>
 
-                <el-checkbox
-                  v-model="formData1.examSettings.other.randomQuestions"
+                <art-button
+                  type="default"
+                  @click="cancelMoveQuestion"
                 >
-                  随机出题
-                </el-checkbox>
-
-                <el-checkbox
-                  v-model="formData1.examSettings.other.randomOrder"
-                >
-                  题目乱序
-                </el-checkbox>
-
-                <el-checkbox
-                  v-model="formData1.examSettings.other.randomOptions"
-                >
-                  选项乱序
-                </el-checkbox>
-
-                <el-checkbox
-                  v-model="formData1.examSettings.other.showCountdown"
-                >
-                  显示倒计时
-                </el-checkbox>
-
-                <el-checkbox
-                  v-model="formData1.examSettings.other.autoSubmit"
-                >
-                  自动提交
-                </el-checkbox>
+                  取消移动
+                </art-button>
               </div>
-            </el-form-item>
+            </div>
+
+            <div
+              class="art-card flex flex-wrap items-center gap-3"
+            >
+              <art-button
+                type="add"
+                @click="addQuestion"
+              >
+                添加问题
+              </art-button>
+
+              <ArtButton
+                type="import"
+                @click="handleOpenTableDialog"
+              >
+                从题库添加
+              </ArtButton>
+            </div>
           </el-form>
-        </div>
-      </el-tab-pane>
-    </el-tabs>
+        </el-tab-pane>
+
+        <el-tab-pane
+          label="考试设置"
+          name="setting"
+        >
+          <div
+            class="flex flex-col gap-4"
+          >
+            <el-form
+              :model="formData"
+              label-position="top"
+            >
+              <div
+                class="art-card"
+              >
+                <div
+                  class="mb-4"
+                >
+                  <h3
+                    class="text-base font-semibold text-g-900"
+                  >
+                    基础设置
+                  </h3>
+
+                  <p
+                    class="mt-1 text-sm text-g-600"
+                  >
+                    当前满分 {{ totalScore }} 分
+                  </p>
+                </div>
+
+                <div
+                  class="grid grid-cols-2 gap-5 max-md:grid-cols-1"
+                >
+                  <el-form-item
+                    label="考试类型"
+                    class="mb-0!"
+                  >
+                    <el-radio-group
+                      v-model="formData.examType"
+                    >
+                      <el-radio
+                        :value="0"
+                      >
+                        选修
+                      </el-radio>
+
+                      <el-radio
+                        :value="1"
+                      >
+                        必修
+                      </el-radio>
+                    </el-radio-group>
+                  </el-form-item>
+
+                  <el-form-item
+                    label="考试时长（分钟）"
+                    class="mb-0!"
+                  >
+                    <el-input-number
+                      v-model="formData.durationMinutes"
+                      :min="1"
+                      :max="360"
+                      class="w-full!"
+                    />
+                  </el-form-item>
+                </div>
+              </div>
+
+              <div
+                class="art-card"
+              >
+                <div
+                  class="mb-4"
+                >
+                  <h3
+                    class="text-base font-semibold text-g-900"
+                  >
+                    考试规则
+                  </h3>
+                </div>
+
+                <div
+                  class="grid grid-cols-3 gap-5 max-lg:grid-cols-2 max-md:grid-cols-1"
+                >
+                  <el-form-item
+                    label="允许尝试次数"
+                    class="mb-0!"
+                  >
+                    <el-input-number
+                      v-model="formData.attemptLimit"
+                      :min="1"
+                      :max="99"
+                      class="w-full!"
+                    />
+                  </el-form-item>
+
+                  <el-form-item
+                    label="及格分数"
+                    class="mb-0!"
+                  >
+                    <el-input-number
+                      v-model="formData.passScore"
+                      :min="0"
+                      :max="totalScore || 100"
+                      class="w-full!"
+                    />
+                  </el-form-item>
+
+                  <el-form-item
+                    label="重考间隔（小时）"
+                    class="mb-0!"
+                  >
+                    <el-input-number
+                      v-model="formData.retakeIntervalHours"
+                      :min="0"
+                      :max="720"
+                      class="w-full!"
+                    />
+                  </el-form-item>
+                </div>
+              </div>
+
+              <div
+                class="art-card"
+              >
+                <div
+                  class="mb-4"
+                >
+                  <h3
+                    class="text-base font-semibold text-g-900"
+                  >
+                    开放时间
+                  </h3>
+                </div>
+
+                <div
+                  class="grid grid-cols-2 gap-5 max-md:grid-cols-1"
+                >
+                  <el-form-item
+                    label="时间范围"
+                    class="mb-0!"
+                  >
+                    <el-date-picker
+                      v-model="dateRange"
+                      type="datetimerange"
+                      range-separator="至"
+                      start-placeholder="开始时间"
+                      end-placeholder="结束时间"
+                      value-format="YYYY-MM-DD HH:mm:ss"
+                      class="w-full!"
+                    />
+                  </el-form-item>
+
+                  <el-form-item
+                    label="考试总分"
+                    class="mb-0!"
+                  >
+                    <el-input
+                      :model-value="`${totalScore} 分`"
+                      disabled
+                    />
+                  </el-form-item>
+                </div>
+              </div>
+
+              <div
+                class="art-card"
+              >
+                <div
+                  class="mb-4"
+                >
+                  <h3
+                    class="text-base font-semibold text-g-900"
+                  >
+                    考后展示
+                  </h3>
+                </div>
+
+                <div
+                  class="grid grid-cols-2 gap-5 max-md:grid-cols-1"
+                >
+                  <el-form-item
+                    label="考后显示答案"
+                    class="mb-0!"
+                  >
+                    <el-switch
+                      v-model="formData.isShowAnswer"
+                      :active-value="1"
+                      :inactive-value="0"
+                    />
+                  </el-form-item>
+
+                  <el-form-item
+                    label="考后显示分数"
+                    class="mb-0!"
+                  >
+                    <el-switch
+                      v-model="formData.isShowScore"
+                      :active-value="1"
+                      :inactive-value="0"
+                    />
+                  </el-form-item>
+                </div>
+              </div>
+            </el-form>
+          </div>
+        </el-tab-pane>
+      </el-tabs>
+    </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
-
 </style>
-s
