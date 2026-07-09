@@ -147,6 +147,7 @@ export function fetchAdminCourseOutlineSectionDocumentAdd(data: AdminApi.Course.
 
 /**
  *  获取文档小节
+ *  @param olId 小节ID
  */
 export function fetchAdminCourseOutlineSectionDocumentDetail(olId: number) {
   return request.get<AdminApi.Course.CourseOutlineSectionDocumentEditor>({
@@ -201,21 +202,22 @@ export function fetchAdminCourseOutlineSectionVideoUpdate(data: AdminApi.Course.
 }
 
 /**
- *  新增问卷小节
+ *  新增考试小节
  */
-export function fetchAdminCourseOutlineSectionQuestionAdd(data: AdminApi.Course.CourseOutlineSectionQuestionEditor) {
+export function fetchAdminCourseOutlineSectionExamAdd(data: AdminApi.Course.CourseOutlineSectionExamEditor) {
   return request.post<boolean>({
-    url: '/admin/questionpaper/addQuestionPaper',
+    url: '/admin/testpaper/addTestPaper',
     data,
   })
 }
 
 /**
- *  获取问卷小节
+ *  获取考试小节
+ *  @param olId 小节ID
  */
-export function fetchAdminCourseOutlineSectionQuestionDetail(olId: number) {
-  return request.get<AdminApi.Course.CourseOutlineSectionQuestionEditor>({
-    url: '/admin/questionpaper/getQuestionPaper',
+export function fetchAdminCourseOutlineSectionExamDetail(olId: number) {
+  return request.get<AdminApi.Course.CourseOutlineSectionExamEditor>({
+    url: '/admin/testpaper/getTestPaper',
     params: {
       olId,
     },
@@ -223,11 +225,30 @@ export function fetchAdminCourseOutlineSectionQuestionDetail(olId: number) {
 }
 
 /**
- *  修改问卷小节
+ *  修改考试小节
  */
-export function fetchAdminCourseOutlineSectionQuestionUpdate(data: AdminApi.Course.CourseOutlineSectionQuestionEditor) {
+export function fetchAdminCourseOutlineSectionExamUpdate(data: AdminApi.Course.CourseOutlineSectionExamEditor) {
   return request.post<boolean>({
-    url: '/admin/questionpaper/updateQuestionPaper',
+    url: '/admin/testpaper/updateTestPaper',
+    data,
+  })
+}
+
+/**
+ *  获取题库下拉列表
+ */
+export function fetchAdminCourseOutlineSectionExamQuestionBank() {
+  return request.get<AdminApi.Question.CourseOutlineSectionExamQuestionBankItem[]>({
+    url: '/admin/testpaper/getQuestionBank',
+  })
+}
+
+/**
+ *  获取考试小节题目列表
+ */
+export function fetchAdminCourseOutlineSectionExamQuestionList(data: AdminApi.Course.CourseOutlineSectionExamQuestionListParams) {
+  return request.post<AdminApi.Course.CourseOutlineSectionExamQuestionListResponse>({
+    url: '/admin/testpaper/getQuestionList',
     data,
   })
 }

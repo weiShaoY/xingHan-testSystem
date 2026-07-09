@@ -2,8 +2,6 @@
 <script lang="ts" setup>
 import type { ColumnOption } from '@/types'
 
-import { useRoute } from 'vue-router'
-
 const route = useRoute()
 
 const router = useRouter()
@@ -95,7 +93,7 @@ const isShowUploadArea = ref(!isEditMode.value)
 /**
  * 请求参数
  */
-const params = reactive<FileApi.FileListParams>({
+const params = ref<FileApi.FileListParams>({
   name: '',
   type: 'document',
   pageSize: 10,
@@ -119,8 +117,8 @@ const selectedFile = ref<FileApi.FileListItem>()
  * 分页配置
  */
 const pagination = computed(() => ({
-  current: params.currentPage,
-  size: params.pageSize,
+  current: params.value.currentPage,
+  size: params.value.pageSize,
   total: table.value.totals,
 }))
 
@@ -169,7 +167,7 @@ async function getTable() {
   loading.value = true
 
   try {
-    table.value = await fetchAdminFileList(params)
+    table.value = await fetchAdminFileList(params.value)
   }
   finally {
     loading.value = false
@@ -248,8 +246,8 @@ function handleReplaceFileClick() {
  * 每页条数变化
  */
 function handleSizeChange(size: number) {
-  params.pageSize = size
-  params.currentPage = 1
+  params.value.pageSize = size
+  params.value.currentPage = 1
   clearSelectedFile()
   void getTable()
 }
@@ -258,7 +256,7 @@ function handleSizeChange(size: number) {
  * 当前页变化
  */
 function handleCurrentChange(currentPage: number) {
-  params.currentPage = currentPage
+  params.value.currentPage = currentPage
   clearSelectedFile()
   void getTable()
 }
@@ -267,8 +265,8 @@ function handleCurrentChange(currentPage: number) {
  * 搜索
  */
 function handleSearch() {
-  params.currentPage = 1
-  params.name = params.name.trim()
+  params.value.currentPage = 1
+  params.value.name = params.value.name.trim()
   clearSelectedFile()
   void getTable()
 }

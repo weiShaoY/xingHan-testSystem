@@ -586,9 +586,9 @@ export namespace Course {
   type CourseOutlineSectionVideoEditor = CourseOutlineSectionDocumentEditor
 
   /**
-   *  问卷小节 新增或编辑请求参数
+   *  考试小节 新增或编辑请求参数
    */
-  type CourseOutlineSectionQuestionEditor = {
+  type CourseOutlineSectionExamEditor = {
 
     /**
      * 课程ID
@@ -608,7 +608,7 @@ export namespace Course {
     /**
      * 考试结束时间
      */
-    endTime: Date
+    endTime: string
 
     /**
      * 考试简介
@@ -625,49 +625,49 @@ export namespace Course {
      * 考后是否显示答案
      * @description 0=不显示，1=显示。
      */
-    isShowAnswer?: 0 | 1
+    isShowAnswer: 0 | 1
 
     /**
      * 考后是否显示分数
      * @description 0=不显示，1=显示。
      */
-    isShowScore?: 0 | 1
+    isShowScore: 0 | 1
 
     /**
      * 及格分数
      */
-    passScore?: number
+    passScore: number
 
     /**
      * 重考间隔（小时），NULL=无限制
      */
-    retakeIntervalHours?: number
+    retakeIntervalHours: number
 
     /**
      * 满分分数
      */
-    score?: number
+    score: number
 
     /**
      * 考试开始时间
      */
-    startTime?: Date
+    startTime: string
 
     /**
      * 试卷名称
      */
-    testPaperName?: string
+    testPaperName: string
 
     /**
      * 试卷类型（1=考试，2=问卷）
      * @description 1=考试，2=问卷。
      */
-    testPaperType?: 1 | 2
+    testPaperType: 1 | 2
 
     /**
      * 题目列表
      */
-    questions?: Question.QuestionEditorQuestion[]
+    questions: Question.QuestionEditorQuestion[]
 
     /**
      * 小节ID
@@ -691,4 +691,110 @@ export namespace Course {
     olLevel?: 1 | 2
   }
 
+  /**
+   *  考试小节 题目列表 请求参数
+   */
+  type CourseOutlineSectionExamQuestionListParams = CommonApi.PaginationParams & {
+
+    /**
+     * 题库ID列表
+     */
+    qbIds: number[]
+  }
+
+  /**
+   *  考试小节 题库下拉列表项
+   */
+  type CourseOutlineSectionExamQuestionBankItem = {
+
+    /**
+     * 公司ID
+     */
+    companyId: number
+
+    /**
+     * 课程ID
+     */
+    couId: number
+
+    /**
+     * 创建人ID
+     */
+    creater: number
+
+    /**
+     * 创建时间
+     */
+    createTime: string
+
+    /**
+     * 多选题个数
+     */
+    multipleChoiceQuestionsCount: number
+
+    /**
+     * 父级题库ID
+     */
+    parentId: number
+
+    /**
+     * 父级题库名称
+     */
+    parentName: string
+
+    /**
+     * 项目ID
+     */
+    projId: number
+
+    /**
+     * 题库编码
+     */
+    qbCode: string
+
+    /**
+     * 题库描述
+     */
+    qbDesc: string
+
+    /**
+     * 题库ID
+     */
+    qbId: number
+
+    /**
+     * 题库名称
+     */
+    qbName: string
+
+    /**
+     * 题库类型
+     */
+    qbType: number
+
+    /**
+     * 题库类型名称
+     */
+    qbTypeName: string
+
+    /**
+     * 学科ID
+     */
+    sbjId: number
+
+    /**
+     * 单选题个数
+     */
+    singleChoiceQuestionCount: number
+
+    /**
+     * 最后修改时间
+     */
+    updateTime: string
+  }
+
+  /**
+   *  考试小节 题目列表 响应
+   */
+  type CourseOutlineSectionExamQuestionListResponse = CommonApi.PaginatedResponse<Question.QuestionEditorQuestion>
 }

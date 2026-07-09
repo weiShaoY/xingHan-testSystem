@@ -1,13 +1,15 @@
 <!------  2026-04-16---20:42---星期四  ------>
 <!------------------------------------    ------------------------------------------------->
 <script lang="ts" setup>
+import type { ColumnOption } from '@/types'
+
 import { computed, ref } from 'vue'
 
-import SelectFromQuestionBankDialog from './SelectFromQuestionBankDialog.vue'
+const activeTab = ref<'edit' | 'preview'>('edit')
 
-const activeTab = ref('edit')
+const route = useRoute()
 
-const isShowSelectFromQuestionBankDialog = ref(false)
+const router = useRouter()
 
 /**
  * 题目类型
@@ -66,7 +68,7 @@ type Question = {
 /**
  * 表单数据
  */
-const formData = ref<{
+const formData1 = ref<{
 
   /** 考试标题 */
   title: string
@@ -242,16 +244,16 @@ const formData = ref<{
  * 计算满分
  */
 const totalScore = computed(() => {
-  return formData.value.questions.reduce((sum, question) => sum + (question.score || 0), 0)
+  return formData1.value.questions.reduce((sum, question) => sum + (question.score || 0), 0)
 })
 
 /**
  * 添加问题
  */
 function addQuestion() {
-  const newId = Math.max(...formData.value.questions.map(q => q.id)) + 1
+  const newId = Math.max(...formData1.value.questions.map(q => q.id)) + 1
 
-  formData.value.questions.push({
+  formData1.value.questions.push({
     id: newId,
     title: '',
     type: 'single',
@@ -281,8 +283,8 @@ function addQuestion() {
   })
 
   // 强制更新视图
-  formData.value = {
-    ...formData.value,
+  formData1.value = {
+    ...formData1.value,
   }
 }
 
@@ -290,11 +292,11 @@ function addQuestion() {
  * 删除问题
  */
 function deleteQuestion(id: number) {
-  formData.value.questions = formData.value.questions.filter(q => q.id !== id)
+  formData1.value.questions = formData1.value.questions.filter(q => q.id !== id)
 
   // 强制更新视图
-  formData.value = {
-    ...formData.value,
+  formData1.value = {
+    ...formData1.value,
   }
 }
 
@@ -302,10 +304,10 @@ function deleteQuestion(id: number) {
  * 复制问题
  */
 function duplicateQuestion(id: number) {
-  const question = formData.value.questions.find(q => q.id === id)
+  const question = formData1.value.questions.find(q => q.id === id)
 
   if (question) {
-    const newId = Math.max(...formData.value.questions.map(q => q.id)) + 1
+    const newId = Math.max(...formData1.value.questions.map(q => q.id)) + 1
 
     const newQuestion = {
       ...question,
@@ -316,11 +318,11 @@ function duplicateQuestion(id: number) {
       ...opt,
       id: index + 1,
     }))
-    formData.value.questions.push(newQuestion)
+    formData1.value.questions.push(newQuestion)
 
     // 强制更新视图
-    formData.value = {
-      ...formData.value,
+    formData1.value = {
+      ...formData1.value,
     }
   }
 }
@@ -329,7 +331,7 @@ function duplicateQuestion(id: number) {
  * 添加选项
  */
 function addOption(questionIndex: number) {
-  const question = formData.value.questions[questionIndex]
+  const question = formData1.value.questions[questionIndex]
 
   const newId = Math.max(...question.options.map(opt => opt.id)) + 1
 
@@ -340,8 +342,8 @@ function addOption(questionIndex: number) {
   })
 
   // 强制更新视图
-  formData.value = {
-    ...formData.value,
+  formData1.value = {
+    ...formData1.value,
   }
 }
 
@@ -349,7 +351,7 @@ function addOption(questionIndex: number) {
  * 删除选项
  */
 function deleteOption(questionIndex: number, optionId: number) {
-  const question = formData.value.questions[questionIndex]
+  const question = formData1.value.questions[questionIndex]
 
   question.options = question.options.filter(opt => opt.id !== optionId)
 
@@ -359,8 +361,8 @@ function deleteOption(questionIndex: number, optionId: number) {
   })
 
   // 强制更新视图
-  formData.value = {
-    ...formData.value,
+  formData1.value = {
+    ...formData1.value,
   }
 }
 
@@ -368,7 +370,7 @@ function deleteOption(questionIndex: number, optionId: number) {
  * 完成考试创建
  */
 function completeExam() {
-  console.log('完成考试创建', formData.value)
+  console.log('完成考试创建', formData1.value)
 
   // 这里可以添加提交逻辑
 }
@@ -379,29 +381,375 @@ const dateRange = ref<[string, string]>(['', ''])
 // 处理日期范围变化
 function handleDateRangeChange(val: [string, string] | null) {
   if (val) {
-    formData.value.examSettings.startTime = val[0]
-    formData.value.examSettings.endTime = val[1]
+    formData1.value.examSettings.startTime = val[0]
+    formData1.value.examSettings.endTime = val[1]
   }
   else {
-    formData.value.examSettings.startTime = ''
-    formData.value.examSettings.endTime = ''
+    formData1.value.examSettings.startTime = ''
+    formData1.value.examSettings.endTime = ''
   }
+}
+
+// / ///// ////////////////////////  2026-07-09---14:50---星期四  ////////////////////////
+/**
+ * 工作标签页 Store。
+ */
+const workTabStore = useWorkTabStore()
+
+/**
+ * 当前课程 ID
+ */
+const couId = computed(() => {
+  return Number(route.params.couId || 0)
+})
+
+/**
+ * 当前编辑的小节 ID
+ */
+const olId = computed(() => {
+  return Number(route.params.olId || 0)
+})
+
+/**
+ * 新增小节时所属的章节 ID；为空时表示课程直属小节。
+ */
+const olPID = computed(() => {
+  return Number(route.params.olPID || 0)
+})
+
+/**
+ * 是否为编辑模式
+ */
+const isEditMode = computed(() => {
+  return Boolean(olId.value)
+})
+
+/**
+ * 页面标题
+ */
+const pageTitle = computed(() => {
+  return isEditMode.value ? '编辑考试' : '添加考试'
+})
+
+/**
+ * 表格列配置
+ */
+const columns: ColumnOption<AdminApi.Question.QuestionEditorQuestion>[] = [
+  {
+    label: '题目名称',
+    prop: 'qusTitle',
+    slotName: 'qusTitle',
+    minWidth: 200,
+    useSlot: true,
+  },
+  {
+    label: '题目类型',
+    prop: 'qusType',
+    minWidth: 140,
+    useSlot: true,
+    sortable: true,
+  },
+
+  {
+    label: '难度',
+    prop: 'qusType',
+    slotName: 'qusType',
+    minWidth: 140,
+    useSlot: true,
+    sortable: true,
+  },
+  {
+    label: '分值',
+    prop: 'qusType',
+    slotName: 'qusType',
+    minWidth: 140,
+    useSlot: true,
+    sortable: true,
+  },
+]
+
+/**
+ * 加载状态
+ */
+const loading = ref(false)
+
+/**
+ * 是否显示文件选择弹窗
+ */
+const isShowExamSelectDialog = ref(false)
+
+/**
+ * 小节表单数据
+ */
+const formData = ref<AdminApi.Course.CourseOutlineSectionExamEditor>(createInitialFormData())
+
+/**
+ * 创建新增或编辑模式下的小节初始表单
+ */
+function createInitialFormData(): AdminApi.Course.CourseOutlineSectionExamEditor {
+  const baseFormData = {
+    couId: couId.value,
+    olName: '',
+    olIntro: '',
+    asId: 0,
+    olIsAccessory: 0,
+    attemptLimit: 10,
+    durationMinutes: 0,
+    endTime: '',
+    examIntro: '',
+    examType: 0,
+    isShowAnswer: 0,
+    isShowScore: 1,
+    passScore: 0,
+    retakeIntervalHours: 0,
+    score: 0,
+    startTime: '',
+
+    testPaperName: '',
+    testPaperType: 1,
+  } as const
+
+  if (isEditMode.value) {
+    return {
+      questions: [],
+      ...baseFormData,
+
+      olId: olId.value,
+    }
+  }
+
+  return {
+    questions: [],
+    ...baseFormData,
+
+    olPID: olPID.value || 0,
+    olLevel: olPID.value ? 2 : 1,
+  }
+}
+
+/**
+ * 获取小节详情
+ */
+async function getSectionDetail() {
+  loading.value = true
+  if (!olId.value) {
+    return
+  }
+
+  try {
+    const section = await fetchAdminCourseOutlineSectionExamDetail(olId.value)
+
+    formData.value = {
+      ...formData.value,
+      ...section,
+    }
+  }
+  catch {
+    ElNotification.error('获取小节详情失败')
+  }
+  finally {
+    loading.value = false
+  }
+}
+
+onMounted(() => {
+  if (isEditMode.value) {
+    void getSectionDetail()
+  }
+})
+
+const COURSE_OUTLINE_PATH = '/admin/course/outline'
+
+/**
+ * 返回课程大纲页。
+ */
+function backToCourseOutline() {
+  router.push({
+    path: COURSE_OUTLINE_PATH,
+  })
+}
+
+// / ////////////////////////  2026-07-09---15:58---星期四  ////////////////////////
+/**
+ * 请求参数
+ */
+const params = ref<AdminApi.Course.CourseOutlineSectionExamQuestionListParams>({
+  pageSize: 10,
+  currentPage: 1,
+  qbIds: [],
+})
+
+/**
+ * 表格数据
+ */
+const table = ref<AdminApi.Course.CourseOutlineSectionExamQuestionListResponse>({
+  rows: [],
+  totals: 0,
+})
+
+/**
+ * 分页配置
+ */
+const pagination = computed(() => ({
+  current: params.value.currentPage,
+  size: params.value.pageSize,
+  total: table.value.totals,
+}))
+
+/**
+ * 选择表格行
+ */
+function handleTableCurrentChange(row?: AdminApi.Question.QuestionEditorQuestion) {
+}
+
+/**
+ * 每页条数变化
+ */
+function handleSizeChange(size: number) {
+  params.value.pageSize = size
+  params.value.currentPage = 1
+
+  // clearSelectedFile()
+  void getTable()
+}
+
+/**
+ * 当前页变化
+ */
+function handleCurrentChange(currentPage: number) {
+  params.value.currentPage = currentPage
+
+  // clearSelectedFile()
+  void getTable()
+}
+
+/**
+ * 获取表格数据
+ */
+async function getTable() {
+  loading.value = true
+
+  try {
+    table.value = await fetchAdminCourseOutlineSectionExamQuestionList(params.value)
+  }
+  finally {
+    loading.value = false
+  }
+}
+
+const questionBankList = ref<AdminApi.Course.CourseOutlineSectionExamQuestionBankItem[]>([])
+
+/**
+   *  获取题库下拉列表
+   */
+async function getQuestionBankList() {
+  try {
+    questionBankList.value = await fetchAdminCourseOutlineSectionExamQuestionBank()
+
+    console.log('题库下拉列表', questionBankList)
+  }
+  catch {
+    ElNotification.error('获取题库下拉列表失败')
+  }
+}
+
+/**
+ * 打开表格弹窗
+ */
+async function handleOpenTableDialog() {
+  await getQuestionBankList()
+  await getTable()
+  isShowExamSelectDialog.value = true
 }
 
 </script>
 
 <template>
   <div
-    class="h-full"
+    class="mx-auto mb-10 flex w-full max-w-7xl flex-col gap-4 px-10 max-lg:px-6 max-sm:px-4"
   >
-    <!-- 从题库添加弹窗 -->
-    <SelectFromQuestionBankDialog
-      v-if="isShowSelectFromQuestionBankDialog"
-      v-model="isShowSelectFromQuestionBankDialog"
-    />
+    <el-dialog
+      v-if="isShowExamSelectDialog"
+      v-model="isShowExamSelectDialog"
+      title="从题库选题"
+      width="50%"
+      :show-close="false"
+    >
+      <div
+        class="flex justify-between items-center"
+      >
+
+        <div
+          class="flex gap-2 items-center"
+        >
+
+          <ArtButton
+            type="primary"
+          >
+            保存
+          </ArtButton>
+        </div>
+      </div>
+      <!-- 文档表格 -->
+      <ArtTable
+        class="max-h-[calc(100vh-400px)] overflow-auto"
+        :loading="loading"
+        :data="table.rows"
+        :columns="columns"
+        :pagination="pagination"
+        row-key="asId"
+        highlight-current-row
+        @current-change="handleTableCurrentChange"
+        @pagination:size-change="handleSizeChange"
+        @pagination:current-change="handleCurrentChange"
+      >
+        <template
+          #fileName="{ row }"
+        >
+          <div
+            class="min-w-0 flex items-center gap-2"
+          >
+            <div
+              class=""
+            >
+              <ArtPreviewImage
+                :path="row.asThumbnailPath"
+                class="w-15 h-20"
+              />
+            </div>
+
+            <div
+              class="truncate text-sm font-medium text-g-900"
+            >
+              {{ row.asName || '-' }}
+            </div>
+
+          </div>
+        </template>
+
+        <template
+          #createTime="{ row }"
+        >
+          <span>
+            {{ formatDateTime(row.createTime) }}
+          </span>
+        </template>
+
+        <template
+          #fileSize="{ row }"
+        >
+          <span
+            class="text-base text-g-900"
+          >
+            {{ fileSizeFormat(row.asSize) }}
+          </span>
+        </template>
+      </ArtTable>
+    </el-dialog>
 
     <AdminPageHeader
-      title="创建考试"
+      :title="pageTitle"
+      @back="backToCourseOutline"
     >
       <template
         #extra
@@ -430,7 +778,7 @@ function handleDateRangeChange(val: [string, string] | null) {
           <div
             class=""
           >
-            问题总数 {{ formData.questions.length }}
+            问题总数 {{ formData1.questions.length }}
           </div>
 
           <div
@@ -441,7 +789,7 @@ function handleDateRangeChange(val: [string, string] | null) {
         </div>
 
         <el-form
-          :model="formData"
+          :model="formData1"
           label-position="top"
         >
           <el-form-item
@@ -451,14 +799,14 @@ function handleDateRangeChange(val: [string, string] | null) {
             class="mb-10"
           >
             <el-input
-              v-model="formData.title"
+              v-model="formData1.title"
               placeholder="请输入考试名称"
             />
           </el-form-item>
 
           <!-- 问题列表 -->
           <div
-            v-for="(item, index) in formData.questions"
+            v-for="(item, index) in formData1.questions"
             :key="item.id"
             class="mb-6 border rounded-lg p-4"
           >
@@ -678,7 +1026,7 @@ function handleDateRangeChange(val: [string, string] | null) {
 
             <el-button
               type="info"
-              @click="isShowSelectFromQuestionBankDialog = true"
+              @click="handleOpenTableDialog"
             >
               从题库添加
             </el-button>
@@ -695,7 +1043,7 @@ function handleDateRangeChange(val: [string, string] | null) {
           class="mt-5 border rounded-3 p-6"
         >
           <el-form
-            :model="formData.examSettings"
+            :model="formData1.examSettings"
             label-width="150px"
             class="space-y-4"
           >
@@ -704,7 +1052,7 @@ function handleDateRangeChange(val: [string, string] | null) {
               label="考试时间（分钟）"
             >
               <el-input-number
-                v-model="formData.examSettings.duration"
+                v-model="formData1.examSettings.duration"
                 :min="1"
                 :max="360"
                 class="w-40"
@@ -716,14 +1064,14 @@ function handleDateRangeChange(val: [string, string] | null) {
               label="考试次数限制"
             >
               <el-input-number
-                v-model="formData.examSettings.attemptLimit"
+                v-model="formData1.examSettings.attemptLimit"
                 :min="1"
                 :max="10"
                 class="w-40"
               />
 
               <el-checkbox
-                v-model="formData.examSettings.allowRetake"
+                v-model="formData1.examSettings.allowRetake"
                 class="ml-4"
               >
                 允许重复考试
@@ -735,7 +1083,7 @@ function handleDateRangeChange(val: [string, string] | null) {
               label="考试通过分数"
             >
               <el-input-number
-                v-model="formData.examSettings.passingScore"
+                v-model="formData1.examSettings.passingScore"
                 :min="0"
                 :max="100"
                 class="w-40"
@@ -766,7 +1114,7 @@ function handleDateRangeChange(val: [string, string] | null) {
               label="考试说明"
             >
               <el-input
-                v-model="formData.examSettings.description"
+                v-model="formData1.examSettings.description"
                 type="textarea"
                 :rows="3"
                 placeholder="请输入考试说明"
@@ -779,7 +1127,7 @@ function handleDateRangeChange(val: [string, string] | null) {
               label="考试规则"
             >
               <el-input
-                v-model="formData.examSettings.rules"
+                v-model="formData1.examSettings.rules"
                 type="textarea"
                 :rows="3"
                 placeholder="请输入考试规则"
@@ -795,13 +1143,13 @@ function handleDateRangeChange(val: [string, string] | null) {
                 class="flex items-center gap-4"
               >
                 <el-checkbox
-                  v-model="formData.examSettings.showAnswers"
+                  v-model="formData1.examSettings.showAnswers"
                 >
                   显示答案
                 </el-checkbox>
 
                 <el-checkbox
-                  v-model="formData.examSettings.showExplanations"
+                  v-model="formData1.examSettings.showExplanations"
                 >
                   显示解析
                 </el-checkbox>
@@ -816,19 +1164,19 @@ function handleDateRangeChange(val: [string, string] | null) {
                 class="flex items-center gap-4"
               >
                 <el-checkbox
-                  v-model="formData.examSettings.antiCheat.disableCopy"
+                  v-model="formData1.examSettings.antiCheat.disableCopy"
                 >
                   禁止复制粘贴
                 </el-checkbox>
 
                 <el-checkbox
-                  v-model="formData.examSettings.antiCheat.disableWindowSwitch"
+                  v-model="formData1.examSettings.antiCheat.disableWindowSwitch"
                 >
                   禁止切换窗口
                 </el-checkbox>
 
                 <el-checkbox
-                  v-model="formData.examSettings.antiCheat.enableCamera"
+                  v-model="formData1.examSettings.antiCheat.enableCamera"
                 >
                   开启摄像头监控
                 </el-checkbox>
@@ -843,19 +1191,19 @@ function handleDateRangeChange(val: [string, string] | null) {
                 class="flex items-center gap-4"
               >
                 <el-checkbox
-                  v-model="formData.examSettings.notification.notifyStudent"
+                  v-model="formData1.examSettings.notification.notifyStudent"
                 >
                   通知考生
                 </el-checkbox>
 
                 <el-checkbox
-                  v-model="formData.examSettings.notification.notifyTeacher"
+                  v-model="formData1.examSettings.notification.notifyTeacher"
                 >
                   通知教师
                 </el-checkbox>
 
                 <el-checkbox
-                  v-model="formData.examSettings.notification.notifyAdmin"
+                  v-model="formData1.examSettings.notification.notifyAdmin"
                 >
                   通知管理员
                 </el-checkbox>
@@ -870,13 +1218,13 @@ function handleDateRangeChange(val: [string, string] | null) {
                 class="flex items-center gap-4"
               >
                 <el-checkbox
-                  v-model="formData.examSettings.analytics.enable"
+                  v-model="formData1.examSettings.analytics.enable"
                 >
                   启用数据分析
                 </el-checkbox>
 
                 <el-select
-                  v-model="formData.examSettings.analytics.dimensions"
+                  v-model="formData1.examSettings.analytics.dimensions"
                   multiple
                   placeholder="选择分析维度"
                   class="w-64"
@@ -912,37 +1260,37 @@ function handleDateRangeChange(val: [string, string] | null) {
                 class="grid grid-cols-2 gap-4"
               >
                 <el-checkbox
-                  v-model="formData.examSettings.other.allowResume"
+                  v-model="formData1.examSettings.other.allowResume"
                 >
                   允许断点续考
                 </el-checkbox>
 
                 <el-checkbox
-                  v-model="formData.examSettings.other.randomQuestions"
+                  v-model="formData1.examSettings.other.randomQuestions"
                 >
                   随机出题
                 </el-checkbox>
 
                 <el-checkbox
-                  v-model="formData.examSettings.other.randomOrder"
+                  v-model="formData1.examSettings.other.randomOrder"
                 >
                   题目乱序
                 </el-checkbox>
 
                 <el-checkbox
-                  v-model="formData.examSettings.other.randomOptions"
+                  v-model="formData1.examSettings.other.randomOptions"
                 >
                   选项乱序
                 </el-checkbox>
 
                 <el-checkbox
-                  v-model="formData.examSettings.other.showCountdown"
+                  v-model="formData1.examSettings.other.showCountdown"
                 >
                   显示倒计时
                 </el-checkbox>
 
                 <el-checkbox
-                  v-model="formData.examSettings.other.autoSubmit"
+                  v-model="formData1.examSettings.other.autoSubmit"
                 >
                   自动提交
                 </el-checkbox>
@@ -952,10 +1300,6 @@ function handleDateRangeChange(val: [string, string] | null) {
         </div>
       </el-tab-pane>
     </el-tabs>
-
-    <div
-      class="h-20"
-    />
   </div>
 </template>
 
