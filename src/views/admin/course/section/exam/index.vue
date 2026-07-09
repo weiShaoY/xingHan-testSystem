@@ -682,6 +682,19 @@ async function handleOpenTableDialog() {
         <div
           class="flex gap-2 items-center"
         >
+          <el-select
+            v-model="params.qbIds"
+            :placeholder="`${params.qbIds.length ? '' : '所有题库'} `"
+            style="width: 240px"
+            multiple
+          >
+            <el-option
+              v-for="item in questionBankList"
+              :key="item.couId"
+              :label="item.qbName"
+              :value="item.qbId"
+            />
+          </el-select>
 
           <ArtButton
             type="primary"

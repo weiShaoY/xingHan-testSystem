@@ -238,7 +238,7 @@ export function fetchAdminCourseOutlineSectionExamUpdate(data: AdminApi.Course.C
  *  获取题库下拉列表
  */
 export function fetchAdminCourseOutlineSectionExamQuestionBank() {
-  return request.get<AdminApi.Question.CourseOutlineSectionExamQuestionBankItem[]>({
+  return request.get<AdminApi.Course.CourseOutlineSectionExamQuestionBankItem[]>({
     url: '/admin/testpaper/getQuestionBank',
   })
 }
