@@ -176,3 +176,58 @@ export function fetchAdminCourseOutlineSectionVideoAdd(data: AdminApi.Course.Cou
     data,
   })
 }
+
+/**
+ *  获取视频小节
+ *  @param olId 小节ID
+ */
+export function fetchAdminCourseOutlineSectionVideoDetail(olId: number) {
+  return request.get<AdminApi.Course.CourseOutlineSectionVideoEditor>({
+    url: '/admin/video/getVideoSection',
+    params: {
+      olId,
+    },
+  })
+}
+
+/**
+ *  修改视频小节
+ */
+export function fetchAdminCourseOutlineSectionVideoUpdate(data: AdminApi.Course.CourseOutlineSectionVideoEditor) {
+  return request.post<boolean>({
+    url: '/admin/video/updateVideoSection',
+    data,
+  })
+}
+
+/**
+ *  新增问卷小节
+ */
+export function fetchAdminCourseOutlineSectionQuestionAdd(data: AdminApi.Course.CourseOutlineSectionQuestionEditor) {
+  return request.post<boolean>({
+    url: '/admin/questionpaper/addQuestionPaper',
+    data,
+  })
+}
+
+/**
+ *  获取问卷小节
+ */
+export function fetchAdminCourseOutlineSectionQuestionDetail(olId: number) {
+  return request.get<AdminApi.Course.CourseOutlineSectionQuestionEditor>({
+    url: '/admin/questionpaper/getQuestionPaper',
+    params: {
+      olId,
+    },
+  })
+}
+
+/**
+ *  修改问卷小节
+ */
+export function fetchAdminCourseOutlineSectionQuestionUpdate(data: AdminApi.Course.CourseOutlineSectionQuestionEditor) {
+  return request.post<boolean>({
+    url: '/admin/questionpaper/updateQuestionPaper',
+    data,
+  })
+}

@@ -127,12 +127,12 @@ const pagination = computed(() => ({
 /**
  * 小节表单数据
  */
-const formData = ref<AdminApi.Course.CourseOutlineSectionEditor>(createInitialFormData())
+const formData = ref<AdminApi.Course.CourseOutlineSectionVideoEditor>(createInitialFormData())
 
 /**
  * 创建新增或编辑模式下的小节初始表单
  */
-function createInitialFormData(): AdminApi.Course.CourseOutlineSectionEditor {
+function createInitialFormData(): AdminApi.Course.CourseOutlineSectionVideoEditor {
   const baseFormData = {
     couId: couId.value,
     olName: '',
@@ -186,7 +186,7 @@ async function getSectionDetail() {
   }
 
   try {
-    const section = await fetchAdminCourseOutlineSectionDetail(olId.value)
+    const section = await fetchAdminCourseOutlineSectionVideoDetail(olId.value)
 
     formData.value = {
       ...formData.value,
@@ -284,11 +284,11 @@ async function handleSubmit() {
 
   try {
     if (isEditMode.value) {
-      await fetchAdminCourseOutlineSectionUpdate(formData.value)
+      await fetchAdminCourseOutlineSectionVideoUpdate(formData.value)
       ElNotification.success('小节更新成功')
     }
     else {
-      await fetchAdminCourseOutlineSectionAdd(formData.value)
+      await fetchAdminCourseOutlineSectionVideoAdd(formData.value)
       ElNotification.success('小节创建成功')
     }
 
