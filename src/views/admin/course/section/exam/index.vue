@@ -2,27 +2,54 @@
 <script lang="ts" setup>
 import type { ColumnOption } from '@/types'
 
-import { computed, ref } from 'vue'
+import {
+  computed,
+  h,
+  ref,
+} from 'vue'
+
+import { useTable } from '@/hooks'
 
 const route = useRoute()
 
 const router = useRouter()
 
+// ==================== Constants ====================
+
+/** 课程大纲页路由 */
+const COURSE_OUTLINE_PATH = '/admin/course/outline'
+
+/** 当前激活的页签 */
 const activeTab = ref<'edit' | 'setting'>('edit')
 
+// ==================== Types ====================
+
+/** 支持的题目类型 */
 type QuestionType = 1 | 2
+
+/** 支持的题目难度 */
 type QuestionDifficulty = 1 | 2 | 3
+
+/** 题目选项类型 */
 type QuestionOption = AdminApi.Question.QuestionItem
+
+/** 题库列表项类型 */
 type QuestionListItem = AdminApi.Question.QuestionEditorQuestion
+
+/** 页面内部使用的题目结构，补充了前端生成的 clientId */
 type ExamQuestion = Omit<QuestionListItem, 'qusType'> & {
   clientId: string
   qusType: QuestionType
 }
+
+/** 考试编辑表单结构 */
 type ExamEditorForm = Omit<AdminApi.Course.CourseOutlineSectionExamEditor, 'questions'> & {
   questions: ExamQuestion[]
 }
 
 const workTabStore = useWorkTabStore()
+
+// ==================== Route Derived State ====================
 
 /**
  * 当前课程 ID
@@ -59,10 +86,12 @@ const pageTitle = computed(() => {
   return isEditMode.value ? '编辑考试' : '添加考试'
 })
 
+// ==================== UI State ====================
+
 /**
  * 加载状态
  */
-const loading = ref(false)
+const pageLoading = ref(false)
 
 /**
  * 是否显示题库弹窗
@@ -72,23 +101,6 @@ const isShowExamSelectDialog = ref(false)
 /**
  * 题库列表请求参数
  */
-const params = ref<AdminApi.Course.CourseOutlineSectionExamQuestionListParams>({
-  pageSize: 10,
-  currentPage: 1,
-  qbIds: [],
-})
-
-/**
- * 题库列表数据
- */
-const table = ref<AdminApi.Course.CourseOutlineSectionExamQuestionListResponse>({
-  rows: [],
-  totals: 0,
-})
-
-/**
- * 题库下拉列表
- */
 const questionBankList = ref<AdminApi.Course.CourseOutlineSectionExamQuestionBankItem[]>([])
 
 /**
@@ -97,21 +109,16 @@ const questionBankList = ref<AdminApi.Course.CourseOutlineSectionExamQuestionBan
 const selectedBankQuestions = ref<QuestionListItem[]>([])
 
 /**
- * 分页配置
- */
-const pagination = computed(() => ({
-  current: params.value.currentPage,
-  size: params.value.pageSize,
-  total: table.value.totals,
-}))
-
-/**
  * 小节表单数据
  */
 const formData = ref<ExamEditorForm>(createInitialFormData())
 
+// ==================== Static Options ====================
+
+/** 选项标签序列，如 A、B、C、D */
 const optionLabels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
 
+/** 题型选项 */
 const questionTypes: { label: string, value: QuestionType }[] = [
   {
     label: '单选题',
@@ -123,6 +130,7 @@ const questionTypes: { label: string, value: QuestionType }[] = [
   },
 ]
 
+/** 难度选项 */
 const diffOptions: { label: string, value: QuestionDifficulty }[] = [
   {
     label: '简单',
@@ -138,6 +146,7 @@ const diffOptions: { label: string, value: QuestionDifficulty }[] = [
   },
 ]
 
+/** 题目操作菜单 */
 const questionActions = [
   {
     label: '移动',
@@ -153,38 +162,128 @@ const questionActions = [
   },
 ]
 
+/** 当前正在移动的题目 clientId */
 const movingQuestionId = ref('')
 
-const columns: ColumnOption<QuestionListItem>[] = [
-  {
-    label: '题目名称',
-    prop: 'qusTitle',
-    slotName: 'qusTitle',
-    minWidth: 260,
-    useSlot: true,
+// ==================== Display Helpers ====================
+
+/**
+ * 获取题型显示文案。
+ * @param type 题型值
+ */
+function getQuestionTypeLabel(type: number) {
+  return type === 1 ? '单选题' : type === 2 ? '多选题' : '其他题型'
+}
+
+/**
+ * 获取题型标签类型。
+ * @param type 题型值
+ */
+function getQuestionTypeTagType(type: number) {
+  return type === 1 ? 'primary' : type === 2 ? 'success' : 'info'
+}
+
+/**
+ * 获取难度显示文案。
+ * @param diff 难度值
+ */
+function getDiffLabel(diff: number) {
+  return diff === 1 ? '简单' : diff === 2 ? '中等' : '困难'
+}
+
+/**
+ * 获取难度标签类型。
+ * @param diff 难度值
+ */
+function getDiffTagType(diff: number) {
+  return diff === 1 ? 'success' : diff === 2 ? 'warning' : 'danger'
+}
+
+/**
+ * 构建题库弹窗表格列配置。
+ */
+function createQuestionTableColumns(): ColumnOption<QuestionListItem>[] {
+  return [
+    {
+      label: '序号',
+      type: 'globalIndex',
+      width: 60,
+      visible: true,
+    },
+    {
+      label: '题目名称',
+      prop: 'qusTitle',
+      minWidth: 260,
+    },
+    {
+      label: '题型',
+      prop: 'qusType',
+      width: 100,
+      formatter: (row) => {
+        return h(ElTag, {
+          type: getQuestionTypeTagType(row.qusType),
+          size: 'small',
+        }, () => getQuestionTypeLabel(row.qusType))
+      },
+    },
+    {
+      label: '难度',
+      prop: 'qusDiff',
+      width: 100,
+      formatter: (row) => {
+        return h(ElTag, {
+          type: getDiffTagType(row.qusDiff),
+          size: 'small',
+        }, () => getDiffLabel(row.qusDiff))
+      },
+    },
+    {
+      label: '分数',
+      prop: 'qusScore',
+      width: 100,
+    },
+  ]
+}
+
+// ==================== Table State ====================
+
+/** 题库弹窗表格数据与分页逻辑 */
+const {
+  columns,
+  data: tableData,
+  loading: tableLoading,
+  pagination: tablePagination,
+  searchParams,
+  getData,
+  replaceSearchParams,
+  handleSizeChange: handleTableSizeChange,
+  handleCurrentChange: handleTableCurrentChange,
+} = useTable({
+  core: {
+    apiFn: fetchAdminCourseOutlineSectionExamQuestionList,
+    apiParams: {
+      pageSize: 10,
+      currentPage: 1,
+      qbIds: [],
+    },
+    immediate: false,
+    paginationKey: {
+      current: 'currentPage',
+      size: 'pageSize',
+    },
+    columnsFactory: createQuestionTableColumns,
   },
-  {
-    label: '题目类型',
-    prop: 'qusType',
-    slotName: 'qusType',
-    minWidth: 120,
-    useSlot: true,
+  hooks: {
+    onError: () => {
+      ElNotification.error('获取题目列表失败')
+    },
   },
-  {
-    label: '难度',
-    prop: 'qusDiff',
-    slotName: 'qusDiff',
-    minWidth: 100,
-    useSlot: true,
-  },
-  {
-    label: '分值',
-    prop: 'qusScore',
-    slotName: 'qusScore',
-    minWidth: 100,
-    useSlot: true,
-  },
-]
+})
+
+/** 兼容模板中对 params 的既有用法 */
+const params = searchParams
+
+// ==================== Computed State ====================
 
 /**
  * 考试总分
@@ -202,6 +301,7 @@ const examStats = computed(() => {
     `总分 ${totalScore.value}`,
     `单选 ${formData.value.questions.filter(question => question.qusType === 1).length}`,
     `多选 ${formData.value.questions.filter(question => question.qusType === 2).length}`,
+    `当前满分 ${totalScore.value} 分`,
   ]
 })
 
@@ -264,6 +364,9 @@ function createInitialFormData(): ExamEditorForm {
   }
 }
 
+/**
+ * 生成前端临时题目 ID，用于拖拽、复制等本地交互。
+ */
 function createClientId() {
   const randomValue = Math.random().toString(36)
 
@@ -272,6 +375,11 @@ function createClientId() {
   return `${Date.now()}-${randomId}`
 }
 
+/**
+ * 创建一个默认题目选项。
+ * @param ansContext 选项内容
+ * @param ansIsCorrect 是否为正确答案
+ */
 function createOption(ansContext = '', ansIsCorrect = false): QuestionOption {
   return {
     ansContext,
@@ -279,6 +387,10 @@ function createOption(ansContext = '', ansIsCorrect = false): QuestionOption {
   }
 }
 
+/**
+ * 创建一个默认题目。
+ * @param type 题目类型，默认单选题
+ */
 function createQuestion(type: QuestionType = 1): ExamQuestion {
   return {
     clientId: createClientId(),
@@ -296,10 +408,18 @@ function createQuestion(type: QuestionType = 1): ExamQuestion {
   }
 }
 
+/**
+ * 判断接口题型是否属于当前页面支持的题型。
+ * @param type 接口返回的题型值
+ */
 function isSupportedQuestionType(type: AdminApi.Question.QuestionEditorQuestion['qusType']): type is QuestionType {
   return type === 1 || type === 2
 }
 
+/**
+ * 将接口返回的题目结构标准化为页面内部结构。
+ * @param question 原始题目数据
+ */
 function normalizeQuestion(question: AdminApi.Question.QuestionEditorQuestion): ExamQuestion {
   const qusType = isSupportedQuestionType(question.qusType) ? question.qusType : 1
 
@@ -330,6 +450,10 @@ function normalizeQuestion(question: AdminApi.Question.QuestionEditorQuestion): 
   return normalizedQuestion
 }
 
+/**
+ * 将接口返回的考试详情标准化为页面表单结构。
+ * @param data 原始考试详情
+ */
 function normalizeFormData(data: AdminApi.Course.CourseOutlineSectionExamEditor): ExamEditorForm {
   const questions = (data.questions ?? [])
     .filter(question => isSupportedQuestionType(question.qusType))
@@ -342,32 +466,37 @@ function normalizeFormData(data: AdminApi.Course.CourseOutlineSectionExamEditor)
   }
 }
 
+/**
+ * 根据选项索引生成展示标签。
+ * @param index 选项索引
+ */
 function getOptionLabel(index: number) {
   return optionLabels[index] ?? `${index + 1}`
 }
 
-function getQuestionTypeLabel(type: number) {
-  return type === 1 ? '单选题' : type === 2 ? '多选题' : '其他题型'
-}
-
-function getDiffLabel(diff: number) {
-  return diff === 1 ? '简单' : diff === 2 ? '中等' : diff === 3 ? '困难' : '-'
-}
-
-function getDiffTagType(diff: number) {
-  return diff === 1 ? 'success' : diff === 2 ? 'warning' : 'danger'
-}
-
+/**
+ * 获取多选题所有正确答案的索引。
+ * @param question 当前题目
+ */
 function getCorrectOptionIndexes(question: ExamQuestion) {
   return question.qusItems
     .map((option, index) => option.ansIsCorrect ? index : -1)
     .filter(index => index !== -1)
 }
 
+/**
+ * 获取单选题当前正确答案索引。
+ * @param question 当前题目
+ */
 function getCorrectSingleOptionIndex(question: ExamQuestion) {
   return getCorrectOptionIndexes(question)[0]
 }
 
+/**
+ * 设置单选题的正确答案。
+ * @param question 当前题目
+ * @param optionIndex 选中的选项索引
+ */
 function setCorrectSingleOption(question: ExamQuestion, optionIndex: number | string) {
   const selectedIndex = Number(optionIndex)
 
@@ -376,6 +505,11 @@ function setCorrectSingleOption(question: ExamQuestion, optionIndex: number | st
   })
 }
 
+/**
+ * 设置多选题的正确答案。
+ * @param question 当前题目
+ * @param optionIndexes 选中的选项索引列表
+ */
 function setCorrectMultipleOptions(question: ExamQuestion, optionIndexes: Array<number | string>) {
   const selectedIndexes = optionIndexes.map(Number)
 
@@ -384,6 +518,11 @@ function setCorrectMultipleOptions(question: ExamQuestion, optionIndexes: Array<
   })
 }
 
+/**
+ * 保证题型与答案状态一致。
+ * 单选题只允许保留一个正确答案，并补足最少选项数量。
+ * @param question 当前题目
+ */
 function ensureQuestionTypeConsistency(question: ExamQuestion) {
   if (!question.qusItems?.length) {
     question.qusItems = [
@@ -414,10 +553,15 @@ function ensureQuestionTypeConsistency(question: ExamQuestion) {
   })
 }
 
+/** 追加一条新题目。 */
 function addQuestion() {
   formData.value.questions.push(createQuestion())
 }
 
+/**
+ * 复制指定题目，并清空后端主键，保留题干和选项内容。
+ * @param question 被复制的题目
+ */
 function copyQuestion(question: ExamQuestion) {
   formData.value.questions.push({
     clientId: createClientId(),
@@ -436,6 +580,10 @@ function copyQuestion(question: ExamQuestion) {
   })
 }
 
+/**
+ * 删除指定题目，至少保留一题。
+ * @param questionIndex 题目索引
+ */
 function deleteQuestion(questionIndex: number) {
   if (formData.value.questions.length <= 1) {
     ElNotification.warning('至少保留一道题目')
@@ -445,14 +593,23 @@ function deleteQuestion(questionIndex: number) {
   formData.value.questions.splice(questionIndex, 1)
 }
 
+/**
+ * 进入题目移动状态。
+ * @param questionIndex 题目索引
+ */
 function moveQuestion(questionIndex: number) {
   movingQuestionId.value = formData.value.questions[questionIndex]?.clientId ?? ''
 }
 
+/** 取消题目移动状态。 */
 function cancelMoveQuestion() {
   movingQuestionId.value = ''
 }
 
+/**
+ * 将当前移动中的题目插入到目标位置之后。
+ * @param targetIndex 目标题目索引
+ */
 function moveQuestionTo(targetIndex: number) {
   if (!movingQuestionId.value) {
     return
@@ -473,6 +630,12 @@ function moveQuestionTo(targetIndex: number) {
   cancelMoveQuestion()
 }
 
+/**
+ * 统一处理题目操作菜单行为。
+ * @param action 操作类型
+ * @param question 当前题目
+ * @param questionIndex 当前题目索引
+ */
 function handleQuestionAction(action: string, question: ExamQuestion, questionIndex: number) {
   if (action === 'move') {
     moveQuestion(questionIndex)
@@ -487,12 +650,22 @@ function handleQuestionAction(action: string, question: ExamQuestion, questionIn
   }
 }
 
+/**
+ * 在指定位置后插入一个选项；未指定位置时追加到末尾。
+ * @param question 当前题目
+ * @param index 当前选项索引
+ */
 function addOption(question: ExamQuestion, index?: number) {
   const insertIndex = typeof index === 'number' ? index + 1 : question.qusItems.length
 
   question.qusItems.splice(insertIndex, 0, createOption())
 }
 
+/**
+ * 删除指定选项，至少保留两个选项。
+ * @param question 当前题目
+ * @param index 选项索引
+ */
 function removeOption(question: ExamQuestion, index: number) {
   if (question.qusItems.length <= 2) {
     ElNotification.warning('每道题至少保留两个选项')
@@ -502,6 +675,10 @@ function removeOption(question: ExamQuestion, index: number) {
   question.qusItems.splice(index, 1)
 }
 
+/**
+ * 校验整个考试表单数据。
+ * 包括试卷标题、题目内容、选项内容、分值和正确答案约束。
+ */
 function validateFormData() {
   if (!formData.value.testPaperName.trim()) {
     ElNotification.warning('请输入考试标题')
@@ -552,6 +729,9 @@ function validateFormData() {
   return true
 }
 
+/**
+ * 生成提交给后端的考试数据。
+ */
 function createSubmitData(): AdminApi.Course.CourseOutlineSectionExamEditor {
   return {
     ...formData.value,
@@ -585,7 +765,7 @@ async function getSectionDetail() {
     return
   }
 
-  loading.value = true
+  pageLoading.value = true
 
   try {
     const section = await fetchAdminCourseOutlineSectionExamDetail(olId.value)
@@ -596,7 +776,7 @@ async function getSectionDetail() {
     ElNotification.error('获取考试详情失败')
   }
   finally {
-    loading.value = false
+    pageLoading.value = false
   }
 }
 
@@ -613,51 +793,59 @@ async function getQuestionBankList() {
 }
 
 /**
- * 获取题目列表
+ * 打开题库弹窗并加载题库与题目列表。
  */
-async function getTable() {
-  loading.value = true
-
-  try {
-    table.value = await fetchAdminCourseOutlineSectionExamQuestionList(params.value)
-  }
-  catch {
-    ElNotification.error('获取题目列表失败')
-  }
-  finally {
-    loading.value = false
-  }
-}
-
 async function handleOpenTableDialog() {
   selectedBankQuestions.value = []
   isShowExamSelectDialog.value = true
   await getQuestionBankList()
-  await getTable()
+  replaceSearchParams({
+    ...searchParams,
+    currentPage: 1,
+  })
+  await getData()
 }
 
+/**
+ * 记录题库弹窗中当前选中的题目。
+ * @param rows 当前选中行
+ */
 function handleTableSelectionChange(rows: QuestionListItem[]) {
   selectedBankQuestions.value = rows
 }
 
+/** 按当前筛选条件重新查询题库题目列表。 */
 function handleSearch() {
-  params.value.currentPage = 1
-  void getTable()
-}
-
-function handleSizeChange(size: number) {
-  params.value.pageSize = size
-  params.value.currentPage = 1
   selectedBankQuestions.value = []
-  void getTable()
+  replaceSearchParams({
+    ...searchParams,
+    currentPage: 1,
+  })
+  void getData()
 }
 
-function handleCurrentChange(currentPage: number) {
-  params.value.currentPage = currentPage
+/**
+ * 处理题库弹窗分页大小变化。
+ * @param size 每页条数
+ */
+async function handleSizeChange(size: number) {
   selectedBankQuestions.value = []
-  void getTable()
+  await handleTableSizeChange(size)
 }
 
+/**
+ * 处理题库弹窗页码变化。
+ * @param currentPage 当前页码
+ */
+async function handleCurrentChange(currentPage: number) {
+  selectedBankQuestions.value = []
+  await handleTableCurrentChange(currentPage)
+}
+
+/**
+ * 将题库题目追加到当前试卷，并自动过滤重复题目。
+ * @param questions 选中的题库题目
+ */
 function appendQuestions(questions: QuestionListItem[]) {
   const existingQuestionIds = new Set(
     formData.value.questions
@@ -684,6 +872,7 @@ function appendQuestions(questions: QuestionListItem[]) {
   ElNotification.success(`已添加 ${normalizedQuestions.length} 道题目`)
 }
 
+/** 确认将题库弹窗中的所选题目添加到试卷。 */
 function confirmSelectQuestions() {
   if (!selectedBankQuestions.value.length) {
     ElNotification.warning('请先选择题目')
@@ -698,7 +887,7 @@ function confirmSelectQuestions() {
  * 提交小节
  */
 async function handleSubmit() {
-  if (loading.value) {
+  if (pageLoading.value) {
     return
   }
 
@@ -706,7 +895,7 @@ async function handleSubmit() {
     return
   }
 
-  loading.value = true
+  pageLoading.value = true
 
   try {
     const submitData = createSubmitData()
@@ -727,18 +916,18 @@ async function handleSubmit() {
     ElNotification.error(isEditMode.value ? '考试更新失败' : '考试创建失败')
   }
   finally {
-    loading.value = false
+    pageLoading.value = false
   }
 }
 
-const COURSE_OUTLINE_PATH = '/admin/course/outline'
-
+/** 返回课程大纲页。 */
 function backToCourseOutline() {
   router.push({
     path: COURSE_OUTLINE_PATH,
   })
 }
 
+/** 页面初始化：编辑模式拉取详情，新增模式标准化默认表单。 */
 onMounted(() => {
   if (isEditMode.value) {
     void getSectionDetail()
@@ -773,6 +962,7 @@ onMounted(() => {
             collapse-tags-tooltip
             placeholder="筛选题库"
             style="width: 320px"
+            @change="handleSearch"
           >
             <el-option
               v-for="item in questionBankList"
@@ -781,14 +971,6 @@ onMounted(() => {
               :value="item.qbId"
             />
           </el-select>
-
-          <ArtButton
-            type="primary"
-            :loading="loading"
-            @click="handleSearch"
-          >
-            查询
-          </ArtButton>
         </div>
 
         <div
@@ -800,72 +982,15 @@ onMounted(() => {
 
       <ArtTable
         class="max-h-[calc(100vh-360px)] overflow-auto"
-        :loading="loading"
-        :data="table.rows"
+        :loading="tableLoading"
+        :data="tableData"
         :columns="columns"
-        :pagination="pagination"
-        row-key="qusId"
+        :pagination="tablePagination"
+        row-key="qusID"
         @selection-change="handleTableSelectionChange"
         @pagination:size-change="handleSizeChange"
         @pagination:current-change="handleCurrentChange"
-      >
-        <template
-          #default
-        >
-          <el-table-column
-            type="selection"
-            width="55"
-          />
-        </template>
-
-        <template
-          #qusTitle="{ row }"
-        >
-          <div
-            class="min-w-0"
-          >
-            <div
-              class="truncate text-sm font-medium text-g-900"
-            >
-              {{ row.qusTitle || '-' }}
-            </div>
-
-            <div
-              class="mt-1 text-xs text-g-500"
-            >
-              ID: {{ row.qusId || '-' }}
-            </div>
-          </div>
-        </template>
-
-        <template
-          #qusType="{ row }"
-        >
-          <el-tag
-            size="small"
-            :type="row.qusType === 1 ? 'primary' : 'success'"
-          >
-            {{ getQuestionTypeLabel(row.qusType) }}
-          </el-tag>
-        </template>
-
-        <template
-          #qusDiff="{ row }"
-        >
-          <el-tag
-            size="small"
-            :type="getDiffTagType(row.qusDiff)"
-          >
-            {{ getDiffLabel(row.qusDiff) }}
-          </el-tag>
-        </template>
-
-        <template
-          #qusScore="{ row }"
-        >
-          <span>{{ row.qusScore || 0 }} 分</span>
-        </template>
-      </ArtTable>
+      />
 
       <template
         #footer
@@ -899,7 +1024,7 @@ onMounted(() => {
       >
         <ArtButton
           type="success"
-          :loading="loading"
+          :loading="pageLoading"
           @click="handleSubmit"
         >
           完成
@@ -908,7 +1033,7 @@ onMounted(() => {
     </AdminPageHeader>
 
     <div
-      v-loading="loading"
+      v-loading="pageLoading"
       class="flex flex-col gap-4"
     >
       <el-tabs
@@ -924,259 +1049,225 @@ onMounted(() => {
             label-position="top"
             class="flex flex-col gap-4"
           >
+            <!-- 考试信息 -->
             <div
-              class="art-card"
+              class="flex flex-col gap-4"
             >
-              <div
-                class="mb-4 flex items-center justify-between gap-4 max-sm:flex-col max-sm:items-start"
+              <h3
+                class="text-base font-semibold text-g-900"
               >
-                <div>
-                  <h3
-                    class="text-base font-semibold text-g-900"
-                  >
-                    考试信息
-                  </h3>
-
-                  <p
-                    class="mt-1 text-sm text-g-600"
-                  >
-                    问题总数 {{ formData.questions.length }} / 满分 {{ totalScore }}
-                  </p>
-                </div>
-              </div>
-
-              <el-form-item
-                label="标题"
-                required
-                class="mb-0!"
-              >
-                <el-input
-                  v-model="formData.testPaperName"
-                  placeholder="请填写考试名称"
-                  size="large"
-                />
-              </el-form-item>
-
-              <el-form-item
-                label="考试说明"
-                class="mb-0! mt-4"
-              >
-                <el-input
-                  v-model="formData.examIntro"
-                  type="textarea"
-                  :rows="4"
-                  placeholder="请输入考试说明"
-                />
-              </el-form-item>
-            </div>
-
-            <div
-              class="flex items-center justify-between gap-4 max-md:flex-col max-md:items-stretch"
-            >
-              <div>
-                <h3
-                  class="text-base font-semibold text-g-900"
-                >
-                  题目列表
-                </h3>
-
-                <p
-                  class="mt-1 text-sm text-g-600"
-                >
-                  单选 {{ formData.questions.filter(question => question.qusType === 1).length }} / 多选 {{ formData.questions.filter(question => question.qusType === 2).length }}
-                </p>
-              </div>
+                考试信息
+              </h3>
 
               <div
-                class="flex flex-wrap gap-3 max-sm:flex-col"
+                class="art-card"
               >
-                <art-button
-                  type="add"
-                  @click="addQuestion"
+                <el-form-item
+                  label="标题"
+                  required
+                  class="mb-0!"
                 >
-                  添加问题
-                </art-button>
-
-                <ArtButton
-                  type="import"
-                  @click="handleOpenTableDialog"
-                >
-                  从题库添加
-                </ArtButton>
-              </div>
-            </div>
-
-            <div
-              v-for="(question, questionIndex) in formData.questions"
-              :key="question.clientId"
-            >
-              <div
-                class="art-card flex flex-col gap-4 transition"
-                :class="[
-                  movingQuestionId === question.clientId
-                    ? 'border-primary/30 bg-primary/10!'
-                    : '',
-                ]"
-              >
-                <div
-                  class="flex gap-4 items-start max-md:flex-col"
-                >
-                  <div
-                    class="flex size-10 shrink-0 items-center justify-center rounded-custom-sm bg-primary/10 text-sm font-semibold text-primary"
-                  >
-                    Q{{ questionIndex + 1 }}
-                  </div>
-
                   <el-input
-                    v-model="question.qusTitle"
-                    placeholder="请输入问题"
-                    class="w-full flex-1"
+                    v-model="formData.testPaperName"
+                    placeholder="请填写考试名称"
+                    size="large"
                   />
+                </el-form-item>
 
-                  <div
-                    class="flex shrink-0 flex-wrap gap-2 items-center max-md:w-full max-md:justify-end"
-                  >
-                    <ArtButton
-                      v-for="item in questionActions"
-                      :key="item.action"
-                      type="link"
-                      @click="handleQuestionAction(item.action, question, questionIndex)"
-                    >
-                      {{ item.label }}
-                    </ArtButton>
-                  </div>
-                </div>
-
-                <div
-                  class="rounded-custom-sm bg-(--art-gray-100) px-4 py-3"
+                <el-form-item
+                  label="考试说明"
+                  class="mb-0! mt-4"
                 >
-                  <el-radio-group
-                    v-model="question.qusType"
-                    class="flex flex-wrap gap-x-12 gap-y-2"
-                    @change="ensureQuestionTypeConsistency(question)"
-                  >
-                    <el-radio
-                      v-for="item in questionTypes"
-                      :key="item.value"
-                      :value="item.value"
-                    >
-                      {{ item.label }}
-                    </el-radio>
-                  </el-radio-group>
-                </div>
+                  <el-input
+                    v-model="formData.examIntro"
+                    type="textarea"
+                    :rows="2"
+                    placeholder="请输入考试说明"
+                  />
+                </el-form-item>
+              </div>
 
+            </div>
+
+            <!-- 题目列表 -->
+            <div
+              class="flex flex-col gap-4"
+            >
+              <h3
+                class="text-base font-semibold text-g-900"
+              >
+                题目列表
+              </h3>
+
+              <div
+                v-for="(question, questionIndex) in formData.questions"
+                :key="question.clientId"
+              >
                 <div
-                  class="flex flex-col gap-2"
+                  class="art-card flex flex-col gap-4 transition"
+                  :class="[
+                    movingQuestionId === question.clientId
+                      ? 'border-primary/30 bg-primary/10!'
+                      : '',
+                  ]"
                 >
                   <div
-                    v-for="(option, optionIndex) in question.qusItems"
-                    :key="optionIndex"
-                    class="flex gap-2 items-center justify-between max-sm:flex-col max-sm:items-stretch"
+                    class="flex gap-4 items-start max-md:flex-col"
                   >
+                    <div
+                      class="flex size-10 shrink-0 items-center justify-center rounded-custom-sm bg-primary/10 text-sm font-semibold text-primary"
+                    >
+                      Q{{ questionIndex + 1 }}
+                    </div>
+
                     <el-input
-                      v-model="option.ansContext"
-                      placeholder="请输入选项内容"
-                      @keyup.enter="addOption(question, optionIndex)"
-                    >
-                      <template
-                        #prepend
-                      >
-                        {{ getOptionLabel(optionIndex) }}.
-                      </template>
-                    </el-input>
+                      v-model="question.qusTitle"
+                      placeholder="请输入问题"
+                      class="w-full flex-1"
+                    />
 
                     <div
-                      class="flex gap-1 items-center justify-end"
+                      class="flex shrink-0 flex-wrap gap-2 items-center max-md:w-full max-md:justify-end"
                     >
                       <ArtButton
-                        type="add"
-                        @click="addOption(question, optionIndex)"
-                      />
-
-                      <ArtButton
-                        type="delete"
-                        :disabled="question.qusItems.length <= 2"
-                        @click="removeOption(question, optionIndex)"
-                      />
+                        v-for="item in questionActions"
+                        :key="item.action"
+                        type="link"
+                        @click="handleQuestionAction(item.action, question, questionIndex)"
+                      >
+                        {{ item.label }}
+                      </ArtButton>
                     </div>
                   </div>
-                </div>
 
-                <div
-                  class="grid grid-cols-2 gap-5 max-md:grid-cols-1"
-                >
-                  <el-form-item
-                    label="正确答案"
-                    required
-                    class="mb-0! [&_.el-select]:w-full"
-                  >
-                    <el-select
-                      v-if="question.qusType === 1"
-                      :model-value="getCorrectSingleOptionIndex(question)"
-                      placeholder="请选择正确答案"
-                      @update:model-value="value => setCorrectSingleOption(question, value)"
-                    >
-                      <el-option
-                        v-for="(option, optionIndex) in question.qusItems"
-                        :key="optionIndex"
-                        :label="option.ansContext || `选项${getOptionLabel(optionIndex)}`"
-                        :value="optionIndex"
-                      />
-                    </el-select>
-
-                    <el-select
-                      v-else
-                      :model-value="getCorrectOptionIndexes(question)"
-                      multiple
-                      placeholder="请选择正确答案"
-                      @update:model-value="value => setCorrectMultipleOptions(question, value)"
-                    >
-                      <el-option
-                        v-for="(option, optionIndex) in question.qusItems"
-                        :key="optionIndex"
-                        :label="option.ansContext || `选项${getOptionLabel(optionIndex)}`"
-                        :value="optionIndex"
-                      />
-                    </el-select>
-                  </el-form-item>
-
-                  <el-form-item
-                    label="分值"
-                    class="mb-0! w-full!"
-                    required
-                  >
-                    <el-input-number
-                      v-model="question.qusScore"
-                      :min="1"
-                      :max="100"
-                      :controls="true"
-                      placeholder="本题分值"
-                      class="w-full!"
-                    />
-                  </el-form-item>
-                </div>
-
-                <div
-                  class="grid grid-cols-2 gap-5 max-md:grid-cols-1"
-                >
-                  <el-form-item
-                    label="难度"
-                    class="mb-0! w-full!"
-                    required
+                  <div
+                    class="rounded-custom-sm bg-(--art-gray-100) px-4 py-3"
                   >
                     <el-radio-group
-                      v-model="question.qusDiff"
-                      class="flex flex-wrap gap-x-8 gap-y-2"
+                      v-model="question.qusType"
+                      class="flex flex-wrap gap-x-12 gap-y-2"
+                      @change="ensureQuestionTypeConsistency(question)"
                     >
                       <el-radio
-                        v-for="item in diffOptions"
+                        v-for="item in questionTypes"
                         :key="item.value"
                         :value="item.value"
                       >
                         {{ item.label }}
                       </el-radio>
                     </el-radio-group>
-                  </el-form-item>
+                  </div>
+
+                  <div
+                    class="flex flex-col gap-2"
+                  >
+                    <div
+                      v-for="(option, optionIndex) in question.qusItems"
+                      :key="optionIndex"
+                      class="flex gap-2 items-center justify-between max-sm:flex-col max-sm:items-stretch"
+                    >
+                      <el-input
+                        v-model="option.ansContext"
+                        placeholder="请输入选项内容"
+                        @keyup.enter="addOption(question, optionIndex)"
+                      >
+                        <template
+                          #prepend
+                        >
+                          {{ getOptionLabel(optionIndex) }}.
+                        </template>
+                      </el-input>
+
+                      <div
+                        class="flex gap-1 items-center justify-end"
+                      >
+                        <ArtButton
+                          type="add"
+                          @click="addOption(question, optionIndex)"
+                        />
+
+                        <ArtButton
+                          type="delete"
+                          :disabled="question.qusItems.length <= 2"
+                          @click="removeOption(question, optionIndex)"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div
+                    class="grid grid-cols-3 gap-5 max-md:grid-cols-1"
+                  >
+
+                    <el-form-item
+                      label="难度"
+                      class="mb-0! w-full!"
+                      required
+                    >
+                      <el-radio-group
+                        v-model="question.qusDiff"
+                        class="flex flex-wrap gap-x-8 gap-y-2"
+                      >
+                        <el-radio
+                          v-for="item in diffOptions"
+                          :key="item.value"
+                          :value="item.value"
+                        >
+                          {{ item.label }}
+                        </el-radio>
+                      </el-radio-group>
+                    </el-form-item>
+
+                    <el-form-item
+                      label="正确答案"
+                      required
+                      class="mb-0! [&_.el-select]:w-full"
+                    >
+                      <el-select
+                        v-if="question.qusType === 1"
+                        :model-value="getCorrectSingleOptionIndex(question)"
+                        placeholder="请选择正确答案"
+                        @update:model-value="value => setCorrectSingleOption(question, value)"
+                      >
+                        <el-option
+                          v-for="(option, optionIndex) in question.qusItems"
+                          :key="optionIndex"
+                          :label="option.ansContext || `选项${getOptionLabel(optionIndex)}`"
+                          :value="optionIndex"
+                        />
+                      </el-select>
+
+                      <el-select
+                        v-else
+                        :model-value="getCorrectOptionIndexes(question)"
+                        multiple
+                        placeholder="请选择正确答案"
+                        @update:model-value="value => setCorrectMultipleOptions(question, value)"
+                      >
+                        <el-option
+                          v-for="(option, optionIndex) in question.qusItems"
+                          :key="optionIndex"
+                          :label="option.ansContext || `选项${getOptionLabel(optionIndex)}`"
+                          :value="optionIndex"
+                        />
+                      </el-select>
+                    </el-form-item>
+
+                    <el-form-item
+                      label="分值"
+                      class="mb-0! w-full!"
+                      required
+                    >
+                      <el-input-number
+                        v-model="question.qusScore"
+                        :min="1"
+                        :max="100"
+                        :controls="true"
+                        placeholder="本题分值"
+                        class="w-full!"
+                      />
+                    </el-form-item>
+                  </div>
 
                   <el-form-item
                     label="答案说明(选填)"
@@ -1189,27 +1280,31 @@ onMounted(() => {
                       placeholder="请输入答案说明"
                     />
                   </el-form-item>
+
+                  <div
+                    class="grid grid-cols-2 gap-5 max-md:grid-cols-1"
+                  />
                 </div>
-              </div>
 
-              <div
-                v-if="movingQuestionId"
-                class="my-3 flex flex-wrap gap-3 items-center justify-center"
-              >
-                <art-button
-                  type="warning"
-                  :disabled="movingQuestionId === question.clientId"
-                  @click="moveQuestionTo(questionIndex)"
+                <div
+                  v-if="movingQuestionId"
+                  class="my-3 flex flex-wrap gap-3 items-center justify-center"
                 >
-                  移到第 {{ questionIndex + 1 }} 题后
-                </art-button>
+                  <art-button
+                    type="warning"
+                    :disabled="movingQuestionId === question.clientId"
+                    @click="moveQuestionTo(questionIndex)"
+                  >
+                    移到第 {{ questionIndex + 1 }} 题后
+                  </art-button>
 
-                <art-button
-                  type="default"
-                  @click="cancelMoveQuestion"
-                >
-                  取消移动
-                </art-button>
+                  <art-button
+                    type="default"
+                    @click="cancelMoveQuestion"
+                  >
+                    取消移动
+                  </art-button>
+                </div>
               </div>
             </div>
 
@@ -1238,205 +1333,129 @@ onMounted(() => {
           name="setting"
         >
           <div
-            class="flex flex-col gap-4"
+            class="art-card"
           >
             <el-form
               :model="formData"
-              label-position="top"
+              label-position="left"
+              label-width="auto"
+              class="flex flex-col gap-4"
             >
-              <div
-                class="art-card"
+              <el-form-item
+                label="考试类型"
+                class="mb-0!"
               >
-                <div
-                  class="mb-4"
+                <el-radio-group
+                  v-model="formData.examType"
                 >
-                  <h3
-                    class="text-base font-semibold text-g-900"
+                  <el-radio
+                    :value="0"
                   >
-                    基础设置
-                  </h3>
+                    选修
+                  </el-radio>
 
-                  <p
-                    class="mt-1 text-sm text-g-600"
+                  <el-radio
+                    :value="1"
                   >
-                    当前满分 {{ totalScore }} 分
-                  </p>
-                </div>
+                    必修
+                  </el-radio>
+                </el-radio-group>
+              </el-form-item>
 
-                <div
-                  class="grid grid-cols-2 gap-5 max-md:grid-cols-1"
-                >
-                  <el-form-item
-                    label="考试类型"
-                    class="mb-0!"
-                  >
-                    <el-radio-group
-                      v-model="formData.examType"
-                    >
-                      <el-radio
-                        :value="0"
-                      >
-                        选修
-                      </el-radio>
-
-                      <el-radio
-                        :value="1"
-                      >
-                        必修
-                      </el-radio>
-                    </el-radio-group>
-                  </el-form-item>
-
-                  <el-form-item
-                    label="考试时长（分钟）"
-                    class="mb-0!"
-                  >
-                    <el-input-number
-                      v-model="formData.durationMinutes"
-                      :min="1"
-                      :max="360"
-                      class="w-full!"
-                    />
-                  </el-form-item>
-                </div>
-              </div>
-
-              <div
-                class="art-card"
+              <el-form-item
+                label="考试时长（分钟）"
+                class="mb-0!"
               >
-                <div
-                  class="mb-4"
-                >
-                  <h3
-                    class="text-base font-semibold text-g-900"
-                  >
-                    考试规则
-                  </h3>
-                </div>
+                <el-input-number
+                  v-model="formData.durationMinutes"
+                  :min="1"
+                  :max="360"
+                  class="w-full!"
+                />
+              </el-form-item>
 
-                <div
-                  class="grid grid-cols-3 gap-5 max-lg:grid-cols-2 max-md:grid-cols-1"
-                >
-                  <el-form-item
-                    label="允许尝试次数"
-                    class="mb-0!"
-                  >
-                    <el-input-number
-                      v-model="formData.attemptLimit"
-                      :min="1"
-                      :max="99"
-                      class="w-full!"
-                    />
-                  </el-form-item>
-
-                  <el-form-item
-                    label="及格分数"
-                    class="mb-0!"
-                  >
-                    <el-input-number
-                      v-model="formData.passScore"
-                      :min="0"
-                      :max="totalScore || 100"
-                      class="w-full!"
-                    />
-                  </el-form-item>
-
-                  <el-form-item
-                    label="重考间隔（小时）"
-                    class="mb-0!"
-                  >
-                    <el-input-number
-                      v-model="formData.retakeIntervalHours"
-                      :min="0"
-                      :max="720"
-                      class="w-full!"
-                    />
-                  </el-form-item>
-                </div>
-              </div>
-
-              <div
-                class="art-card"
+              <el-form-item
+                label="允许尝试次数"
+                class="mb-0!"
               >
-                <div
-                  class="mb-4"
-                >
-                  <h3
-                    class="text-base font-semibold text-g-900"
-                  >
-                    开放时间
-                  </h3>
-                </div>
+                <el-input-number
+                  v-model="formData.attemptLimit"
+                  :min="1"
+                  :max="99"
+                  class="w-full!"
+                />
+              </el-form-item>
 
-                <div
-                  class="grid grid-cols-2 gap-5 max-md:grid-cols-1"
-                >
-                  <el-form-item
-                    label="时间范围"
-                    class="mb-0!"
-                  >
-                    <el-date-picker
-                      v-model="dateRange"
-                      type="datetimerange"
-                      range-separator="至"
-                      start-placeholder="开始时间"
-                      end-placeholder="结束时间"
-                      value-format="YYYY-MM-DD HH:mm:ss"
-                      class="w-full!"
-                    />
-                  </el-form-item>
-
-                  <el-form-item
-                    label="考试总分"
-                    class="mb-0!"
-                  >
-                    <el-input
-                      :model-value="`${totalScore} 分`"
-                      disabled
-                    />
-                  </el-form-item>
-                </div>
-              </div>
-
-              <div
-                class="art-card"
+              <el-form-item
+                label="及格分数"
+                class="mb-0!"
               >
-                <div
-                  class="mb-4"
-                >
-                  <h3
-                    class="text-base font-semibold text-g-900"
-                  >
-                    考后展示
-                  </h3>
-                </div>
+                <el-input-number
+                  v-model="formData.passScore"
+                  :min="0"
+                  :max="totalScore || 100"
+                  class="w-full!"
+                />
+              </el-form-item>
 
-                <div
-                  class="grid grid-cols-2 gap-5 max-md:grid-cols-1"
-                >
-                  <el-form-item
-                    label="考后显示答案"
-                    class="mb-0!"
-                  >
-                    <el-switch
-                      v-model="formData.isShowAnswer"
-                      :active-value="1"
-                      :inactive-value="0"
-                    />
-                  </el-form-item>
+              <el-form-item
+                label="重考间隔（小时）"
+                class="mb-0!"
+              >
+                <el-input-number
+                  v-model="formData.retakeIntervalHours"
+                  :min="0"
+                  :max="720"
+                  class="w-full!"
+                />
+              </el-form-item>
 
-                  <el-form-item
-                    label="考后显示分数"
-                    class="mb-0!"
-                  >
-                    <el-switch
-                      v-model="formData.isShowScore"
-                      :active-value="1"
-                      :inactive-value="0"
-                    />
-                  </el-form-item>
-                </div>
-              </div>
+              <el-form-item
+                label="时间范围"
+                class="mb-0!"
+              >
+                <el-date-picker
+                  v-model="dateRange"
+                  type="datetimerange"
+                  range-separator="至"
+                  start-placeholder="开始时间"
+                  end-placeholder="结束时间"
+                  value-format="YYYY-MM-DD HH:mm:ss"
+                  class="w-full!"
+                />
+              </el-form-item>
+
+              <el-form-item
+                label="考试总分"
+                class="mb-0!"
+              >
+                <el-input
+                  :model-value="`${totalScore} 分`"
+                  disabled
+                />
+              </el-form-item>
+
+              <el-form-item
+                label="考后显示答案"
+                class="mb-0!"
+              >
+                <el-switch
+                  v-model="formData.isShowAnswer"
+                  :active-value="1"
+                  :inactive-value="0"
+                />
+              </el-form-item>
+
+              <el-form-item
+                label="考后显示分数"
+                class="mb-0!"
+              >
+                <el-switch
+                  v-model="formData.isShowScore"
+                  :active-value="1"
+                  :inactive-value="0"
+                />
+              </el-form-item>
             </el-form>
           </div>
         </el-tab-pane>

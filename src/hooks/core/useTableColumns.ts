@@ -58,6 +58,10 @@ const SPECIAL_COLUMNS: Record<string, { prop: string, label: string }> = {
     prop: '__index__',
     label: $t('table.column.index'),
   },
+  globalIndex: {
+    prop: '__global_index__',
+    label: $t('table.column.index'),
+  },
 }
 
 /**

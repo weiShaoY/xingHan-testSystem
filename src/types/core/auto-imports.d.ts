@@ -12,6 +12,7 @@ declare global {
   const ElMessage: typeof import('element-plus/es').ElMessage
   const ElMessageBox: typeof import('element-plus/es').ElMessageBox
   const ElNotification: typeof import('element-plus/es').ElNotification
+  const ElTag: typeof import('element-plus/es').ElTag
   const HttpError: typeof import('../../apis/http/error').HttpError
   const PasswordStrength: typeof import('../../utils/form/validator').PasswordStrength
   const StorageConfig: typeof import('../../utils/storage/storage-config').StorageConfig
@@ -533,6 +534,7 @@ declare module 'vue' {
     readonly ElMessage: UnwrapRef<typeof import('element-plus/es')['ElMessage']>
     readonly ElMessageBox: UnwrapRef<typeof import('element-plus/es')['ElMessageBox']>
     readonly ElNotification: UnwrapRef<typeof import('element-plus/es')['ElNotification']>
+    readonly ElTag: UnwrapRef<typeof import('element-plus/es')['ElTag']>
     readonly HttpError: UnwrapRef<typeof import('../../apis/http/error')['HttpError']>
     readonly PasswordStrength: UnwrapRef<typeof import('../../utils/form/validator')['PasswordStrength']>
     readonly StorageConfig: UnwrapRef<typeof import('../../utils/storage/storage-config')['StorageConfig']>
