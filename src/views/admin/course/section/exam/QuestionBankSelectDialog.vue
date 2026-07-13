@@ -177,12 +177,6 @@ const {
 })
 
 /**
- * 题库筛选参数。
- * 兼容模板中对 params 的使用方式。
- */
-const params = searchFormState
-
-/**
  * 根据筛选表单生成题库查询参数。
  * @param search 当前筛选表单状态
  */
@@ -287,7 +281,7 @@ watch(visible, (value) => {
         class="flex flex-wrap items-center gap-3"
       >
         <el-select
-          v-model="params.qbIds"
+          v-model="searchFormState.qbIds"
           multiple
           clearable
           collapse-tags
