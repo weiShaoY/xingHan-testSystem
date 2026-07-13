@@ -143,8 +143,8 @@ export const useWorkTabStore = defineStore(
       }
 
       // 从 keepAlive 排除列表中移除
-      if (tab.name) {
-        removeKeepAliveExclude(tab.name)
+      if (tab.cacheName || tab.name) {
+        removeKeepAliveExclude(tab.cacheName || tab.name)
       }
 
       // 默认同名动态路由复用标签；multiTab 路由按完整路径区分标签。
@@ -184,6 +184,7 @@ export const useWorkTabStore = defineStore(
           fixedTab: tab.fixedTab ?? existingTab.fixedTab,
           multiTab: tab.multiTab ?? existingTab.multiTab,
           keepAlive: tab.keepAlive ?? existingTab.keepAlive,
+          cacheName: tab.cacheName || existingTab.cacheName,
           name: tab.name || existingTab.name,
           icon: tab.icon || existingTab.icon,
         }
@@ -417,10 +418,12 @@ export const useWorkTabStore = defineStore(
      * 将指定选项卡添加到 keepAlive 排除列表中
      */
     function addKeepAliveExclude(tab: WorkTab) {
-      if (!tab.keepAlive || !tab.name) { return }
+      const cacheName = tab.cacheName || tab.name
 
-      if (!keepAliveExclude.value.includes(tab.name)) {
-        keepAliveExclude.value.push(tab.name)
+      if (!tab.keepAlive || !cacheName) { return }
+
+      if (!keepAliveExclude.value.includes(cacheName)) {
+        keepAliveExclude.value.push(cacheName)
       }
     }
 

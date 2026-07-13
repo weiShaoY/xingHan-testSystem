@@ -110,6 +110,9 @@ export type WorkTab = {
   /** 路由名称 */
   name: string
 
+  /** KeepAlive 组件名称，默认使用路由名称 */
+  cacheName?: string
+
   /** 是否缓存 */
   keepAlive: boolean
 

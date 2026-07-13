@@ -8,10 +8,17 @@ import type {
 
 import {
   computed,
+  nextTick,
   ref,
 } from 'vue'
 
+import { VueDraggable } from 'vue-draggable-plus'
+
 import QuestionBankSelectDialog from './QuestionBankSelectDialog.vue'
+
+defineOptions({
+  name: 'CourseSectionExam',
+})
 
 const route = useRoute()
 
@@ -24,6 +31,12 @@ const activeTab = ref<'edit' | 'setting'>('edit')
 
 /** Element Plus 自定义校验函数类型。 */
 type ExamValidator = NonNullable<FormItemRule['validator']>
+
+/** 题目对象对应的稳定渲染标识。 */
+const questionKeys = new WeakMap<AdminApi.Question.Question, string>()
+
+/** 本地题目渲染标识序号。 */
+let questionKeySeed = 0
 
 const workTabStore = useWorkTabStore()
 
@@ -310,6 +323,26 @@ function createQuestion(type: 1 | 2 = 1): AdminApi.Question.Question {
 }
 
 /**
+ * 获取题目的稳定渲染标识，防止拖动后表单节点复用错位。
+ * @param question 当前题目
+ */
+function getQuestionKey(question: AdminApi.Question.Question) {
+  const existingKey = questionKeys.get(question)
+
+  if (existingKey) {
+    return existingKey
+  }
+
+  questionKeySeed += 1
+
+  const key = `question-${question.qusId || 'new'}-${questionKeySeed}`
+
+  questionKeys.set(question, key)
+
+  return key
+}
+
+/**
  * 根据选项索引生成展示标签。
  * @param index 选项索引
  */
@@ -460,6 +493,13 @@ function removeOption(question: AdminApi.Question.Question, index: number) {
   question.qusItems.splice(index, 1)
 }
 
+/** 拖动排序结束后清除基于旧索引生成的表单校验状态。 */
+function handleQuestionDragEnd() {
+  void nextTick(() => {
+    examFormRef.value?.clearValidate()
+  })
+}
+
 /**
  * 校验整个考试表单数据。
  * 包括试卷标题、题目内容、选项内容、分值和正确答案约束。
@@ -550,6 +590,8 @@ async function handleSubmit() {
   pageLoading.value = true
 
   try {
+    const examTabPath = route.path
+
     const submitData = createSubmitData()
 
     if (isEditMode.value) {
@@ -561,8 +603,8 @@ async function handleSubmit() {
       ElNotification.success('考试创建成功')
     }
 
-    workTabStore.removeTab(route.path)
-    backToCourseOutline()
+    await backToCourseOutline()
+    workTabStore.removeTab(examTabPath)
   }
   catch {
     ElNotification.error(isEditMode.value ? '考试更新失败' : '考试创建失败')
@@ -574,7 +616,7 @@ async function handleSubmit() {
 
 /** 返回课程大纲页。 */
 function backToCourseOutline() {
-  router.push({
+  return router.push({
     name: 'AdminCourseOutline',
     params: {
       couId: couId.value,
@@ -582,7 +624,7 @@ function backToCourseOutline() {
   })
 }
 
-/** 页面初始化：编辑模式拉取详情，新增模式标准化默认表单。 */
+/** 页面初始化：编辑模式拉取详情。 */
 onMounted(() => {
   if (isEditMode.value) {
     void getSectionDetail()
@@ -687,16 +729,39 @@ onMounted(() => {
                 题目列表
               </h3>
 
-              <div
-                v-for="(question, questionIndex) in formData.questions"
-                :key="`${question.qusId || 'new'}-${questionIndex}`"
+              <VueDraggable
+                v-model="formData.questions"
+                handle=".question-drag-handle"
+                ghost-class="question-drag-ghost"
+                chosen-class="question-drag-chosen"
+                :animation="200"
+                class="flex flex-col gap-4"
+                @end="handleQuestionDragEnd"
               >
                 <div
+                  v-for="(question, questionIndex) in formData.questions"
+                  :key="getQuestionKey(question)"
                   class="art-card flex flex-col gap-4"
                 >
                   <div
                     class="flex gap-4 items-start max-md:flex-col"
                   >
+                    <el-tooltip
+                      content="拖动排序"
+                      placement="top"
+                    >
+                      <button
+                        type="button"
+                        aria-label="拖动题目排序"
+                        class="question-drag-handle flex size-10 shrink-0 cursor-move items-center justify-center rounded-custom-sm text-g-500 transition-colors hover:bg-g-100 hover:text-primary"
+                      >
+                        <ArtSvgIcon
+                          icon="ri:drag-move-2-fill"
+                          class="text-lg"
+                        />
+                      </button>
+                    </el-tooltip>
+
                     <div
                       class="flex size-10 shrink-0 items-center justify-center rounded-custom-sm bg-primary/10 text-sm font-semibold text-primary"
                     >
@@ -882,7 +947,7 @@ onMounted(() => {
                   </el-form-item>
 
                 </div>
-              </div>
+              </VueDraggable>
             </div>
 
             <div
@@ -1053,4 +1118,12 @@ onMounted(() => {
 </template>
 
 <style lang="scss" scoped>
+.question-drag-ghost {
+  opacity: 0.35;
+}
+
+.question-drag-chosen {
+  border-color: var(--el-color-primary-light-5);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 8%);
+}
 </style>
