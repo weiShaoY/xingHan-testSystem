@@ -125,6 +125,8 @@ export namespace Question {
      */
     qusId?: number
 
+    qusUid?: string
+
     /**
      * 选项内容
      */

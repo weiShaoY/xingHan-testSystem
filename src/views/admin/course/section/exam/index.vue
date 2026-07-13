@@ -167,7 +167,7 @@ function validateCorrectAnswer(
 /**
  * 考试编辑表单规则。
  */
-const examFormRules = {
+const examFormRules: FormRules = {
   testPaperName: [
     {
       required: true,
@@ -243,8 +243,8 @@ const examStats = computed(() => {
 /**
  * 创建新增或编辑模式下的小节初始表单
  */
-function createInitialFormData() {
-  const baseFormData = {
+function createInitialFormData(): AdminApi.Course.CourseOutlineSectionExamEditor {
+  const baseFormData: AdminApi.Course.CourseOutlineSectionExamEditor = {
     couId: couId.value,
     attemptLimit: 1,
     durationMinutes: 60,
@@ -259,7 +259,7 @@ function createInitialFormData() {
     startTime: '',
     testPaperName: '',
     testPaperType: 1,
-    questions: [],
+    questions: [createQuestion()],
   }
 
   if (isEditMode.value) {
@@ -285,6 +285,8 @@ function createOption(ansContext = '', ansIsCorrect = false): AdminApi.Question.
   return {
     ansContext,
     ansIsCorrect,
+    qusId: 0,
+    qusUid: '',
   }
 }
 
@@ -380,7 +382,7 @@ function ensureQuestionTypeConsistency(question: AdminApi.Question.Question) {
 
   let hasCorrectOption = false
 
-  question.qusItems.forEach((option: AdminApi.Question.Question) => {
+  question.qusItems.forEach((option) => {
     if (!option.ansIsCorrect) {
       return
     }
@@ -434,22 +436,6 @@ function deleteQuestion(questionIndex: number) {
 }
 
 /**
- * 统一处理题目操作菜单行为。
- * @param action 操作类型
- * @param question 当前题目
- * @param questionIndex 当前题目索引
- */
-function handleQuestionAction(action: string, question: AdminApi.Question.Question, questionIndex: number) {
-  if (action === 'copy') {
-    copyQuestion(question)
-  }
-
-  if (action === 'delete') {
-    deleteQuestion(questionIndex)
-  }
-}
-
-/**
  * 在指定位置后插入一个选项；未指定位置时追加到末尾。
  * @param question 当前题目
  * @param index 当前选项索引
@@ -498,25 +484,7 @@ async function validateFormData() {
 function createSubmitData(): AdminApi.Course.CourseOutlineSectionExamEditor {
   return {
     ...formData.value,
-    testPaperName: formData.value.testPaperName.trim(),
-    examIntro: formData.value.examIntro.trim(),
     score: totalScore.value,
-    questions: formData.value.questions.map((question) => {
-      return {
-        qusId: question.qusId,
-        qusTitle: question.qusTitle.trim(),
-        qusType: question.qusType,
-        qusScore: Number(question.qusScore),
-        qusExplain: question.qusExplain?.trim() ?? '',
-        qusDiff: question.qusDiff,
-        qusItems: question.qusItems.map(option => ({
-          ansId: option.ansId,
-          qusId: option.qusId,
-          ansContext: option.ansContext.trim(),
-          ansIsCorrect: Boolean(option.ansIsCorrect),
-        })),
-      }
-    }),
   }
 }
 
@@ -548,8 +516,23 @@ function handleOpenTableDialog() {
 
 /** 处理题库弹窗确认选题。 */
 function handleConfirmSelectQuestions(questions: AdminApi.Question.Question[]) {
-  formData.value.questions.push(...questions)
-  ElNotification.success(`已添加 ${questions.length} 道题目`)
+  const existingQuestionIds = new Set(
+    formData.value.questions
+      .map(question => question.qusId)
+      .filter((qusId): qusId is number => Boolean(qusId)),
+  )
+
+  const newQuestions = questions.filter((question) => {
+    return !question.qusId || !existingQuestionIds.has(question.qusId)
+  })
+
+  if (!newQuestions.length) {
+    ElNotification.warning('所选题目已全部添加')
+    return
+  }
+
+  formData.value.questions.push(...newQuestions)
+  ElNotification.success(`已添加 ${newQuestions.length} 道题目`)
 }
 
 /**
@@ -591,8 +574,6 @@ async function handleSubmit() {
 
 /** 返回课程大纲页。 */
 function backToCourseOutline() {
-  console.log('🚀 ~ file: index.vue:732 ~ couId:', couId)
-
   router.push({
     name: 'AdminCourseOutline',
     params: {
@@ -675,7 +656,7 @@ onMounted(() => {
                   class="mb-0!"
                 >
                   <el-input
-                    v-model="formData.testPaperName"
+                    v-model.trim="formData.testPaperName"
                     placeholder="请填写考试名称"
                     size="large"
                   />
@@ -686,7 +667,7 @@ onMounted(() => {
                   class="mb-0! mt-4"
                 >
                   <el-input
-                    v-model="formData.examIntro"
+                    v-model.trim="formData.examIntro"
                     type="textarea"
                     :rows="2"
                     placeholder="请输入考试说明"
@@ -708,10 +689,10 @@ onMounted(() => {
 
               <div
                 v-for="(question, questionIndex) in formData.questions"
-                :key="question.qusId"
+                :key="`${question.qusId || 'new'}-${questionIndex}`"
               >
                 <div
-                  class="art-card flex flex-col gap-4 transition bg-primary/10"
+                  class="art-card flex flex-col gap-4"
                 >
                   <div
                     class="flex gap-4 items-start max-md:flex-col"
@@ -728,7 +709,7 @@ onMounted(() => {
                       class="mb-0! w-full flex-1"
                     >
                       <el-input
-                        v-model="question.qusTitle"
+                        v-model.trim="question.qusTitle"
                         placeholder="请输入问题"
                         class="w-full flex-1"
                       />
@@ -781,7 +762,7 @@ onMounted(() => {
                         class="mb-0! flex-1"
                       >
                         <el-input
-                          v-model="option.ansContext"
+                          v-model.trim="option.ansContext"
                           placeholder="请输入选项内容"
                           @keyup.enter="addOption(question, optionIndex)"
                         >
@@ -873,6 +854,7 @@ onMounted(() => {
                     <el-form-item
                       label="分值"
                       :prop="`questions.${questionIndex}.qusScore`"
+                      :rules="examFormRules.questionScore"
                       class="mb-0! w-full!"
                       required
                     >
@@ -892,18 +874,14 @@ onMounted(() => {
                     class="mb-0!"
                   >
                     <el-input
-                      v-model="question.qusExplain"
+                      v-model.trim="question.qusExplain"
                       type="textarea"
                       :rows="3"
                       placeholder="请输入答案说明"
                     />
                   </el-form-item>
 
-                  <div
-                    class="grid grid-cols-2 gap-5 max-md:grid-cols-1"
-                  />
                 </div>
-
               </div>
             </div>
 
