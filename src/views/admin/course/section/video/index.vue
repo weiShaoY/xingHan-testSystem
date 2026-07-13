@@ -344,14 +344,15 @@ async function playVideo(item: FileApi.FileListItem) {
   }
 }
 
-const COURSE_OUTLINE_PATH = '/admin/course/outline'
-
 /**
  * 返回课程大纲页。
  */
 function backToCourseOutline() {
   router.push({
-    path: COURSE_OUTLINE_PATH,
+    name: 'AdminCourseOutline',
+    params: {
+      couId: couId.value,
+    },
   })
 }
 </script>

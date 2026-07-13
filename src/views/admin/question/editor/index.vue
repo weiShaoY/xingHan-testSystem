@@ -12,11 +12,6 @@ const route = useRoute()
 const router = useRouter()
 
 /**
- * 题库列表页路径。
- */
-const QUESTION_LIST_PATH = '/admin/question'
-
-/**
  * 工作标签页 Store。
  */
 const workTabStore = useWorkTabStore()
@@ -110,7 +105,7 @@ function backToQuestionList() {
   workTabStore.removeTab(route.path)
 
   router.push({
-    path: QUESTION_LIST_PATH,
+    name: 'AdminQuestionList',
   })
 }
 

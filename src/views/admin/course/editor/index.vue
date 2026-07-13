@@ -3,11 +3,6 @@
 <script lang="ts" setup>
 
 /**
- * 课程列表页路径。
- */
-const COURSE_LIST_PATH = '/admin/course'
-
-/**
  * 默认课程展示图预览地址。
  */
 const previewImageUrl = 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=autumn%20forest%20road%20scenery%20with%20colorful%20trees&image_size=landscape_4_3'
@@ -150,7 +145,7 @@ function backToCourseList() {
   workTabStore.removeTab(route.path)
 
   router.push({
-    path: COURSE_LIST_PATH,
+    name: 'AdminCourseList',
   })
 }
 

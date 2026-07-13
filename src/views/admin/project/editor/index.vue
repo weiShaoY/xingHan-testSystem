@@ -32,18 +32,13 @@ const projectImageOptions = [
 const workTabStore = useWorkTabStore()
 
 /**
- * 项目列表页路径。
- */
-const PROJECT_LIST_PATH = '/admin/project'
-
-/**
  * 返回项目列表页并关闭当前编辑标签。
  */
 function backToProjectList() {
   workTabStore.removeTab(route.path)
 
   router.push({
-    path: PROJECT_LIST_PATH,
+    name: 'AdminProjectList',
   })
 }
 

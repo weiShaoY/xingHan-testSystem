@@ -1,23 +1,17 @@
 <!------  2026-07-09---考试小节编辑  ------>
 <script lang="ts" setup>
-import type { ColumnOption } from '@/types'
-
 import {
   computed,
-  h,
   ref,
 } from 'vue'
 
-import { useTable } from '@/hooks'
+import QuestionBankSelectDialog from './QuestionBankSelectDialog.vue'
 
 const route = useRoute()
 
 const router = useRouter()
 
 // ==================== Constants ====================
-
-/** 课程大纲页路由 */
-const COURSE_OUTLINE_PATH = '/admin/course/outline'
 
 /** 当前激活的页签 */
 const activeTab = ref<'edit' | 'setting'>('edit')
@@ -99,16 +93,6 @@ const pageLoading = ref(false)
 const isShowExamSelectDialog = ref(false)
 
 /**
- * 题库列表请求参数
- */
-const questionBankList = ref<AdminApi.Course.CourseOutlineSectionExamQuestionBankItem[]>([])
-
-/**
- * 弹窗内选中的题目
- */
-const selectedBankQuestions = ref<QuestionListItem[]>([])
-
-/**
  * 小节表单数据
  */
 const formData = ref<ExamEditorForm>(createInitialFormData())
@@ -164,124 +148,6 @@ const questionActions = [
 
 /** 当前正在移动的题目 clientId */
 const movingQuestionId = ref('')
-
-// ==================== Display Helpers ====================
-
-/**
- * 获取题型显示文案。
- * @param type 题型值
- */
-function getQuestionTypeLabel(type: number) {
-  return type === 1 ? '单选题' : type === 2 ? '多选题' : '其他题型'
-}
-
-/**
- * 获取题型标签类型。
- * @param type 题型值
- */
-function getQuestionTypeTagType(type: number) {
-  return type === 1 ? 'primary' : type === 2 ? 'success' : 'info'
-}
-
-/**
- * 获取难度显示文案。
- * @param diff 难度值
- */
-function getDiffLabel(diff: number) {
-  return diff === 1 ? '简单' : diff === 2 ? '中等' : '困难'
-}
-
-/**
- * 获取难度标签类型。
- * @param diff 难度值
- */
-function getDiffTagType(diff: number) {
-  return diff === 1 ? 'success' : diff === 2 ? 'warning' : 'danger'
-}
-
-/**
- * 构建题库弹窗表格列配置。
- */
-function createQuestionTableColumns(): ColumnOption<QuestionListItem>[] {
-  return [
-    {
-      label: '序号',
-      type: 'globalIndex',
-      width: 60,
-      visible: true,
-    },
-    {
-      label: '题目名称',
-      prop: 'qusTitle',
-      minWidth: 260,
-    },
-    {
-      label: '题型',
-      prop: 'qusType',
-      width: 100,
-      formatter: (row) => {
-        return h(ElTag, {
-          type: getQuestionTypeTagType(row.qusType),
-          size: 'small',
-        }, () => getQuestionTypeLabel(row.qusType))
-      },
-    },
-    {
-      label: '难度',
-      prop: 'qusDiff',
-      width: 100,
-      formatter: (row) => {
-        return h(ElTag, {
-          type: getDiffTagType(row.qusDiff),
-          size: 'small',
-        }, () => getDiffLabel(row.qusDiff))
-      },
-    },
-    {
-      label: '分数',
-      prop: 'qusScore',
-      width: 100,
-    },
-  ]
-}
-
-// ==================== Table State ====================
-
-/** 题库弹窗表格数据与分页逻辑 */
-const {
-  columns,
-  data: tableData,
-  loading: tableLoading,
-  pagination: tablePagination,
-  searchParams,
-  getData,
-  replaceSearchParams,
-  handleSizeChange: handleTableSizeChange,
-  handleCurrentChange: handleTableCurrentChange,
-} = useTable({
-  core: {
-    apiFn: fetchAdminCourseOutlineSectionExamQuestionList,
-    apiParams: {
-      pageSize: 10,
-      currentPage: 1,
-      qbIds: [],
-    },
-    immediate: false,
-    paginationKey: {
-      current: 'currentPage',
-      size: 'pageSize',
-    },
-    columnsFactory: createQuestionTableColumns,
-  },
-  hooks: {
-    onError: () => {
-      ElNotification.error('获取题目列表失败')
-    },
-  },
-})
-
-/** 兼容模板中对 params 的既有用法 */
-const params = searchParams
 
 // ==================== Computed State ====================
 
@@ -780,66 +646,9 @@ async function getSectionDetail() {
   }
 }
 
-/**
- * 获取题库下拉列表
- */
-async function getQuestionBankList() {
-  try {
-    questionBankList.value = await fetchAdminCourseOutlineSectionExamQuestionBank()
-  }
-  catch {
-    ElNotification.error('获取题库下拉列表失败')
-  }
-}
-
-/**
- * 打开题库弹窗并加载题库与题目列表。
- */
-async function handleOpenTableDialog() {
-  selectedBankQuestions.value = []
+/** 打开题库弹窗。 */
+function handleOpenTableDialog() {
   isShowExamSelectDialog.value = true
-  await getQuestionBankList()
-  replaceSearchParams({
-    ...searchParams,
-    currentPage: 1,
-  })
-  await getData()
-}
-
-/**
- * 记录题库弹窗中当前选中的题目。
- * @param rows 当前选中行
- */
-function handleTableSelectionChange(rows: QuestionListItem[]) {
-  selectedBankQuestions.value = rows
-}
-
-/** 按当前筛选条件重新查询题库题目列表。 */
-function handleSearch() {
-  selectedBankQuestions.value = []
-  replaceSearchParams({
-    ...searchParams,
-    currentPage: 1,
-  })
-  void getData()
-}
-
-/**
- * 处理题库弹窗分页大小变化。
- * @param size 每页条数
- */
-async function handleSizeChange(size: number) {
-  selectedBankQuestions.value = []
-  await handleTableSizeChange(size)
-}
-
-/**
- * 处理题库弹窗页码变化。
- * @param currentPage 当前页码
- */
-async function handleCurrentChange(currentPage: number) {
-  selectedBankQuestions.value = []
-  await handleTableCurrentChange(currentPage)
 }
 
 /**
@@ -872,15 +681,9 @@ function appendQuestions(questions: QuestionListItem[]) {
   ElNotification.success(`已添加 ${normalizedQuestions.length} 道题目`)
 }
 
-/** 确认将题库弹窗中的所选题目添加到试卷。 */
-function confirmSelectQuestions() {
-  if (!selectedBankQuestions.value.length) {
-    ElNotification.warning('请先选择题目')
-    return
-  }
-
-  appendQuestions(selectedBankQuestions.value)
-  isShowExamSelectDialog.value = false
+/** 处理题库弹窗确认选题。 */
+function handleConfirmSelectQuestions(questions: QuestionListItem[]) {
+  appendQuestions(questions)
 }
 
 /**
@@ -922,8 +725,13 @@ async function handleSubmit() {
 
 /** 返回课程大纲页。 */
 function backToCourseOutline() {
+  console.log('🚀 ~ file: index.vue:732 ~ couId:', couId)
+
   router.push({
-    path: COURSE_OUTLINE_PATH,
+    name: 'AdminCourseOutline',
+    params: {
+      couId: couId.value,
+    },
   })
 }
 
@@ -942,77 +750,10 @@ onMounted(() => {
   <div
     class="mx-auto mb-10 flex w-full max-w-7xl flex-col gap-4 px-10 max-lg:px-6 max-sm:px-4"
   >
-    <el-dialog
+    <QuestionBankSelectDialog
       v-model="isShowExamSelectDialog"
-      title="从题库添加题目"
-      width="72%"
-      destroy-on-close
-    >
-      <div
-        class="mb-4 flex flex-wrap items-center justify-between gap-3"
-      >
-        <div
-          class="flex flex-wrap items-center gap-3"
-        >
-          <el-select
-            v-model="params.qbIds"
-            multiple
-            clearable
-            collapse-tags
-            collapse-tags-tooltip
-            placeholder="筛选题库"
-            style="width: 320px"
-            @change="handleSearch"
-          >
-            <el-option
-              v-for="item in questionBankList"
-              :key="item.qbId"
-              :label="item.qbName"
-              :value="item.qbId"
-            />
-          </el-select>
-        </div>
-
-        <div
-          class="text-sm text-g-600"
-        >
-          已选 {{ selectedBankQuestions.length }} 道
-        </div>
-      </div>
-
-      <ArtTable
-        class="max-h-[calc(100vh-360px)] overflow-auto"
-        :loading="tableLoading"
-        :data="tableData"
-        :columns="columns"
-        :pagination="tablePagination"
-        row-key="qusID"
-        @selection-change="handleTableSelectionChange"
-        @pagination:size-change="handleSizeChange"
-        @pagination:current-change="handleCurrentChange"
-      />
-
-      <template
-        #footer
-      >
-        <div
-          class="flex items-center justify-end gap-3"
-        >
-          <el-button
-            @click="isShowExamSelectDialog = false"
-          >
-            取消
-          </el-button>
-
-          <ArtButton
-            type="primary"
-            @click="confirmSelectQuestions"
-          >
-            添加所选题目
-          </ArtButton>
-        </div>
-      </template>
-    </el-dialog>
+      @confirm="handleConfirmSelectQuestions"
+    />
 
     <AdminPageHeader
       :title="pageTitle"
