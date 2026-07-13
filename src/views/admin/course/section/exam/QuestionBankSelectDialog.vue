@@ -13,37 +13,67 @@ defineOptions({
   name: 'QuestionBankSelectDialog',
 })
 
+/**
+ * 弹窗确认事件。
+ * 返回当前勾选的题库题目列表。
+ */
 const emit = defineEmits<{
   confirm: [questions: AdminApi.Question.QuestionEditorQuestion[]]
 }>()
 
+/**
+ * 弹窗显示状态。
+ */
 const visible = defineModel<boolean>({
   default: false,
 })
 
-type QuestionListItem = AdminApi.Question.QuestionEditorQuestion
-
+/**
+ * 题库下拉列表数据。
+ */
 const questionBankList = ref<AdminApi.Course.CourseOutlineSectionExamQuestionBankItem[]>([])
 
-const selectedQuestions = ref<QuestionListItem[]>([])
+/**
+ * 当前在弹窗表格中勾选的题目。
+ */
+const selectedQuestions = ref<AdminApi.Question.QuestionEditorQuestion[]>([])
 
+/**
+ * 获取题型显示文案。
+ * @param type 题型值
+ */
 function getQuestionTypeLabel(type: number) {
   return type === 1 ? '单选题' : type === 2 ? '多选题' : '其他题型'
 }
 
+/**
+ * 获取题型标签类型。
+ * @param type 题型值
+ */
 function getQuestionTypeTagType(type: number) {
   return type === 1 ? 'primary' : type === 2 ? 'success' : 'info'
 }
 
+/**
+ * 获取难度显示文案。
+ * @param diff 难度值
+ */
 function getDiffLabel(diff: number) {
   return diff === 1 ? '简单' : diff === 2 ? '中等' : '困难'
 }
 
+/**
+ * 获取难度标签类型。
+ * @param diff 难度值
+ */
 function getDiffTagType(diff: number) {
   return diff === 1 ? 'success' : diff === 2 ? 'warning' : 'danger'
 }
 
-function createQuestionTableColumns(): ColumnOption<QuestionListItem>[] {
+/**
+ * 构建题库表格列配置。
+ */
+function createQuestionTableColumns(): ColumnOption<AdminApi.Question.QuestionEditorQuestion>[] {
   return [
     {
       label: '序号',
@@ -86,15 +116,58 @@ function createQuestionTableColumns(): ColumnOption<QuestionListItem>[] {
   ]
 }
 
+/**
+ * 适配题库题目列表接口响应结构。
+ * 将后端返回的 rows、totals 转换为 useTable 统一识别的 records、total。
+ * @param response 接口原始响应
+ */
+function adaptQuestionListResponse(response: AdminApi.Course.CourseOutlineSectionExamQuestionListResponse) {
+  return {
+    records: response.rows ?? [],
+    total: response.totals ?? 0,
+  }
+}
+
+/**
+ * 题库弹窗表格列配置。
+ */
 const {
   columns,
+  /**
+   * 题库弹窗表格数据。
+   */
   data: tableData,
+  /**
+   * 题库弹窗表格加载状态。
+   */
   loading: tableLoading,
+  /**
+   * 题库弹窗表格分页信息。
+   */
   pagination: tablePagination,
+  /**
+   * 题库弹窗筛选参数。
+   */
   searchParams,
+
+  /**
+   * 获取题库题目列表。
+   */
   getData,
+
+  /**
+   * 替换当前筛选参数。
+   */
   replaceSearchParams,
+
+  /**
+   * 处理分页大小变化。
+   */
   handleSizeChange: handleTableSizeChange,
+
+  /**
+   * 处理页码变化。
+   */
   handleCurrentChange: handleTableCurrentChange,
 } = useTable({
   core: {
@@ -111,6 +184,9 @@ const {
     },
     columnsFactory: createQuestionTableColumns,
   },
+  transform: {
+    responseAdapter: adaptQuestionListResponse,
+  },
   hooks: {
     onError: () => {
       ElNotification.error('获取题目列表失败')
@@ -118,12 +194,18 @@ const {
   },
 })
 
+/**
+ * 兼容模板中对 params 的使用方式。
+ */
 const params = searchParams as {
   currentPage: number
   pageSize: number
   qbIds: number[]
 }
 
+/**
+ * 获取题库下拉列表。
+ */
 async function getQuestionBankList() {
   try {
     questionBankList.value = await fetchAdminCourseOutlineSectionExamQuestionBank()
@@ -133,6 +215,10 @@ async function getQuestionBankList() {
   }
 }
 
+/**
+ * 初始化弹窗数据。
+ * 包括重置选中状态、加载题库下拉项和首屏题目列表。
+ */
 async function initDialogData() {
   selectedQuestions.value = []
   await getQuestionBankList()
@@ -143,10 +229,17 @@ async function initDialogData() {
   await getData()
 }
 
-function handleTableSelectionChange(rows: QuestionListItem[]) {
+/**
+ * 记录当前表格选中项。
+ * @param rows 当前选中的题目列表
+ */
+function handleTableSelectionChange(rows: AdminApi.Question.QuestionEditorQuestion[]) {
   selectedQuestions.value = rows
 }
 
+/**
+ * 按当前筛选条件重新加载题目列表。
+ */
 function handleSearch() {
   selectedQuestions.value = []
   replaceSearchParams({
@@ -156,20 +249,35 @@ function handleSearch() {
   void getData()
 }
 
+/**
+ * 处理每页条数变化。
+ * @param size 每页条数
+ */
 async function handleSizeChange(size: number) {
   selectedQuestions.value = []
   await handleTableSizeChange(size)
 }
 
+/**
+ * 处理页码变化。
+ * @param currentPage 当前页码
+ */
 async function handleCurrentChange(currentPage: number) {
   selectedQuestions.value = []
   await handleTableCurrentChange(currentPage)
 }
 
+/**
+ * 关闭弹窗。
+ */
 function closeDialog() {
   visible.value = false
 }
 
+/**
+ * 确认当前选择的题目。
+ * 未选择题目时给出提示，否则将结果回传给父组件。
+ */
 function confirmSelectQuestions() {
   if (!selectedQuestions.value.length) {
     ElNotification.warning('请先选择题目')
@@ -180,6 +288,10 @@ function confirmSelectQuestions() {
   visible.value = false
 }
 
+/**
+ * 监听弹窗打开状态，在展示时初始化所需数据。
+ * @param value 当前弹窗显示状态
+ */
 watch(visible, (value) => {
   if (!value) {
     return
@@ -230,12 +342,11 @@ watch(visible, (value) => {
     </div>
 
     <ArtTable
-      class="max-h-[calc(100vh-360px)] overflow-auto"
       :loading="tableLoading"
       :data="tableData"
       :columns="columns"
       :pagination="tablePagination"
-      row-key="qusID"
+      row-key="qusId"
       @selection-change="handleTableSelectionChange"
       @pagination:size-change="handleSizeChange"
       @pagination:current-change="handleCurrentChange"

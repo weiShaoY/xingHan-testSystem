@@ -40,6 +40,7 @@ const props = withDefaults(defineProps<ArtTableProps>(), {
   emptyHeight: '100%',
   emptyText: '暂无数据',
   showTableHeader: true,
+  height: 'calc(100vh - 600px)',
 })
 
 const emit = defineEmits<{
@@ -144,7 +145,9 @@ const layout = computed(() => {
   }
 })
 
-// 默认分页常量
+/**
+   *  默认分页常量
+   */
 const DEFAULT_PAGINATION_OPTIONS: PaginationOptions = {
   pageSizes: [10, 20, 30, 50, 100],
   align: 'center',
