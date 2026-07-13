@@ -1,5 +1,11 @@
 <!------  2026-07-09---考试小节编辑  ------>
 <script lang="ts" setup>
+import type {
+  FormInstance,
+  FormItemRule,
+  FormRules,
+} from 'element-plus'
+
 import {
   computed,
   ref,
@@ -24,22 +30,8 @@ type QuestionType = 1 | 2
 /** 支持的题目难度 */
 type QuestionDifficulty = 1 | 2 | 3
 
-/** 题目选项类型 */
-type QuestionOption = AdminApi.Question.QuestionItem
-
-/** 题库列表项类型 */
-type QuestionListItem = AdminApi.Question.QuestionEditorQuestion
-
-/** 页面内部使用的题目结构，补充了前端生成的 clientId */
-type ExamQuestion = Omit<QuestionListItem, 'qusType'> & {
-  clientId: string
-  qusType: QuestionType
-}
-
-/** 考试编辑表单结构 */
-type ExamEditorForm = Omit<AdminApi.Course.CourseOutlineSectionExamEditor, 'questions'> & {
-  questions: ExamQuestion[]
-}
+/** Element Plus 自定义校验函数类型。 */
+type ExamValidator = NonNullable<FormItemRule['validator']>
 
 const workTabStore = useWorkTabStore()
 
@@ -95,7 +87,12 @@ const isShowExamSelectDialog = ref(false)
 /**
  * 小节表单数据
  */
-const formData = ref<ExamEditorForm>(createInitialFormData())
+const formData = ref<AdminApi.Course.CourseOutlineSectionExamEditor>(createInitialFormData())
+
+/**
+ * 考试编辑表单实例。
+ */
+const examFormRef = ref<FormInstance>()
 
 // ==================== Static Options ====================
 
@@ -149,6 +146,105 @@ const questionActions = [
 /** 当前正在移动的题目 clientId */
 const movingQuestionId = ref('')
 
+/**
+ * 正确答案校验规则。
+ */
+function validateCorrectAnswer(
+  _rule: Parameters<ExamValidator>[0],
+  _value: Parameters<ExamValidator>[1],
+  callback: Parameters<ExamValidator>[2],
+) {
+  const field = String(_rule.field || '')
+
+  const match = field.match(/^questions\.(\d+)\.qusItems$/)
+
+  const questionIndex = Number(match?.[1] ?? -1)
+
+  const question = formData.value.questions[questionIndex]
+
+  if (!question) {
+    callback()
+
+    return
+  }
+
+  if (question.qusItems.length < 2) {
+    callback(new Error('至少需要两个选项'))
+
+    return
+  }
+
+  const correctOptionCount = question.qusItems.filter(option => option.ansIsCorrect).length
+
+  if (question.qusType === 1 && correctOptionCount !== 1) {
+    callback(new Error('单选题需要且只能设置一个正确答案'))
+
+    return
+  }
+
+  if (question.qusType === 2 && correctOptionCount === 0) {
+    callback(new Error('多选题请至少设置一个正确答案'))
+
+    return
+  }
+
+  callback()
+}
+
+/**
+ * 考试编辑表单规则。
+ */
+const examFormRules = {
+  testPaperName: [
+    {
+      required: true,
+      whitespace: true,
+      message: '请输入考试标题',
+      trigger: 'blur',
+    },
+  ],
+  questions: [
+    {
+      required: true,
+      type: 'array',
+      min: 1,
+      message: '请至少添加一道题目',
+      trigger: 'change',
+    },
+  ],
+  questionTitle: [
+    {
+      required: true,
+      whitespace: true,
+      message: '请输入题目内容',
+      trigger: 'blur',
+    },
+  ],
+  optionContent: [
+    {
+      required: true,
+      whitespace: true,
+      message: '请输入选项内容',
+      trigger: 'blur',
+    },
+  ],
+  correctAnswer: [
+    {
+      validator: validateCorrectAnswer,
+      trigger: 'change',
+    },
+  ],
+  questionScore: [
+    {
+      required: true,
+      type: 'number',
+      min: 1,
+      message: '请填写有效分值',
+      trigger: 'change',
+    },
+  ],
+}
+
 // ==================== Computed State ====================
 
 /**
@@ -197,8 +293,8 @@ const dateRange = computed<[string, string] | []>({
 /**
  * 创建新增或编辑模式下的小节初始表单
  */
-function createInitialFormData(): ExamEditorForm {
-  const baseFormData: Omit<ExamEditorForm, 'olId' | 'olPID' | 'olLevel'> = {
+function createInitialFormData() {
+  const baseFormData = {
     couId: couId.value,
     attemptLimit: 1,
     durationMinutes: 60,
@@ -213,7 +309,7 @@ function createInitialFormData(): ExamEditorForm {
     startTime: '',
     testPaperName: '',
     testPaperType: 1,
-    questions: [createQuestion()],
+    questions: [],
   }
 
   if (isEditMode.value) {
@@ -246,7 +342,7 @@ function createClientId() {
  * @param ansContext 选项内容
  * @param ansIsCorrect 是否为正确答案
  */
-function createOption(ansContext = '', ansIsCorrect = false): QuestionOption {
+function createOption(ansContext = '', ansIsCorrect = false): AdminApi.Question.QuestionItem {
   return {
     ansContext,
     ansIsCorrect,
@@ -545,54 +641,18 @@ function removeOption(question: ExamQuestion, index: number) {
  * 校验整个考试表单数据。
  * 包括试卷标题、题目内容、选项内容、分值和正确答案约束。
  */
-function validateFormData() {
-  if (!formData.value.testPaperName.trim()) {
-    ElNotification.warning('请输入考试标题')
+async function validateFormData() {
+  if (!examFormRef.value) {
     return false
   }
 
-  if (!formData.value.questions.length) {
-    ElNotification.warning('请至少添加一道题目')
+  try {
+    return await examFormRef.value.validate()
+  }
+  catch {
+    ElNotification.warning('请先完善考试表单内容')
     return false
   }
-
-  for (const [questionIndex, question] of formData.value.questions.entries()) {
-    const questionNumber = `第 ${questionIndex + 1} 题`
-
-    if (!question.qusTitle.trim()) {
-      ElNotification.warning(`${questionNumber} 请输入题目内容`)
-      return false
-    }
-
-    if (question.qusItems.length < 2) {
-      ElNotification.warning(`${questionNumber} 至少需要两个选项`)
-      return false
-    }
-
-    if (question.qusItems.some(option => !option.ansContext.trim())) {
-      ElNotification.warning(`${questionNumber} 请完善选项内容`)
-      return false
-    }
-
-    if (!Number.isFinite(Number(question.qusScore)) || Number(question.qusScore) <= 0) {
-      ElNotification.warning(`${questionNumber} 请填写有效分值`)
-      return false
-    }
-
-    const correctOptionCount = question.qusItems.filter(option => option.ansIsCorrect).length
-
-    if (question.qusType === 1 && correctOptionCount !== 1) {
-      ElNotification.warning(`${questionNumber} 单选题需要且只能设置一个正确答案`)
-      return false
-    }
-
-    if (question.qusType === 2 && correctOptionCount === 0) {
-      ElNotification.warning(`${questionNumber} 多选题请至少设置一个正确答案`)
-      return false
-    }
-  }
-
-  return true
 }
 
 /**
@@ -651,39 +711,10 @@ function handleOpenTableDialog() {
   isShowExamSelectDialog.value = true
 }
 
-/**
- * 将题库题目追加到当前试卷，并自动过滤重复题目。
- * @param questions 选中的题库题目
- */
-function appendQuestions(questions: QuestionListItem[]) {
-  const existingQuestionIds = new Set(
-    formData.value.questions
-      .map(question => question.qusId)
-      .filter((id): id is number => Number.isFinite(Number(id))),
-  )
-
-  const normalizedQuestions = questions
-    .filter((question) => {
-      if (!question.qusId) {
-        return true
-      }
-
-      return !existingQuestionIds.has(question.qusId)
-    })
-    .map(normalizeQuestion)
-
-  if (!normalizedQuestions.length) {
-    ElNotification.warning('所选题目已全部存在于当前试卷')
-    return
-  }
-
-  formData.value.questions.push(...normalizedQuestions)
-  ElNotification.success(`已添加 ${normalizedQuestions.length} 道题目`)
-}
-
 /** 处理题库弹窗确认选题。 */
-function handleConfirmSelectQuestions(questions: QuestionListItem[]) {
-  appendQuestions(questions)
+function handleConfirmSelectQuestions(questions: AdminApi.Question.QuestionEditorQuestion[]) {
+  formData.value.questions.push(...questions)
+  ElNotification.success(`已添加 ${questions.length} 道题目`)
 }
 
 /**
@@ -694,7 +725,7 @@ async function handleSubmit() {
     return
   }
 
-  if (!validateFormData()) {
+  if (!await validateFormData()) {
     return
   }
 
@@ -786,7 +817,9 @@ onMounted(() => {
           name="edit"
         >
           <el-form
+            ref="examFormRef"
             :model="formData"
+            :rules="examFormRules"
             label-position="top"
             class="flex flex-col gap-4"
           >
@@ -804,6 +837,7 @@ onMounted(() => {
                 class="art-card"
               >
                 <el-form-item
+                  prop="testPaperName"
                   label="标题"
                   required
                   class="mb-0!"
@@ -861,11 +895,17 @@ onMounted(() => {
                       Q{{ questionIndex + 1 }}
                     </div>
 
-                    <el-input
-                      v-model="question.qusTitle"
-                      placeholder="请输入问题"
-                      class="w-full flex-1"
-                    />
+                    <el-form-item
+                      :prop="`questions.${questionIndex}.qusTitle`"
+                      :rules="examFormRules.questionTitle"
+                      class="mb-0! w-full flex-1"
+                    >
+                      <el-input
+                        v-model="question.qusTitle"
+                        placeholder="请输入问题"
+                        class="w-full flex-1"
+                      />
+                    </el-form-item>
 
                     <div
                       class="flex shrink-0 flex-wrap gap-2 items-center max-md:w-full max-md:justify-end"
@@ -907,17 +947,23 @@ onMounted(() => {
                       :key="optionIndex"
                       class="flex gap-2 items-center justify-between max-sm:flex-col max-sm:items-stretch"
                     >
-                      <el-input
-                        v-model="option.ansContext"
-                        placeholder="请输入选项内容"
-                        @keyup.enter="addOption(question, optionIndex)"
+                      <el-form-item
+                        :prop="`questions.${questionIndex}.qusItems.${optionIndex}.ansContext`"
+                        :rules="examFormRules.optionContent"
+                        class="mb-0! flex-1"
                       >
-                        <template
-                          #prepend
+                        <el-input
+                          v-model="option.ansContext"
+                          placeholder="请输入选项内容"
+                          @keyup.enter="addOption(question, optionIndex)"
                         >
-                          {{ getOptionLabel(optionIndex) }}.
-                        </template>
-                      </el-input>
+                          <template
+                            #prepend
+                          >
+                            {{ getOptionLabel(optionIndex) }}.
+                          </template>
+                        </el-input>
+                      </el-form-item>
 
                       <div
                         class="flex gap-1 items-center justify-end"
@@ -962,6 +1008,8 @@ onMounted(() => {
                     <el-form-item
                       label="正确答案"
                       required
+                      :prop="`questions.${questionIndex}.qusItems`"
+                      :rules="examFormRules.correctAnswer"
                       class="mb-0! [&_.el-select]:w-full"
                     >
                       <el-select
@@ -996,6 +1044,8 @@ onMounted(() => {
 
                     <el-form-item
                       label="分值"
+                      :prop="`questions.${questionIndex}.qusScore`"
+                      :rules="examFormRules.questionScore"
                       class="mb-0! w-full!"
                       required
                     >
