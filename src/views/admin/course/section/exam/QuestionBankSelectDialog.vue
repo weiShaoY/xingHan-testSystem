@@ -125,6 +125,40 @@ const {
     immediate: false,
     columnsFactory: (): ColumnOption<AdminApi.Question.Question>[] => [
       {
+        type: 'expand',
+        label: '选项',
+        width: 80,
+        formatter: (row) => {
+          if (!row.qusItems?.length) {
+            return h(ElEmpty, {
+              description: '暂无选项',
+              imageSize: 48,
+            })
+          }
+
+          return h('div', {
+            class: 'flex flex-col gap-2 px-50 py-3',
+          }, row.qusItems.map((option, index) => {
+            const label = `${String.fromCharCode(65 + index)}. ${option.ansContext || '未填写选项内容'}`
+
+            if (row.qusType === 1) {
+              return h(ElRadio, {
+                key: option.ansId || index,
+                modelValue: option.ansIsCorrect,
+                value: true,
+                disabled: true,
+              }, () => label)
+            }
+
+            return h(ElCheckbox, {
+              key: option.ansId || index,
+              modelValue: option.ansIsCorrect,
+              disabled: true,
+            }, () => label)
+          }))
+        },
+      },
+      {
         type: 'selection',
         width: 50,
         reserveSelection: true,
