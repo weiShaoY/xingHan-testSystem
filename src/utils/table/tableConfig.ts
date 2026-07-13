@@ -39,10 +39,10 @@ export const tableConfig = {
   recordFields: ['list', 'data', 'records', 'items', 'result', 'rows'],
 
   // 总条数
-  totalFields: ['total', 'count'],
+  totalFields: ['total', 'count', 'totals'],
 
   // 当前页码
-  currentFields: ['current', 'page', 'pageNum'],
+  currentFields: ['current', 'page', 'pageNum', 'currentPage'],
 
   // 每页大小
   sizeFields: ['size', 'pageSize', 'limit'],

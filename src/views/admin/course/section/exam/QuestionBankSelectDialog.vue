@@ -43,7 +43,7 @@ const questionBankList = ref<AdminApi.Course.CourseOutlineSectionExamQuestionBan
 /**
  * 当前在弹窗表格中勾选的题目。
  */
-const selectedQuestions = ref<AdminApi.Question.QuestionEditorQuestion[]>([])
+const selectedRows = ref<AdminApi.Question.QuestionEditorQuestion[]>([])
 
 /**
  * 获取题型显示文案。
@@ -83,6 +83,11 @@ function getDiffTagType(diff: number) {
 function createQuestionTableColumns(): ColumnOption<AdminApi.Question.QuestionEditorQuestion>[] {
   return [
     {
+      type: 'selection',
+      width: 50,
+      reserveSelection: true,
+    },
+    {
       label: '序号',
       type: 'globalIndex',
       width: 60,
@@ -121,18 +126,6 @@ function createQuestionTableColumns(): ColumnOption<AdminApi.Question.QuestionEd
       width: 100,
     },
   ]
-}
-
-/**
- * 适配题库题目列表接口响应结构。
- * 将后端返回的 rows、totals 转换为 useTable 统一识别的 records、total。
- * @param response 接口原始响应
- */
-function adaptQuestionListResponse(response: AdminApi.Course.CourseOutlineSectionExamQuestionListResponse) {
-  return {
-    records: response.rows ?? [],
-    total: response.totals ?? 0,
-  }
 }
 
 /**
@@ -181,14 +174,7 @@ const {
       qbIds: [],
     },
     immediate: false,
-    paginationKey: {
-      current: 'currentPage',
-      size: 'pageSize',
-    },
     columnsFactory: createQuestionTableColumns,
-  },
-  transform: {
-    responseAdapter: adaptQuestionListResponse,
   },
   hooks: {
     onError: () => {
@@ -230,15 +216,13 @@ async function getQuestionBankList() {
  * 包括重置选中状态、加载题库下拉项和首屏题目列表。
  */
 async function initDialogData() {
-  selectedQuestions.value = []
+  selectedRows.value = []
   searchFormState.value = {
     qbIds: [],
   }
   await getQuestionBankList()
   replaceSearchParams({
     ...buildSearchParams(searchFormState.value),
-    currentPage: 1,
-    pageSize: 10,
   })
   await getData()
 }
@@ -247,35 +231,18 @@ async function initDialogData() {
  * 记录当前表格选中项。
  * @param rows 当前选中的题目列表
  */
-function handleTableSelectionChange(rows: AdminApi.Question.QuestionEditorQuestion[]) {
-  selectedQuestions.value = rows
+function handleSelectionChange(rows: AdminApi.Question.QuestionEditorQuestion[]) {
+  selectedRows.value = rows
+  console.log('选择变更:', rows)
 }
 
 /**
  * 按当前筛选条件重新加载题目列表。
  */
 function handleSearch() {
-  selectedQuestions.value = []
+  selectedRows.value = []
   replaceSearchParams(buildSearchParams(searchFormState.value))
   void getData()
-}
-
-/**
- * 处理每页条数变化。
- * @param size 每页条数
- */
-async function handleSizeChange(size: number) {
-  selectedQuestions.value = []
-  await handleTableSizeChange(size)
-}
-
-/**
- * 处理页码变化。
- * @param currentPage 当前页码
- */
-async function handleCurrentChange(currentPage: number) {
-  selectedQuestions.value = []
-  await handleTableCurrentChange(currentPage)
 }
 
 /**
@@ -290,12 +257,12 @@ function closeDialog() {
  * 未选择题目时给出提示，否则将结果回传给父组件。
  */
 function confirmSelectQuestions() {
-  if (!selectedQuestions.value.length) {
+  if (!selectedRows.value.length) {
     ElNotification.warning('请先选择题目')
     return
   }
 
-  emit('confirm', selectedQuestions.value)
+  emit('confirm', selectedRows.value)
   visible.value = false
 }
 
@@ -348,19 +315,19 @@ watch(visible, (value) => {
       <div
         class="text-sm text-g-600"
       >
-        共 {{ tablePagination.total }} 道，已选 {{ selectedQuestions.length }} 道
+        共 {{ tablePagination.total }} 道，已选 {{ selectedRows.length }} 道
       </div>
     </div>
 
     <ArtTable
+      row-key="qusId"
       :loading="loading"
       :data="tableData"
       :columns="columns"
       :pagination="tablePagination"
-      row-key="qusId"
-      @selection-change="handleTableSelectionChange"
-      @pagination:size-change="handleSizeChange"
-      @pagination:current-change="handleCurrentChange"
+      @selection-change="handleSelectionChange"
+      @pagination:size-change="handleTableSizeChange"
+      @pagination:current-change="handleTableCurrentChange"
     />
 
     <template
@@ -377,6 +344,7 @@ watch(visible, (value) => {
 
         <ArtButton
           type="primary"
+          :disabled="!selectedRows.length"
           @click="confirmSelectQuestions"
         >
           添加所选题目

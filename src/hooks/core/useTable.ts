@@ -227,16 +227,48 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
   } = config
 
   /**
+   * 根据默认请求参数推断当前页字段名。
+   * @returns 当前页字段名
+   */
+  function resolvePageKey(): string {
+    if (paginationKey?.current) {
+      return paginationKey.current
+    }
+
+    if ('currentPage' in (apiParams as Record<string, unknown>)) {
+      return 'currentPage'
+    }
+
+    return tableConfig.paginationKey.current
+  }
+
+  /**
+   * 根据默认请求参数推断每页条数字段名。
+   * @returns 每页条数字段名
+   */
+  function resolveSizeKey(): string {
+    if (paginationKey?.size) {
+      return paginationKey.size
+    }
+
+    if ('pageSize' in (apiParams as Record<string, unknown>)) {
+      return 'pageSize'
+    }
+
+    return tableConfig.paginationKey.size
+  }
+
+  /**
    * 当前页字段名。
    * 优先使用业务传入配置，否则回退到全局配置。
    */
-  const pageKey = paginationKey?.current || tableConfig.paginationKey.current
+  const pageKey = resolvePageKey()
 
   /**
    * 每页条数字段名。
    * 优先使用业务传入配置，否则回退到全局配置。
    */
-  const sizeKey = paginationKey?.size || tableConfig.paginationKey.size
+  const sizeKey = resolveSizeKey()
 
   /**
    * 缓存统计刷新触发器。
