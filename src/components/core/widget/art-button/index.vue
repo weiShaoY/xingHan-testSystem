@@ -38,7 +38,7 @@ type Props = {
    * 按钮预设类型
    * @description 内置不同的图标、颜色和 tooltip 配置
    */
-  type?: 'default' | 'preview' | 'more' | 'add' | 'edit' | 'delete' | 'import' | 'export' | 'link' | 'primary' | 'success' | 'warning' | 'error' | 'allocate' | 'download'
+  type?: 'default' | 'preview' | 'more' | 'add' | 'edit' | 'delete' | 'import' | 'export' | 'link' | 'primary' | 'success' | 'warning' | 'error' | 'allocate' | 'download' | 'copy'
 
   /**
    * 图标颜色
@@ -200,6 +200,11 @@ const defaultButtons: Record<NonNullable<Props['type']>, ButtonPreset> = {
     icon: 'ri:download-2-line',
     class: 'bg-info/12 text-info',
     tooltip: '下载',
+  },
+  copy: {
+    icon: 'iconamoon:copy-light',
+    class: 'bg-info/12 text-info',
+    tooltip: '复制',
   },
 }
 

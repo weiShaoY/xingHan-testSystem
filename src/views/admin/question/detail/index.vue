@@ -10,7 +10,7 @@ const route = useRoute()
 
 const router = useRouter()
 
-type Question = AdminApi.Question.QuestionEditorQuestion
+type Question = AdminApi.Question.Question
 
 type QuestionType = 1 | 2
 

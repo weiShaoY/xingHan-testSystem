@@ -113,7 +113,7 @@ export namespace Question {
   /**
    *  题目选项
    */
-  type QuestionItem = {
+  type QuestionOption = {
 
     /**
      *  选项ID
@@ -137,9 +137,9 @@ export namespace Question {
   }
 
   /**
-   *  题目列表项
+   *  题目列表 单个题目
    */
-  type QuestionEditorQuestion = {
+  type Question = {
 
     /**
      *  题目ID
@@ -176,7 +176,7 @@ export namespace Question {
     /**
      * 题目选项列表
      */
-    qusItems: QuestionItem[]
+    qusItems: QuestionOption[]
   }
 
   /**
@@ -198,6 +198,6 @@ export namespace Question {
     /**
      * 题目列表
      */
-    questions: QuestionEditorQuestion[]
+    questions: Question[]
   }
 }

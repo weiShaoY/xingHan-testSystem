@@ -18,7 +18,7 @@ defineOptions({
  * 返回当前勾选的题库题目列表。
  */
 const emit = defineEmits<{
-  confirm: [questions: AdminApi.Question.QuestionEditorQuestion[]]
+  confirm: [questions: AdminApi.Question.Question[]]
 }>()
 
 /**
@@ -43,7 +43,7 @@ const questionBankList = ref<AdminApi.Course.CourseOutlineSectionExamQuestionBan
 /**
  * 当前在弹窗表格中勾选的题目。
  */
-const selectedRows = ref<AdminApi.Question.QuestionEditorQuestion[]>([])
+const selectedRows = ref<AdminApi.Question.Question[]>([])
 
 /**
  * 获取题型显示文案。
@@ -123,7 +123,7 @@ const {
       qbIds: [],
     },
     immediate: false,
-    columnsFactory: (): ColumnOption<AdminApi.Question.QuestionEditorQuestion>[] => [
+    columnsFactory: (): ColumnOption<AdminApi.Question.Question>[] => [
       {
         type: 'selection',
         width: 50,
@@ -218,7 +218,7 @@ async function initDialogData() {
  * 记录当前表格选中项。
  * @param rows 当前选中的题目列表
  */
-function handleSelectionChange(rows: AdminApi.Question.QuestionEditorQuestion[]) {
+function handleSelectionChange(rows: AdminApi.Question.Question[]) {
   selectedRows.value = rows
   console.log('选择变更:', rows)
 }

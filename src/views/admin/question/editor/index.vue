@@ -40,11 +40,11 @@ const isEditMode = computed(() => {
  */
 type QuestionType = 1 | 2
 
-type QuestionDifficulty = AdminApi.Question.QuestionEditorQuestion['qusDiff']
+type QuestionDifficulty = AdminApi.Question.Question['qusDiff']
 
-type QuestionOption = AdminApi.Question.QuestionItem
+type QuestionOption = AdminApi.Question.QuestionOption
 
-type EditorQuestion = Omit<AdminApi.Question.QuestionEditorQuestion, 'qusType' | 'qusItems'> & {
+type EditorQuestion = Omit<AdminApi.Question.Question, 'qusType' | 'qusItems'> & {
   clientId: string
   qusType: QuestionType
   qusItems: QuestionOption[]
@@ -273,7 +273,7 @@ function createQuestion(type: QuestionType = 1): EditorQuestion {
  * @param type 接口返回的题目类型。
  * @returns 当前页面支持的题目类型。
  */
-function isSupportedQuestionType(type: AdminApi.Question.QuestionEditorQuestion['qusType']): type is QuestionType {
+function isSupportedQuestionType(type: AdminApi.Question.Question['qusType']): type is QuestionType {
   return type === 1 || type === 2
 }
 
@@ -283,7 +283,7 @@ function isSupportedQuestionType(type: AdminApi.Question.QuestionEditorQuestion[
  * @param question 接口题目数据。
  * @returns 编辑页题目数据。
  */
-function normalizeQuestion(question: AdminApi.Question.QuestionEditorQuestion): EditorQuestion {
+function normalizeQuestion(question: AdminApi.Question.Question): EditorQuestion {
   const qusType = isSupportedQuestionType(question.qusType) ? question.qusType : 1
 
   const normalizedQuestion: EditorQuestion = {

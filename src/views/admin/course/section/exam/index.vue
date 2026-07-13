@@ -22,14 +22,6 @@ const router = useRouter()
 /** 当前激活的页签 */
 const activeTab = ref<'edit' | 'setting'>('edit')
 
-// ==================== Types ====================
-
-/** 支持的题目类型 */
-type QuestionType = 1 | 2
-
-/** 支持的题目难度 */
-type QuestionDifficulty = 1 | 2 | 3
-
 /** Element Plus 自定义校验函数类型。 */
 type ExamValidator = NonNullable<FormItemRule['validator']>
 
@@ -100,7 +92,7 @@ const examFormRef = ref<FormInstance>()
 const optionLabels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
 
 /** 题型选项 */
-const questionTypes: { label: string, value: QuestionType }[] = [
+const questionTypes: { label: string, value: 1 | 2 }[] = [
   {
     label: '单选题',
     value: 1,
@@ -112,7 +104,7 @@ const questionTypes: { label: string, value: QuestionType }[] = [
 ]
 
 /** 难度选项 */
-const diffOptions: { label: string, value: QuestionDifficulty }[] = [
+const diffOptions: { label: string, value: 1 | 2 | 3 }[] = [
   {
     label: '简单',
     value: 1,
@@ -126,25 +118,6 @@ const diffOptions: { label: string, value: QuestionDifficulty }[] = [
     value: 3,
   },
 ]
-
-/** 题目操作菜单 */
-const questionActions = [
-  {
-    label: '移动',
-    action: 'move',
-  },
-  {
-    label: '复制',
-    action: 'copy',
-  },
-  {
-    label: '删除',
-    action: 'delete',
-  },
-]
-
-/** 当前正在移动的题目 clientId */
-const movingQuestionId = ref('')
 
 /**
  * 正确答案校验规则。
@@ -268,29 +241,6 @@ const examStats = computed(() => {
 })
 
 /**
- * 时间范围
- */
-const dateRange = computed<[string, string] | []>({
-  get() {
-    if (formData.value.startTime && formData.value.endTime) {
-      return [formData.value.startTime, formData.value.endTime] as [string, string]
-    }
-
-    return [] as []
-  },
-  set(value: [string, string] | []) {
-    if (!value?.length) {
-      formData.value.startTime = ''
-      formData.value.endTime = ''
-      return
-    }
-
-    formData.value.startTime = value[0]
-    formData.value.endTime = value[1]
-  },
-})
-
-/**
  * 创建新增或编辑模式下的小节初始表单
  */
 function createInitialFormData() {
@@ -327,22 +277,11 @@ function createInitialFormData() {
 }
 
 /**
- * 生成前端临时题目 ID，用于拖拽、复制等本地交互。
- */
-function createClientId() {
-  const randomValue = Math.random().toString(36)
-
-  const randomId = randomValue.slice(2)
-
-  return `${Date.now()}-${randomId}`
-}
-
-/**
  * 创建一个默认题目选项。
  * @param ansContext 选项内容
  * @param ansIsCorrect 是否为正确答案
  */
-function createOption(ansContext = '', ansIsCorrect = false): AdminApi.Question.QuestionItem {
+function createOption(ansContext = '', ansIsCorrect = false): AdminApi.Question.QuestionOption {
   return {
     ansContext,
     ansIsCorrect,
@@ -353,9 +292,9 @@ function createOption(ansContext = '', ansIsCorrect = false): AdminApi.Question.
  * 创建一个默认题目。
  * @param type 题目类型，默认单选题
  */
-function createQuestion(type: QuestionType = 1): ExamQuestion {
+function createQuestion(type: 1 | 2 = 1): AdminApi.Question.Question {
   return {
-    clientId: createClientId(),
+    qusId: 0,
     qusTitle: '',
     qusType: type,
     qusScore: 10,
@@ -364,67 +303,7 @@ function createQuestion(type: QuestionType = 1): ExamQuestion {
     qusItems: [
       createOption(),
       createOption(),
-      createOption(),
-      createOption(),
     ],
-  }
-}
-
-/**
- * 判断接口题型是否属于当前页面支持的题型。
- * @param type 接口返回的题型值
- */
-function isSupportedQuestionType(type: AdminApi.Question.QuestionEditorQuestion['qusType']): type is QuestionType {
-  return type === 1 || type === 2
-}
-
-/**
- * 将接口返回的题目结构标准化为页面内部结构。
- * @param question 原始题目数据
- */
-function normalizeQuestion(question: AdminApi.Question.QuestionEditorQuestion): ExamQuestion {
-  const qusType = isSupportedQuestionType(question.qusType) ? question.qusType : 1
-
-  const normalizedQuestion: ExamQuestion = {
-    ...question,
-    clientId: createClientId(),
-    qusType,
-    qusTitle: question.qusTitle ?? '',
-    qusScore: question.qusScore ?? 10,
-    qusExplain: question.qusExplain ?? '',
-    qusDiff: ([1, 2, 3].includes(Number(question.qusDiff)) ? question.qusDiff : 2) as QuestionDifficulty,
-    qusItems: question.qusItems?.length
-      ? question.qusItems.map(item => ({
-          ...item,
-          ansContext: item.ansContext ?? '',
-          ansIsCorrect: Boolean(item.ansIsCorrect),
-        }))
-      : [
-          createOption(),
-          createOption(),
-          createOption(),
-          createOption(),
-        ],
-  }
-
-  ensureQuestionTypeConsistency(normalizedQuestion)
-
-  return normalizedQuestion
-}
-
-/**
- * 将接口返回的考试详情标准化为页面表单结构。
- * @param data 原始考试详情
- */
-function normalizeFormData(data: AdminApi.Course.CourseOutlineSectionExamEditor): ExamEditorForm {
-  const questions = (data.questions ?? [])
-    .filter(question => isSupportedQuestionType(question.qusType))
-    .map(normalizeQuestion)
-
-  return {
-    ...createInitialFormData(),
-    ...data,
-    questions: questions.length ? questions : [createQuestion()],
   }
 }
 
@@ -440,7 +319,7 @@ function getOptionLabel(index: number) {
  * 获取多选题所有正确答案的索引。
  * @param question 当前题目
  */
-function getCorrectOptionIndexes(question: ExamQuestion) {
+function getCorrectOptionIndexes(question: AdminApi.Question.Question) {
   return question.qusItems
     .map((option, index) => option.ansIsCorrect ? index : -1)
     .filter(index => index !== -1)
@@ -450,7 +329,7 @@ function getCorrectOptionIndexes(question: ExamQuestion) {
  * 获取单选题当前正确答案索引。
  * @param question 当前题目
  */
-function getCorrectSingleOptionIndex(question: ExamQuestion) {
+function getCorrectSingleOptionIndex(question: AdminApi.Question.Question) {
   return getCorrectOptionIndexes(question)[0]
 }
 
@@ -459,7 +338,7 @@ function getCorrectSingleOptionIndex(question: ExamQuestion) {
  * @param question 当前题目
  * @param optionIndex 选中的选项索引
  */
-function setCorrectSingleOption(question: ExamQuestion, optionIndex: number | string) {
+function setCorrectSingleOption(question: AdminApi.Question.Question, optionIndex: number | string) {
   const selectedIndex = Number(optionIndex)
 
   question.qusItems.forEach((option, index) => {
@@ -472,7 +351,7 @@ function setCorrectSingleOption(question: ExamQuestion, optionIndex: number | st
  * @param question 当前题目
  * @param optionIndexes 选中的选项索引列表
  */
-function setCorrectMultipleOptions(question: ExamQuestion, optionIndexes: Array<number | string>) {
+function setCorrectMultipleOptions(question: AdminApi.Question.Question, optionIndexes: Array<number | string>) {
   const selectedIndexes = optionIndexes.map(Number)
 
   question.qusItems.forEach((option, index) => {
@@ -485,7 +364,7 @@ function setCorrectMultipleOptions(question: ExamQuestion, optionIndexes: Array<
  * 单选题只允许保留一个正确答案，并补足最少选项数量。
  * @param question 当前题目
  */
-function ensureQuestionTypeConsistency(question: ExamQuestion) {
+function ensureQuestionTypeConsistency(question: AdminApi.Question.Question) {
   if (!question.qusItems?.length) {
     question.qusItems = [
       createOption(),
@@ -501,7 +380,7 @@ function ensureQuestionTypeConsistency(question: ExamQuestion) {
 
   let hasCorrectOption = false
 
-  question.qusItems.forEach((option) => {
+  question.qusItems.forEach((option: AdminApi.Question.Question) => {
     if (!option.ansIsCorrect) {
       return
     }
@@ -524,9 +403,8 @@ function addQuestion() {
  * 复制指定题目，并清空后端主键，保留题干和选项内容。
  * @param question 被复制的题目
  */
-function copyQuestion(question: ExamQuestion) {
+function copyQuestion(question: AdminApi.Question.Question) {
   formData.value.questions.push({
-    clientId: createClientId(),
     qusId: undefined,
     qusTitle: question.qusTitle,
     qusType: question.qusType,
@@ -556,53 +434,12 @@ function deleteQuestion(questionIndex: number) {
 }
 
 /**
- * 进入题目移动状态。
- * @param questionIndex 题目索引
- */
-function moveQuestion(questionIndex: number) {
-  movingQuestionId.value = formData.value.questions[questionIndex]?.clientId ?? ''
-}
-
-/** 取消题目移动状态。 */
-function cancelMoveQuestion() {
-  movingQuestionId.value = ''
-}
-
-/**
- * 将当前移动中的题目插入到目标位置之后。
- * @param targetIndex 目标题目索引
- */
-function moveQuestionTo(targetIndex: number) {
-  if (!movingQuestionId.value) {
-    return
-  }
-
-  const sourceIndex = formData.value.questions.findIndex(question => question.clientId === movingQuestionId.value)
-
-  if (sourceIndex === -1) {
-    cancelMoveQuestion()
-    return
-  }
-
-  const [question] = formData.value.questions.splice(sourceIndex, 1)
-
-  const insertIndex = sourceIndex < targetIndex ? targetIndex : targetIndex + 1
-
-  formData.value.questions.splice(insertIndex, 0, question)
-  cancelMoveQuestion()
-}
-
-/**
  * 统一处理题目操作菜单行为。
  * @param action 操作类型
  * @param question 当前题目
  * @param questionIndex 当前题目索引
  */
-function handleQuestionAction(action: string, question: ExamQuestion, questionIndex: number) {
-  if (action === 'move') {
-    moveQuestion(questionIndex)
-  }
-
+function handleQuestionAction(action: string, question: AdminApi.Question.Question, questionIndex: number) {
   if (action === 'copy') {
     copyQuestion(question)
   }
@@ -617,7 +454,7 @@ function handleQuestionAction(action: string, question: ExamQuestion, questionIn
  * @param question 当前题目
  * @param index 当前选项索引
  */
-function addOption(question: ExamQuestion, index?: number) {
+function addOption(question: AdminApi.Question.Question, index?: number) {
   const insertIndex = typeof index === 'number' ? index + 1 : question.qusItems.length
 
   question.qusItems.splice(insertIndex, 0, createOption())
@@ -628,7 +465,7 @@ function addOption(question: ExamQuestion, index?: number) {
  * @param question 当前题目
  * @param index 选项索引
  */
-function removeOption(question: ExamQuestion, index: number) {
+function removeOption(question: AdminApi.Question.Question, index: number) {
   if (question.qusItems.length <= 2) {
     ElNotification.warning('每道题至少保留两个选项')
     return
@@ -694,9 +531,7 @@ async function getSectionDetail() {
   pageLoading.value = true
 
   try {
-    const section = await fetchAdminCourseOutlineSectionExamDetail(olId.value)
-
-    formData.value = normalizeFormData(section)
+    formData.value = await fetchAdminCourseOutlineSectionExamDetail(olId.value)
   }
   catch {
     ElNotification.error('获取考试详情失败')
@@ -712,7 +547,7 @@ function handleOpenTableDialog() {
 }
 
 /** 处理题库弹窗确认选题。 */
-function handleConfirmSelectQuestions(questions: AdminApi.Question.QuestionEditorQuestion[]) {
+function handleConfirmSelectQuestions(questions: AdminApi.Question.Question[]) {
   formData.value.questions.push(...questions)
   ElNotification.success(`已添加 ${questions.length} 道题目`)
 }
@@ -770,10 +605,7 @@ function backToCourseOutline() {
 onMounted(() => {
   if (isEditMode.value) {
     void getSectionDetail()
-    return
   }
-
-  formData.value = normalizeFormData(formData.value)
 })
 </script>
 
@@ -876,15 +708,10 @@ onMounted(() => {
 
               <div
                 v-for="(question, questionIndex) in formData.questions"
-                :key="question.clientId"
+                :key="question.qusId"
               >
                 <div
-                  class="art-card flex flex-col gap-4 transition"
-                  :class="[
-                    movingQuestionId === question.clientId
-                      ? 'border-primary/30 bg-primary/10!'
-                      : '',
-                  ]"
+                  class="art-card flex flex-col gap-4 transition bg-primary/10"
                 >
                   <div
                     class="flex gap-4 items-start max-md:flex-col"
@@ -911,13 +738,14 @@ onMounted(() => {
                       class="flex shrink-0 flex-wrap gap-2 items-center max-md:w-full max-md:justify-end"
                     >
                       <ArtButton
-                        v-for="item in questionActions"
-                        :key="item.action"
-                        type="link"
-                        @click="handleQuestionAction(item.action, question, questionIndex)"
-                      >
-                        {{ item.label }}
-                      </ArtButton>
+                        type="delete"
+                        @click="deleteQuestion(questionIndex)"
+                      />
+
+                      <ArtButton
+                        type="copy"
+                        @click="copyQuestion(question)"
+                      />
                     </div>
                   </div>
 
@@ -1045,7 +873,6 @@ onMounted(() => {
                     <el-form-item
                       label="分值"
                       :prop="`questions.${questionIndex}.qusScore`"
-                      :rules="examFormRules.questionScore"
                       class="mb-0! w-full!"
                       required
                     >
@@ -1077,25 +904,6 @@ onMounted(() => {
                   />
                 </div>
 
-                <div
-                  v-if="movingQuestionId"
-                  class="my-3 flex flex-wrap gap-3 items-center justify-center"
-                >
-                  <art-button
-                    type="warning"
-                    :disabled="movingQuestionId === question.clientId"
-                    @click="moveQuestionTo(questionIndex)"
-                  >
-                    移到第 {{ questionIndex + 1 }} 题后
-                  </art-button>
-
-                  <art-button
-                    type="default"
-                    @click="cancelMoveQuestion"
-                  >
-                    取消移动
-                  </art-button>
-                </div>
               </div>
             </div>
 
@@ -1202,27 +1010,38 @@ onMounted(() => {
               </el-form-item>
 
               <el-form-item
-                label="时间范围"
-                class="mb-0!"
-              >
-                <el-date-picker
-                  v-model="dateRange"
-                  type="datetimerange"
-                  range-separator="至"
-                  start-placeholder="开始时间"
-                  end-placeholder="结束时间"
-                  value-format="YYYY-MM-DD HH:mm:ss"
-                  class="w-full!"
-                />
-              </el-form-item>
-
-              <el-form-item
                 label="考试总分"
                 class="mb-0!"
               >
                 <el-input
                   :model-value="`${totalScore} 分`"
                   disabled
+                />
+              </el-form-item>
+
+              <el-form-item
+                label="开始时间"
+                class="mb-0!"
+              >
+                <el-date-picker
+                  v-model="formData.startTime"
+                  type="datetime"
+                  placeholder="请选择开始时间"
+                  value-format="YYYY-MM-DD HH:mm:ss"
+                  class="w-full!"
+                />
+              </el-form-item>
+
+              <el-form-item
+                label="结束时间"
+                class="mb-0!"
+              >
+                <el-date-picker
+                  v-model="formData.endTime"
+                  type="datetime"
+                  placeholder="请选择结束时间"
+                  value-format="YYYY-MM-DD HH:mm:ss"
+                  class="w-full!"
                 />
               </el-form-item>
 

@@ -667,7 +667,7 @@ export namespace Course {
     /**
      * 题目列表
      */
-    questions: Question.QuestionEditorQuestion[]
+    questions: Question.Question[]
 
     /**
      * 小节ID
@@ -796,5 +796,5 @@ export namespace Course {
   /**
    *  考试小节 题目列表 响应
    */
-  type CourseOutlineSectionExamQuestionListResponse = CommonApi.PaginatedResponse<Question.QuestionEditorQuestion>
+  type CourseOutlineSectionExamQuestionListResponse = CommonApi.PaginatedResponse<Question.Question>
 }
