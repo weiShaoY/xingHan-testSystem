@@ -56,12 +56,25 @@ import {
 
 import { useTableColumns } from './useTableColumns'
 
-// 类型推导工具类型
+/**
+ * 从 API 函数中推导请求参数类型。
+ */
 type InferApiParams<T> = T extends (params: infer P) => any ? P : never
+
+/**
+ * 从 API 函数中推导响应类型。
+ */
 type InferApiResponse<T> = T extends (params: any) => Promise<infer R> ? R : never
+
+/**
+ * 从分页响应中提取单条记录类型。
+ */
 type InferRecordType<T> = T extends TablePaginatedResponse<infer U> ? U : never
 
-// 优化的配置接口 - 支持自动类型推导
+/**
+ * useTable 的配置项类型。
+ * 支持从 API 函数自动推导请求参数和响应数据结构。
+ */
 export type UseTableConfig<
   TApiFn extends (params: any) => Promise<any> = (params: any) => Promise<any>,
   TRecord = InferRecordType<InferApiResponse<TApiFn>>,
@@ -98,7 +111,7 @@ export type UseTableConfig<
     }
   }
 
-  // 数据处理
+  /** 数据处理 */
   transform?: {
 
     /** 数据转换函数 */
@@ -108,7 +121,7 @@ export type UseTableConfig<
     responseAdapter?: (response: TResponse) => ApiResponse<TRecord>
   }
 
-  // 性能优化
+  /** 性能优化 */
   performance?: {
 
     /** 是否启用缓存 */
@@ -124,7 +137,7 @@ export type UseTableConfig<
     maxCacheSize?: number
   }
 
-  // 生命周期钩子
+  /** 生命周期钩子 */
   hooks?: {
 
     /** 数据加载成功回调（仅网络请求成功时触发） */
@@ -143,7 +156,7 @@ export type UseTableConfig<
     resetFormCallback?: () => void
   }
 
-  // 调试配置
+  /** 调试配置 */
   debug?: {
 
     /** 是否启用日志输出 */
@@ -154,6 +167,10 @@ export type UseTableConfig<
   }
 }
 
+/**
+ * 创建表格数据管理 Hook。
+ * @param config 表格配置项
+ */
 export function useTable<TApiFn extends (params: any) => Promise<any>>(
   config: UseTableConfig<TApiFn>,
 ) {
@@ -174,8 +191,16 @@ export function useTable<TApiFn extends (params: any) => Promise<any>>(
 function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
   config: UseTableConfig<TApiFn>,
 ) {
+  /**
+   * 表格单条记录类型。
+   */
   type TRecord = InferRecordType<InferApiResponse<TApiFn>>
+
+  /**
+   * 表格请求参数类型。
+   */
   type TParams = InferApiParams<TApiFn>
+
   const {
     core: {
       apiFn,
@@ -201,26 +226,55 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
     },
   } = config
 
-  // 分页字段名配置：优先使用传入的配置，否则使用全局配置
+  /**
+   * 当前页字段名。
+   * 优先使用业务传入配置，否则回退到全局配置。
+   */
   const pageKey = paginationKey?.current || tableConfig.paginationKey.current
 
+  /**
+   * 每页条数字段名。
+   * 优先使用业务传入配置，否则回退到全局配置。
+   */
   const sizeKey = paginationKey?.size || tableConfig.paginationKey.size
 
-  // 响应式触发器，用于手动更新缓存统计信息
+  /**
+   * 缓存统计刷新触发器。
+   * 用于在缓存变更后主动触发 cacheInfo 重新计算。
+   */
   const cacheUpdateTrigger = ref(0)
 
-  // 日志工具函数
+  /**
+   * 调试日志工具。
+   */
   const logger = {
+    /**
+     * 输出普通日志。
+     * @param message 日志消息
+     * @param args 附加参数
+     */
     log: (message: string, ...args: unknown[]) => {
       if (enableLog) {
         console.log(`[useTable] ${message}`, ...args)
       }
     },
+
+    /**
+     * 输出警告日志。
+     * @param message 日志消息
+     * @param args 附加参数
+     */
     warn: (message: string, ...args: unknown[]) => {
       if (enableLog) {
         console.warn(`[useTable] ${message}`, ...args)
       }
     },
+
+    /**
+     * 输出错误日志。
+     * @param message 日志消息
+     * @param args 附加参数
+     */
     error: (message: string, ...args: unknown[]) => {
       if (enableLog) {
         console.error(`[useTable] ${message}`, ...args)
@@ -228,28 +282,51 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
     },
   }
 
-  // 缓存实例
+  /**
+   * 表格缓存实例。
+   * 仅在启用缓存时创建。
+   */
   const cache = enableCache ? new TableCache<TRecord>(cacheTime, maxCacheSize, enableLog) : null
 
-  // 加载状态机
+  /**
+   * 表格加载状态枚举。
+   */
   type LoadingState = 'idle' | 'loading' | 'success' | 'error'
+
+  /**
+   * 当前加载状态。
+   */
   const loadingState = ref<LoadingState>('idle')
 
+  /**
+   * 是否处于加载中。
+   */
   const loading = computed(() => loadingState.value === 'loading')
 
-  // 错误状态
+  /**
+   * 当前错误信息。
+   */
   const error = ref<TableError | null>(null)
 
-  // 表格数据
+  /**
+   * 当前表格数据。
+   */
   const data = ref<TRecord[]>([])
 
-  // 请求取消控制器
+  /**
+   * 当前请求的取消控制器。
+   */
   let abortController: AbortController | null = null
 
-  // 缓存清理定时器
+  /**
+   * 自动清理缓存的定时器。
+   */
   let cacheCleanupTimer: NodeJS.Timeout | null = null
 
-  // 搜索参数
+  /**
+   * 当前搜索参数。
+   * 同时承载分页参数与业务筛选参数。
+   */
   const searchParams = reactive(
     Object.assign(
       {
@@ -261,32 +338,52 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
     ) as TParams,
   )
 
-  // 分页配置
+  /**
+   * 当前分页状态。
+   */
   const pagination = reactive<TablePaginationParams>({
     current: ((searchParams as Record<string, unknown>)[pageKey] as number) || 1,
     size: ((searchParams as Record<string, unknown>)[sizeKey] as number) || 10,
     total: 0,
   })
 
-  // 移动端分页 (响应式)
+  /**
+   * 窗口宽度。
+   * 用于生成移动端分页配置。
+   */
   const { width } = useWindowSize()
 
+  /**
+   * 移动端分页配置。
+   */
   const mobilePagination = computed(() => ({
     ...pagination,
     small: width.value < 768,
   }))
 
-  // 列配置
+  /**
+   * 列配置管理实例。
+   */
   const columnConfig = columnsFactory ? useTableColumns<TRecord>(columnsFactory) : null
 
+  /**
+   * 当前表格列配置。
+   */
   const columns = columnConfig?.columns
 
+  /**
+   * 列勾选状态配置。
+   */
   const columnChecks = columnConfig?.columnChecks
 
-  // 是否有数据
+  /**
+   * 是否存在数据。
+   */
   const hasData = computed(() => data.value.length > 0)
 
-  // 缓存统计信息
+  /**
+   * 缓存统计信息。
+   */
   const cacheInfo = computed(() => {
     // 依赖触发器，确保缓存变化时重新计算
     void cacheUpdateTrigger.value
@@ -301,11 +398,17 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
     return cache.getStats()
   })
 
-  // 错误处理函数
+  /**
+   * 表格错误处理函数。
+   */
   const handleError = createErrorHandler(onError, enableLog)
 
-  // 清理缓存，根据不同的业务场景选择性地清理缓存
-  const clearCache = (strategy: CacheInvalidationStrategy, context?: string): void => {
+  /**
+   * 按策略清理缓存。
+   * @param strategy 缓存清理策略
+   * @param context 触发场景说明
+   */
+  function clearCache(strategy: CacheInvalidationStrategy, context?: string): void {
     if (!cache) { return }
 
     let clearedCount = 0
@@ -336,11 +439,16 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
     cacheUpdateTrigger.value++
   }
 
-  // 获取数据的核心方法
-  const fetchData = async (
+  /**
+   * 获取数据的核心方法。
+   * 负责请求发起、缓存命中、响应转换和状态同步。
+   * @param params 本次请求的附加参数
+   * @param useCache 是否启用缓存
+   */
+  async function fetchData(
     params?: Partial<TParams>,
     useCache = enableCache,
-  ): Promise<ApiResponse<TRecord>> => {
+  ): Promise<ApiResponse<TRecord>> {
     // 取消上一个请求
     if (abortController) {
       abortController.abort()
@@ -491,8 +599,11 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
     }
   }
 
-  // 获取数据 (保持当前页)
-  const getData = async (params?: Partial<TParams>): Promise<ApiResponse<TRecord> | void> => {
+  /**
+   * 获取数据并保持当前页。
+   * @param params 本次请求的附加参数
+   */
+  async function getData(params?: Partial<TParams>): Promise<ApiResponse<TRecord> | void> {
     try {
       return await fetchData(params)
     }
@@ -502,8 +613,12 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
     }
   }
 
-  // 分页获取数据 (重置到第一页) - 专门用于搜索场景
-  const getDataByPage = async (params?: Partial<TParams>): Promise<ApiResponse<TRecord> | void> => {
+  /**
+   * 获取数据并重置到第一页。
+   * 适用于搜索、筛选等需要回到首页的场景。
+   * @param params 本次请求的附加参数
+   */
+  async function getDataByPage(params?: Partial<TParams>): Promise<ApiResponse<TRecord> | void> {
     pagination.current = 1
     ;(searchParams as Record<string, unknown>)[pageKey] = 1
 
@@ -519,11 +634,15 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
     }
   }
 
-  // 智能防抖搜索函数
+  /**
+   * 防抖版搜索请求函数。
+   */
   const debouncedGetDataByPage = createSmartDebounce(getDataByPage, debounceTime)
 
-  // 重置搜索参数
-  const resetSearchParams = async (): Promise<void> => {
+  /**
+   * 重置搜索参数并重新请求数据。
+   */
+  async function resetSearchParams(): Promise<void> {
     // 取消防抖的搜索
     debouncedGetDataByPage.cancel()
 
@@ -564,8 +683,12 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
     }
   }
 
-  // 替换搜索参数：适用于表单查询，避免旧字段残留
-  const replaceSearchParams = (params?: Partial<TParams>): void => {
+  /**
+   * 替换搜索参数。
+   * 适用于表单查询，避免旧字段残留。
+   * @param params 新的搜索参数
+   */
+  function replaceSearchParams(params?: Partial<TParams>): void {
     const paramsRecord = searchParams as Record<string, unknown>
 
     const currentSize = pagination.size || ((paramsRecord[sizeKey] as number) ?? 10)
@@ -590,11 +713,16 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
     pagination.size = currentSize
   }
 
-  // 防重复调用的标志
+  /**
+   * 当前页切换防重入标记。
+   */
   let isCurrentChanging = false
 
-  // 处理分页大小变化
-  const handleSizeChange = async (newSize: number): Promise<void> => {
+  /**
+   * 处理每页条数变化。
+   * @param newSize 新的每页条数
+   */
+  async function handleSizeChange(newSize: number): Promise<void> {
     if (newSize <= 0) { return }
 
     debouncedGetDataByPage.cancel()
@@ -611,8 +739,11 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
     await getData()
   }
 
-  // 处理当前页变化
-  const handleCurrentChange = async (newCurrent: number): Promise<void> => {
+  /**
+   * 处理当前页变化。
+   * @param newCurrent 新的页码
+   */
+  async function handleCurrentChange(newCurrent: number): Promise<void> {
     if (newCurrent <= 0) { return }
 
     // 修复：防止重复调用
@@ -646,10 +777,11 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
     }
   }
 
-  // 针对不同业务场景的刷新方法
-
-  // 新增后刷新：回到第一页并清空分页缓存（适用于新增数据后）
-  const refreshCreate = async (): Promise<void> => {
+  /**
+   * 新增数据后的刷新逻辑。
+   * 回到第一页并清空分页缓存。
+   */
+  async function refreshCreate(): Promise<void> {
     debouncedGetDataByPage.cancel()
     pagination.current = 1
     ;(searchParams as Record<string, unknown>)[pageKey] = 1
@@ -657,14 +789,20 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
     await getData()
   }
 
-  // 更新后刷新：保持当前页，仅清空当前搜索缓存（适用于更新数据后）
-  const refreshUpdate = async (): Promise<void> => {
+  /**
+   * 更新数据后的刷新逻辑。
+   * 保持当前页，仅清空当前搜索缓存。
+   */
+  async function refreshUpdate(): Promise<void> {
     clearCache(CacheInvalidationStrategy.CLEAR_CURRENT, '编辑数据')
     await getData()
   }
 
-  // 删除后刷新：智能处理页码，避免空页面（适用于删除数据后）
-  const refreshRemove = async (): Promise<void> => {
+  /**
+   * 删除数据后的刷新逻辑。
+   * 自动处理空页并在必要时回退到上一页。
+   */
+  async function refreshRemove(): Promise<void> {
     const { current } = pagination
 
     // 清除缓存并获取最新数据
@@ -679,21 +817,29 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
     }
   }
 
-  // 全量刷新：清空所有缓存，重新获取数据（适用于手动刷新按钮）
-  const refreshData = async (): Promise<void> => {
+  /**
+   * 全量刷新数据。
+   * 清空所有缓存后重新请求。
+   */
+  async function refreshData(): Promise<void> {
     debouncedGetDataByPage.cancel()
     clearCache(CacheInvalidationStrategy.CLEAR_ALL, '手动刷新')
     await getData()
   }
 
-  // 轻量刷新：仅清空当前搜索条件的缓存，保持分页状态（适用于定时刷新）
-  const refreshSoft = async (): Promise<void> => {
+  /**
+   * 轻量刷新数据。
+   * 保持分页状态，仅清空当前搜索条件的缓存。
+   */
+  async function refreshSoft(): Promise<void> {
     clearCache(CacheInvalidationStrategy.CLEAR_CURRENT, '软刷新')
     await getData()
   }
 
-  // 取消当前请求
-  const cancelRequest = (): void => {
+  /**
+   * 取消当前请求及其防抖任务。
+   */
+  function cancelRequest(): void {
     if (abortController) {
       abortController.abort()
     }
@@ -701,15 +847,20 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
     debouncedGetDataByPage.cancel()
   }
 
-  // 清空数据
-  const clearData = (): void => {
+  /**
+   * 清空当前表格数据和错误状态。
+   */
+  function clearData(): void {
     data.value = []
     error.value = null
     clearCache(CacheInvalidationStrategy.CLEAR_ALL, '清空数据')
   }
 
-  // 清理已过期的缓存条目，释放内存空间
-  const clearExpiredCache = (): number => {
+  /**
+   * 清理已过期缓存。
+   * @returns 清理的缓存条数
+   */
+  function clearExpiredCache(): number {
     if (!cache) { return 0 }
 
     const cleanedCount = cache.cleanupExpired()
@@ -722,7 +873,9 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
     return cleanedCount
   }
 
-  // 设置定期清理过期缓存
+  /**
+   * 设置定期清理过期缓存的定时任务。
+   */
   if (enableCache && cache) {
     cacheCleanupTimer = setInterval(() => {
       const cleanedCount = cache.cleanupExpired()
@@ -736,14 +889,18 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
     }, cacheTime / 2) // 每半个缓存周期清理一次
   }
 
-  // 挂载时自动加载数据
+  /**
+   * 在组件挂载时自动加载数据。
+   */
   if (immediate) {
     onMounted(async () => {
       await getData()
     })
   }
 
-  // 组件卸载时彻底清理
+  /**
+   * 在组件卸载时清理请求和缓存资源。
+   */
   onUnmounted(() => {
     cancelRequest()
     if (cache) {
@@ -755,7 +912,9 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
     }
   })
 
-  // 优化的返回值结构
+  /**
+   * Hook 对外暴露的能力集合。
+   */
   return {
     // 数据相关
     /** 表格数据 */
@@ -882,16 +1041,24 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
   }
 }
 
-// 重新导出类型和枚举，方便使用
+/**
+ * 重新导出缓存失效策略枚举，便于业务侧直接使用。
+ */
 export {
   CacheInvalidationStrategy,
 } from '../../utils/table/tableCache'
 
+/**
+ * 重新导出表格缓存相关类型。
+ */
 export type {
   ApiResponse,
   CacheItem,
 } from '../../utils/table/tableCache'
 
+/**
+ * 重新导出表格工具相关类型。
+ */
 export type {
   BaseRequestParams,
   TableError,

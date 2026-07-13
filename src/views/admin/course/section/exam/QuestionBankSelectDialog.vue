@@ -29,6 +29,13 @@ const visible = defineModel<boolean>({
 })
 
 /**
+ * 题库筛选表单状态。
+ */
+const searchFormState = ref({
+  qbIds: [] as number[],
+})
+
+/**
  * 题库下拉列表数据。
  */
 const questionBankList = ref<AdminApi.Course.CourseOutlineSectionExamQuestionBankItem[]>([])
@@ -140,15 +147,11 @@ const {
   /**
    * 题库弹窗表格加载状态。
    */
-  loading: tableLoading,
+  loading,
   /**
    * 题库弹窗表格分页信息。
    */
   pagination: tablePagination,
-  /**
-   * 题库弹窗筛选参数。
-   */
-  searchParams,
 
   /**
    * 获取题库题目列表。
@@ -195,12 +198,19 @@ const {
 })
 
 /**
+ * 题库筛选参数。
  * 兼容模板中对 params 的使用方式。
  */
-const params = searchParams as {
-  currentPage: number
-  pageSize: number
-  qbIds: number[]
+const params = searchFormState
+
+/**
+ * 根据筛选表单生成题库查询参数。
+ * @param search 当前筛选表单状态
+ */
+function buildSearchParams(search: typeof searchFormState.value) {
+  return {
+    qbIds: [...search.qbIds],
+  }
 }
 
 /**
@@ -221,10 +231,14 @@ async function getQuestionBankList() {
  */
 async function initDialogData() {
   selectedQuestions.value = []
+  searchFormState.value = {
+    qbIds: [],
+  }
   await getQuestionBankList()
   replaceSearchParams({
-    ...searchParams,
+    ...buildSearchParams(searchFormState.value),
     currentPage: 1,
+    pageSize: 10,
   })
   await getData()
 }
@@ -242,10 +256,7 @@ function handleTableSelectionChange(rows: AdminApi.Question.QuestionEditorQuesti
  */
 function handleSearch() {
   selectedQuestions.value = []
-  replaceSearchParams({
-    ...searchParams,
-    currentPage: 1,
-  })
+  replaceSearchParams(buildSearchParams(searchFormState.value))
   void getData()
 }
 
@@ -337,12 +348,12 @@ watch(visible, (value) => {
       <div
         class="text-sm text-g-600"
       >
-        已选 {{ selectedQuestions.length }} 道
+        共 {{ tablePagination.total }} 道，已选 {{ selectedQuestions.length }} 道
       </div>
     </div>
 
     <ArtTable
-      :loading="tableLoading"
+      :loading="loading"
       :data="tableData"
       :columns="columns"
       :pagination="tablePagination"
