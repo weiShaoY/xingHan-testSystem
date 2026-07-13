@@ -78,57 +78,6 @@ function getDiffTagType(diff: number) {
 }
 
 /**
- * 构建题库表格列配置。
- */
-function createQuestionTableColumns(): ColumnOption<AdminApi.Question.QuestionEditorQuestion>[] {
-  return [
-    {
-      type: 'selection',
-      width: 50,
-      reserveSelection: true,
-    },
-    {
-      label: '序号',
-      type: 'globalIndex',
-      width: 60,
-      visible: true,
-    },
-    {
-      label: '题目名称',
-      prop: 'qusTitle',
-      minWidth: 260,
-    },
-    {
-      label: '题型',
-      prop: 'qusType',
-      width: 100,
-      formatter: (row) => {
-        return h(ElTag, {
-          type: getQuestionTypeTagType(row.qusType),
-          size: 'small',
-        }, () => getQuestionTypeLabel(row.qusType))
-      },
-    },
-    {
-      label: '难度',
-      prop: 'qusDiff',
-      width: 100,
-      formatter: (row) => {
-        return h(ElTag, {
-          type: getDiffTagType(row.qusDiff),
-          size: 'small',
-        }, () => getDiffLabel(row.qusDiff))
-      },
-    },
-    {
-      label: '分数',
-      prop: 'qusScore',
-      width: 100,
-    },
-  ]
-}
-
-/**
  * 题库弹窗表格列配置。
  */
 const {
@@ -159,7 +108,7 @@ const {
   /**
    * 处理分页大小变化。
    */
-  handleSizeChange: handleTableSizeChange,
+  handleSizeChange,
 
   /**
    * 处理页码变化。
@@ -174,7 +123,51 @@ const {
       qbIds: [],
     },
     immediate: false,
-    columnsFactory: createQuestionTableColumns,
+    columnsFactory: (): ColumnOption<AdminApi.Question.QuestionEditorQuestion>[] => [
+      {
+        type: 'selection',
+        width: 50,
+        reserveSelection: true,
+      },
+      {
+        label: '序号',
+        type: 'globalIndex',
+        width: 60,
+        visible: true,
+      },
+      {
+        label: '题目名称',
+        prop: 'qusTitle',
+        minWidth: 260,
+      },
+      {
+        label: '题型',
+        prop: 'qusType',
+        width: 100,
+        formatter: (row) => {
+          return h(ElTag, {
+            type: getQuestionTypeTagType(row.qusType),
+            size: 'small',
+          }, () => getQuestionTypeLabel(row.qusType))
+        },
+      },
+      {
+        label: '难度',
+        prop: 'qusDiff',
+        width: 100,
+        formatter: (row) => {
+          return h(ElTag, {
+            type: getDiffTagType(row.qusDiff),
+            size: 'small',
+          }, () => getDiffLabel(row.qusDiff))
+        },
+      },
+      {
+        label: '分数',
+        prop: 'qusScore',
+        width: 100,
+      },
+    ],
   },
   hooks: {
     onError: () => {
@@ -326,7 +319,7 @@ watch(visible, (value) => {
       :columns="columns"
       :pagination="tablePagination"
       @selection-change="handleSelectionChange"
-      @pagination:size-change="handleTableSizeChange"
+      @pagination:size-change="handleSizeChange"
       @pagination:current-change="handleTableCurrentChange"
     />
 
