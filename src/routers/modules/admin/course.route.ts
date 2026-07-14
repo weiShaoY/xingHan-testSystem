@@ -6,6 +6,7 @@ const sectionRouteConfigs = [
     name: 'Document',
     title: '文档',
     icon: 'ri:file-word-line',
+    cacheName: 'CourseSectionDocument',
     component: '/admin/course/section/document',
   },
   {
@@ -13,6 +14,7 @@ const sectionRouteConfigs = [
     name: 'Video',
     title: '视频',
     icon: 'ri:file-video-line',
+    cacheName: 'CourseSectionVideo',
     component: '/admin/course/section/video',
   },
   {
@@ -20,6 +22,7 @@ const sectionRouteConfigs = [
     name: 'Exam',
     title: '考试',
     icon: 'ri:file-text-line',
+    cacheName: 'CourseSectionExam',
     component: '/admin/course/section/exam',
   },
   {
@@ -27,6 +30,7 @@ const sectionRouteConfigs = [
     name: 'Survey',
     title: '问卷',
     icon: 'ri:file-text-line',
+    cacheName: 'CourseSectionSurvey',
     component: '/admin/course/section/survey',
   },
 ]
@@ -39,7 +43,7 @@ const createSectionRoutes: AppRouteRecord[] = sectionRouteConfigs.map((item, ind
     title: `添加${item.title}小节`,
     icon: item.icon,
     keepAlive: true,
-    cacheName: item.type === 'exam' ? 'CourseSectionExam' : undefined,
+    cacheName: item.cacheName,
     sort: 4 + index,
     isHide: true,
     activePath: '/admin/course/list',
