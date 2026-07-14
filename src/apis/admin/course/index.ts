@@ -235,7 +235,7 @@ export function fetchAdminCourseOutlineSectionExamUpdate(data: AdminApi.Course.C
 }
 
 /**
- *  获取题库下拉列表
+ *  获取考试小节 题库下拉列表
  */
 export function fetchAdminCourseOutlineSectionExamQuestionBank() {
   return request.get<AdminApi.Course.CourseOutlineSectionExamQuestionBankItem[]>({
@@ -244,11 +244,44 @@ export function fetchAdminCourseOutlineSectionExamQuestionBank() {
 }
 
 /**
- *  获取考试小节题目列表
+ *  获取考试小节 题目列表
  */
 export function fetchAdminCourseOutlineSectionExamQuestionList(data: AdminApi.Course.CourseOutlineSectionExamQuestionListParams) {
   return request.post<AdminApi.Course.CourseOutlineSectionExamQuestionListResponse>({
     url: '/admin/testpaper/getQuestionList',
+    data,
+  })
+}
+
+/**
+ * 新增问卷小节
+ */
+export function fetchAdminCourseOutlineSectionSurveyAdd(data: AdminApi.Course.CourseOutlineSectionSurveyEditor) {
+  return request.post<boolean>({
+    url: '/admin/questionpaper/addQuestionPaper',
+    data,
+  })
+}
+
+/**
+ *  获取问卷小节
+ * @param olId 小节ID
+ */
+export function fetchAdminCourseOutlineSectionSurveyDetail(olId: number) {
+  return request.get<AdminApi.Course.CourseOutlineSectionSurveyEditor>({
+    url: '/admin/questionpaper/getQuestionPaper',
+    params: {
+      olId,
+    },
+  })
+}
+
+/**
+ *  修改问卷小节
+ */
+export function fetchAdminCourseOutlineSectionSurveyUpdate(data: AdminApi.Course.CourseOutlineSectionSurveyEditor) {
+  return request.post<boolean>({
+    url: '/admin/questionpaper/updateQuestionPaper',
     data,
   })
 }

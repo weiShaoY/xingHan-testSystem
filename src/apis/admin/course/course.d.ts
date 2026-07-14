@@ -797,4 +797,111 @@ export namespace Course {
    *  考试小节 题目列表 响应
    */
   type CourseOutlineSectionExamQuestionListResponse = CommonApi.PaginatedResponse<Question.Question>
+
+  /**
+   *  问卷小节 新增或编辑请求参数
+   */
+  type CourseOutlineSectionSurveyEditor = {
+
+    /**
+     * 课程ID
+     */
+    couId: number
+
+    /**
+     * 允许尝试次数
+     */
+    attemptLimit: number
+
+    /**
+     * 考试时长
+     */
+    durationMinutes: number
+
+    /**
+     * 考试结束时间
+     */
+    endTime: string
+
+    /**
+     * 考试简介
+     */
+    examIntro: string
+
+    /**
+     * 考试类型
+     * @description 0=选修，1=必修。
+     */
+    examType: 0 | 1
+
+    /**
+     * 考后是否显示答案
+     * @description 0=不显示，1=显示。
+     */
+    isShowAnswer: 0 | 1
+
+    /**
+     * 考后是否显示分数
+     * @description 0=不显示，1=显示。
+     */
+    isShowScore: 0 | 1
+
+    /**
+     * 及格分数
+     */
+    passScore: number
+
+    /**
+     * 重考间隔（小时），NULL=无限制
+     */
+    retakeIntervalHours: number
+
+    /**
+     * 满分分数
+     */
+    score: number
+
+    /**
+     * 考试开始时间
+     */
+    startTime: string
+
+    /**
+     * 试卷名称
+     */
+    testPaperName: string
+
+    /**
+     * 试卷类型（1=考试，2=问卷）
+     * @description 1=考试，2=问卷。
+     */
+    testPaperType: 1 | 2
+
+    /**
+     * 题目列表
+     */
+    questions: Question.Question[]
+
+    /**
+     * 小节ID
+     * @description 小节的唯一标识符
+     * @description 只有新建时需要。
+     */
+    olId?: number
+
+    /**
+     * 父级节点ID
+     * @description 小节所属的章节ID , 只有在章节深度为2时才需要。
+     * @description 只有新建时需要。
+     */
+    olPID?: number
+
+    /**
+     *  章节深度
+     * @description 1 跟章节同级，2 在章节里面。
+     * @description 只有新建时需要。
+     */
+    olLevel?: 1 | 2
+  }
+
 }

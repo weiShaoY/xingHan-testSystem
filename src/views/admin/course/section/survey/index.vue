@@ -1,15 +1,71 @@
-<!------  2026-04-20---09:54---星期一  ------>
-<!------------------------------------  问卷小节  ------------------------------------------------->
+<!------  2026-07-09---问卷小节编辑  ------>
 <script lang="ts" setup>
-import { computed, ref } from 'vue'
+import type {
+  FormInstance,
+  FormItemRule,
+  FormRules,
+} from 'element-plus'
+
+import {
+  computed,
+  nextTick,
+  ref,
+} from 'vue'
+
+import { VueDraggable } from 'vue-draggable-plus'
+
+defineOptions({
+  name: 'CourseSectionExam',
+})
 
 const route = useRoute()
+
+const router = useRouter()
+
+// ==================== Constants ====================
+
+/** 当前激活的页签 */
+const activeTab = ref<'edit' | 'setting'>('edit')
+
+/** Element Plus 自定义校验函数类型。 */
+type ExamValidator = NonNullable<FormItemRule['validator']>
+
+/** 题目对象对应的稳定渲染标识。 */
+const questionKeys = new WeakMap<AdminApi.Question.Question, string>()
+
+/** 本地题目渲染标识序号。 */
+let questionKeySeed = 0
+
+const workTabStore = useWorkTabStore()
+
+// ==================== Route Derived State ====================
+
+/**
+ * 当前课程 ID
+ */
+const couId = computed(() => {
+  return Number(route.params.couId || 0)
+})
+
+/**
+ * 当前编辑的小节 ID
+ */
+const olId = computed(() => {
+  return Number(route.params.olId || 0)
+})
+
+/**
+ * 新增小节时所属的章节 ID；为空时表示课程直属小节。
+ */
+const olPID = computed(() => {
+  return Number(route.params.olPID || 0)
+})
 
 /**
  * 是否为编辑模式
  */
 const isEditMode = computed(() => {
-  return Boolean(route.params.sectionId)
+  return Boolean(olId.value)
 })
 
 /**
@@ -19,320 +75,441 @@ const pageTitle = computed(() => {
   return isEditMode.value ? '编辑问卷' : '添加问卷'
 })
 
-/**
- * 问题类型
- */
-type SurveyQuestionType = 'single' | 'multiple' | 'open' | 'number'
+// ==================== UI State ====================
 
 /**
- * 问题选项
+ * 加载状态
  */
-type SurveyOption = {
-
-  /** 选项 ID */
-  id: string
-
-  /** 选项内容 */
-  content: string
-}
+const pageLoading = ref(false)
 
 /**
- * 问题数据
+ * 小节表单数据
  */
-type SurveyQuestion = {
-
-  /** 问题 ID */
-  id: string
-
-  /** 题目 */
-  title: string
-
-  /** 问题类型 */
-  type: SurveyQuestionType
-
-  /** 选项 */
-  options: SurveyOption[]
-
-  /** 是否添加其他选项 */
-  enableOther: boolean
-
-  /** 是否展开高级设置 */
-  advancedExpanded: boolean
-
-  /** 是否必填 */
-  required: boolean
-
-  /** 是否智能排序 */
-  smartSort: boolean
-
-  /** 段落说明 */
-  description: string
-}
-
-const activeTab = ref('editor')
+const formData = ref<AdminApi.Course.CourseOutlineSectionSurveyEditor>(createInitialFormData())
 
 /**
- * 问卷表单
+ * 问卷编辑表单实例。
  */
-const surveyForm = ref({
-  title: '未命名问卷',
-  required: true,
-  scoreMultiplier: 1,
-  startSubmitTime: '',
-  endSubmitTime: '',
-  sectionTypeTag: '',
-  description: '',
-  successMessage: '感谢您的参与！',
-  randomOptions: false,
-  successRedirectType: 'none',
-  showResult: false,
-  showParticipantCount: true,
-  accessPermission: 'course',
-  submitPermission: 'anonymous',
-  maxSubmitCount: 1,
-  unlimitedSubmit: false,
-  allowModifyAfterSubmit: false,
-})
+const examFormRef = ref<FormInstance>()
 
-/**
- * 问题列表
- */
-const questions = ref<SurveyQuestion[]>([
-  {
-    id: '1',
-    title: 'Q1.',
-    type: 'multiple',
-    options: [
-      {
-        id: '1',
-        content: '',
-      },
-    ],
-    enableOther: false,
-    advancedExpanded: true,
-    required: true,
-    smartSort: false,
-    description: '',
-  },
-  {
-    id: '2',
-    title: 'Q2.',
-    type: 'single',
-    options: [
-      {
-        id: '1',
-        content: '',
-      },
-    ],
-    enableOther: false,
-    advancedExpanded: true,
-    required: true,
-    smartSort: false,
-    description: '',
-  },
-])
+// ==================== Static Options ====================
 
-/**
- * 小节基本分
- */
-const baseScore = 10
+/** 选项标签序列，如 A、B、C、D */
+const optionLabels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
 
-/**
- * 小节积分
- */
-const sectionScore = computed(() => {
-  return baseScore * Number(surveyForm.value.scoreMultiplier || 0)
-})
-
-/**
- * 问题类型选项
- */
-const questionTypeOptions: Array<{
-  label: string
-  value: SurveyQuestionType
-}> = [
+/** 题型选项 */
+const questionTypes: { label: string, value: 1 | 2 }[] = [
   {
     label: '单选题',
-    value: 'single',
+    value: 1,
   },
   {
     label: '多选题',
-    value: 'multiple',
-  },
-  {
-    label: '开放式问题',
-    value: 'open',
-  },
-  {
-    label: '数值型',
-    value: 'number',
+    value: 2,
   },
 ]
 
 /**
- * 富文本工具栏图标
+ * 正确答案校验规则。
  */
-const editorTools = [
-  'ri:font-size',
-  'ri:font-color',
-  'ri:bold',
-  'ri:list-ordered',
-  'ri:list-unordered',
-  'ri:align-left',
-  'ri:align-center',
-  'ri:link',
-  'ri:image-line',
-  'ri:subtract-line',
-]
+function validateCorrectAnswer(
+  _rule: Parameters<ExamValidator>[0],
+  _value: Parameters<ExamValidator>[1],
+  callback: Parameters<ExamValidator>[2],
+) {
+  const field = String(_rule.field || '')
 
-/**
- * 生成 ID
- */
-function createId() {
-  return `${Date.now()}-${Math.random()
-    .toString(16)
-    .slice(2)}`
+  const match = field.match(/^questions\.(\d+)\.qusItems$/)
+
+  const questionIndex = Number(match?.[1] ?? -1)
+
+  const question = formData.value.questions[questionIndex]
+
+  if (!question) {
+    callback()
+
+    return
+  }
+
+  if (question.qusItems.length < 2) {
+    callback(new Error('至少需要两个选项'))
+
+    return
+  }
+
+  callback()
 }
 
 /**
- * 创建问题
+ * 问卷编辑表单规则。
  */
-function createQuestion(type: SurveyQuestionType = 'single'): SurveyQuestion {
+const examFormRules: FormRules = {
+  testPaperName: [
+    {
+      required: true,
+      whitespace: true,
+      message: '请输入问卷标题',
+      trigger: 'blur',
+    },
+  ],
+  questions: [
+    {
+      required: true,
+      type: 'array',
+      min: 1,
+      message: '请至少添加一道题目',
+      trigger: 'change',
+    },
+  ],
+  questionTitle: [
+    {
+      required: true,
+      whitespace: true,
+      message: '请输入题目内容',
+      trigger: 'blur',
+    },
+  ],
+  optionContent: [
+    {
+      required: true,
+      whitespace: true,
+      message: '请输入选项内容',
+      trigger: 'blur',
+    },
+  ],
+  correctAnswer: [
+    {
+      validator: validateCorrectAnswer,
+      trigger: 'change',
+    },
+  ],
+
+}
+
+// ==================== Computed State ====================
+
+/**
+ * 问卷统计
+ */
+const examStats = computed(() => {
+  return [
+    `题目数 ${formData.value.questions.length}`,
+  ]
+})
+
+/**
+ * 创建新增或编辑模式下的小节初始表单
+ */
+function createInitialFormData(): AdminApi.Course.CourseOutlineSectionSurveyEditor {
+  const baseFormData: AdminApi.Course.CourseOutlineSectionSurveyEditor = {
+    couId: couId.value,
+    attemptLimit: 1,
+    durationMinutes: 60,
+    endTime: '',
+    examIntro: '',
+    examType: 0,
+    isShowAnswer: 1,
+    isShowScore: 1,
+    passScore: 60,
+    retakeIntervalHours: 0,
+    score: 0,
+    startTime: '',
+    testPaperName: '',
+    testPaperType: 1,
+    questions: [createQuestion()],
+  }
+
+  if (isEditMode.value) {
+    return {
+      ...baseFormData,
+      olId: olId.value,
+    }
+  }
+
   return {
-    id: createId(),
-    title: `Q${questions.value.length + 1}.`,
-    type,
-    options: [
-      {
-        id: createId(),
-        content: '',
-      },
-    ],
-    enableOther: false,
-    advancedExpanded: true,
-    required: true,
-    smartSort: false,
-    description: '',
+    ...baseFormData,
+    olPID: olPID.value || 0,
+    olLevel: olPID.value ? 2 : 1,
   }
 }
 
 /**
- * 添加问题
+ * 创建一个默认题目选项。
+ * @param ansContext 选项内容
+ * @param ansIsCorrect 是否为正确答案
  */
+function createOption(ansContext = '', ansIsCorrect = false): AdminApi.Question.QuestionOption {
+  return {
+    ansContext,
+    ansIsCorrect,
+    qusId: 0,
+    qusUid: '',
+  }
+}
+
+/**
+ * 创建一个默认题目。
+ * @param type 题目类型，默认单选题
+ */
+function createQuestion(type: 1 | 2 = 1): AdminApi.Question.Question {
+  return {
+    qusId: 0,
+    qusTitle: '',
+    qusType: type,
+    qusScore: 10,
+    qusExplain: '',
+    qusDiff: 2,
+    qusItems: [
+      createOption(),
+      createOption(),
+    ],
+  }
+}
+
+/**
+ * 获取题目的稳定渲染标识，防止拖动后表单节点复用错位。
+ * @param question 当前题目
+ */
+function getQuestionKey(question: AdminApi.Question.Question) {
+  const existingKey = questionKeys.get(question)
+
+  if (existingKey) {
+    return existingKey
+  }
+
+  questionKeySeed += 1
+
+  const key = `question-${question.qusId || 'new'}-${questionKeySeed}`
+
+  questionKeys.set(question, key)
+
+  return key
+}
+
+/**
+ * 根据选项索引生成展示标签。
+ * @param index 选项索引
+ */
+function getOptionLabel(index: number) {
+  return optionLabels[index] ?? `${index + 1}`
+}
+
+/**
+ * 保证题型与答案状态一致。
+ * 单选题只允许保留一个正确答案，并补足最少选项数量。
+ * @param question 当前题目
+ */
+function ensureQuestionTypeConsistency(question: AdminApi.Question.Question) {
+  if (!question.qusItems?.length) {
+    question.qusItems = [
+      createOption(),
+      createOption(),
+      createOption(),
+      createOption(),
+    ]
+  }
+
+  if (question.qusType !== 1) {
+    return
+  }
+
+  let hasCorrectOption = false
+
+  question.qusItems.forEach((option) => {
+    if (!option.ansIsCorrect) {
+      return
+    }
+
+    if (hasCorrectOption) {
+      option.ansIsCorrect = false
+      return
+    }
+
+    hasCorrectOption = true
+  })
+}
+
+/** 追加一条新题目。 */
 function addQuestion() {
-  questions.value.push(createQuestion())
+  formData.value.questions.push(createQuestion())
 }
 
 /**
- * 批量添加问题
+ * 复制指定题目，并清空后端主键，保留题干和选项内容。
+ * @param question 被复制的题目
  */
-function batchAddQuestion() {
-  questions.value.push(createQuestion('single'))
-  questions.value.push(createQuestion('multiple'))
-}
-
-/**
- * 添加段落说明
- */
-function addParagraphDescription() {
-  const question = createQuestion('open')
-
-  question.title = '段落说明'
-  question.description = '请输入段落说明'
-  questions.value.push(question)
-}
-
-/**
- * 复制问题
- */
-function copyQuestion(question: SurveyQuestion) {
-  questions.value.push({
-    ...structuredClone(question),
-    id: createId(),
-    title: `Q${questions.value.length + 1}.`,
+function copyQuestion(question: AdminApi.Question.Question) {
+  formData.value.questions.push({
+    qusId: undefined,
+    qusTitle: question.qusTitle,
+    qusType: question.qusType,
+    qusScore: question.qusScore,
+    qusExplain: question.qusExplain,
+    qusDiff: question.qusDiff,
+    qusItems: question.qusItems.map(option => ({
+      ansId: undefined,
+      qusId: undefined,
+      ansContext: option.ansContext,
+      ansIsCorrect: option.ansIsCorrect,
+    })),
   })
 }
 
 /**
- * 删除问题
+ * 删除指定题目，至少保留一题。
+ * @param questionIndex 题目索引
  */
 function deleteQuestion(questionIndex: number) {
-  if (questions.value.length <= 1) {
+  if (formData.value.questions.length <= 1) {
+    ElNotification.warning('至少保留一道题目')
     return
   }
 
-  questions.value.splice(questionIndex, 1)
+  formData.value.questions.splice(questionIndex, 1)
 }
 
 /**
- * 移动问题
+ * 在指定位置后插入一个选项；未指定位置时追加到末尾。
+ * @param question 当前题目
+ * @param index 当前选项索引
  */
-function moveQuestion(questionIndex: number, direction: 'up' | 'down') {
-  const targetIndex = direction === 'up' ? questionIndex - 1 : questionIndex + 1
+function addOption(question: AdminApi.Question.Question, index?: number) {
+  const insertIndex = typeof index === 'number' ? index + 1 : question.qusItems.length
 
-  if (targetIndex < 0 || targetIndex >= questions.value.length) {
+  question.qusItems.splice(insertIndex, 0, createOption())
+}
+
+/**
+ * 删除指定选项，至少保留两个选项。
+ * @param question 当前题目
+ * @param index 选项索引
+ */
+function removeOption(question: AdminApi.Question.Question, index: number) {
+  if (question.qusItems.length <= 2) {
+    ElNotification.warning('每道题至少保留两个选项')
     return
   }
 
-  const [question] = questions.value.splice(questionIndex, 1)
-
-  questions.value.splice(targetIndex, 0, question)
+  question.qusItems.splice(index, 1)
 }
 
-/**
- * 添加选项
- */
-function addOption(question: SurveyQuestion, optionIndex?: number) {
-  const insertIndex = typeof optionIndex === 'number' ? optionIndex + 1 : question.options.length
-
-  question.options.splice(insertIndex, 0, {
-    id: createId(),
-    content: '',
+/** 拖动排序结束后清除基于旧索引生成的表单校验状态。 */
+function handleQuestionDragEnd() {
+  void nextTick(() => {
+    examFormRef.value?.clearValidate()
   })
 }
 
 /**
- * 删除选项
+ * 校验整个问卷表单数据。
+ * 包括试卷标题、题目内容、选项内容、分值和正确答案约束。
  */
-function removeOption(question: SurveyQuestion, optionIndex: number) {
-  if (question.options.length <= 1) {
+async function validateFormData() {
+  if (!examFormRef.value) {
+    return false
+  }
+
+  try {
+    return await examFormRef.value.validate()
+  }
+  catch {
+    ElNotification.warning('请先完善问卷表单内容')
+    return false
+  }
+}
+
+/**
+ * 获取小节详情
+ */
+async function getSectionDetail() {
+  if (!olId.value) {
     return
   }
 
-  question.options.splice(optionIndex, 1)
+  pageLoading.value = true
+
+  try {
+    formData.value = await fetchAdminCourseOutlineSectionSurveyDetail(olId.value)
+  }
+  catch {
+    ElNotification.error('获取问卷详情失败')
+  }
+  finally {
+    pageLoading.value = false
+  }
 }
 
 /**
- * 切换问题高级设置
+ * 提交小节
  */
-function toggleQuestionAdvanced(question: SurveyQuestion) {
-  question.advancedExpanded = !question.advancedExpanded
+async function handleSubmit() {
+  if (pageLoading.value) {
+    return
+  }
+
+  if (!await validateFormData()) {
+    return
+  }
+
+  pageLoading.value = true
+
+  try {
+    const examTabPath = route.path
+
+    if (isEditMode.value) {
+      await fetchAdminCourseOutlineSectionSurveyUpdate(formData.value)
+      ElNotification.success('问卷更新成功')
+    }
+    else {
+      await fetchAdminCourseOutlineSectionSurveyAdd(formData.value)
+      ElNotification.success('问卷创建成功')
+    }
+
+    await backToCourseOutline()
+    workTabStore.removeTab(examTabPath)
+  }
+  catch {
+    ElNotification.error(isEditMode.value ? '问卷更新失败' : '问卷创建失败')
+  }
+  finally {
+    pageLoading.value = false
+  }
 }
 
-/**
- * 提交问卷
- */
-function handleSubmit() {
-  console.log('问卷小节表单:', {
-    mode: isEditMode.value ? 'edit' : 'create',
-    survey: surveyForm.value,
-    questions: questions.value,
+/** 返回课程大纲页。 */
+function backToCourseOutline() {
+  return router.push({
+    name: 'AdminCourseOutline',
+    params: {
+      couId: couId.value,
+    },
   })
 }
+
+/** 页面初始化：编辑模式拉取详情。 */
+onMounted(() => {
+  if (isEditMode.value) {
+    void getSectionDetail()
+  }
+})
 </script>
 
 <template>
   <div
     class="mx-auto mb-10 flex w-full max-w-7xl flex-col gap-4 px-10 max-lg:px-6 max-sm:px-4"
   >
+
     <AdminPageHeader
       :title="pageTitle"
+      :stats="examStats"
+      @back="backToCourseOutline"
     >
       <template
         #extra
       >
         <ArtButton
           type="success"
+          :loading="pageLoading"
           @click="handleSubmit"
         >
           完成
@@ -340,153 +517,188 @@ function handleSubmit() {
       </template>
     </AdminPageHeader>
 
-    <el-tabs
-      v-model="activeTab"
+    <div
+      v-loading="pageLoading"
+      class="flex flex-col gap-4"
     >
-      <el-tab-pane
-        label="问卷编辑"
-        name="editor"
-        class="art-card"
+      <el-tabs
+        v-model="activeTab"
+        class="exam-tabs"
       >
-        <el-form
-          :model="surveyForm"
-          label-position="top"
+        <el-tab-pane
+          label="问卷编辑"
+          name="edit"
         >
-          <div
-            class="mb-6 flex items-center justify-between gap-4 max-sm:flex-col max-sm:items-stretch"
+          <el-form
+            ref="examFormRef"
+            :model="formData"
+            :rules="examFormRules"
+            label-position="top"
+            class="flex flex-col gap-4"
           >
-            <el-form-item
-              label="标题"
-              required
-              class="mb-0! flex-1"
-            >
-              <el-input
-                v-model="surveyForm.title"
-                placeholder="请输入问卷标题"
-              />
-            </el-form-item>
-
-            <ArtButton
-              type="link"
-              @click="batchAddQuestion"
-            >
-              批量添加问题
-            </ArtButton>
-          </div>
-
-          <div
-            class="flex flex-col gap-6"
-          >
+            <!-- 问卷信息 -->
             <div
-              v-for="(question, questionIndex) in questions"
-              :key="question.id"
-              class="rounded-lg border border-(--art-card-border) p-5"
+              class="flex flex-col gap-4"
             >
+              <h3
+                class="text-base font-semibold text-g-900"
+              >
+                问卷信息
+              </h3>
+
               <div
-                class="flex gap-4 items-start max-lg:flex-col"
+                class="art-card"
+              >
+                <el-form-item
+                  prop="testPaperName"
+                  label="问卷标题"
+                  required
+                  class="mb-0!"
+                >
+                  <el-input
+                    v-model.trim="formData.testPaperName"
+                    placeholder="请填写问卷名称"
+                    size="large"
+                  />
+                </el-form-item>
+
+                <el-form-item
+                  label="问卷说明"
+                  class="mb-0! mt-4"
+                >
+                  <el-input
+                    v-model.trim="formData.examIntro"
+                    type="textarea"
+                    :rows="2"
+                    placeholder="请输入问卷说明"
+                  />
+                </el-form-item>
+              </div>
+
+            </div>
+
+            <!-- 题目列表 -->
+            <div
+              class="flex flex-col gap-4"
+            >
+              <h3
+                class="text-base font-semibold text-g-900"
+              >
+                题目列表
+              </h3>
+
+              <VueDraggable
+                v-model="formData.questions"
+                handle=".question-drag-handle"
+                ghost-class="question-drag-ghost"
+                chosen-class="question-drag-chosen"
+                :animation="200"
+                class="flex flex-col gap-4"
+                @end="handleQuestionDragEnd"
               >
                 <div
-                  class="flex min-w-0 flex-1 flex-col gap-4"
+                  v-for="(question, questionIndex) in formData.questions"
+                  :key="getQuestionKey(question)"
+                  class="art-card flex flex-col gap-4"
                 >
                   <div
-                    class="flex gap-4 items-center max-sm:flex-col max-sm:items-stretch"
+                    class="flex gap-4 items-start max-md:flex-col"
                   >
-                    <el-input
-                      v-model="question.title"
-                      placeholder="请输入问题标题"
-                      class="flex-1"
+                    <el-tooltip
+                      content="拖动排序"
+                      placement="top"
                     >
-                      <template
-                        #append
+                      <button
+                        type="button"
+                        aria-label="拖动题目排序"
+                        class="question-drag-handle flex size-10 shrink-0 cursor-move items-center justify-center rounded-custom-sm text-g-500 transition-colors hover:bg-g-100 hover:text-primary"
                       >
-                        <div
-                          class="flex items-center gap-3 text-5 text-g-700"
-                        >
-                          <ArtSvgIcon
-                            icon="ri:mic-line"
-                          />
-
-                          <ArtSvgIcon
-                            icon="ri:vidicon-line"
-                          />
-
-                          <ArtSvgIcon
-                            icon="ri:image-line"
-                          />
-                        </div>
-                      </template>
-                    </el-input>
+                        <ArtSvgIcon
+                          icon="ri:drag-move-2-fill"
+                          class="text-lg"
+                        />
+                      </button>
+                    </el-tooltip>
 
                     <div
-                      class="flex shrink-0 gap-3 items-center justify-end"
+                      class="flex size-10 shrink-0 items-center justify-center rounded-custom-sm bg-primary/10 text-sm font-semibold text-primary"
+                    >
+                      Q{{ questionIndex + 1 }}
+                    </div>
+
+                    <el-form-item
+                      :prop="`questions.${questionIndex}.qusTitle`"
+                      :rules="examFormRules.questionTitle"
+                      class="mb-0! w-full flex-1"
+                    >
+                      <el-input
+                        v-model.trim="question.qusTitle"
+                        placeholder="请输入问题"
+                        class="w-full flex-1"
+                      />
+                    </el-form-item>
+
+                    <div
+                      class="flex shrink-0 flex-wrap gap-2 items-center max-md:w-full max-md:justify-end"
                     >
                       <ArtButton
-                        type="link"
-                        :disabled="questionIndex === 0"
-                        @click="moveQuestion(questionIndex, 'up')"
-                      >
-                        移动
-                      </ArtButton>
-
-                      <ArtButton
-                        type="link"
-                        @click="copyQuestion(question)"
-                      >
-                        复制
-                      </ArtButton>
-
-                      <ArtButton
-                        type="link"
+                        type="delete"
                         @click="deleteQuestion(questionIndex)"
-                      >
-                        删除
-                      </ArtButton>
+                      />
+
+                      <ArtButton
+                        type="copy"
+                        @click="copyQuestion(question)"
+                      />
                     </div>
                   </div>
 
-                  <el-radio-group
-                    v-model="question.type"
-                    class="flex flex-wrap gap-x-12 gap-y-2"
+                  <div
+                    class="rounded-custom-sm bg-(--art-gray-100) px-4 py-3"
                   >
-                    <el-radio
-                      v-for="item in questionTypeOptions"
-                      :key="item.value"
-                      :value="item.value"
+                    <el-radio-group
+                      v-model="question.qusType"
+                      class="flex flex-wrap gap-x-12 gap-y-2"
+                      @change="ensureQuestionTypeConsistency(question)"
                     >
-                      {{ item.label }}
-                    </el-radio>
-                  </el-radio-group>
+                      <el-radio
+                        v-for="item in questionTypes"
+                        :key="item.value"
+                        :value="item.value"
+                      >
+                        {{ item.label }}
+                      </el-radio>
+                    </el-radio-group>
+                  </div>
 
-                  <template
-                    v-if="question.type === 'single' || question.type === 'multiple'"
+                  <div
+                    class="flex flex-col gap-2"
                   >
                     <div
-                      v-for="(option, optionIndex) in question.options"
-                      :key="option.id"
-                      class="flex gap-3 items-center max-sm:flex-col max-sm:items-stretch"
+                      v-for="(option, optionIndex) in question.qusItems"
+                      :key="optionIndex"
+                      class="flex gap-2 items-center justify-between max-sm:flex-col max-sm:items-stretch"
                     >
-                      <el-input
-                        v-model="option.content"
-                        :placeholder="optionIndex === 0 ? '点击创建选项，回车自动创建下一个选项' : '请输入选项内容'"
+                      <el-form-item
+                        :prop="`questions.${questionIndex}.qusItems.${optionIndex}.ansContext`"
+                        :rules="examFormRules.optionContent"
+                        class="mb-0! flex-1"
                       >
-                        <template
-                          #prepend
+                        <el-input
+                          v-model.trim="option.ansContext"
+                          placeholder="请输入选项内容"
+                          @keyup.enter="addOption(question, optionIndex)"
                         >
-                          {{ String.fromCharCode(65 + optionIndex) }}.
-                        </template>
-
-                        <template
-                          #append
-                        >
-                          <ArtSvgIcon
-                            icon="ri:image-line"
-                            class="text-5"
-                          />
-                        </template>
-                      </el-input>
+                          <template
+                            #prepend
+                          >
+                            {{ getOptionLabel(optionIndex) }}.
+                          </template>
+                        </el-input>
+                      </el-form-item>
 
                       <div
-                        class="flex gap-2 justify-end"
+                        class="flex gap-1 items-center justify-end"
                       >
                         <ArtButton
                           type="add"
@@ -495,545 +707,145 @@ function handleSubmit() {
 
                         <ArtButton
                           type="delete"
-                          :disabled="question.options.length <= 1"
+                          :disabled="question.qusItems.length <= 2"
                           @click="removeOption(question, optionIndex)"
                         />
                       </div>
                     </div>
-
-                    <div
-                      class="border border-(--art-card-border) px-4 py-3"
-                    >
-                      <el-checkbox
-                        v-model="question.enableOther"
-                      >
-                        添加选项“其他”
-                      </el-checkbox>
-
-                      <el-tooltip
-                        content="允许学员填写其他选项"
-                        placement="top"
-                      >
-                        <span
-                          class="ml-2 inline-flex h-5 w-5 items-center justify-center rounded-full bg-[var(--art-gray-400)] text-xs text-white"
-                        >
-                          ?
-                        </span>
-                      </el-tooltip>
-                    </div>
-                  </template>
-
-                  <template
-                    v-else
-                  >
-                    <el-input
-                      v-model="question.description"
-                      type="textarea"
-                      :rows="4"
-                      :placeholder="question.type === 'number' ? '学员填写数值答案' : '学员填写开放式答案'"
-                    />
-                  </template>
-
-                  <div
-                    class="border border-(--art-card-border)"
-                  >
-                    <button
-                      type="button"
-                      class="flex h-12 w-full items-center gap-4 px-5 text-primary"
-                      @click="toggleQuestionAdvanced(question)"
-                    >
-                      <ArtSvgIcon
-                        :icon="question.advancedExpanded ? 'ri:arrow-up-s-line' : 'ri:arrow-down-s-line'"
-                        class="text-6"
-                      />
-
-                      <span>高级设置</span>
-
-                      <el-tag
-                        size="small"
-                      >
-                        必填
-                      </el-tag>
-
-                      <el-tag
-                        size="small"
-                      >
-                        智能排序
-                      </el-tag>
-                    </button>
-
-                    <div
-                      v-if="question.advancedExpanded"
-                      class="grid grid-cols-2 gap-4 border-t border-(--art-card-border) p-4 max-sm:grid-cols-1"
-                    >
-                      <el-radio-group
-                        v-model="question.required"
-                        class="flex gap-6"
-                      >
-                        <el-radio
-                          :value="true"
-                        >
-                          必填
-                        </el-radio>
-
-                        <el-radio
-                          :value="false"
-                        >
-                          选填
-                        </el-radio>
-                      </el-radio-group>
-
-                      <el-checkbox
-                        v-model="question.smartSort"
-                      >
-                        智能排序
-                      </el-checkbox>
-                    </div>
                   </div>
 
-                  <div
-                    class="w-full border border-(--art-card-border)"
-                  >
-                    <div
-                      class="flex flex-wrap items-center gap-5 border-b border-(--art-card-border) px-4 py-3 text-g-500"
-                    >
-                      <span>16px</span>
-
-                      <ArtSvgIcon
-                        v-for="tool in editorTools"
-                        :key="tool"
-                        :icon="tool"
-                        class="text-5"
-                      />
-                    </div>
-
-                    <el-input
-                      v-model="question.description"
-                      type="textarea"
-                      :rows="6"
-                      resize="none"
-                      class="survey-description-editor"
-                    />
-                  </div>
                 </div>
-              </div>
+              </VueDraggable>
             </div>
-          </div>
 
-          <div
-            class="mt-6 rounded-lg border border-(--art-card-border) p-4 flex flex-wrap gap-3 items-center"
-          >
-            <ArtButton
-              type="add"
-              @click="addQuestion"
+            <div
+              class="art-card flex flex-wrap items-center gap-3"
             >
-              添加问题
-            </ArtButton>
+              <art-button
+                type="add"
+                @click="addQuestion"
+              >
+                添加问题
+              </art-button>
 
-            <ArtButton
-              type="add"
-              @click="addParagraphDescription"
-            >
-              添加段落说明
-            </ArtButton>
+              <!-- <ArtButton
+                type="import"
+                @click="handleOpenTableDialog"
+              >
+                从题库添加
+              </ArtButton> -->
+            </div>
+          </el-form>
+        </el-tab-pane>
 
-            <ArtButton
-              type="link"
-              @click="batchAddQuestion"
-            >
-              批量添加问题
-            </ArtButton>
-          </div>
-        </el-form>
-      </el-tab-pane>
-
-      <el-tab-pane
-        label="问卷设置"
-        name="settings"
-        class="art-card"
-      >
-        <el-form
-          :model="surveyForm"
-          label-position="top"
-          class="flex flex-col gap-6"
+        <el-tab-pane
+          label="问卷设置"
+          name="setting"
         >
           <div
-            class="grid grid-cols-[220px_minmax(0,1fr)] gap-6 items-center max-md:grid-cols-1 max-md:gap-3"
+            class="art-card"
           >
-            <div
-              class="flex items-center gap-2"
+            <el-form
+              :model="formData"
+              label-position="left"
+              label-width="auto"
+              class="flex flex-col gap-4"
             >
-              <span>是否必修</span>
-
-              <span
-                class="inline-flex h-5 w-5 items-center justify-center rounded-full bg-[var(--art-gray-400)] text-xs text-white"
-              >?</span>
-            </div>
-
-            <el-radio-group
-              v-model="surveyForm.required"
-              class="flex flex-wrap gap-x-10 gap-y-2"
-            >
-              <el-radio
-                :value="true"
-              >
-                必修
-              </el-radio>
-
-              <el-radio
-                :value="false"
-              >
-                选修
-              </el-radio>
-            </el-radio-group>
-          </div>
-
-          <div
-            class="grid grid-cols-[220px_minmax(0,1fr)] gap-6 items-center max-md:grid-cols-1 max-md:gap-3"
-          >
-            <div
-              class="flex items-center gap-2"
-            >
-              <span>小节基本积分</span>
-
-              <span
-                class="inline-flex h-5 w-5 items-center justify-center rounded-full bg-[var(--art-gray-400)] text-xs text-white"
-              >?</span>
-            </div>
-
-            <div
-              class="flex flex-wrap gap-6 items-center"
-            >
-              <span
-                class="text-warning"
-              >+ {{ sectionScore }}</span>
-
-              <span
-                class="h-6 w-px bg-(--art-card-border)"
-              />
-
-              <span>基本分 {{ baseScore }} ×</span>
-
-              <el-input-number
-                v-model="surveyForm.scoreMultiplier"
-                :min="0"
-                :controls="false"
-                class="!w-36"
-              />
-            </div>
-          </div>
-
-          <div
-            class="grid grid-cols-2 gap-6 max-md:grid-cols-1"
-          >
-            <el-form-item
-              label="开始提交时间"
-            >
-              <el-date-picker
-                v-model="surveyForm.startSubmitTime"
-                type="datetime"
-                placeholder="不设置"
-                class="w-full!"
-              />
-            </el-form-item>
-
-            <el-form-item
-              label="结束提交时间"
-            >
-              <el-date-picker
-                v-model="surveyForm.endSubmitTime"
-                type="datetime"
-                placeholder="不设置"
-                class="w-full!"
-              />
-            </el-form-item>
-          </div>
-
-          <div
-            class="grid grid-cols-[220px_minmax(0,1fr)] gap-6 items-center max-md:grid-cols-1 max-md:gap-3"
-          >
-            <div>
-              小节类型标签
-            </div>
-
-            <div
-              class="flex gap-5 items-center max-sm:flex-col max-sm:items-stretch"
-            >
-              <el-input
-                v-model="surveyForm.sectionTypeTag"
-                class="max-w-72 max-sm:max-w-none"
-              />
-
-              <span>预览</span>
-            </div>
-          </div>
-
-          <el-form-item
-            label="说明"
-          >
-            <div
-              class="w-full border border-(--art-card-border)"
-            >
-              <div
-                class="flex h-12 items-center border-b border-(--art-card-border) text-sm"
-              >
-                <button
-                  type="button"
-                  class="h-full px-6 text-g-900"
-                >
-                  文本编辑
-                </button>
-
-                <button
-                  type="button"
-                  class="h-full border-l border-(--art-card-border) px-6 text-primary"
-                >
-                  图文编辑
-                </button>
-              </div>
-
-              <div
-                class="flex flex-wrap items-center gap-5 border-b border-(--art-card-border) px-4 py-3 text-g-500"
-              >
-                <span>16px</span>
-
-                <ArtSvgIcon
-                  v-for="tool in editorTools"
-                  :key="tool"
-                  :icon="tool"
-                  class="text-5"
-                />
-              </div>
-
-              <el-input
-                v-model="surveyForm.description"
-                type="textarea"
-                :rows="8"
-                resize="none"
-                class="survey-description-editor"
-              />
-            </div>
-          </el-form-item>
-
-          <el-form-item
-            label="提交成功提示语"
-          >
-            <el-input
-              v-model="surveyForm.successMessage"
-            />
-          </el-form-item>
-
-          <div
-            class="flex flex-col gap-6"
-          >
-            <el-form-item
-              label="选项随机展示"
-            >
-              <el-radio-group
-                v-model="surveyForm.randomOptions"
-                class="flex flex-wrap gap-x-10 gap-y-2"
-              >
-                <el-radio
-                  :value="false"
-                >
-                  不随机展示
-                </el-radio>
-
-                <el-radio
-                  :value="true"
-                >
-                  随机展示
-                </el-radio>
-              </el-radio-group>
-            </el-form-item>
-
-            <el-form-item
-              label="提交成功页面跳转按钮"
-            >
-              <el-radio-group
-                v-model="surveyForm.successRedirectType"
-                class="flex flex-wrap gap-x-10 gap-y-2"
-              >
-                <el-radio
-                  value="none"
-                >
-                  不跳转
-                </el-radio>
-
-                <el-radio
-                  value="custom"
-                >
-                  自定义按钮
-                </el-radio>
-              </el-radio-group>
-            </el-form-item>
-
-            <el-form-item
-              label="提交后展示问卷结果"
-            >
-              <el-radio-group
-                v-model="surveyForm.showResult"
-                class="flex flex-wrap gap-x-10 gap-y-2"
-              >
-                <el-radio
-                  :value="true"
-                >
-                  展示
-                </el-radio>
-
-                <el-radio
-                  :value="false"
-                >
-                  不展示
-                </el-radio>
-              </el-radio-group>
-            </el-form-item>
-
-            <el-form-item
-              label="大屏幕展示问卷参与人数"
-            >
-              <el-radio-group
-                v-model="surveyForm.showParticipantCount"
-                class="flex flex-wrap gap-x-10 gap-y-2"
-              >
-                <el-radio
-                  :value="true"
-                >
-                  展示
-                </el-radio>
-
-                <el-radio
-                  :value="false"
-                >
-                  不展示
-                </el-radio>
-              </el-radio-group>
-            </el-form-item>
-
-            <el-form-item
-              label="问卷访问权限"
-            >
-              <el-select
-                v-model="surveyForm.accessPermission"
-                class="max-w-xl"
-              >
-                <el-option
-                  label="课程内公开 - 课程内所有学员可见"
-                  value="course"
-                />
-
-                <el-option
-                  label="仅分配学员可见"
-                  value="assigned"
-                />
-              </el-select>
-            </el-form-item>
-
-            <el-form-item
-              label="问卷提交权限"
-            >
-              <el-radio-group
-                v-model="surveyForm.submitPermission"
-                class="flex flex-wrap gap-x-10 gap-y-2"
-              >
-                <el-radio
-                  value="anonymous"
-                >
-                  允许不登录提交
-                </el-radio>
-
-                <el-radio
-                  value="login"
-                >
-                  需登录提交
-                </el-radio>
-              </el-radio-group>
-            </el-form-item>
-
-            <el-form-item
-              label="问卷提交次数"
-            >
-              <div
-                class="flex flex-wrap gap-4 items-center"
+              <el-form-item
+                label="问卷类型"
+                class="mb-0!"
               >
                 <el-radio-group
-                  v-model="surveyForm.unlimitedSubmit"
-                  class="flex flex-wrap gap-4 items-center"
+                  v-model="formData.examType"
                 >
                   <el-radio
-                    :value="false"
+                    :value="0"
                   >
-                    最多允许提交
+                    选修
                   </el-radio>
 
-                  <el-input-number
-                    v-model="surveyForm.maxSubmitCount"
-                    :min="1"
-                    :controls="false"
-                    class="!w-20"
-                    :disabled="surveyForm.unlimitedSubmit"
-                  />
-
-                  <span>次</span>
-
                   <el-radio
-                    :value="true"
+                    :value="1"
                   >
-                    不限提交次数
+                    必修
                   </el-radio>
                 </el-radio-group>
-              </div>
-            </el-form-item>
+              </el-form-item>
 
-            <el-form-item
-              label="是否允许提交后修改问卷"
-            >
-              <el-radio-group
-                v-model="surveyForm.allowModifyAfterSubmit"
-                class="flex flex-wrap gap-x-10 gap-y-2"
+              <el-form-item
+                label="允许尝试次数"
+                class="mb-0!"
               >
-                <el-radio
-                  :value="false"
-                >
-                  不允许修改
-                </el-radio>
+                <el-input-number
+                  v-model="formData.attemptLimit"
+                  :min="1"
+                  :max="99"
+                  class="w-full!"
+                />
+              </el-form-item>
 
-                <el-radio
-                  :value="true"
-                >
-                  允许修改
-                </el-radio>
-              </el-radio-group>
-            </el-form-item>
+              <el-form-item
+                label="开始时间"
+                class="mb-0!"
+              >
+                <el-date-picker
+                  v-model="formData.startTime"
+                  type="datetime"
+                  placeholder="请选择开始时间"
+                  value-format="YYYY-MM-DD HH:mm:ss"
+                  class="w-full!"
+                />
+              </el-form-item>
+
+              <el-form-item
+                label="结束时间"
+                class="mb-0!"
+              >
+                <el-date-picker
+                  v-model="formData.endTime"
+                  type="datetime"
+                  placeholder="请选择结束时间"
+                  value-format="YYYY-MM-DD HH:mm:ss"
+                  class="w-full!"
+                />
+              </el-form-item>
+
+              <el-form-item
+                label="问卷后显示答案"
+                class="mb-0!"
+              >
+                <el-switch
+                  v-model="formData.isShowAnswer"
+                  :active-value="1"
+                  :inactive-value="0"
+                />
+              </el-form-item>
+
+              <el-form-item
+                label="问卷后显示分数"
+                class="mb-0!"
+              >
+                <el-switch
+                  v-model="formData.isShowScore"
+                  :active-value="1"
+                  :inactive-value="0"
+                />
+              </el-form-item>
+            </el-form>
           </div>
-        </el-form>
-      </el-tab-pane>
-    </el-tabs>
-
-    <div
-      class="sticky bottom-0 z-10 -mx-10 border-t border-(--art-card-border) bg-[var(--default-bg-color)] px-10 py-5 max-lg:-mx-6 max-lg:px-6 max-sm:-mx-4 max-sm:px-4"
-    >
-      <div
-        class="mx-auto flex max-w-7xl justify-end"
-      >
-        <ArtButton
-          type="success"
-          class="px-10 py-5 text-base"
-          @click="handleSubmit"
-        >
-          完成
-        </ArtButton>
-      </div>
+        </el-tab-pane>
+      </el-tabs>
     </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
-:deep(.survey-description-editor) {
-  .el-textarea__inner {
-    border: 0;
-    border-radius: 0;
-    box-shadow: none;
-  }
+.question-drag-ghost {
+  opacity: 0.35;
+}
+
+.question-drag-chosen {
+  border-color: var(--el-color-primary-light-5);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 8%);
 }
 </style>
