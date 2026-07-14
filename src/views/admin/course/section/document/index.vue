@@ -365,12 +365,11 @@ function backToCourseOutline() {
 
       <!-- 文档表格 -->
       <ArtTable
-        class="max-h-[calc(100vh-400px)] overflow-auto"
+        row-key="asId"
         :loading="loading"
         :data="data"
         :columns="columns"
         :pagination="pagination"
-        row-key="asId"
         highlight-current-row
         @current-change="handleTableCurrentChange"
         @pagination:size-change="handleSizeChange"

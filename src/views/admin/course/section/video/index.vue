@@ -2,7 +2,11 @@
 <script lang="ts" setup>
 import type { ColumnOption } from '@/types'
 
-import { useRoute } from 'vue-router'
+import { h } from 'vue'
+
+import ArtPreviewImage from '@/components/core/media/art-preview-image/index.vue'
+
+import { useTable } from '@/hooks'
 
 const route = useRoute()
 
@@ -48,39 +52,8 @@ const pageTitle = computed(() => {
   return isEditMode.value ? '编辑视频' : '添加视频'
 })
 
-/**
- * 表格列配置
- */
-const columns: ColumnOption<FileApi.FileListItem>[] = [
-  {
-    label: '文件名称',
-    prop: 'asName',
-    slotName: 'fileName',
-    minWidth: 460,
-    useSlot: true,
-  },
-  {
-    label: '上传时间',
-    prop: 'createTime',
-    minWidth: 140,
-    useSlot: true,
-    sortable: true,
-  },
-
-  {
-    label: '文件大小',
-    prop: 'asSize',
-    slotName: 'fileSize',
-    minWidth: 140,
-    useSlot: true,
-    sortable: true,
-  },
-]
-
-/**
- * 加载状态
- */
-const loading = ref(false)
+/** 页面详情加载状态。 */
+const pageLoading = ref(false)
 
 /**
  * 是否显示文件选择弹窗
@@ -92,37 +65,82 @@ const isShowFileSelectDialog = ref(false)
  */
 const isShowUploadArea = ref(!isEditMode.value)
 
-/**
- * 请求参数
- */
-const params = reactive<FileApi.FileListParams>({
+/** 视频列表搜索条件。 */
+const searchFormState = ref({
   name: '',
-  type: 'video',
-  pageSize: 10,
-  currentPage: 1,
+  type: 'video' as const,
 })
 
 /**
- * 表格数据
+ * 视频选择表格。
  */
-const table = ref<FileApi.FileListResponse>({
-  rows: [],
-  totals: 0,
+const {
+  columns,
+  data,
+  loading,
+  pagination,
+  getData,
+  replaceSearchParams,
+  handleSizeChange,
+  handleCurrentChange,
+} = useTable({
+  core: {
+    apiFn: fetchAdminFileList,
+    apiParams: {
+      name: '',
+      type: 'video',
+      pageSize: 10,
+      currentPage: 1,
+    },
+    immediate: false,
+    columnsFactory: (): ColumnOption<FileApi.FileListItem>[] => [
+      {
+        label: '文件名称',
+        prop: 'asName',
+        minWidth: 460,
+        formatter: (row) => {
+          return h('div', {
+            class: 'min-w-0 flex items-center gap-2',
+          }, [
+            h(ArtPreviewImage, {
+              path: row.asThumbnailPath,
+              preview: false,
+              class: 'h-20 w-15 shrink-0 cursor-pointer',
+              onClick: () => playVideo(row),
+            }),
+            h('div', {
+              class: 'truncate text-sm font-medium text-g-900',
+            }, row.asName || '-'),
+          ])
+        },
+      },
+      {
+        label: '上传时间',
+        prop: 'createTime',
+        minWidth: 140,
+        sortable: true,
+        formatter: row => formatDateTime(row.createTime),
+      },
+      {
+        label: '文件大小',
+        prop: 'asSize',
+        minWidth: 140,
+        sortable: true,
+        formatter: row => fileSizeFormat(row.asSize),
+      },
+    ],
+  },
+  hooks: {
+    onError: () => {
+      ElNotification.error('获取视频列表失败')
+    },
+  },
 })
 
 /**
  * 表格当前选中的文件。只有点击“选择视频”后才会写入 formData。
  */
 const selectedFile = ref<FileApi.FileListItem>()
-
-/**
- * 分页配置
- */
-const pagination = computed(() => ({
-  current: params.currentPage,
-  size: params.pageSize,
-  total: table.value.totals,
-}))
 
 /**
  * 小节表单数据
@@ -162,28 +180,21 @@ function clearSelectedFile() {
   selectedFile.value = undefined
 }
 
-/**
- * 获取表格数据
- */
-async function getTable() {
-  loading.value = true
-
-  try {
-    table.value = await fetchAdminFileList(params)
-  }
-  finally {
-    loading.value = false
-  }
-}
+/** 翻页或切换每页条数时清空上一页的单选文件。 */
+watch(
+  () => [pagination.current, pagination.size],
+  clearSelectedFile,
+)
 
 /**
  * 获取小节详情
  */
 async function getSectionDetail() {
-  loading.value = true
   if (!olId.value) {
     return
   }
+
+  pageLoading.value = true
 
   try {
     const section = await fetchAdminCourseOutlineSectionVideoDetail(olId.value)
@@ -198,7 +209,7 @@ async function getSectionDetail() {
     ElNotification.error('获取小节详情失败')
   }
   finally {
-    loading.value = false
+    pageLoading.value = false
   }
 }
 
@@ -207,7 +218,8 @@ async function getSectionDetail() {
  */
 function handleOpenTableDialog() {
   isShowFileSelectDialog.value = true
-  void getTable()
+  replaceSearchParams(searchFormState.value)
+  void getData()
 }
 
 /**
@@ -240,37 +252,18 @@ function confirmSelectFile() {
 function handleReplaceFileClick() {
   isShowUploadArea.value = true
   clearSelectedFile()
-  void getTable()
   isShowFileSelectDialog.value = true
-}
-
-/**
- * 每页条数变化
- */
-function handleSizeChange(size: number) {
-  params.pageSize = size
-  params.currentPage = 1
-  clearSelectedFile()
-  void getTable()
-}
-
-/**
- * 当前页变化
- */
-function handleCurrentChange(currentPage: number) {
-  params.currentPage = currentPage
-  clearSelectedFile()
-  void getTable()
+  replaceSearchParams(searchFormState.value)
+  void getData()
 }
 
 /**
  * 搜索
  */
 function handleSearch() {
-  params.currentPage = 1
-  params.name = params.name.trim()
   clearSelectedFile()
-  void getTable()
+  replaceSearchParams(searchFormState.value)
+  void getData()
 }
 
 /**
@@ -359,6 +352,7 @@ function backToCourseOutline() {
 
 <template>
   <div
+    v-loading="pageLoading"
     class="mx-auto mb-10 flex w-full max-w-7xl flex-col gap-4 px-10 max-lg:px-6 max-sm:px-4"
   >
     <el-dialog
@@ -388,7 +382,7 @@ function backToCourseOutline() {
         class="flex justify-between items-center"
       >
         <el-input
-          v-model="params.name"
+          v-model.trim="searchFormState.name"
           class="max-w-110 max-md:max-w-none max-sm:w-full"
           placeholder="请输入文件名称"
           clearable
@@ -425,60 +419,16 @@ function backToCourseOutline() {
 
       <!-- 视频表格 -->
       <ArtTable
+        row-key="asId"
         :loading="loading"
-        :data="table.rows"
+        :data="data"
         :columns="columns"
         :pagination="pagination"
-        row-key="asId"
         highlight-current-row
         @current-change="handleTableCurrentChange"
         @pagination:size-change="handleSizeChange"
         @pagination:current-change="handleCurrentChange"
-      >
-        <template
-          #fileName="{ row }"
-        >
-          <div
-            class="min-w-0 flex items-center gap-2"
-          >
-            <div
-              class=""
-            >
-              <ArtPreviewImage
-                :path="row.asThumbnailPath"
-                class="w-15 h-20"
-                :preview="false"
-                @click="playVideo(row)"
-              />
-            </div>
-
-            <div
-              class="truncate text-sm font-medium text-g-900"
-            >
-              {{ row.asName || '-' }}
-            </div>
-
-          </div>
-        </template>
-
-        <template
-          #createTime="{ row }"
-        >
-          <span>
-            {{ formatDateTime(row.createTime) }}
-          </span>
-        </template>
-
-        <template
-          #fileSize="{ row }"
-        >
-          <span
-            class="text-base text-g-900"
-          >
-            {{ fileSizeFormat(row.asSize) }}
-          </span>
-        </template>
-      </ArtTable>
+      />
     </el-dialog>
 
     <AdminPageHeader
