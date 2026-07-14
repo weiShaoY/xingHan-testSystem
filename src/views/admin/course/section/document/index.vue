@@ -2,6 +2,10 @@
 <script lang="ts" setup>
 import type { ColumnOption } from '@/types'
 
+import { h } from 'vue'
+
+import ArtPreviewImage from '@/components/core/media/art-preview-image/index.vue'
+
 import { useTable } from '@/hooks'
 
 const route = useRoute()
@@ -93,24 +97,34 @@ const {
       {
         label: '文件名称',
         prop: 'asName',
-        slotName: 'fileName',
         minWidth: 460,
-        useSlot: true,
+        formatter: (row) => {
+          return h('div', {
+            class: 'min-w-0 flex items-center gap-2',
+          }, [
+            h(ArtPreviewImage, {
+              path: row.asThumbnailPath,
+              class: 'h-20 w-15 shrink-0',
+            }),
+            h('div', {
+              class: 'truncate text-sm font-medium text-g-900',
+            }, row.asName || '-'),
+          ])
+        },
       },
       {
         label: '上传时间',
         prop: 'createTime',
         minWidth: 140,
-        useSlot: true,
         sortable: true,
+        formatter: row => formatDateTime(row.createTime),
       },
       {
         label: '文件大小',
         prop: 'asSize',
-        slotName: 'fileSize',
         minWidth: 140,
-        useSlot: true,
         sortable: true,
+        formatter: row => fileSizeFormat(row.asSize),
       },
     ],
   },
@@ -361,49 +375,7 @@ function backToCourseOutline() {
         @current-change="handleTableCurrentChange"
         @pagination:size-change="handleSizeChange"
         @pagination:current-change="handleCurrentChange"
-      >
-        <template
-          #fileName="{ row }"
-        >
-          <div
-            class="min-w-0 flex items-center gap-2"
-          >
-            <div
-              class=""
-            >
-              <ArtPreviewImage
-                :path="row.asThumbnailPath"
-                class="w-15 h-20"
-              />
-            </div>
-
-            <div
-              class="truncate text-sm font-medium text-g-900"
-            >
-              {{ row.asName || '-' }}
-            </div>
-
-          </div>
-        </template>
-
-        <template
-          #createTime="{ row }"
-        >
-          <span>
-            {{ formatDateTime(row.createTime) }}
-          </span>
-        </template>
-
-        <template
-          #fileSize="{ row }"
-        >
-          <span
-            class="text-base text-g-900"
-          >
-            {{ fileSizeFormat(row.asSize) }}
-          </span>
-        </template>
-      </ArtTable>
+      />
     </el-dialog>
 
     <AdminPageHeader
