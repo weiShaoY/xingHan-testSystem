@@ -2,6 +2,8 @@
 <script lang="ts" setup>
 import type { ColumnOption } from '@/types'
 
+import { useTable } from '@/hooks'
+
 const route = useRoute()
 
 const router = useRouter()
@@ -46,39 +48,8 @@ const pageTitle = computed(() => {
   return isEditMode.value ? '编辑文档' : '添加文档'
 })
 
-/**
- * 表格列配置
- */
-const columns: ColumnOption<FileApi.FileListItem>[] = [
-  {
-    label: '文件名称',
-    prop: 'asName',
-    slotName: 'fileName',
-    minWidth: 460,
-    useSlot: true,
-  },
-  {
-    label: '上传时间',
-    prop: 'createTime',
-    minWidth: 140,
-    useSlot: true,
-    sortable: true,
-  },
-
-  {
-    label: '文件大小',
-    prop: 'asSize',
-    slotName: 'fileSize',
-    minWidth: 140,
-    useSlot: true,
-    sortable: true,
-  },
-]
-
-/**
- * 加载状态
- */
-const loading = ref(false)
+/** 页面详情加载状态。 */
+const pageLoading = ref(false)
 
 /**
  * 是否显示文件选择弹窗
@@ -90,37 +61,70 @@ const isShowFileSelectDialog = ref(false)
  */
 const isShowUploadArea = ref(!isEditMode.value)
 
-/**
- * 请求参数
- */
-const params = ref<FileApi.FileListParams>({
+/** 文件列表搜索条件。 */
+const searchFormState = ref({
   name: '',
-  type: 'document',
-  pageSize: 10,
-  currentPage: 1,
+  type: 'document' as const,
 })
 
 /**
- * 表格数据
+ * 文件选择表格。
  */
-const table = ref<FileApi.FileListResponse>({
-  rows: [],
-  totals: 0,
+const {
+  columns,
+  data,
+  loading,
+  pagination,
+  getData,
+  replaceSearchParams,
+  handleSizeChange,
+  handleCurrentChange,
+} = useTable({
+  core: {
+    apiFn: fetchAdminFileList,
+    apiParams: {
+      name: '',
+      type: 'document',
+      pageSize: 10,
+      currentPage: 1,
+    },
+    immediate: false,
+    columnsFactory: (): ColumnOption<FileApi.FileListItem>[] => [
+      {
+        label: '文件名称',
+        prop: 'asName',
+        slotName: 'fileName',
+        minWidth: 460,
+        useSlot: true,
+      },
+      {
+        label: '上传时间',
+        prop: 'createTime',
+        minWidth: 140,
+        useSlot: true,
+        sortable: true,
+      },
+      {
+        label: '文件大小',
+        prop: 'asSize',
+        slotName: 'fileSize',
+        minWidth: 140,
+        useSlot: true,
+        sortable: true,
+      },
+    ],
+  },
+  hooks: {
+    onError: () => {
+      ElNotification.error('获取文档列表失败')
+    },
+  },
 })
 
 /**
  * 表格当前选中的文件。只有点击“选择文档”后才会写入 formData。
  */
 const selectedFile = ref<FileApi.FileListItem>()
-
-/**
- * 分页配置
- */
-const pagination = computed(() => ({
-  current: params.value.currentPage,
-  size: params.value.pageSize,
-  total: table.value.totals,
-}))
 
 /**
  * 小节表单数据
@@ -160,28 +164,21 @@ function clearSelectedFile() {
   selectedFile.value = undefined
 }
 
-/**
- * 获取表格数据
- */
-async function getTable() {
-  loading.value = true
-
-  try {
-    table.value = await fetchAdminFileList(params.value)
-  }
-  finally {
-    loading.value = false
-  }
-}
+// /** 翻页或切换每页条数时清空上一页的单选文件。 */
+watch(
+  () => [pagination.current, pagination.size],
+  clearSelectedFile,
+)
 
 /**
  * 获取小节详情
  */
 async function getSectionDetail() {
-  loading.value = true
   if (!olId.value) {
     return
   }
+
+  pageLoading.value = true
 
   try {
     const section = await fetchAdminCourseOutlineSectionDocumentDetail(olId.value)
@@ -196,7 +193,7 @@ async function getSectionDetail() {
     ElNotification.error('获取小节详情失败')
   }
   finally {
-    loading.value = false
+    pageLoading.value = false
   }
 }
 
@@ -205,7 +202,8 @@ async function getSectionDetail() {
  */
 function handleOpenTableDialog() {
   isShowFileSelectDialog.value = true
-  void getTable()
+  replaceSearchParams(searchFormState.value)
+  void getData()
 }
 
 /**
@@ -238,37 +236,18 @@ function confirmSelectFile() {
 function handleReplaceFileClick() {
   isShowUploadArea.value = true
   clearSelectedFile()
-  void getTable()
   isShowFileSelectDialog.value = true
-}
-
-/**
- * 每页条数变化
- */
-function handleSizeChange(size: number) {
-  params.value.pageSize = size
-  params.value.currentPage = 1
-  clearSelectedFile()
-  void getTable()
-}
-
-/**
- * 当前页变化
- */
-function handleCurrentChange(currentPage: number) {
-  params.value.currentPage = currentPage
-  clearSelectedFile()
-  void getTable()
+  replaceSearchParams(searchFormState.value)
+  void getData()
 }
 
 /**
  * 搜索
  */
 function handleSearch() {
-  params.value.currentPage = 1
-  params.value.name = params.value.name.trim()
   clearSelectedFile()
-  void getTable()
+  replaceSearchParams(searchFormState.value)
+  void getData()
 }
 
 /**
@@ -321,6 +300,7 @@ function backToCourseOutline() {
 
 <template>
   <div
+    v-loading="pageLoading"
     class="mx-auto mb-10 flex w-full max-w-7xl flex-col gap-4 px-10 max-lg:px-6 max-sm:px-4"
   >
     <el-dialog
@@ -334,7 +314,7 @@ function backToCourseOutline() {
         class="flex justify-between items-center"
       >
         <el-input
-          v-model="params.name"
+          v-model.trim="searchFormState.name"
           class="max-w-110 max-md:max-w-none max-sm:w-full"
           placeholder="请输入文件名称"
           clearable
@@ -373,7 +353,7 @@ function backToCourseOutline() {
       <ArtTable
         class="max-h-[calc(100vh-400px)] overflow-auto"
         :loading="loading"
-        :data="table.rows"
+        :data="data"
         :columns="columns"
         :pagination="pagination"
         row-key="asId"

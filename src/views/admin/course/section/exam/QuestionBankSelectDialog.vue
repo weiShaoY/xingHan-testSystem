@@ -85,7 +85,7 @@ const {
   /**
    * 题库弹窗表格数据。
    */
-  data: tableData,
+  data,
   /**
    * 题库弹窗表格加载状态。
    */
@@ -93,7 +93,7 @@ const {
   /**
    * 题库弹窗表格分页信息。
    */
-  pagination: tablePagination,
+  pagination,
 
   /**
    * 获取题库题目列表。
@@ -113,7 +113,7 @@ const {
   /**
    * 处理页码变化。
    */
-  handleCurrentChange: handleTableCurrentChange,
+  handleCurrentChange,
 } = useTable({
   core: {
     apiFn: fetchAdminCourseOutlineSectionExamQuestionList,
@@ -336,19 +336,19 @@ watch(visible, (value) => {
       <div
         class="text-sm text-g-600"
       >
-        共 {{ tablePagination.total }} 道，已选 {{ selectedRows.length }} 道
+        共 {{ pagination.total }} 道，已选 {{ selectedRows.length }} 道
       </div>
     </div>
 
     <ArtTable
       row-key="qusId"
       :loading="loading"
-      :data="tableData"
+      :data="data"
       :columns="columns"
-      :pagination="tablePagination"
+      :pagination="pagination"
       @selection-change="handleSelectionChange"
       @pagination:size-change="handleSizeChange"
-      @pagination:current-change="handleTableCurrentChange"
+      @pagination:current-change="handleCurrentChange"
     />
 
     <template
