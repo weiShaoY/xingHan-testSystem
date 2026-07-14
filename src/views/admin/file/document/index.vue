@@ -10,7 +10,8 @@ import ArtButton from '@/components/core/widget/art-button/index.vue'
 
 import { useTable } from '@/hooks'
 
-const tableLoading = ref(false)
+/** 下载或恢复操作的加载状态。 */
+const actionLoading = ref(false)
 
 /** 文档列表搜索条件。 */
 const searchFormState = ref({
@@ -24,7 +25,7 @@ const searchFormState = ref({
 const {
   columns,
   data,
-  loading: tableLoading,
+  loading,
   pagination,
   getData,
   replaceSearchParams,
@@ -120,14 +121,15 @@ function handleUploadError(error: Error) {
  * 下载表格项
  */
 async function downloadTableItem(item: FileApi.FileListItem) {
-  tableLoading.value = true
+  actionLoading.value = true
+
   try {
     const blob = await fetchAdminFileAttachment(item.asId)
 
     await fileDownload(blob, item.asName)
   }
   finally {
-    tableLoading.value = false
+    actionLoading.value = false
   }
 }
 
@@ -135,6 +137,8 @@ async function downloadTableItem(item: FileApi.FileListItem) {
  * 删除表格项
  */
 async function deleteTableItem(_item: FileApi.FileListItem) {
+  actionLoading.value = true
+
   try {
     await fetchAdminFileDelete(_item.asId)
     await refreshRemove()
@@ -142,6 +146,9 @@ async function deleteTableItem(_item: FileApi.FileListItem) {
   }
   catch {
     ElNotification.error('删除失败')
+  }
+  finally {
+    actionLoading.value = false
   }
 }
 
@@ -207,7 +214,7 @@ function handleSearch() {
 
     <!-- 数据表格 -->
     <ArtTable
-      :loading="tableLoading"
+      :loading="loading || actionLoading"
       :data="data"
       :columns="columns"
       :pagination="pagination"
