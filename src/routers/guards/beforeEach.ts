@@ -513,6 +513,11 @@ function isStaticRoute(path: string): boolean {
 async function fetchUserInfo(path: string): Promise<void> {
   const userStore = getUserStoreByPath(path)
 
+  if (hasLoadedUserInfo(userStore.userInfo)) {
+    userStore.checkAndClearWorkTabs()
+    return
+  }
+
   if (isDevSkipAuthEnabled) {
     userStore.setUserInfo(isClientPath(path) ? devClientUserInfo : devAdminUserInfo)
     userStore.checkAndClearWorkTabs()
@@ -523,12 +528,22 @@ async function fetchUserInfo(path: string): Promise<void> {
     ? await fetchClientGetUserInfo(path)
     : await fetchAdminGetUserInfo(path)
 
-  console.log('🚀 ~ file: beforeEach.ts:435 ~ data:', userInfo)
-
   userStore.setUserInfo(userInfo)
 
   // 检查并清理工作台标签页（如果是不同用户登录）
   userStore.checkAndClearWorkTabs()
+}
+
+/**
+ * 判断当前 store 中是否已有可复用的用户信息。
+ *
+ * @param userInfo 当前缓存的用户信息。
+ * @returns 是否已具备基础身份信息。
+ */
+function hasLoadedUserInfo(
+  userInfo: Partial<AdminApi.Auth.UserInfo> | Partial<ClientApi.Auth.UserInfo> | undefined,
+): boolean {
+  return Boolean(userInfo?.userId)
 }
 
 /**

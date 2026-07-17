@@ -9,6 +9,7 @@ import { sm2, sm3 } from 'sm-crypto'
 import { useI18n } from 'vue-i18n'
 
 import { HttpError } from '@/apis/http/error'
+import { fetchAdminGetPublicKey, fetchAdminGetUserInfo, fetchAdminLogin } from '@/apis/admin/auth'
 
 import AppConfig from '@/config'
 
@@ -160,8 +161,6 @@ function encryptLoginPayload(formData: any, publicKey: string, sm2key: string) {
  * 并根据 redirect 参数跳转到目标页面或客户端首页。
  */
 async function handleSubmit() {
-  console.log('🚀 ~ file: index.vue:137 ~ window.$isDevelopment:', window.$isDevelopment)
-
   if (!formRef.value) { return }
 
   try {
@@ -204,6 +203,11 @@ async function handleSubmit() {
     userStore.setToken(loginResult.token, '')
 
     userStore.setLoginStatus(true)
+
+    const { userInfo } = await fetchAdminGetUserInfo()
+
+    userStore.setUserInfo(userInfo)
+    userStore.checkAndClearWorkTabs()
 
     // 登录成功处理
     showLoginSuccessNotice()
