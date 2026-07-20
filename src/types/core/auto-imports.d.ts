@@ -147,6 +147,7 @@ declare global {
   const fetchClientGetPublicKey: typeof import('../../apis/client/auth/index').fetchClientGetPublicKey
   const fetchClientGetUserInfo: typeof import('../../apis/client/auth/index').fetchClientGetUserInfo
   const fetchClientLogin: typeof import('../../apis/client/auth/index').fetchClientLogin
+  const fetchClientTaskList: typeof import('../../apis/client/task/index').fetchClientTaskList
   const fetchFileList: typeof import('../../apis/file/index').fetchAdminFileList
   const fetchGetMenuList: typeof import('../../apis/system-manage').fetchGetMenuList
   const fetchGetPublicKey: typeof import('../../apis/admin/index').fetchAdminGetPublicKey
@@ -538,7 +539,6 @@ declare module 'vue' {
     readonly EffectScope: UnwrapRef<typeof import('vue')['EffectScope']>
     readonly ElLoading: UnwrapRef<typeof import('element-plus/es')['ElLoading']>
     readonly ElMessage: UnwrapRef<typeof import('element-plus/es')['ElMessage']>
-    readonly ElMessageBox: UnwrapRef<typeof import('element-plus/es')['ElMessageBox']>
     readonly ElNotification: UnwrapRef<typeof import('element-plus/es')['ElNotification']>
     readonly HttpError: UnwrapRef<typeof import('../../apis/http/error')['HttpError']>
     readonly PasswordStrength: UnwrapRef<typeof import('../../utils/form/validator')['PasswordStrength']>
@@ -630,6 +630,7 @@ declare module 'vue' {
     readonly fetchClientGetPublicKey: UnwrapRef<typeof import('../../apis/client/auth/index')['fetchClientGetPublicKey']>
     readonly fetchClientGetUserInfo: UnwrapRef<typeof import('../../apis/client/auth/index')['fetchClientGetUserInfo']>
     readonly fetchClientLogin: UnwrapRef<typeof import('../../apis/client/auth/index')['fetchClientLogin']>
+    readonly fetchClientTaskList: UnwrapRef<typeof import('../../apis/client/task/index')['fetchClientTaskList']>
     readonly fetchGetMenuList: UnwrapRef<typeof import('../../apis/system-manage')['fetchGetMenuList']>
     readonly fetchGetRoleList: UnwrapRef<typeof import('../../apis/system-manage')['fetchGetRoleList']>
     readonly fetchGetUserList: UnwrapRef<typeof import('../../apis/system-manage')['fetchGetUserList']>

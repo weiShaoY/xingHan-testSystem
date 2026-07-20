@@ -1,66 +1,82 @@
-<!------  2026-05-14---16:11---星期四  ------>
-<!------------------------------------    ------------------------------------------------->
-<script lang="ts" setup>
-import ClientHeaderBar from './components/client-header-bar/index.vue'
-
-import ClientPageContent from './components/client-page-content/index.vue'
-
+<script setup lang="ts">
 defineOptions({
   name: 'ClientLayout',
 })
-
-const props = withDefaults(defineProps<{
-
-  /** 是否显示客户端顶部栏；不传时保持客户端首页默认显示规则。 */
-  showHeader?: boolean | null
-}>(), {
-  showHeader: null,
-})
+const route = useRoute()
 
 const router = useRouter()
 
-const isShowClientHeaderBar = computed(() => {
-  return props.showHeader ?? router.currentRoute.value.path === '/client/home'
+const navTitle = computed(() => {
+  return String(route.meta?.title || '')
 })
+
+function onBack() {
+  if (window.history.state.back) {
+    history.back()
+  }
+  else {
+    router.replace('/client/home')
+  }
+}
+
 </script>
 
 <template>
   <div
     class="app-layout"
   >
-    <!-- <aside
-      id="app-sidebar"
-    >
-      <ArtSidebarMenu />
-    </aside> -->
+    <VanNavBar
+      :title="navTitle"
+      :fixed="true"
+      :left-arrow="!route.meta.hideClientBack"
+      placeholder
+      clickable
+      @click-left="onBack"
+    />
 
-    <main
-      id="app-main"
+    <router-view
+      v-slot="{ Component, route: viewRoute }"
     >
-      <div
-        v-if="isShowClientHeaderBar"
-        id="app-header"
+      <!-- 缓存路由动画 -->
+      <Transition
+        class="app-wrapper"
+        mode="out-in"
+        appear
       >
-        <ClientHeaderBar />
-      </div>
+        <KeepAlive
+          :max="10"
+        >
+          <component
+            :is="Component"
+            v-if="viewRoute.meta.keepAlive"
+            :key="viewRoute.path"
+            class="art-page-view"
+          />
+        </KeepAlive>
+      </Transition>
 
-      <div
-        id="app-content"
+      <!-- 非缓存路由动画 -->
+      <Transition
+        class="app-wrapper"
+        mode="out-in"
+        appear
       >
-        <slot>
-          <ClientPageContent />
-        </slot>
-      </div>
-    </main>
+        <component
+          :is="Component"
+          v-if="!viewRoute.meta.keepAlive"
+          :key="viewRoute.path"
+          class="art-page-view"
+        />
+      </Transition>
+    </router-view>
 
-    <div
-      id="app-global"
-    >
-      <ArtGlobalComponent />
-    </div>
   </div>
 </template>
 
-<style lang="scss" scoped>
-  @use './style';
+<style scoped>
+.app-wrapper {
+  width: 100%;
+  position: relative;
+  padding: 16px;
+}
 </style>

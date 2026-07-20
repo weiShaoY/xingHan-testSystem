@@ -59,9 +59,12 @@ import { useCommon } from '@/hooks/core/useCommon'
 
 import {
   getLoginRouteNameByPath,
-  getUserStoreByPath,
   isClientPath,
 } from '@/store'
+
+import { useAdminUserStore } from '@/store/modules/adminUser'
+
+import { useClientUserStore } from '@/store/modules/clientUser'
 
 import { useMenuStore } from '@/store/modules/menu'
 
@@ -511,24 +514,35 @@ function isStaticRoute(path: string): boolean {
  * @param path 当前访问路径，用于选择管理端或客户端对应的用户 store。
  */
 async function fetchUserInfo(path: string): Promise<void> {
-  const userStore = getUserStoreByPath(path)
+  if (isClientPath(path)) {
+    const userStore = useClientUserStore()
+
+    if (hasLoadedUserInfo(userStore.userInfo)) {
+      userStore.checkAndClearWorkTabs()
+      return
+    }
+
+    userStore.setUserInfo(
+      isDevSkipAuthEnabled
+        ? devClientUserInfo
+        : (await fetchClientGetUserInfo(path)).userInfo,
+    )
+    userStore.checkAndClearWorkTabs()
+    return
+  }
+
+  const userStore = useAdminUserStore()
 
   if (hasLoadedUserInfo(userStore.userInfo)) {
     userStore.checkAndClearWorkTabs()
     return
   }
 
-  if (isDevSkipAuthEnabled) {
-    userStore.setUserInfo(isClientPath(path) ? devClientUserInfo : devAdminUserInfo)
-    userStore.checkAndClearWorkTabs()
-    return
-  }
-
-  const { userInfo } = isClientPath(path)
-    ? await fetchClientGetUserInfo(path)
-    : await fetchAdminGetUserInfo(path)
-
-  userStore.setUserInfo(userInfo)
+  userStore.setUserInfo(
+    isDevSkipAuthEnabled
+      ? devAdminUserInfo
+      : (await fetchAdminGetUserInfo(path)).userInfo,
+  )
 
   // 检查并清理工作台标签页（如果是不同用户登录）
   userStore.checkAndClearWorkTabs()

@@ -1,5 +1,5 @@
-/** 认证类型 */
-namespace AuthNamespace {
+/** 客户端认证类型 */
+export namespace Auth {
 
   /** 公钥 */
   type PublicKey = {

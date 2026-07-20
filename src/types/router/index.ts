@@ -93,6 +93,10 @@ export type RouteMeta = {
 
   /** 父级路径 */
   parentPath?: string
+
+  /** 客户端页面是否隐藏左箭头 */
+  hideClientBack?: boolean
+
 } & Record<string | number | symbol, unknown>
 
 /**

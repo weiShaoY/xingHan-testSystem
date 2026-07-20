@@ -1,6 +1,4 @@
-<!------  2026-05-14---15:22---星期四  ------>
-<!------------------------------------    ------------------------------------------------->
-<script lang="ts" setup>
+<script setup lang="ts">
 import cover1 from '@imgs/cover/img1.webp'
 
 import cover2 from '@imgs/cover/img2.webp'
@@ -17,106 +15,122 @@ type NavItem = {
   name: string
   path: string
   icon: string
-  bgColor: string
+  accentClass: string
+  cardClass: string
 }
 
 type RecommendCourse = {
+  id: number
   title: string
   cover: string
   sections: number
   participants: number
+  tag: string
 }
+
+const router = useRouter()
 
 const navList: NavItem[] = [
   {
     name: '我的任务',
     path: '/client/task',
     icon: 'tdesign:task',
-    bgColor: '#11bbd2',
+    accentClass: 'bg-teal-500 shadow-[0_10px_18px_rgb(20_184_166/28%)]',
+    cardClass: 'border-teal-100 bg-linear-to-b from-teal-50 to-white',
   },
   {
-    name: '报名的课程',
+    name: '报名课程',
     path: '/client/course/list',
     icon: 'tdesign:course',
-    bgColor: '#f7979f',
+    accentClass: 'bg-rose-400 shadow-[0_10px_18px_rgb(251_113_133/28%)]',
+    cardClass: 'border-rose-100 bg-linear-to-b from-rose-50 to-white',
   },
   {
     name: '学习历史',
     path: '/client/history/list',
     icon: 'tdesign:history',
-    bgColor: '#febd2d',
+    accentClass: 'bg-amber-500 shadow-[0_10px_18px_rgb(245_158_11/28%)]',
+    cardClass: 'border-amber-100 bg-linear-to-b from-amber-50 to-white',
   },
   {
     name: '个人主页',
     path: '/client/user-center',
     icon: 'tdesign:architecture-hui-style',
-    bgColor: '#f4793e',
+    accentClass: 'bg-orange-500 shadow-[0_10px_18px_rgb(249_115_22/28%)]',
+    cardClass: 'border-orange-100 bg-linear-to-b from-orange-50 to-white',
   },
 ]
 
 const recommendList: RecommendCourse[] = [
   {
+    id: 1,
     title: '如何使用UMU设计有效果的在线学习项目',
     cover: cover1,
     sections: 19,
     participants: 54061,
+    tag: '热门',
   },
   {
+    id: 2,
     title: 'UMU 快速入门指南',
     cover: cover2,
     sections: 5,
     participants: 182550,
+    tag: '入门',
   },
   {
+    id: 3,
     title: 'UMU AI 微课：降低做课成本，提升业务价值',
     cover: cover3,
     sections: 26,
     participants: 10056,
+    tag: 'AI',
   },
   {
+    id: 4,
     title: '考题本｜难题错题一手抓 知识盲点不落下',
     cover: cover4,
     sections: 3,
     participants: 6989,
+    tag: '测评',
   },
   {
+    id: 5,
     title: '语音微课、视频｜AI 自动生成课程字幕，人人都能快速上手',
     cover: cover5,
     sections: 12,
     participants: 9316,
+    tag: '进阶',
   },
   {
+    id: 6,
     title: '如何将已有视频和文档形成UMU课程',
     cover: cover6,
     sections: 3,
     participants: 20362,
+    tag: '实践',
   },
 ]
 
-const router = useRouter()
+const sectionTotal = computed(() => {
+  return recommendList.reduce((total, item) => total + item.sections, 0)
+})
 
-function handleClick(item: NavItem) {
-  console.log(item)
-  router.push(item.path)
+function goToPath(path: string) {
+  router.push(path)
 }
 
-/**
- * 跳转到推荐课程列表页
- */
 function goToRecommendList() {
   router.push({
     name: 'ClientRecommendList',
   })
 }
 
-/**
-   * 跳转到推荐课程详情页
-   */
 function goToRecommendDetail(item: RecommendCourse) {
   router.push({
     name: 'ClientRecommendDetail',
     params: {
-      id: item.sections,
+      id: item.id,
     },
   })
 }
@@ -124,114 +138,173 @@ function goToRecommendDetail(item: RecommendCourse) {
 
 <template>
   <div
-    class="py-5 max-sm:py-3"
+    class="flex flex-col gap-4 px-0 pt-3 pb-6 sm:gap-5 sm:pt-4 sm:pb-7"
   >
-    <!-- 导航栏 -->
-    <div
-      class="grid grid-cols-4 gap-4 max-md:gap-3 max-sm:gap-2.5"
+
+    <van-grid
+      :column-num="2"
+      :border="false"
+      gutter="12"
+      class="[&_.van-grid-item__content]:bg-transparent [&_.van-grid-item__content]:p-0"
     >
-      <button
+      <van-grid-item
         v-for="item in navList"
-        :key="item.name"
-        type="button"
-        class="min-h-[118px] min-w-0 flex items-center justify-start gap-4 overflow-hidden rounded-custom-sm border-0 px-5 py-4 text-white font-500 shadow-[0_8px_20px_rgb(0_0_0/8%)] transition-[transform,filter,box-shadow] duration-120 ease-in-out cursor-pointer select-none touch-manipulation hover:-translate-y-0.5 hover:shadow-[0_12px_26px_rgb(0_0_0/10%)] active:scale-[0.96] active:brightness-92 active:shadow-[0_3px_8px_rgb(0_0_0/10%)] max-md:min-h-[104px] max-md:flex-col max-md:justify-center max-md:gap-2 max-md:px-3 max-md:py-3 max-sm:aspect-square max-sm:min-h-0 max-sm:gap-1.5 max-sm:rounded-2xl max-sm:p-[8px_4px] [-webkit-tap-highlight-color:transparent]"
-        :style="{ backgroundColor: item.bgColor }"
-        :title="item.name"
-        @click="handleClick(item)"
+        :key="item.path"
+        clickable
+        @click="goToPath(item.path)"
       >
         <div
-          class="flex-c"
+          class="min-h-28 w-full flex items-center justify-center gap-3 rounded-5 border px-4 py-4 text-center shadow-[0_10px_24px_rgb(15_23_42/6%)]"
+          :class="item.cardClass"
         >
-          <ArtSvgIcon
-            :icon="item.icon"
-            class="text-[38px] max-md:text-[34px] max-sm:text-[32px]"
-          />
-        </div>
-
-        <div
-          class="line-clamp-2 min-w-0 flex-1 overflow-hidden text-left text-base leading-[1.35] text-ellipsis max-md:w-full max-md:flex-none max-md:text-center max-md:text-sm max-sm:text-xs max-sm:leading-[1.25]"
-        >
-          {{ item.name }}
-        </div>
-      </button>
-    </div>
-
-    <el-divider
-      class="my-6! max-sm:my-4!"
-    />
-
-    <!-- 推荐课程 -->
-    <div
-      class="pb-6"
-    >
-      <div
-        class="mb-5 flex items-start justify-between gap-4 max-sm:mb-4"
-      >
-        <div>
-          <h2
-            class="m-0 text-xl text-g-900 font-semibold leading-8 max-sm:text-[22px]"
+          <div
+            class="h-12 w-12 flex shrink-0 items-center justify-center rounded-4 text-white"
+            :class="item.accentClass"
           >
-            推荐
-          </h2>
-
-          <p
-            class="mt-1 mb-0 text-sm text-g-600 leading-5 max-sm:mt-2 max-sm:text-[15px]"
-          >
-            10门课程 97个小节
-          </p>
-        </div>
-
-        <button
-          type="button"
-          class="min-h-8 flex items-center gap-1 border-0 bg-transparent p-0 text-base text-g-900 font-500 cursor-pointer select-none touch-manipulation hover:text-primary active:opacity-60 [-webkit-tap-highlight-color:transparent]"
-        >
-          <span
-            @click="goToRecommendList"
-          >
-            查看全部
-          </span>
-
-          <ArtSvgIcon
-            icon="ri:arrow-right-s-line"
-            class="text-[22px]"
-          />
-        </button>
-      </div>
-
-      <div
-        class="grid grid-cols-4 gap-x-5 gap-y-7 max-xl:grid-cols-3 max-md:grid-cols-2 max-sm:gap-x-3 max-sm:gap-y-6"
-      >
-        <button
-          v-for="item in recommendList"
-          :key="item.title"
-          type="button"
-          class="group min-w-0 overflow-hidden art-card p-0 text-left cursor-pointer select-none touch-manipulation transition hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-[0_12px_30px_rgb(15_23_42/8%)] active:scale-[0.98] active:opacity-80 max-sm:rounded-none max-sm:border-0 max-sm:bg-transparent max-sm:hover:translate-y-0 max-sm:hover:shadow-none [-webkit-tap-highlight-color:transparent]"
-          @click="goToRecommendDetail(item)"
-        >
-          <img
-            :src="item.cover"
-            :alt="item.title"
-            class="aspect-16/9 w-full object-cover max-sm:rounded-[5px]"
-          >
+            <ArtSvgIcon
+              :icon="item.icon"
+              class="text-7"
+            />
+          </div>
 
           <div
-            class="px-4 pb-4 pt-3 max-sm:p-0"
+            class="min-w-0 flex-1 overflow-hidden"
+          >
+            <span
+              class="block wrap-break-word text-4.5 text-slate-900 font-700 leading-1.35"
+            >{{ item.name }}</span>
+          </div>
+        </div>
+      </van-grid-item>
+    </van-grid>
+
+    <van-cell
+      title="推荐课程"
+      value="查看全部"
+      is-link
+      center
+      class="bg-transparent! px-0!"
+      @click="goToRecommendList"
+    >
+      <template
+        #title
+      >
+        <span
+          class="text-5 text-slate-900 font-700"
+        >推荐课程</span>
+      </template>
+
+      <template
+        #label
+      >
+        <span
+          class="mt-1 block text-3.25 text-slate-500"
+        >
+          {{ recommendList.length }}门课程 · {{ sectionTotal }}个小节
+        </span>
+      </template>
+
+      <template
+        #value
+      >
+        <span
+          class="text-3.5 text-teal-700"
+        >查看全部</span>
+      </template>
+    </van-cell>
+
+    <van-space
+      direction="vertical"
+      fill
+      :size="14"
+    >
+      <div
+        v-for="item in recommendList"
+        :key="item.id"
+        class="flex cursor-pointer flex-col gap-3.5 rounded-5 border border-slate-200 bg-white p-3.5 shadow-[0_10px_24px_rgb(15_23_42/5%)] transition duration-200 active:scale-[0.992] sm:flex-row"
+        @click="goToRecommendDetail(item)"
+      >
+        <van-image
+          :src="item.cover"
+          :alt="item.title"
+          fit="cover"
+          radius="16"
+          class="h-44 w-full shrink-0 overflow-hidden sm:h-28 sm:w-28"
+        />
+
+        <div
+          class="min-w-0 flex flex-1 flex-col overflow-hidden"
+        >
+          <van-cell
+            center
+            class="rounded-4 bg-transparent px-0 py-0 [&_.van-cell__value]:flex [&_.van-cell__value]:items-center [&_.van-cell__value]:justify-end"
+          >
+            <template
+              #title
+            >
+              <van-tag
+                plain
+                round
+                type="primary"
+              >
+                {{ item.tag }}
+              </van-tag>
+            </template>
+
+            <template
+              #value
+            >
+              <span
+                class="shrink-0 text-3 text-slate-500"
+              >
+                {{ item.participants }}人参与
+              </span>
+            </template>
+          </van-cell>
+
+          <div
+            class="mt-3 rounded-4 bg-slate-50/70 px-3 py-3 backdrop-blur-sm"
           >
             <h3
-              class="line-clamp-2 m-0 min-h-[44px] overflow-hidden text-base text-g-900 font-500 leading-[22px] text-ellipsis group-hover:text-primary max-sm:mt-2 max-sm:min-h-[40px] max-sm:text-[16px] max-sm:leading-5"
+              class="m-0 min-h-[3.4rem] break-all text-4 text-slate-900 font-700 leading-[1.7]"
             >
               {{ item.title }}
             </h3>
 
-            <p
-              class="mt-2 mb-0 text-sm text-g-600 leading-5 max-sm:mt-1.5 max-sm:text-[14px]"
+            <div
+              class="mt-3 flex items-center justify-between gap-3 border-t border-slate-100 pt-3"
             >
-              {{ item.sections }}个小节 {{ item.participants }}人参与
-            </p>
-          </div>
-        </button>
-      </div>
-    </div>
+              <div
+                class="flex flex-wrap gap-x-4 gap-y-2 text-3 text-teal-700"
+              >
+                <span
+                  class="inline-flex items-center gap-1.5"
+                >
+                  <ArtSvgIcon
+                    icon="ri:list-check-2"
+                    class="text-4"
+                  />
+                  {{ item.sections }}个小节
+                </span>
+              </div>
 
+              <van-button
+                round
+                size="small"
+                type="primary"
+                class="border-0 bg-linear-to-r from-teal-600 to-cyan-500 px-3 shadow-[0_10px_18px_rgb(20_184_166/22%)]!"
+                @click.stop="goToRecommendDetail(item)"
+              >
+                进入学习
+                <van-icon
+                  name="arrow"
+                  class="ml-1"
+                />
+              </van-button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </van-space>
   </div>
 </template>

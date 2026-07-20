@@ -23,6 +23,7 @@ export const clientRoutes: AppRouteRecord = {
         title: '首页',
         icon: 'ri:home-line',
         keepAlive: false,
+        hideClientBack: true,
       },
     },
     {

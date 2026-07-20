@@ -74,7 +74,7 @@ export const useClientUserStore = defineStore(
      *
      * @param newInfo 新的客户端用户信息。
      */
-    function setUserInfo(newInfo: AdminApi.Auth.UserInfo) {
+    function setUserInfo(newInfo: ClientApi.Auth.UserInfo) {
       userInfo.value = newInfo
     }
 

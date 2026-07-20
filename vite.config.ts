@@ -10,7 +10,7 @@ import AutoImport from 'unplugin-auto-import/vite'
 
 import ElementPlus from 'unplugin-element-plus/vite'
 
-import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
+import { ElementPlusResolver, VantResolver } from 'unplugin-vue-components/resolvers'
 
 import Components from 'unplugin-vue-components/vite'
 
@@ -129,7 +129,10 @@ export default ({ mode }: { mode: string }) => {
       // 自动按需导入组件
       Components({
         dts: 'src/types/core/components.d.ts',
-        resolvers: [ElementPlusResolver()],
+        resolvers: [
+          ElementPlusResolver(),
+          VantResolver(),
+        ],
       }),
 
       // 按需定制主题配置
