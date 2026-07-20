@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const router = useRouter()
+
 const accentClasses = [
   'from-teal-600 to-cyan-500',
   'from-sky-600 to-teal-500',
@@ -26,9 +27,11 @@ function getTaskSubtitle(item: ClientApi.Task.TaskListItem): string {
 
 function getTaskProgress(item: ClientApi.Task.TaskListItem): number {
   const progress = Number(item.learningProgress)
+
   if (Number.isNaN(progress)) {
     return 0
   }
+
   return Math.min(Math.max(progress, 0), 100)
 }
 
@@ -51,10 +54,10 @@ const taskList = ref<ClientApi.Task.TaskListResponse>([])
 async function fetchTaskList() {
   taskList.value = await fetchClientTaskList()
 }
+
 onMounted(() => {
   fetchTaskList()
 })
-
 
 const checked = ref(false)
 
@@ -65,8 +68,10 @@ const checked = ref(false)
     class="flex flex-col gap-4 px-0 pt-3 pb-6 sm:gap-5 sm:pt-4 sm:pb-7"
   >
 
-  <van-switch v-model="checked" disabled />
-
+    <van-switch
+      v-model="checked"
+      disabled
+    />
 
     <van-space
       direction="vertical"
@@ -169,11 +174,19 @@ const checked = ref(false)
       </div>
     </van-space>
 
-    <van-tabbar ">
-  <van-tabbar-item icon="home-o">标签</van-tabbar-item>
-  <van-tabbar-item icon="search">标签</van-tabbar-item>
-  <van-tabbar-item icon="friends-o">标签</van-tabbar-item>
-  <van-tabbar-item icon="setting-o">标签</van-tabbar-item>
-</van-tabbar>
+    <van-tabbar>
+      <van-tabbar-item
+        icon="home-o"
+      >
+        项目
+      </van-tabbar-item>
+
+      <van-tabbar-item
+        icon="search"
+      >
+        课程
+      </van-tabbar-item>
+
+    </van-tabbar>
   </div>
 </template>
