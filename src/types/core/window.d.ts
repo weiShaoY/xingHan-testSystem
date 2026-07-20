@@ -6,6 +6,7 @@ declare global {
    * 全局 Window 对象类型扩展
    * @description 为 Window 对象添加全局插件和工具的类型定义
    */
+  // eslint-disable-next-line ts/consistent-type-definitions
   export interface Window {
 
     /**
@@ -43,5 +44,11 @@ declare global {
      * @description 用于区分客户端路由和管理端路由
      */
     $isClientRoute: boolean
+
+    /**
+     * Vant 消息提示实例
+     * @description 用于显示 Vant 组件的消息的消息提示
+     */
+    $showToast: typeof import('vant').showToast
   }
 }

@@ -78,7 +78,7 @@ type Props = {
    * @description 等同于 Element Plus Tooltip placement
    * @example "top"
    */
-  tooltipPlacement?: string
+  tooltipPlacement?: 'top' | 'bottom' | 'left' | 'right'
 
   /**
    * Tooltip 层级

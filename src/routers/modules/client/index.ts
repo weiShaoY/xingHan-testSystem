@@ -27,6 +27,16 @@ export const clientRoutes: AppRouteRecord = {
       },
     },
     {
+      name: 'ClientUser',
+      path: 'user',
+      component: '/client/user',
+      meta: {
+        title: '个人主页',
+        icon: 'ri:user-line',
+        keepAlive: false,
+      },
+    },
+    {
       path: 'task',
       name: 'ClientTask',
       component: '/client/task',
@@ -37,16 +47,6 @@ export const clientRoutes: AppRouteRecord = {
       },
     },
 
-    {
-      name: 'ClientUserCenter',
-      path: 'user-center',
-      component: '/client/user-center',
-      meta: {
-        title: '个人主页',
-        icon: 'ri:user-line',
-        keepAlive: false,
-      },
-    },
     {
       path: 'course',
       name: 'ClientCourse',

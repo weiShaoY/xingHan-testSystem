@@ -9,6 +9,8 @@ import en from 'element-plus/es/locale/lang/en'
 
 import zh from 'element-plus/es/locale/lang/zh-cn'
 
+import { showToast } from 'vant'
+
 import { createTextVNode } from 'vue'
 
 import { useRoute } from 'vue-router'
@@ -51,6 +53,8 @@ const ContextHolder = defineComponent({
         watchEffect(() => {
           window.$isClientRoute = route.path.startsWith('/client')
         })
+
+        window.$showToast = showToast
 
         console.log('[AppProvider] 全局组件注册成功', {
           $notification: typeof window.$notification,

@@ -71,6 +71,7 @@ async function onRefresh() {
   loading.value = true
   await fetchTaskList()
   loading.value = false
+  window.$showToast('刷新成功')
 }
 
 </script>
