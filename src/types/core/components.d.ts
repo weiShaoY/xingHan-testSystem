@@ -174,6 +174,9 @@ declare module 'vue' {
     VanNavBar: typeof import('vant/es')['NavBar']
     VanProgress: typeof import('vant/es')['Progress']
     VanSpace: typeof import('vant/es')['Space']
+    VanSwitch: typeof import('vant/es')['Switch']
+    VanTabbar: typeof import('vant/es')['Tabbar']
+    VanTabbarItem: typeof import('vant/es')['TabbarItem']
     VanTag: typeof import('vant/es')['Tag']
   }
   export interface GlobalDirectives {

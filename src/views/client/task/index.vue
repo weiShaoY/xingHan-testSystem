@@ -56,6 +56,7 @@ onMounted(() => {
 })
 
 
+const checked = ref(false)
 
 </script>
 
@@ -63,6 +64,9 @@ onMounted(() => {
   <div
     class="flex flex-col gap-4 px-0 pt-3 pb-6 sm:gap-5 sm:pt-4 sm:pb-7"
   >
+
+  <van-switch v-model="checked" disabled />
+
 
     <van-space
       direction="vertical"
@@ -164,5 +168,12 @@ onMounted(() => {
         </div>
       </div>
     </van-space>
+
+    <van-tabbar ">
+  <van-tabbar-item icon="home-o">标签</van-tabbar-item>
+  <van-tabbar-item icon="search">标签</van-tabbar-item>
+  <van-tabbar-item icon="friends-o">标签</van-tabbar-item>
+  <van-tabbar-item icon="setting-o">标签</van-tabbar-item>
+</van-tabbar>
   </div>
 </template>
