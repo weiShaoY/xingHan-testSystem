@@ -59,130 +59,145 @@ onMounted(() => {
   fetchTaskList()
 })
 
-const checked = ref(false)
+const active = ref(0)
+
+function handleChange(index: number) {
+  active.value = index
+}
+
+const loading = ref(false)
+
+async function onRefresh() {
+  loading.value = true
+  await fetchTaskList()
+  loading.value = false
+}
 
 </script>
 
 <template>
+
   <div
     class="flex flex-col gap-4 px-0 pt-3 pb-6 sm:gap-5 sm:pt-4 sm:pb-7"
   >
-
-    <van-switch
-      v-model="checked"
-      disabled
-    />
-
-    <van-space
-      direction="vertical"
-      fill
-      :size="16"
+    <van-pull-refresh
+      v-model="loading"
+      @refresh="onRefresh"
     >
-      <div
-        v-for="(item, index) in taskList"
-        :key="item.taskId"
-        class="overflow-hidden rounded-5 border border-slate-200 bg-white shadow-[0_10px_24px_rgb(15_23_42/5%)] transition duration-200 active:scale-[0.992]"
+      <van-space
+        direction="vertical"
+        fill
+        :size="16"
       >
         <div
-          class="relative overflow-hidden bg-linear-to-r px-4 py-5 text-white sm:px-5"
-          :class="getAccentClass(index)"
+          v-for="(item, index) in taskList"
+          :key="item.taskId"
+          class="overflow-hidden rounded-5 border border-slate-200 bg-white shadow-[0_10px_24px_rgb(15_23_42/5%)] transition duration-200 active:scale-[0.992]"
         >
           <div
-            class="pointer-events-none absolute right--6 top--5 h-24 w-24 rounded-full bg-white/10"
-          />
-
-          <div
-            class="pointer-events-none absolute right-10 bottom--8 h-20 w-20 rounded-full bg-white/8 blur-2xl"
-          />
-
-          <div
-            class="relative z-1"
-          >
-            <h3
-              class="m-0 wrap-break-word text-5.5 font-700 leading-1.35"
-            >
-              {{ item.projName }}
-            </h3>
-
-            <p
-              class="mt-3 mb-0 text-4 leading-1.6 text-white/90"
-            >
-              {{ getTaskSubtitle(item) }}
-            </p>
-          </div>
-        </div>
-
-        <div
-          class="px-4 py-4 sm:px-5"
-          :class="getSurfaceClass(index)"
-        >
-          <van-cell
-            center
-            class="rounded-4 bg-transparent px-0 py-0 [&_.van-cell__value]:flex [&_.van-cell__value]:items-center [&_.van-cell__value]:justify-end"
-          >
-            <template
-              #title
-            >
-              <van-tag
-                plain
-                round
-                type="success"
-              >
-                学习项目
-              </van-tag>
-            </template>
-
-            <template
-              #value
-            >
-              <van-button
-                round
-                size="small"
-                type="primary"
-                class="border-0 bg-linear-to-r from-teal-600 to-cyan-500 px-3 shadow-[0_10px_18px_rgb(20_184_166/22%)]!"
-                @click.stop="goToTaskDetail(item)"
-              >
-                {{ getActionText(item) }}
-                <van-icon
-                  name="arrow"
-                  class="ml-1"
-                />
-              </van-button>
-            </template>
-          </van-cell>
-
-          <div
-            class="mt-3 rounded-4 bg-white/70 px-3.5 py-3 backdrop-blur-sm"
+            class="relative overflow-hidden bg-linear-to-r px-4 py-5 text-white sm:px-5"
+            :class="getAccentClass(index)"
           >
             <div
-              class="mb-2 flex items-center justify-between text-3.5 text-slate-500"
-            >
-              <span>学习进度</span>
-
-              <span>{{ getTaskProgress(item) }}%</span>
-            </div>
-
-            <van-progress
-              :percentage="getTaskProgress(item)"
-              stroke-width="6"
-              color="linear-gradient(90deg, #0f766e 0%, #14b8a6 100%)"
-              track-color="#e2e8f0"
-              :show-pivot="false"
+              class="pointer-events-none absolute right--6 top--5 h-24 w-24 rounded-full bg-white/10"
             />
+
+            <div
+              class="pointer-events-none absolute right-10 bottom--8 h-20 w-20 rounded-full bg-white/8 blur-2xl"
+            />
+
+            <div
+              class="relative z-1"
+            >
+              <h3
+                class="m-0 wrap-break-word text-5.5 font-700 leading-1.35"
+              >
+                {{ item.projName }}
+              </h3>
+
+              <p
+                class="mt-3 mb-0 text-4 leading-1.6 text-white/90"
+              >
+                {{ getTaskSubtitle(item) }}
+              </p>
+            </div>
+          </div>
+
+          <div
+            class="px-4 py-4 sm:px-5"
+            :class="getSurfaceClass(index)"
+          >
+            <van-cell
+              center
+              class="rounded-4 bg-transparent px-0 py-0 [&_.van-cell__value]:flex [&_.van-cell__value]:items-center [&_.van-cell__value]:justify-end"
+            >
+              <template
+                #title
+              >
+                <van-tag
+                  plain
+                  round
+                  type="success"
+                >
+                  学习项目
+                </van-tag>
+              </template>
+
+              <template
+                #value
+              >
+                <van-button
+                  round
+                  size="small"
+                  type="primary"
+                  class="border-0 bg-linear-to-r from-teal-600 to-cyan-500 px-3 shadow-[0_10px_18px_rgb(20_184_166/22%)]!"
+                  @click.stop="goToTaskDetail(item)"
+                >
+                  {{ getActionText(item) }}
+                  <van-icon
+                    name="arrow"
+                    class="ml-1"
+                  />
+                </van-button>
+              </template>
+            </van-cell>
+
+            <div
+              class="mt-3 rounded-4 bg-white/70 px-3.5 py-3 backdrop-blur-sm"
+            >
+              <div
+                class="mb-2 flex items-center justify-between text-3.5 text-slate-500"
+              >
+                <span>学习进度</span>
+
+                <span>{{ getTaskProgress(item) }}%</span>
+              </div>
+
+              <van-progress
+                :percentage="getTaskProgress(item)"
+                stroke-width="6"
+                color="linear-gradient(90deg, #0f766e 0%, #14b8a6 100%)"
+                track-color="#e2e8f0"
+                :show-pivot="false"
+              />
+            </div>
           </div>
         </div>
-      </div>
-    </van-space>
+      </van-space>
+    </van-pull-refresh>
 
-    <van-tabbar>
+    <van-tabbar
+      v-model="active"
+      @change="handleChange"
+    >
       <van-tabbar-item
-        icon="home-o"
+        icon="apps-o"
       >
         项目
       </van-tabbar-item>
 
       <van-tabbar-item
-        icon="search"
+        icon="desktop-o"
       >
         课程
       </van-tabbar-item>
