@@ -23,5 +23,5 @@
     "skipLibCheck": true
   },
   "include": ["src/**/*", "src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"],
-  "exclude": ["node_modules", "dist", "**/*.js"]
+  "exclude": ["node_modules", "dist", "**/*.js", "src/routers/guards/beforeEach copy.ts"]
 }

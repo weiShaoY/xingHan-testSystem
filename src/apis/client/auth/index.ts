@@ -23,11 +23,10 @@ export function fetchClientLogin(params: ClientApi.Auth.LoginParams) {
  * 获取客户端用户信息
  * @returns 用户信息
  */
-export function fetchClientGetUserInfo(authPath?: string) {
+export function fetchClientGetUserInfo() {
   return request.get<{
     userInfo: ClientApi.Auth.UserInfo
   }>({
     url: '/client/auth/userInfo',
-    authPath,
   })
 }

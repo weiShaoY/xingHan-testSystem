@@ -8,8 +8,13 @@ import { sm2, sm3 } from 'sm-crypto'
 
 import { useI18n } from 'vue-i18n'
 
+import {
+  fetchClientGetPublicKey,
+  fetchClientGetUserInfo,
+  fetchClientLogin,
+} from '@/apis/client/auth'
+
 import { HttpError } from '@/apis/http/error'
-import { fetchClientGetPublicKey, fetchClientGetUserInfo, fetchClientLogin } from '@/apis/client/auth'
 
 import AppConfig from '@/config'
 

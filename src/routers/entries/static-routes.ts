@@ -11,13 +11,7 @@ import type { AppRouteRecordRaw } from '@/utils/router'
  * 2、静态路由不管是否登录都可以访问
  */
 export const staticRoutes: AppRouteRecordRaw[] = [
-  // 不需要登录就能访问的路由示例
-  // {
-  //   path: '/welcome',
-  //   name: 'WelcomeStatic',
-  //   component: () => import('@views/admin/dashboard/console/index.vue'),
-  //   meta: { title: 'menus.dashboard.title' }
-  // },
+
   {
     path: '/admin/auth/login',
     name: 'AdminLogin',
@@ -46,7 +40,7 @@ export const staticRoutes: AppRouteRecordRaw[] = [
     },
   },
 
-  // ///////////////////////////////////////////////////////////////////
+  // /////////////////////////// 客户端 路由 ////////////////////////////////////////
 
   {
     path: '/client/auth/login',
@@ -76,7 +70,7 @@ export const staticRoutes: AppRouteRecordRaw[] = [
     },
   },
 
-  // ///////////////////////////////////////////////////////////////////
+  // /////////////////////////// 其他路由 ////////////////////////////////////////
   {
     path: '/403',
     name: 'Exception403',

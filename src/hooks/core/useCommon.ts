@@ -36,7 +36,7 @@ export function useCommon() {
    * 刷新当前页面
    * 通过切换 setting store 中的 refresh 状态触发页面重新渲染
    */
-  const refresh = () => {
+  function refresh() {
     settingStore.reload()
   }
 
@@ -44,7 +44,7 @@ export function useCommon() {
    * 滚动到页面顶部
    * 查找主内容区域并将其滚动位置重置为顶部
    */
-  const scrollToTop = () => {
+  function scrollToTop() {
     const scrollContainer = document.getElementById('app-main')
 
     if (scrollContainer) {
@@ -56,7 +56,7 @@ export function useCommon() {
    * 平滑滚动到页面顶部
    * 使用 smooth 行为实现平滑滚动效果
    */
-  const smoothScrollToTop = () => {
+  function smoothScrollToTop() {
     const scrollContainer = document.getElementById('app-main')
 
     if (scrollContainer) {
@@ -72,7 +72,7 @@ export function useCommon() {
    * @param top 目标滚动位置（像素）
    * @param smooth 是否使用平滑滚动
    */
-  const scrollTo = (top: number, smooth: boolean = false) => {
+  function scrollTo(top: number, smooth: boolean = false) {
     const scrollContainer = document.getElementById('app-main')
 
     if (scrollContainer) {

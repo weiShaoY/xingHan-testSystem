@@ -23,11 +23,10 @@ export function fetchAdminLogin(data: AdminApi.Auth.LoginParams) {
  * 获取管理端用户信息
  * @returns 用户信息
  */
-export function fetchAdminGetUserInfo(authPath?: string) {
+export function fetchAdminGetUserInfo() {
   return request.get<{
     userInfo: AdminApi.Auth.UserInfo
   }>({
     url: '/admin/auth/userInfo',
-    authPath,
   })
 }

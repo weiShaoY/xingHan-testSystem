@@ -8,8 +8,13 @@ import { sm2, sm3 } from 'sm-crypto'
 
 import { useI18n } from 'vue-i18n'
 
+import {
+  fetchAdminGetPublicKey,
+  fetchAdminGetUserInfo,
+  fetchAdminLogin,
+} from '@/apis/admin/auth'
+
 import { HttpError } from '@/apis/http/error'
-import { fetchAdminGetPublicKey, fetchAdminGetUserInfo, fetchAdminLogin } from '@/apis/admin/auth'
 
 import AppConfig from '@/config'
 
@@ -155,10 +160,24 @@ function encryptLoginPayload(formData: any, publicKey: string, sm2key: string) {
 }
 
 /**
+ * 获取管理端登录后的安全回跳地址。
+ *
+ * @param redirect 路由查询参数中的回跳地址。
+ * @returns 管理端路径；无效地址回退到管理端入口。
+ */
+function getAdminRedirect(redirect: unknown): string {
+  if (typeof redirect === 'string' && (redirect === '/admin' || redirect.startsWith('/admin/'))) {
+    return redirect
+  }
+
+  return '/admin'
+}
+
+/**
  * 提交登录表单。
  *
- * 校验表单和拖拽验证后调用登录接口，成功后保存客户端 token 与登录状态，
- * 并根据 redirect 参数跳转到目标页面或客户端首页。
+ * 校验表单和拖拽验证后调用登录接口，成功后保存管理端 token 与登录状态，
+ * 并根据 redirect 参数跳转到目标页面或管理端首页。
  */
 async function handleSubmit() {
   if (!formRef.value) { return }
@@ -212,10 +231,7 @@ async function handleSubmit() {
     // 登录成功处理
     showLoginSuccessNotice()
 
-    // 获取 redirect 参数，如果存在则跳转到指定页面，否则跳转到客户端首页
-    const redirect = route.query.redirect as string
-
-    router.push(redirect || '/admin')
+    router.push(getAdminRedirect(route.query.redirect))
   }
   catch (error) {
     if (error instanceof HttpError) {

@@ -6,8 +6,6 @@ import { nextTick } from 'vue'
 
 import { useCommon } from '@/hooks/core/useCommon'
 
-import { useSettingStore } from '@/store/modules/setting'
-
 import { loadingService } from '@/utils/ui'
 
 import { getPendingLoading, resetPendingLoading } from './beforeEach'
@@ -19,17 +17,13 @@ export function setupAfterEachGuard(router: Router) {
   router.afterEach(() => {
     scrollToTop()
 
-    // 关闭进度条
-    const settingStore = useSettingStore()
+    // 无条件清理进度条，防止导航期间切换配置后留下残影。
+    NProgress.done()
 
-    if (settingStore.showNprogress) {
-      NProgress.done()
-
-      // 确保进度条完全移除，避免残影
-      setTimeout(() => {
-        NProgress.remove()
-      }, 600)
-    }
+    // 确保进度条完全移除，避免残影
+    setTimeout(() => {
+      NProgress.remove()
+    }, 600)
 
     // 关闭 loading 效果
     if (getPendingLoading()) {
