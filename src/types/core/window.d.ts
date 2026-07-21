@@ -49,6 +49,6 @@ declare global {
      * Vant 消息提示实例
      * @description 用于显示 Vant 组件的消息的消息提示
      */
-    $showToast: typeof import('vant').showToast
+    $toast: typeof import('vant').showToast
   }
 }

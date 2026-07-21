@@ -54,7 +54,7 @@ const ContextHolder = defineComponent({
           window.$isClientRoute = route.path.startsWith('/client')
         })
 
-        window.$showToast = showToast
+        window.$toast = showToast
 
         console.log('[AppProvider] 全局组件注册成功', {
           $notification: typeof window.$notification,

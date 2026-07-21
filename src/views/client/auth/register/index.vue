@@ -1,309 +1,237 @@
-<!-- 注册页面 -->
-<script setup lang="ts">
-import type { FormInstance, FormRules } from 'element-plus'
+<!------  2026-07-21---16:23---星期二  ------>
+<!------------------------------------    ------------------------------------------------->
+<script lang="ts" setup>
+import type { FieldRule } from 'vant'
 
-import { useI18n } from 'vue-i18n'
+import { showNotify } from 'vant'
 
-defineOptions({
-  name: 'Register',
-})
+import { useRoute, useRouter } from 'vue-router'
 
-type RegisterForm = {
-  username: string
-  password: string
-  confirmPassword: string
-  agreement: boolean
-}
-
-const USERNAME_MIN_LENGTH = 3
-
-const USERNAME_MAX_LENGTH = 20
-
-const PASSWORD_MIN_LENGTH = 6
-
-const REDIRECT_DELAY = 1000
-
-const { t, locale } = useI18n()
+const route = useRoute()
 
 const router = useRouter()
 
-const formRef = ref<FormInstance>()
-
 const loading = ref(false)
 
-const formKey = ref(0)
-
-// 监听语言切换，重置表单
-watch(locale, () => {
-  formKey.value++
+const navTitle = computed(() => {
+  return String(route.meta?.title || '')
 })
 
-const formData = reactive<RegisterForm>({
+function onBack() {
+  if (window.history.state.back) {
+    history.back()
+  }
+  else {
+    router.replace('/client/auth/login')
+  }
+}
+
+const postData = ref({
   username: '',
+  email: '',
+  code: '',
   password: '',
   confirmPassword: '',
-  agreement: false,
 })
 
-/**
-   * 验证密码
-   * 当密码输入后，如果确认密码已填写，则触发确认密码的验证
-   */
-function validatePassword(_rule: any, value: string, callback: (error?: Error) => void) {
-  if (!value) {
-    callback(new Error(t('register.placeholder.password')))
-    return
-  }
-
-  if (formData.confirmPassword) {
-    formRef.value?.validateField('confirmPassword')
-  }
-
-  callback()
-}
-
-/**
-   * 验证确认密码
-   * 检查确认密码是否与密码一致
-   */
-function validateConfirmPassword(_rule: any, value: string, callback: (error?: Error) => void) {
-  if (!value) {
-    callback(new Error(t('register.rule.confirmPasswordRequired')))
-    return
-  }
-
-  if (value !== formData.password) {
-    callback(new Error(t('register.rule.passwordMismatch')))
-    return
-  }
-
-  callback()
-}
-
-/**
-   * 验证用户协议
-   * 确保用户已勾选同意协议
-   */
-function validateAgreement(_rule: any, value: boolean, callback: (error?: Error) => void) {
-  if (!value) {
-    callback(new Error(t('register.rule.agreementRequired')))
-    return
-  }
-
-  callback()
-}
-
-const rules = computed<FormRules<RegisterForm>>(() => ({
+const rules: Record<string, FieldRule[]> = {
   username: [
     {
       required: true,
-      message: t('register.placeholder.username'),
-      trigger: 'blur',
+      message: '请输入用户名',
     },
+  ],
+  email: [
     {
-      min: USERNAME_MIN_LENGTH,
-      max: USERNAME_MAX_LENGTH,
-      message: t('register.rule.usernameLength'),
-      trigger: 'blur',
+      required: true,
+      message: '请输入邮箱',
+    },
+  ],
+  code: [
+    {
+      required: true,
+      message: '请输入验证码',
     },
   ],
   password: [
     {
       required: true,
-      validator: validatePassword,
-      trigger: 'blur',
-    },
-    {
-      min: PASSWORD_MIN_LENGTH,
-      message: t('register.rule.passwordLength'),
-      trigger: 'blur',
+      message: '请输入密码',
     },
   ],
-  confirmPassword: [{
-    required: true,
-    validator: validateConfirmPassword,
-    trigger: 'blur',
-  }],
-  agreement: [{
-    validator: validateAgreement,
-    trigger: 'change',
-  }],
-}))
-
-/**
-   * 注册用户
-   * 验证表单后提交注册请求
-   */
-async function register() {
-  if (!formRef.value) { return }
-
-  try {
-    await formRef.value.validate()
-    loading.value = true
-
-    // TODO: 替换为真实 API 调用
-    // const params = {
-    //   username: formData.username,
-    //   password: formData.password
-    // }
-    // const res = await AuthService.register(params)
-    // if (res.code === ApiStatus.success) {
-    //   ElMessage.success('注册成功')
-    //   toLogin()
-    // }
-
-    // 模拟注册请求
-    setTimeout(() => {
-      loading.value = false
-      ElMessage.success('注册成功')
-      toLogin()
-    }, REDIRECT_DELAY)
-  }
-  catch (error) {
-    console.error('表单验证失败:', error)
-    loading.value = false
-  }
+  confirmPassword: [
+    {
+      required: true,
+      message: '请确认密码',
+    },
+    {
+      required: true,
+      validator: (val: string) => val === postData.value.password,
+      message: '两次密码不一致',
+    },
+  ],
 }
 
-/**
-   * 跳转到登录页面
-   */
-function toLogin() {
-  setTimeout(() => {
-    router.push({
-      name: 'ClientLogin',
-    })
-  }, REDIRECT_DELAY)
+const isGettingCode = ref(false)
+
+const buttonText = computed(() => {
+  return isGettingCode.value ? '获取中' : '发送验证码'
+})
+
+async function getCode() {
+  isGettingCode.value = true
+
+  if (!postData.value.email) {
+    // showNotify({
+    //   type: 'warning',
+    //   message: t('forgotPassword.pleaseEnterEmail'),
+    // })
+    window.$toast('请输入邮箱')
+  }
+
+  // isGettingCode.value = true
+  // const res = await userStore.getCode()
+
+  // if (res.code === 0) {
+  //   showNotify({
+  //     type: 'success',
+  //     message: `验证码发送成功`,
+  //   })
+  // }
+
+  // isGettingCode.value = false
+
+  showNotify({
+    type: 'success',
+    message: `验证码发送成功`,
+  })
+  isGettingCode.value = false
+}
+
+async function handleSubmit() {
+  // await formRef.value.validate()
 }
 </script>
 
 <template>
   <div
-    class="flex w-full h-screen"
+    class=""
   >
-    <LoginLeftView
-      i18n-path="client.login"
+    <VanNavBar
+      :title="navTitle"
+      :fixed="true"
+      :left-arrow="!route.meta.hideClientBack"
+      placeholder
+      clickable
+      @click-left="onBack"
     />
 
-    <div
-      class="relative flex-1"
+  </div>
+
+  <div
+    class="mx-auto p-3 text-center w-full"
+  >
+    <van-form
+      :model="postData"
+      :rules="rules"
+      validate-trigger="onSubmit"
+      class="grid gap-5"
+      @submit="handleSubmit"
     >
-      <AuthTopBar />
+      <div
+        class="mt-4 rounded-md overflow-hidden"
+      >
+        <van-field
+          v-model.trim="postData.username"
+          :rules="rules.username"
+          name="username"
+          placeholder="请输入用户名"
+        />
+      </div>
 
       <div
-        class="auth-right-wrap"
+        class="rounded-md overflow-hidden"
       >
-        <div
-          class="form"
-        >
-          <h3
-            class="title"
-          >
-            {{ $t('register.title') }}
-          </h3>
-
-          <p
-            class="sub-title"
-          >
-            {{ $t('register.subTitle') }}
-          </p>
-
-          <ElForm
-            ref="formRef"
-            :key="formKey"
-            class="mt-7.5"
-            :model="formData"
-            :rules="rules"
-            label-position="top"
-          >
-            <ElFormItem
-              prop="username"
-            >
-              <ElInput
-                v-model.trim="formData.username"
-                class="custom-height"
-                :placeholder="$t('register.placeholder.username')"
-              />
-            </ElFormItem>
-
-            <ElFormItem
-              prop="password"
-            >
-              <ElInput
-                v-model.trim="formData.password"
-                class="custom-height"
-                :placeholder="$t('register.placeholder.password')"
-                type="password"
-                autocomplete="off"
-                show-password
-              />
-            </ElFormItem>
-
-            <ElFormItem
-              prop="confirmPassword"
-            >
-              <ElInput
-                v-model.trim="formData.confirmPassword"
-                class="custom-height"
-                :placeholder="$t('register.placeholder.confirmPassword')"
-                type="password"
-                autocomplete="off"
-                show-password
-                @keyup.enter="register"
-              />
-            </ElFormItem>
-
-            <ElFormItem
-              prop="agreement"
-            >
-              <ElCheckbox
-                v-model="formData.agreement"
-              >
-                {{ $t('register.agreeText') }}
-                <RouterLink
-                  style="color: var(--theme-color); text-decoration: none"
-                  to="/privacy-policy"
-                >
-                  {{ $t('register.privacyPolicy') }}
-                </RouterLink>
-              </ElCheckbox>
-            </ElFormItem>
-
-            <div
-              style="margin-top: 15px"
-            >
-              <ElButton
-                v-ripple
-                class="w-full custom-height"
-                type="primary"
-                :loading="loading"
-                @click="register"
-              >
-                {{ $t('register.submitBtnText') }}
-              </ElButton>
-            </div>
-
-            <div
-              class="mt-5 text-sm text-g-600"
-            >
-              <span>{{ $t('register.hasAccount') }}</span>
-
-              <RouterLink
-                class="text-theme"
-                :to="{ name: 'ClientLogin' }"
-              >
-                {{
-                  $t('register.toLogin')
-                }}
-              </RouterLink>
-            </div>
-          </ElForm>
-        </div>
+        <van-field
+          v-model.trim="postData.email"
+          :rules="rules.email"
+          name="email"
+          placeholder="请输入邮箱"
+        />
       </div>
-    </div>
+
+      <div
+        class="mt-4 rounded-md overflow-hidden"
+      >
+        <van-field
+          v-model.trim="postData.code"
+          :rules="rules.code"
+          name="code"
+          placeholder="请输入验证码"
+        >
+          <template
+            #button
+          >
+            <van-button
+              size="small"
+              type="primary"
+              plain
+              @click="getCode"
+            >
+              {{ buttonText }}
+            </van-button>
+          </template>
+        </van-field>
+      </div>
+
+      <div
+        class="mt-4 rounded-md overflow-hidden"
+      >
+        <van-field
+          v-model.trim="postData.password"
+          type="password"
+          :rules="rules.password"
+          name="password"
+          placeholder="请输入密码"
+        />
+      </div>
+
+      <div
+        class="mt-4 rounded-md overflow-hidden"
+      >
+        <van-field
+          v-model.trim="postData.confirmPassword"
+          type="password"
+          :rules="rules.confirmPassword"
+          name="confirmPassword"
+          placeholder="再次输入密码"
+        />
+      </div>
+
+      <van-button
+        :loading="loading"
+        block
+        type="primary"
+        native-type="submit"
+      >
+        注册
+      </van-button>
+    </van-form>
+
+    <nav
+      class="mt-7 grid justify-items-center gap-10 text-[18px] [&_a]:leading-1.5 [&_a]:text-[#2589ed] [&_a]:no-underline"
+    >
+
+      <RouterLink
+        :to="{ name: 'ClientLogin' }"
+      >
+        返回登录
+      </RouterLink>
+    </nav>
+
   </div>
 </template>
 
-<style scoped>
-  @import '../login/style.css';
+<style lang="scss" scoped>
+
 </style>

@@ -38,7 +38,7 @@ const clientAuthRoutes: AppRouteRecordRaw[] = [
     name: 'ClientLogin',
     component: () => import('@views/client/auth/login/index.vue'),
     meta: {
-      title: 'menus.login.title',
+      title: '登录',
       isHideTab: true,
     },
   },
@@ -47,7 +47,7 @@ const clientAuthRoutes: AppRouteRecordRaw[] = [
     name: 'ClientRegister',
     component: () => import('@views/client/auth/register/index.vue'),
     meta: {
-      title: 'menus.register.title',
+      title: '注册',
       isHideTab: true,
     },
   },
@@ -56,7 +56,7 @@ const clientAuthRoutes: AppRouteRecordRaw[] = [
     name: 'ClientForgetPassword',
     component: () => import('@views/client/auth/forget-password/index.vue'),
     meta: {
-      title: 'menus.forgetPassword.title',
+      title: '忘记密码',
       isHideTab: true,
     },
   },

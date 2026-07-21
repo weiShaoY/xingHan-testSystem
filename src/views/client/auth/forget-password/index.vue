@@ -1,102 +1,221 @@
-<script setup lang="ts">
-defineOptions({
-  name: 'ForgetPassword',
-})
+<!------  2026-07-21---16:23---星期二  ------>
+<!------------------------------------    ------------------------------------------------->
+<script lang="ts" setup>
+import type { FieldRule } from 'vant'
+
+import { showNotify } from 'vant'
+
+import { useRoute, useRouter } from 'vue-router'
+
+const route = useRoute()
 
 const router = useRouter()
 
-const showInputLabel = ref(false)
-
-const username = ref('')
-
 const loading = ref(false)
 
-async function register() {}
+const navTitle = computed(() => {
+  return String(route.meta?.title || '')
+})
 
-function toLogin() {
-  router.push({
-    name: 'ClientLogin',
+function onBack() {
+  if (window.history.state.back) {
+    history.back()
+  }
+  else {
+    router.replace('/client/auth/login')
+  }
+}
+
+const postData = ref({
+  email: '',
+  code: '',
+  password: '',
+  confirmPassword: '',
+})
+
+const rules: Record<string, FieldRule[]> = {
+
+  email: [
+    {
+      required: true,
+      message: '请输入邮箱',
+    },
+  ],
+  code: [
+    {
+      required: true,
+      message: '请输入验证码',
+    },
+  ],
+  password: [
+    {
+      required: true,
+      message: '请输入密码',
+    },
+  ],
+  confirmPassword: [
+    {
+      required: true,
+      message: '请确认密码',
+    },
+    {
+      required: true,
+      validator: (val: string) => val === postData.value.password,
+      message: '两次密码不一致',
+    },
+  ],
+}
+
+const isGettingCode = ref(false)
+
+const buttonText = computed(() => {
+  return isGettingCode.value ? '获取中' : '发送验证码'
+})
+
+async function getCode() {
+  isGettingCode.value = true
+
+  if (!postData.value.email) {
+    // showNotify({
+    //   type: 'warning',
+    //   message: t('forgotPassword.pleaseEnterEmail'),
+    // })
+    window.$toast('请输入邮箱')
+  }
+
+  // isGettingCode.value = true
+  // const res = await userStore.getCode()
+
+  // if (res.code === 0) {
+  //   showNotify({
+  //     type: 'success',
+  //     message: `验证码发送成功`,
+  //   })
+  // }
+
+  // isGettingCode.value = false
+
+  showNotify({
+    type: 'success',
+    message: `验证码发送成功`,
   })
+  isGettingCode.value = false
+}
+
+async function handleSubmit() {
+  // await formRef.value.validate()
 }
 </script>
 
 <template>
   <div
-    class="flex w-full h-screen"
+    class=""
   >
-    <LoginLeftView
-      i18n-path="client.login"
+    <VanNavBar
+      :title="navTitle"
+      :fixed="true"
+      :left-arrow="!route.meta.hideClientBack"
+      placeholder
+      clickable
+      @click-left="onBack"
     />
 
-    <div
-      class="relative flex-1"
+  </div>
+
+  <div
+    class="mx-auto p-3 text-center w-full"
+  >
+    <van-form
+      :model="postData"
+      :rules="rules"
+      validate-trigger="onSubmit"
+      class="grid gap-5"
+      @submit="handleSubmit"
     >
-      <AuthTopBar />
 
       <div
-        class="auth-right-wrap"
+        class="rounded-md overflow-hidden"
       >
-        <div
-          class="form"
-        >
-          <h3
-            class="title"
-          >
-            {{ $t('forgetPassword.title') }}
-          </h3>
-
-          <p
-            class="sub-title"
-          >
-            {{ $t('forgetPassword.subTitle') }}
-          </p>
-
-          <div
-            class="mt-5"
-          >
-            <span
-              v-if="showInputLabel"
-              class="input-label"
-            >账号</span>
-
-            <ElInput
-              v-model.trim="username"
-              class="custom-height"
-              :placeholder="$t('forgetPassword.placeholder')"
-            />
-          </div>
-
-          <div
-            style="margin-top: 15px"
-          >
-            <ElButton
-              v-ripple
-              class="w-full custom-height"
-              type="primary"
-              :loading="loading"
-              @click="register"
-            >
-              {{ $t('forgetPassword.submitBtnText') }}
-            </ElButton>
-          </div>
-
-          <div
-            style="margin-top: 15px"
-          >
-            <ElButton
-              class="w-full custom-height"
-              plain
-              @click="toLogin"
-            >
-              {{ $t('forgetPassword.backBtnText') }}
-            </ElButton>
-          </div>
-        </div>
+        <van-field
+          v-model.trim="postData.email"
+          :rules="rules.email"
+          name="email"
+          placeholder="请输入邮箱"
+        />
       </div>
-    </div>
+
+      <div
+        class="mt-4 rounded-md overflow-hidden"
+      >
+        <van-field
+          v-model.trim="postData.code"
+          :rules="rules.code"
+          name="code"
+          placeholder="请输入验证码"
+        >
+          <template
+            #button
+          >
+            <van-button
+              size="small"
+              type="primary"
+              plain
+              @click="getCode"
+            >
+              {{ buttonText }}
+            </van-button>
+          </template>
+        </van-field>
+      </div>
+
+      <div
+        class="mt-4 rounded-md overflow-hidden"
+      >
+        <van-field
+          v-model.trim="postData.password"
+          type="password"
+          :rules="rules.password"
+          name="password"
+          placeholder="请输入密码"
+        />
+      </div>
+
+      <div
+        class="mt-4 rounded-md overflow-hidden"
+      >
+        <van-field
+          v-model.trim="postData.confirmPassword"
+          type="password"
+          :rules="rules.confirmPassword"
+          name="confirmPassword"
+          placeholder="再次输入密码"
+        />
+      </div>
+
+      <van-button
+        :loading="loading"
+        block
+        type="primary"
+        native-type="submit"
+      >
+        注册
+      </van-button>
+    </van-form>
+
+    <nav
+      class="mt-7 grid justify-items-center gap-10 text-[18px] [&_a]:leading-1.5 [&_a]:text-[#2589ed] [&_a]:no-underline"
+    >
+
+      <RouterLink
+        :to="{ name: 'ClientLogin' }"
+      >
+        返回登录
+      </RouterLink>
+    </nav>
+
   </div>
 </template>
 
-<style scoped>
-  @import '../login/style.css';
+<style lang="scss" scoped>
+
 </style>
