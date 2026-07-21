@@ -8,6 +8,8 @@ import {
 
 withDefaults(
   defineProps<{
+
+    /** 异常页展示数据。 */
     data: ExceptionData
   }>(),
   {
@@ -15,6 +17,8 @@ withDefaults(
 )
 
 const router = useRouter()
+
+const route = useRoute()
 
 const userStore = useCurrentUserStore()
 
@@ -37,8 +41,17 @@ type ExceptionData = {
 
 const { homePath } = useCommon()
 
+/** 根据当前错误路径获取所属端的首页。 */
+function getTargetHomePath(): string {
+  if (route.path.startsWith('/client')) {
+    return '/client/home'
+  }
+
+  return homePath.value || '/admin'
+}
+
 function backHome() {
-  const targetHomePath = homePath.value || '/'
+  const targetHomePath = getTargetHomePath()
 
   if (!userStore.isLogin) {
     router.push({
@@ -56,15 +69,15 @@ function backHome() {
 
 <template>
   <div
-    class="page-content !border-0 !bg-transparent min-h-screen flex-cc"
+    class="page-content border-0! bg-transparent! min-h-screen flex-cc"
   >
     <div
-      class="flex-cc max-md:!block max-md:text-center"
+      class="flex-cc max-md:block! max-md:text-center"
     >
       <ThemeSvg
         :src="data.imgUrl"
         size="100%"
-        class="!w-100"
+        class="w-100!"
       />
 
       <div

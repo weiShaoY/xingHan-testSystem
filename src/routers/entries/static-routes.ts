@@ -1,17 +1,7 @@
 import type { AppRouteRecordRaw } from '@/utils/router'
 
-/**
- * 静态路由配置（不需要权限就能访问的路由）
- *
- * 属性说明：
- * isHideTab: true 表示不在标签页中显示
- *
- * 注意事项：
- * 1、path、name 不要和动态路由冲突，否则会导致路由冲突无法访问
- * 2、静态路由不管是否登录都可以访问
- */
-export const staticRoutes: AppRouteRecordRaw[] = [
-
+/** 管理端匿名认证路由。 */
+const adminAuthRoutes: AppRouteRecordRaw[] = [
   {
     path: '/admin/auth/login',
     name: 'AdminLogin',
@@ -39,9 +29,10 @@ export const staticRoutes: AppRouteRecordRaw[] = [
       isHideTab: true,
     },
   },
+]
 
-  // /////////////////////////// 客户端 路由 ////////////////////////////////////////
-
+/** 客户端匿名认证路由。 */
+const clientAuthRoutes: AppRouteRecordRaw[] = [
   {
     path: '/client/auth/login',
     name: 'ClientLogin',
@@ -69,6 +60,21 @@ export const staticRoutes: AppRouteRecordRaw[] = [
       isHideTab: true,
     },
   },
+]
+
+/**
+ * 静态路由配置（不需要权限就能访问的路由）
+ *
+ * 属性说明：
+ * isHideTab: true 表示不在标签页中显示
+ *
+ * 注意事项：
+ * 1、path、name 不要和动态路由冲突，否则会导致路由冲突无法访问
+ * 2、静态路由不管是否登录都可以访问
+ */
+export const staticRoutes: AppRouteRecordRaw[] = [
+  ...adminAuthRoutes,
+  ...clientAuthRoutes,
 
   // /////////////////////////// 其他路由 ////////////////////////////////////////
   {
