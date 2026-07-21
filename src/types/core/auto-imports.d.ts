@@ -58,122 +58,72 @@ declare global {
   const effectScope: typeof import('vue').effectScope
   const emojo: typeof import('../../utils/ui/emojo').default
   const extendRef: typeof import('@vueuse/core').extendRef
-  const f: typeof import('../../apis/admin/index').f
-  const fe: typeof import('../../apis/admin/course/index').fe
-  const fet: typeof import('../../apis/admin/course/index').fet
-  const fetch: typeof import('../../apis/admin/index').fetch
-  const fetchAdmin: typeof import('../../apis/admin/index').fetchAdmin
-  const fetchAdminAddCourse: typeof import('../../apis/admin/index').fetchAdminCourseCreate
-  const fetchAdminAddCourseOutline: typeof import('../../apis/admin/index').fetchAdminCourseOutlineAdd
   const fetchAdminCourseAdd: typeof import('../../apis/admin/course/index').fetchAdminCourseAdd
-  const fetchAdminCourseChapterDetail: typeof import('../../apis/admin/index').fetchAdminCourseOutlineChapterDetail
-  const fetchAdminCourseCreate: typeof import('../../apis/admin/course').fetchAdminCourseAdd
   const fetchAdminCourseDelete: typeof import('../../apis/admin/course/index').fetchAdminCourseDelete
-  const fetchAdminCourseDetail: typeof import('../../apis/admin/course').fetchAdminCourseSetting
   const fetchAdminCourseList: typeof import('../../apis/admin/course/index').fetchAdminCourseList
-  const fetchAdminCourseOutlineAdd: typeof import('../../apis/admin/index').fetchAdminCourseOutlineAdd
   const fetchAdminCourseOutlineChapterAdd: typeof import('../../apis/admin/course/index').fetchAdminCourseOutlineChapterAdd
   const fetchAdminCourseOutlineChapterDelete: typeof import('../../apis/admin/course/index').fetchAdminCourseOutlineChapterDelete
   const fetchAdminCourseOutlineChapterDetail: typeof import('../../apis/admin/course/index').fetchAdminCourseOutlineChapterDetail
   const fetchAdminCourseOutlineChapterUpdate: typeof import('../../apis/admin/course/index').fetchAdminCourseOutlineChapterUpdate
-  const fetchAdminCourseOutlineDelete: typeof import('../../apis/admin/index').fetchAdminCourseOutlineDelete
-  const fetchAdminCourseOutlineDeleteSection: typeof import('../../apis/admin/index').fetchAdminCourseOutlineDeleteSection
-  const fetchAdminCourseOutlineDetail: typeof import('../../apis/admin/index').fetchAdminCourseOutlineDetail
   const fetchAdminCourseOutlineList: typeof import('../../apis/admin/course/index').fetchAdminCourseOutlineList
-  const fetchAdminCourseOutlineSectionAdd: typeof import('../../apis/admin/course/index').fetchAdminCourseOutlineSectionAdd
   const fetchAdminCourseOutlineSectionDelete: typeof import('../../apis/admin/course/index').fetchAdminCourseOutlineSectionDelete
-  const fetchAdminCourseOutlineSectionDetail: typeof import('../../apis/admin/course/index').fetchAdminCourseOutlineSectionDetail
   const fetchAdminCourseOutlineSectionDocumentAdd: typeof import('../../apis/admin/course/index').fetchAdminCourseOutlineSectionDocumentAdd
   const fetchAdminCourseOutlineSectionDocumentDetail: typeof import('../../apis/admin/course/index').fetchAdminCourseOutlineSectionDocumentDetail
   const fetchAdminCourseOutlineSectionDocumentUpdate: typeof import('../../apis/admin/course/index').fetchAdminCourseOutlineSectionDocumentUpdate
   const fetchAdminCourseOutlineSectionExamAdd: typeof import('../../apis/admin/course/index').fetchAdminCourseOutlineSectionExamAdd
   const fetchAdminCourseOutlineSectionExamDetail: typeof import('../../apis/admin/course/index').fetchAdminCourseOutlineSectionExamDetail
   const fetchAdminCourseOutlineSectionExamQuestionBank: typeof import('../../apis/admin/course/index').fetchAdminCourseOutlineSectionExamQuestionBank
-  const fetchAdminCourseOutlineSectionExamQuestionLibrary: typeof import('../../apis/admin/course/index').fetchAdminCourseOutlineSectionExamQuestionLibrary
   const fetchAdminCourseOutlineSectionExamQuestionList: typeof import('../../apis/admin/course/index').fetchAdminCourseOutlineSectionExamQuestionList
   const fetchAdminCourseOutlineSectionExamUpdate: typeof import('../../apis/admin/course/index').fetchAdminCourseOutlineSectionExamUpdate
-  const fetchAdminCourseOutlineSectionQuestionAdd: typeof import('../../apis/admin/course/index').fetchAdminCourseOutlineSectionQuestionAdd
-  const fetchAdminCourseOutlineSectionQuestionDetail: typeof import('../../apis/admin/course/index').fetchAdminCourseOutlineSectionQuestionDetail
-  const fetchAdminCourseOutlineSectionQuestionUpdate: typeof import('../../apis/admin/course/index').fetchAdminCourseOutlineSectionQuestionUpdate
   const fetchAdminCourseOutlineSectionSurveyAdd: typeof import('../../apis/admin/course/index').fetchAdminCourseOutlineSectionSurveyAdd
   const fetchAdminCourseOutlineSectionSurveyDetail: typeof import('../../apis/admin/course/index').fetchAdminCourseOutlineSectionSurveyDetail
   const fetchAdminCourseOutlineSectionSurveyUpdate: typeof import('../../apis/admin/course/index').fetchAdminCourseOutlineSectionSurveyUpdate
-  const fetchAdminCourseOutlineSectionUpdate: typeof import('../../apis/admin/course/index').fetchAdminCourseOutlineSectionUpdate
   const fetchAdminCourseOutlineSectionVideoAdd: typeof import('../../apis/admin/course/index').fetchAdminCourseOutlineSectionVideoAdd
-  const fetchAdminCourseOutlineSectionVideoAddAdd: typeof import('../../apis/admin/course/index').fetchAdminCourseOutlineSectionVideoAddAdd
   const fetchAdminCourseOutlineSectionVideoDetail: typeof import('../../apis/admin/course/index').fetchAdminCourseOutlineSectionVideoDetail
   const fetchAdminCourseOutlineSectionVideoUpdate: typeof import('../../apis/admin/course/index').fetchAdminCourseOutlineSectionVideoUpdate
-  const fetchAdminCourseOutlineUpdate: typeof import('../../apis/admin/index').fetchAdminCourseOutlineUpdate
-  const fetchAdminCourseSectionDetail: typeof import('../../apis/admin/index').fetchAdminCourseOutlineSectionDetail
-  const fetchAdminCourseSectionList: typeof import('../../apis/admin/index').fetchAdminCourseSectionList
   const fetchAdminCourseSetting: typeof import('../../apis/admin/course/index').fetchAdminCourseSetting
   const fetchAdminCourseUpdate: typeof import('../../apis/admin/course/index').fetchAdminCourseUpdate
-  const fetchAdminCreateCourse: typeof import('../../apis/admin/index').fetchAdminCourseCreate
-  const fetchAdminD: typeof import('../../apis/admin/index').fetchAdminD
-  const fetchAdminDe: typeof import('../../apis/admin/index').fetchAdminDe
-  const fetchAdminDeleteCourse: typeof import('../../apis/admin/index').fetchAdminCourseDelete
-  const fetchAdminDeleteProject: typeof import('../../apis/admin/project').fetchAdminDeleteProject
   const fetchAdminFileAttachment: typeof import('../../apis/file/index').fetchAdminFileAttachment
   const fetchAdminFileDelete: typeof import('../../apis/file/index').fetchAdminFileDelete
   const fetchAdminFileList: typeof import('../../apis/file/index').fetchAdminFileList
   const fetchAdminFileRecover: typeof import('../../apis/file/index').fetchAdminFileRecover
   const fetchAdminFileRecyclingList: typeof import('../../apis/file/index').fetchAdminFileRecyclingList
-  const fetchAdminFileResource: typeof import('../../apis/file/index').fetchAdminFileResource
-  const fetchAdminFileRestore: typeof import('../../apis/file/index').fetchAdminFileRestore
-  const fetchAdminFilerecover: typeof import('../../apis/file/index').fetchAdminFilerecover
-  const fetchAdminGetCourseList: typeof import('../../apis/admin/index').fetchAdminGetCourseList
   const fetchAdminGetPublicKey: typeof import('../../apis/admin/auth/index').fetchAdminGetPublicKey
   const fetchAdminGetUserInfo: typeof import('../../apis/admin/auth/index').fetchAdminGetUserInfo
   const fetchAdminLogin: typeof import('../../apis/admin/auth/index').fetchAdminLogin
-  const fetchAdminP: typeof import('../../apis/admin/project').fetchAdminP
   const fetchAdminProjectAdd: typeof import('../../apis/admin/project/index').fetchAdminProjectAdd
-  const fetchAdminProjectCourseList: typeof import('../../apis/admin/project').fetchAdminProjectCourseList
-  const fetchAdminProjectCreate: typeof import('../../apis/admin/project').fetchAdminProjectCreate
   const fetchAdminProjectDelete: typeof import('../../apis/admin/project/index').fetchAdminProjectDelete
-  const fetchAdminProjectDetail: typeof import('../../apis/admin/project').fetchAdminProjectDetail
   const fetchAdminProjectList: typeof import('../../apis/admin/project/index').fetchAdminProjectList
-  const fetchAdminProjectPreview: typeof import('../../apis/admin/project').fetchAdminProjectPreview
   const fetchAdminProjectSetting: typeof import('../../apis/admin/project/index').fetchAdminProjectSetting
   const fetchAdminProjectStageList: typeof import('../../apis/admin/project/index').fetchAdminProjectStageList
   const fetchAdminProjectStageListUpdate: typeof import('../../apis/admin/project/index').fetchAdminProjectStageListUpdate
-  const fetchAdminProjectStageSave: typeof import('../../apis/admin/project').fetchAdminProjectStageSave
   const fetchAdminProjectUpdate: typeof import('../../apis/admin/project/index').fetchAdminProjectUpdate
   const fetchAdminQuestionAdd: typeof import('../../apis/admin/question/index').fetchAdminQuestionAdd
   const fetchAdminQuestionList: typeof import('../../apis/admin/question/index').fetchAdminQuestionList
   const fetchAdminQuestionSetting: typeof import('../../apis/admin/question/index').fetchAdminQuestionSetting
   const fetchAdminQuestionUpdate: typeof import('../../apis/admin/question/index').fetchAdminQuestionUpdate
-  const fetchAdminUpdateCourse: typeof import('../../apis/admin/index').fetchAdminCourseUpdate
   const fetchAdminUploadFile: typeof import('../../apis/file/index').fetchAdminUploadFile
   const fetchClientGetPublicKey: typeof import('../../apis/client/auth/index').fetchClientGetPublicKey
   const fetchClientGetUserInfo: typeof import('../../apis/client/auth/index').fetchClientGetUserInfo
   const fetchClientLogin: typeof import('../../apis/client/auth/index').fetchClientLogin
   const fetchClientTaskList: typeof import('../../apis/client/task/index').fetchClientTaskList
-  const fetchFileList: typeof import('../../apis/file/index').fetchAdminFileList
   const fetchGetMenuList: typeof import('../../apis/system-manage').fetchGetMenuList
-  const fetchGetPublicKey: typeof import('../../apis/admin/index').fetchAdminGetPublicKey
   const fetchGetRoleList: typeof import('../../apis/system-manage').fetchGetRoleList
-  const fetchGetUserInfo: typeof import('../../apis/admin/index').fetchGetUserInfo
   const fetchGetUserList: typeof import('../../apis/system-manage').fetchGetUserList
-  const fetchLogin: typeof import('../../apis/auth').fetchLogin
-  const fetchUploadFile: typeof import('../../apis/file/index').fetchAdminUploadFile
   const fileDownload: typeof import('../../utils/file').fileDownload
   const fileSizeFormat: typeof import('../../utils/file').fileSizeFormat
   const formatDateTime: typeof import('../../utils/time').formatDateTime
   const formatMenuTitle: typeof import('../../utils/router').formatMenuTitle
   const formatTimestampToChineseDate: typeof import('../../utils/time').formatTimestampToChineseDate
   const getActivePinia: typeof import('pinia').getActivePinia
-  const getCourseList: typeof import('../../apis/course').getCourseList
   const getCssVar: typeof import('../../utils/ui/colors').getCssVar
   const getCurrentInstance: typeof import('vue').getCurrentInstance
   const getCurrentScope: typeof import('vue').getCurrentScope
   const getCurrentWatcher: typeof import('vue').getCurrentWatcher
   const getDarkColor: typeof import('../../utils/ui/colors').getDarkColor
-  const getDatePart: typeof import('../../utils/time').getDateSegment
   const getDateSegment: typeof import('../../utils/time').getDateSegment
-  const getDocumentList: typeof import('../../apis/file/index').getDocumentList
   const getDuration: typeof import('../../utils/time').getDuration
   const getElapsedTime: typeof import('../../utils/time').getElapsedTime
-  const getFileList: typeof import('../../apis/file/index').getFileList
   const getFileUrl: typeof import('../../utils/file').getFileUrl
   const getFirstMenuPath: typeof import('../../utils/navigation/route').getFirstMenuPath
   const getLightColor: typeof import('../../utils/ui/colors').getLightColor
@@ -203,8 +153,6 @@ declare global {
   const isReadonly: typeof import('vue').isReadonly
   const isRef: typeof import('vue').isRef
   const isShallow: typeof import('vue').isShallow
-  const jumpToFirst: typeof import('../../utils/navigation/jump').jumpToFirst
-  const loadRouteModules: typeof import('../../routers/core/RouteLoader').loadRouteModules
   const loadingService: typeof import('../../utils/ui/loading').loadingService
   const makeDestructurable: typeof import('@vueuse/core').makeDestructurable
   const mapActions: typeof import('pinia').mapActions
@@ -262,7 +210,6 @@ declare global {
   const setMapStoreSuffix: typeof import('pinia').setMapStoreSuffix
   const setPageTitle: typeof import('../../utils/router').setPageTitle
   const setWorkTab: typeof import('../../utils/navigation/worktab').setWorkTab
-  const setWorktab: typeof import('../../utils/navigation/worktab').setWorkTab
   const setupGlobDirectives: typeof import('../../directives/index').setupGlobDirectives
   const shallowReactive: typeof import('vue').shallowReactive
   const shallowReadonly: typeof import('vue').shallowReadonly
@@ -270,7 +217,6 @@ declare global {
   const showError: typeof import('../../apis/http/error').showError
   const showSuccess: typeof import('../../apis/http/error').showSuccess
   const socket: typeof import('../../utils/socket/index').default
-  const sortRouteModules: typeof import('../../routers/core/RouteLoader').sortRouteModules
   const store: typeof import('../../store/index').store
   const storeToRefs: typeof import('pinia').storeToRefs
   const subtractSize: typeof import('../../utils/size').subtractSize
@@ -294,7 +240,6 @@ declare global {
   const unref: typeof import('vue').unref
   const unrefElement: typeof import('@vueuse/core').unrefElement
   const until: typeof import('@vueuse/core').until
-  const uploadFile: typeof import('../../apis/file/index').fetchAdminUploadFile
   const useActiveElement: typeof import('@vueuse/core').useActiveElement
   const useAdminUserStore: typeof import('../../store/modules/adminUser').useAdminUserStore
   const useAnimate: typeof import('@vueuse/core').useAnimate
@@ -522,6 +467,9 @@ declare global {
   // @ts-ignore
   export type { AuthDirective, HighlightDirective, RippleDirective, RolesDirective } from '../../directives/index'
   import('../../directives/index')
+  // @ts-ignore
+  export type { TaskListParams } from '../../apis/client/task/task.d'
+  import('../../apis/client/task/task.d')
   // @ts-ignore
   export type { HttpError, ErrorResponse, ErrorLogData } from '../../apis/http/error'
   import('../../apis/http/error')

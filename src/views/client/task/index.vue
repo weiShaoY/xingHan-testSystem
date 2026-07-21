@@ -25,34 +25,32 @@ function getTaskSubtitle(item: ClientApi.Task.TaskListItem): string {
   return `${item.projStage}个学习阶段 ${item.projStageCourse}门课程`
 }
 
-function getTaskProgress(item: ClientApi.Task.TaskListItem): number {
-  const progress = Number(item.learningProgress)
-
-  if (Number.isNaN(progress)) {
-    return 0
-  }
-
-  return Math.min(Math.max(progress, 0), 100)
-}
-
-function getActionText(item: ClientApi.Task.TaskListItem): string {
-  return getTaskProgress(item) > 0 ? '继续学习' : '开始学习'
-}
-
-function goToTaskDetail(item: ClientApi.Task.TaskListItem) {
+function goToTaskDetail() {
   router.push('/client/course/list')
 }
+
+const params = ref<ClientApi.Task.TaskListParams>({
+  learningType: 1,
+})
 
 /**
  * 列表响应数据。
  */
 const taskList = ref<ClientApi.Task.TaskListResponse>([])
 
+const loading = ref(false)
+
 /**
  * 获取任务列表。
  */
 async function fetchTaskList() {
-  taskList.value = await fetchClientTaskList()
+  loading.value = true
+  try {
+    taskList.value = await fetchClientTaskList(params.value)
+  }
+  finally {
+    loading.value = false
+  }
 }
 
 onMounted(() => {
@@ -61,17 +59,23 @@ onMounted(() => {
 
 const active = ref(0)
 
-function handleChange(index: number) {
+async function handleChange(index: number) {
   active.value = index
-}
+  if (active.value === 0) {
+    params.value.learningType = 1
+  }
+  else {
+    params.value.learningType = 2
+  }
 
-const loading = ref(false)
+  await fetchTaskList()
+}
 
 async function onRefresh() {
   loading.value = true
   await fetchTaskList()
   loading.value = false
-  window.$showToast('刷新成功')
+  window.$toast('刷新成功')
 }
 
 </script>
@@ -136,11 +140,10 @@ async function onRefresh() {
                 #title
               >
                 <van-tag
-                  plain
-                  round
-                  type="success"
+                  size="large"
+                  :type="params.learningType === 1 ? 'primary' : 'warning'"
                 >
-                  学习项目
+                  {{ item.learningType === 1 ? '项目' : '课程' }}
                 </van-tag>
               </template>
 
@@ -148,13 +151,12 @@ async function onRefresh() {
                 #value
               >
                 <van-button
-                  round
                   size="small"
                   type="primary"
                   class="border-0 bg-linear-to-r from-teal-600 to-cyan-500 px-3 shadow-[0_10px_18px_rgb(20_184_166/22%)]!"
-                  @click.stop="goToTaskDetail(item)"
+                  @click.stop="goToTaskDetail"
                 >
-                  {{ getActionText(item) }}
+                  {{ Number(item.learningProgress) > 0 ? '继续学习' : '开始学习' }}
                   <van-icon
                     name="arrow"
                     class="ml-1"
@@ -171,11 +173,13 @@ async function onRefresh() {
               >
                 <span>学习进度</span>
 
-                <span>{{ getTaskProgress(item) }}%</span>
+                <span>
+                  {{ item.learningProgress ? item.learningProgress : 0 }}%
+                </span>
               </div>
 
               <van-progress
-                :percentage="getTaskProgress(item)"
+                :percentage="item.learningProgress"
                 stroke-width="6"
                 color="linear-gradient(90deg, #0f766e 0%, #14b8a6 100%)"
                 track-color="#e2e8f0"
@@ -189,6 +193,8 @@ async function onRefresh() {
 
     <van-tabbar
       v-model="active"
+      placeholder
+      safe-area-inset-bottom
       @change="handleChange"
     >
       <van-tabbar-item
