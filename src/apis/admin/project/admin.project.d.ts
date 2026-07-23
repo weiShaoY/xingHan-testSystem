@@ -1,5 +1,5 @@
 /**
- * 项目类型
+ * 管理端项目类型
  */
 export namespace Project {
 

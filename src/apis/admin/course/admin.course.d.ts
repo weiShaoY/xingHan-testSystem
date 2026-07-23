@@ -1,4 +1,4 @@
-import type { Question } from '../question/question'
+import type { Question } from '../question/admin.question'
 
 /**
  * 课程类型

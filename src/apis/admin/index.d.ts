@@ -1,10 +1,10 @@
-import { Auth as AuthNamespace } from './auth/auth.d'
+import { Auth as AuthNamespace } from './auth/admin.auth'
 
-import { Course as CourseNamespace } from './course/course.d'
+import { Course as CourseNamespace } from './course/admin.course'
 
-import { Project as ProjectNamespace } from './project/project.d'
+import { Project as ProjectNamespace } from './project/admin.project.d'
 
-import { Question as QuestionNamespace } from './question/question.d'
+import { Question as QuestionNamespace } from './question/admin.question'
 
 declare global {
   namespace AdminApi {

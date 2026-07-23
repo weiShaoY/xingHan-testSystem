@@ -103,9 +103,11 @@ declare global {
   const fetchAdminQuestionSetting: typeof import('../../apis/admin/question/index').fetchAdminQuestionSetting
   const fetchAdminQuestionUpdate: typeof import('../../apis/admin/question/index').fetchAdminQuestionUpdate
   const fetchAdminUploadFile: typeof import('../../apis/file/index').fetchAdminUploadFile
+  const fetchClientCourseOutlineList: typeof import('../../apis/client/course/index').fetchClientCourseOutlineList
   const fetchClientGetPublicKey: typeof import('../../apis/client/auth/index').fetchClientGetPublicKey
   const fetchClientGetUserInfo: typeof import('../../apis/client/auth/index').fetchClientGetUserInfo
   const fetchClientLogin: typeof import('../../apis/client/auth/index').fetchClientLogin
+  const fetchClientProjectStagesList: typeof import('../../apis/client/project/index').fetchClientProjectStagesList
   const fetchClientTaskList: typeof import('../../apis/client/task/index').fetchClientTaskList
   const fetchGetMenuList: typeof import('../../apis/system-manage').fetchGetMenuList
   const fetchGetRoleList: typeof import('../../apis/system-manage').fetchGetRoleList
@@ -468,8 +470,8 @@ declare global {
   export type { AuthDirective, HighlightDirective, RippleDirective, RolesDirective } from '../../directives/index'
   import('../../directives/index')
   // @ts-ignore
-  export type { TaskListParams } from '../../apis/client/task/task.d'
-  import('../../apis/client/task/task.d')
+  export type { TaskListParams } from '../../apis/client/task/client.task.d'
+  import('../../apis/client/task/client.task.d')
   // @ts-ignore
   export type { HttpError, ErrorResponse, ErrorLogData } from '../../apis/http/error'
   import('../../apis/http/error')
@@ -576,9 +578,11 @@ declare module 'vue' {
     readonly fetchAdminQuestionSetting: UnwrapRef<typeof import('../../apis/admin/question/index')['fetchAdminQuestionSetting']>
     readonly fetchAdminQuestionUpdate: UnwrapRef<typeof import('../../apis/admin/question/index')['fetchAdminQuestionUpdate']>
     readonly fetchAdminUploadFile: UnwrapRef<typeof import('../../apis/file/index')['fetchAdminUploadFile']>
+    readonly fetchClientCourseOutlineList: UnwrapRef<typeof import('../../apis/client/course/index')['fetchClientCourseOutlineList']>
     readonly fetchClientGetPublicKey: UnwrapRef<typeof import('../../apis/client/auth/index')['fetchClientGetPublicKey']>
     readonly fetchClientGetUserInfo: UnwrapRef<typeof import('../../apis/client/auth/index')['fetchClientGetUserInfo']>
     readonly fetchClientLogin: UnwrapRef<typeof import('../../apis/client/auth/index')['fetchClientLogin']>
+    readonly fetchClientProjectStagesList: UnwrapRef<typeof import('../../apis/client/project/index')['fetchClientProjectStagesList']>
     readonly fetchClientTaskList: UnwrapRef<typeof import('../../apis/client/task/index')['fetchClientTaskList']>
     readonly fetchGetMenuList: UnwrapRef<typeof import('../../apis/system-manage')['fetchGetMenuList']>
     readonly fetchGetRoleList: UnwrapRef<typeof import('../../apis/system-manage')['fetchGetRoleList']>
