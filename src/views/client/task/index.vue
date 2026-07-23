@@ -25,10 +25,6 @@ function getTaskSubtitle(item: ClientApi.Task.TaskListItem): string {
   return `${item.projStage}个学习阶段 ${item.projStageCourse}门课程`
 }
 
-function goToTaskDetail() {
-  router.push('/client/course/list')
-}
-
 const params = ref<ClientApi.Task.TaskListParams>({
   learningType: 1,
 })
@@ -78,12 +74,20 @@ async function onRefresh() {
   window.$toast('刷新成功')
 }
 
+function goToProject(item: ClientApi.Task.TaskListItem) {
+  router.push({
+    name: 'ClientProjectStages',
+    params: {
+      projId: item.projId,
+    },
+  })
+}
 </script>
 
 <template>
 
   <div
-    class="flex flex-col gap-4 px-0 pt-3 pb-6 sm:gap-5 sm:pt-4 sm:pb-7"
+    class="flex flex-col "
   >
     <van-pull-refresh
       v-model="loading"
@@ -97,7 +101,7 @@ async function onRefresh() {
         <div
           v-for="(item, index) in taskList"
           :key="item.taskId"
-          class="overflow-hidden rounded-5 border border-slate-200 bg-white shadow-[0_10px_24px_rgb(15_23_42/5%)] transition duration-200 active:scale-[0.992]"
+          class="overflow-hidden rounded-md border border-slate-200 bg-white shadow-[0_10px_24px_rgb(15_23_42/5%)] transition duration-200 active:scale-[0.992]"
         >
           <div
             class="relative overflow-hidden bg-linear-to-r px-4 py-5 text-white sm:px-5"
@@ -154,7 +158,7 @@ async function onRefresh() {
                   size="small"
                   type="primary"
                   class="border-0 bg-linear-to-r from-teal-600 to-cyan-500 px-3 shadow-[0_10px_18px_rgb(20_184_166/22%)]!"
-                  @click.stop="goToTaskDetail"
+                  @click.stop="goToProject(item)"
                 >
                   {{ Number(item.learningProgress) > 0 ? '继续学习' : '开始学习' }}
                   <van-icon
@@ -189,6 +193,10 @@ async function onRefresh() {
           </div>
         </div>
       </van-space>
+
+      <template
+        #success
+      />
     </van-pull-refresh>
 
     <van-tabbar

@@ -21,7 +21,6 @@ export const clientRoutes: AppRouteRecord = {
       component: '/client/home',
       meta: {
         title: '首页',
-        icon: 'ri:home-line',
         keepAlive: false,
         hideClientBack: true,
       },
@@ -32,7 +31,6 @@ export const clientRoutes: AppRouteRecord = {
       component: '/client/user',
       meta: {
         title: '个人主页',
-        icon: 'ri:user-line',
         keepAlive: false,
       },
     },
@@ -46,7 +44,29 @@ export const clientRoutes: AppRouteRecord = {
         keepAlive: false,
       },
     },
+    {
+      path: 'project',
+      name: 'ClientProject',
+      component: '/client/project',
+      meta: {
+        title: '我的项目',
+        keepAlive: false,
+      },
+      children: [
+        {
+          path: 'stages/:projId',
+          name: 'ClientProjectStages',
+          component: '/client/project/stages',
+          meta: {
+            title: '项目阶段列表',
+            keepAlive: false,
+          },
+        },
 
+      ],
+    },
+
+    // ////////
     {
       path: 'course',
       name: 'ClientCourse',
@@ -54,7 +74,6 @@ export const clientRoutes: AppRouteRecord = {
       redirect: '/client/course/list',
       meta: {
         title: '报名的课程',
-        icon: 'ri:course-line',
         keepAlive: false,
       },
       children: [
@@ -64,7 +83,6 @@ export const clientRoutes: AppRouteRecord = {
           component: '/client/course/list',
           meta: {
             title: '报名的课程',
-            icon: 'ri:file-text-line',
             keepAlive: false,
           },
         },
@@ -74,20 +92,18 @@ export const clientRoutes: AppRouteRecord = {
           component: '/client/course/detail',
           meta: {
             title: '课程详情',
-            icon: 'ri:file-text-line',
             keepAlive: false,
           },
         },
       ],
-
     },
+
     {
       path: 'history',
       name: 'ClientHistory',
       component: '/client/history/list',
       meta: {
         title: '学习历史',
-        icon: 'ri:history-line',
         keepAlive: false,
       },
       children: [
@@ -97,7 +113,6 @@ export const clientRoutes: AppRouteRecord = {
           component: '/client/history/list',
           meta: {
             title: '学习历史',
-            icon: 'ri:history-line',
             keepAlive: false,
           },
         },
@@ -107,7 +122,6 @@ export const clientRoutes: AppRouteRecord = {
           component: '/client/history/detail',
           meta: {
             title: '学习历史详情',
-            icon: 'ri:history-line',
             keepAlive: false,
           },
         },
@@ -122,7 +136,6 @@ export const clientRoutes: AppRouteRecord = {
       component: '',
       meta: {
         title: '推荐课程',
-        icon: 'ri:recommend-line',
         keepAlive: false,
       },
       children: [
@@ -132,7 +145,6 @@ export const clientRoutes: AppRouteRecord = {
           component: '/client/recommend/list',
           meta: {
             title: '推荐课程',
-            icon: 'ri:recommend-line',
             keepAlive: false,
           },
         },
@@ -142,7 +154,6 @@ export const clientRoutes: AppRouteRecord = {
           component: '/client/recommend/detail',
           meta: {
             title: '推荐课程详情',
-            icon: 'ri:recommend-line',
             keepAlive: false,
           },
         },
