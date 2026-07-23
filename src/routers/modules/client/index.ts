@@ -47,7 +47,7 @@ export const clientRoutes: AppRouteRecord = {
     {
       path: 'project',
       name: 'ClientProject',
-      component: '/client/project',
+      component: '',
       meta: {
         title: '我的项目',
         keepAlive: false,

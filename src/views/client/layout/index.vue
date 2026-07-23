@@ -34,7 +34,7 @@ function goToUser() {
 
 <template>
   <div
-    class=""
+    class="flex h-dvh flex-col overflow-hidden"
   >
     <VanNavBar
       :title="navTitle"
@@ -66,41 +66,40 @@ function goToUser() {
       </template>
     </VanNavBar>
 
-    <router-view
-      v-slot="{ Component, route: viewRoute }"
+    <div
+      class="min-h-0 flex-1 overflow-y-auto p-4"
     >
-      <!-- 缓存路由动画 -->
-      <Transition
-        class="relative w-full p-4"
-        mode="out-in"
-        appear
+      <router-view
+        v-slot="{ Component, route: viewRoute }"
       >
-        <KeepAlive
-          :max="10"
+        <!-- 缓存路由动画 -->
+        <Transition
+          mode="out-in"
+          appear
+        >
+          <KeepAlive
+            :max="10"
+          >
+            <component
+              :is="Component"
+              v-if="viewRoute.meta.keepAlive"
+              :key="viewRoute.path"
+            />
+          </KeepAlive>
+        </Transition>
+
+        <!-- 非缓存路由动画 -->
+        <Transition
+          mode="out-in"
+          appear
         >
           <component
             :is="Component"
-            v-if="viewRoute.meta.keepAlive"
+            v-if="!viewRoute.meta.keepAlive"
             :key="viewRoute.path"
-            class="art-page-view"
           />
-        </KeepAlive>
-      </Transition>
-
-      <!-- 非缓存路由动画 -->
-      <Transition
-        class="relative w-full p-4"
-        mode="out-in"
-        appear
-      >
-        <component
-          :is="Component"
-          v-if="!viewRoute.meta.keepAlive"
-          :key="viewRoute.path"
-          class="art-page-view"
-        />
-      </Transition>
-    </router-view>
-
+        </Transition>
+      </router-view>
+    </div>
   </div>
 </template>

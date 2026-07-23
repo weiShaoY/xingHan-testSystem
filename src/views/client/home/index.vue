@@ -137,9 +137,7 @@ function goToRecommendDetail(item: RecommendCourse) {
 </script>
 
 <template>
-  <div
-    class="flex flex-col"
-  >
+  <div>
 
     <van-grid
       :column-num="2"

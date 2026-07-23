@@ -86,9 +86,7 @@ function goToProject(item: ClientApi.Task.TaskListItem) {
 
 <template>
 
-  <div
-    class="flex flex-col "
-  >
+  <div>
     <van-pull-refresh
       v-model="loading"
       @refresh="onRefresh"
