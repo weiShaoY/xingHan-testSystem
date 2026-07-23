@@ -1,10 +1,17 @@
 <script setup lang="ts">
+import avatar from '@imgs/avatar/avatar10.webp'
+
 defineOptions({
   name: 'ClientLayout',
 })
 const route = useRoute()
 
 const router = useRouter()
+
+// const clientUserStore = useClientUserStore()
+
+// const avatarUrl = computed(() => userStore.getUserInfo.avatar || avatar)
+const avatarUrl = computed(() => avatar)
 
 const navTitle = computed(() => {
   return String(route.meta?.title || '')
@@ -19,11 +26,15 @@ function onBack() {
   }
 }
 
+function goToUser() {
+  router.push('/client/user')
+}
+
 </script>
 
 <template>
   <div
-    class="app-layout"
+    class=""
   >
     <VanNavBar
       :title="navTitle"
@@ -32,14 +43,35 @@ function onBack() {
       placeholder
       clickable
       @click-left="onBack"
-    />
+    >
+
+      <template
+        #right
+      >
+        <button
+          v-if="route.meta.hideClientBack"
+          type="button"
+          class="group flex size-11 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent p-0  "
+          aria-label="个人主页"
+          @click="goToUser"
+        >
+          <van-image
+            :src="avatarUrl"
+            alt="个人头像"
+            fit="cover"
+            round
+            class="size-7.5 overflow-hidden   transition-transform duration-150 group-active:scale-[0.94]"
+          />
+        </button>
+      </template>
+    </VanNavBar>
 
     <router-view
       v-slot="{ Component, route: viewRoute }"
     >
       <!-- 缓存路由动画 -->
       <Transition
-        class="app-wrapper"
+        class="relative w-full p-4"
         mode="out-in"
         appear
       >
@@ -57,7 +89,7 @@ function onBack() {
 
       <!-- 非缓存路由动画 -->
       <Transition
-        class="app-wrapper"
+        class="relative w-full p-4"
         mode="out-in"
         appear
       >
@@ -72,11 +104,3 @@ function onBack() {
 
   </div>
 </template>
-
-<style scoped>
-.app-wrapper {
-  width: 100%;
-  position: relative;
-  padding: 16px;
-}
-</style>

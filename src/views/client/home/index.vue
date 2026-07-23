@@ -138,14 +138,14 @@ function goToRecommendDetail(item: RecommendCourse) {
 
 <template>
   <div
-    class="flex flex-col gap-4 px-0 pt-3 pb-6 sm:gap-5 sm:pt-4 sm:pb-7"
+    class="flex flex-col"
   >
 
     <van-grid
       :column-num="2"
       :border="false"
-      gutter="12"
-      class="[&_.van-grid-item__content]:bg-transparent [&_.van-grid-item__content]:p-0"
+      gutter=""
+      class=""
     >
       <van-grid-item
         v-for="item in navList"
@@ -154,7 +154,7 @@ function goToRecommendDetail(item: RecommendCourse) {
         @click="goToPath(item.path)"
       >
         <div
-          class="min-h-28 w-full flex items-center justify-center gap-3 rounded-5 border px-4 py-4 text-center shadow-[0_10px_24px_rgb(15_23_42/6%)]"
+          class="min-h-28 w-full flex items-center justify-center gap-3  border px-4 py-4 text-center shadow-[0_10px_24px_rgb(15_23_42/6%)] rounded-md"
           :class="item.cardClass"
         >
           <div
@@ -221,15 +221,14 @@ function goToRecommendDetail(item: RecommendCourse) {
       <div
         v-for="item in recommendList"
         :key="item.id"
-        class="flex cursor-pointer flex-col gap-3.5 rounded-5 border border-slate-200 bg-white p-3.5 shadow-[0_10px_24px_rgb(15_23_42/5%)] transition duration-200 active:scale-[0.992] sm:flex-row"
+        class="flex cursor-pointer flex-col gap-3.5 rounded-md border border-slate-200 bg-white p-3.5 shadow-[0_10px_24px_rgb(15_23_42/5%)] transition duration-200 active:scale-[0.992] sm:flex-row"
         @click="goToRecommendDetail(item)"
       >
         <van-image
           :src="item.cover"
           :alt="item.title"
           fit="cover"
-          radius="16"
-          class="h-44 w-full shrink-0 overflow-hidden sm:h-28 sm:w-28"
+          class="h-44 w-full shrink-0 overflow-hidden sm:h-28 sm:w-28 rounded-md!"
         />
 
         <div
@@ -244,7 +243,6 @@ function goToRecommendDetail(item: RecommendCourse) {
             >
               <van-tag
                 plain
-                round
                 type="primary"
               >
                 {{ item.tag }}
@@ -289,17 +287,12 @@ function goToRecommendDetail(item: RecommendCourse) {
               </div>
 
               <van-button
-                round
                 size="small"
                 type="primary"
-                class="border-0 bg-linear-to-r from-teal-600 to-cyan-500 px-3 shadow-[0_10px_18px_rgb(20_184_166/22%)]!"
+                class=""
                 @click.stop="goToRecommendDetail(item)"
               >
-                进入学习
-                <van-icon
-                  name="arrow"
-                  class="ml-1"
-                />
+                立即查看
               </van-button>
             </div>
           </div>
