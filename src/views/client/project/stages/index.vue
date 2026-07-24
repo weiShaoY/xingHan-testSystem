@@ -1,63 +1,77 @@
 <script lang="ts" setup>
 import { useClientNavTitle } from '@/hooks/core/useClientNavTitle'
 
-const loading = ref(false)
+const DEFAULT_NAV_TITLE = '项目阶段列表'
+
+const STAGE_COLORS = [
+  'from-teal-600 to-cyan-500',
+  'from-sky-600 to-teal-500',
+  'from-emerald-600 to-teal-500',
+] as const
+
+type ProjectStagesData = ClientApi.Project.ProjectStagesListResponse
 
 const route = useRoute()
 
-const DEFAULT_NAV_TITLE = '项目阶段列表'
-
 const { setClientNavTitle, clearClientNavTitle } = useClientNavTitle()
+
+const loading = ref(false)
+
+const activeName = ref<number[]>([])
 
 /**
  * 当前项目 ID
  */
-const projId = computed(() => {
-  return Number(route.params.projId || 0)
-})
+const projId = computed(() => Number(route.params.projId || 0))
 
 /**
- * 项目阶段列表
+ * 创建项目阶段列表默认数据。
+ *
+ * @param currentProjId 当前项目 ID。
+ * @returns 空的项目阶段列表数据。
  */
-const projectStageList = ref<ClientApi.Project.ProjectStagesListResponse>({
-  projId: projId.value,
-  projName: '',
-  projIntro: '',
-  projStage: 0,
-  projStageCourseCount: 0,
-  learningProgress: '',
-  projectDirectory: [],
-})
-
-async function getClientProjectStagesList() {
-  loading.value = true
-  try {
-    projectStageList.value = await fetchClientProjectStagesList(projId.value)
-    setNavTitle(projectStageList.value.projName)
-  }
-  catch {
-    setNavTitle()
-    loading.value = false
-  }
-  finally {
-    loading.value = false
+function createEmptyProjectStagesData(currentProjId: number): ProjectStagesData {
+  return {
+    projId: currentProjId,
+    projName: '',
+    projIntro: '',
+    projStage: 0,
+    projStageCourseCount: 0,
+    learningProgress: '',
+    projectDirectory: [],
   }
 }
 
-function onRefresh() {
-  getClientProjectStagesList()
+/**
+ * 项目阶段列表。
+ */
+const projectStageList = ref<ProjectStagesData>(createEmptyProjectStagesData(projId.value))
+
+/**
+ * 学习进度百分比。
+ */
+const progress = computed(() => clampPercent(projectStageList.value.learningProgress))
+
+/**
+ * 将接口返回的进度值限制在 0-100 范围内。
+ *
+ * @param value 接口返回的进度值。
+ * @returns 合法进度百分比。
+ */
+function clampPercent(value: string | number): number {
+  const percent = Number(value)
+
+  return Number.isFinite(percent) ? Math.min(Math.max(percent, 0), 100) : 0
 }
 
-const activeName = ref<number[]>([])
-
-const progress = computed(() => {
-  const value = Number(projectStageList.value.learningProgress)
-
-  return Number.isFinite(value) ? Math.min(Math.max(value, 0), 100) : 0
-})
-
+/**
+ * 获取阶段序号背景色。
+ *
+ * @param index 阶段索引。
+ * @returns UnoCSS 渐变色 class。
+ */
 function getStageColor(index: number): string {
-  return ['from-teal-600 to-cyan-500', 'from-sky-600 to-teal-500', 'from-emerald-600 to-teal-500'][index % 3]
+  return STAGE_COLORS[index % STAGE_COLORS.length]
 }
 
 /**
@@ -70,16 +84,60 @@ function setNavTitle(title?: string) {
   setClientNavTitle(title?.trim() || DEFAULT_NAV_TITLE)
 }
 
-watch(
-  projId,
-  () => {
+/**
+ * 获取项目阶段列表。
+ *
+ * @param options.showSuccessToast 是否在请求成功后提示刷新成功。
+ */
+async function getClientProjectStagesList(options: { showSuccessToast?: boolean } = {
+}) {
+  const currentProjId = projId.value
+
+  loading.value = true
+
+  try {
+    const data = await fetchClientProjectStagesList(currentProjId)
+
+    projectStageList.value = data
+    setNavTitle(data.projName)
+
+    if (options.showSuccessToast) {
+      window.$toast('刷新成功')
+    }
+  }
+  catch {
+    projectStageList.value = createEmptyProjectStagesData(currentProjId)
     setNavTitle()
-    getClientProjectStagesList()
-  },
-  {
-    immediate: true,
-  },
-)
+  }
+  finally {
+    loading.value = false
+  }
+}
+
+/**
+ * 下拉刷新。
+ */
+function onRefresh() {
+  getClientProjectStagesList({
+    showSuccessToast: true,
+  })
+}
+
+/**
+ * 项目切换时，重置页面状态并重新拉取数据。
+ *
+ * @param currentProjId 当前项目 ID。
+ */
+function handleProjectChange(currentProjId: number) {
+  activeName.value = []
+  projectStageList.value = createEmptyProjectStagesData(currentProjId)
+  setNavTitle()
+  getClientProjectStagesList()
+}
+
+watch(projId, handleProjectChange, {
+  immediate: true,
+})
 
 onBeforeUnmount(() => {
   clearClientNavTitle()
