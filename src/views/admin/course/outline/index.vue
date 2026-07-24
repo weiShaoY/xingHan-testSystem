@@ -6,10 +6,10 @@ import type { SectionType } from '@/config/course'
 import { computed, ref } from 'vue'
 
 import {
-  getSectionCreateRoute,
-  getSectionCreateRouteTitle,
-  getSectionEditRoute,
-  getSectionEditRouteTitle,
+  getAdminSectionCreateRoute,
+  getAdminSectionCreateRouteTitle,
+  getAdminSectionEditRoute,
+  getAdminSectionEditRouteTitle,
   getSectionTypeConfig,
 } from '@/config/course'
 
@@ -185,7 +185,7 @@ async function goToAddSection(sectionType: SectionType) {
   isShowCreateSectionDialog.value = false
 
   const targetRoute = router.resolve({
-    name: getSectionCreateRoute(sectionType),
+    name: getAdminSectionCreateRoute(sectionType),
     params: currentCreateSectionChapter.value
       ? {
           couId: couId.value,
@@ -200,12 +200,12 @@ async function goToAddSection(sectionType: SectionType) {
 
   // 章节下的添加小节
   if (currentCreateSectionChapter.value) {
-    workTabStore.updateTabTitle(targetRoute.path, `${courseOutlineList.value.couName}-${currentCreateSectionChapter.value?.name}-${getSectionCreateRouteTitle(sectionType)}`)
+    workTabStore.updateTabTitle(targetRoute.path, `${courseOutlineList.value.couName}-${currentCreateSectionChapter.value?.name}-${getAdminSectionCreateRouteTitle(sectionType)}`)
   }
 
   // 独立小节
   else {
-    workTabStore.updateTabTitle(targetRoute.path, `${courseOutlineList.value.couName}-${getSectionCreateRouteTitle(sectionType)}`)
+    workTabStore.updateTabTitle(targetRoute.path, `${courseOutlineList.value.couName}-${getAdminSectionCreateRouteTitle(sectionType)}`)
   }
 }
 
@@ -220,7 +220,7 @@ async function editSection({
   chapter?: AdminApi.Course.Chapter
 }) {
   const targetRoute = router.resolve({
-    name: getSectionEditRoute(section.sectionType),
+    name: getAdminSectionEditRoute(section.sectionType),
     params: {
       couId: couId.value,
       olId: section.id,
@@ -231,12 +231,12 @@ async function editSection({
 
   // 章节下的小节
   if (chapter) {
-    workTabStore.updateTabTitle(targetRoute.path, `${courseOutlineList.value.couName}-${chapter?.name}-${section.name}-${getSectionEditRouteTitle(section.sectionType)}`)
+    workTabStore.updateTabTitle(targetRoute.path, `${courseOutlineList.value.couName}-${chapter?.name}-${section.name}-${getAdminSectionEditRouteTitle(section.sectionType)}`)
   }
 
   // 独立小节
   else {
-    workTabStore.updateTabTitle(targetRoute.path, `${courseOutlineList.value.couName}-${section.name}-${getSectionEditRouteTitle(section.sectionType)}`)
+    workTabStore.updateTabTitle(targetRoute.path, `${courseOutlineList.value.couName}-${section.name}-${getAdminSectionEditRouteTitle(section.sectionType)}`)
   }
 }
 

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { getSectionTypeConfig } from '@/config/course'
+import { getClientSectionRoute, getSectionTypeConfig } from '@/config/course'
 
 import { useClientNavTitle } from '@/hooks/core/useClientNavTitle'
 
@@ -8,6 +8,8 @@ import CourseSectionItem from './components/CourseSectionItem.vue'
 const DEFAULT_NAV_TITLE = '课程详情'
 
 const route = useRoute()
+
+const router = useRouter()
 
 const { setClientNavTitle, clearClientNavTitle } = useClientNavTitle()
 
@@ -150,7 +152,16 @@ function onRefresh() {
  * @param section 小节数据。
  */
 function handleSection(section: AdminApi.Course.Section) {
-  window.$toast(`${section.name} 暂未开放学习`)
+  // ClientCourseSection
+  const targetRoute = router.resolve({
+    name: getClientSectionRoute(section.sectionType),
+    params: {
+      couId: couId.value,
+      olId: section.id,
+    },
+  })
+
+  router.push(targetRoute)
 }
 
 onBeforeUnmount(() => {

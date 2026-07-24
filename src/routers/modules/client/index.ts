@@ -2,6 +2,48 @@ import type { AppRouteRecord } from '@/types/router'
 
 import { RoutesAlias } from '../../constants/route-alias'
 
+const sectionRouteConfigs = [
+  {
+    type: 'document',
+    name: 'Document',
+    title: '文档',
+    cacheName: 'CourseSectionDocument',
+    component: '/client/course/section/document',
+  },
+  {
+    type: 'video',
+    name: 'Video',
+    title: '视频',
+    cacheName: 'CourseSectionVideo',
+    component: '/client/course/section/video',
+  },
+  {
+    type: 'exam',
+    name: 'Exam',
+    title: '考试',
+    cacheName: 'CourseSectionExam',
+    component: '/client/course/section/exam',
+  },
+  {
+    type: 'survey',
+    name: 'Survey',
+    title: '问卷',
+    cacheName: 'CourseSectionSurvey',
+    component: '/client/course/section/survey',
+  },
+]
+
+const SectionRoutes: AppRouteRecord[] = sectionRouteConfigs.map(item => ({
+  path: `:couId/section/${item.type}/:olPID?`,
+  name: `ClientCourseSection${item.name}`,
+  component: item.component,
+  meta: {
+    title: item.title,
+    keepAlive: true,
+    cacheName: item.cacheName,
+  },
+}))
+
 /**
  * 客户端根路由
  */
@@ -11,7 +53,6 @@ export const clientRoutes: AppRouteRecord = {
   component: RoutesAlias.ClientLayout,
   meta: {
     title: '客户端',
-    icon: 'ri:user-line',
   },
   redirect: '/client/home',
   children: [
@@ -84,7 +125,7 @@ export const clientRoutes: AppRouteRecord = {
           title: '课程详情',
           keepAlive: false,
         },
-      },
+      }, ...SectionRoutes,
 
       // ////////
       {

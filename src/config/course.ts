@@ -17,10 +17,11 @@ export type SectionTypeConfig = {
  * 小节类型元数据
  */
 type SectionTypeMeta = SectionTypeConfig & {
-  createRoute: string
-  createRouteTitle: string
-  editRoute: string
-  editRouteTitle: string
+  adminCreateRoute: string
+  adminCreateRouteTitle: string
+  adminEditRoute: string
+  adminEditRouteTitle: string
+  clientRoute: string
 }
 
 /**
@@ -32,40 +33,44 @@ const sectionTypeMap: Record<SectionType, SectionTypeMeta> = {
     sectionTypeName: '文档',
     sectionIcon: 'ri:article-line',
     sectionIconBgColor: '#fcbd2c',
-    createRoute: 'AdminCourseSectionDocumentCreate',
-    createRouteTitle: '新增文档小节',
-    editRoute: 'AdminCourseSectionDocumentEdit',
-    editRouteTitle: '编辑文档小节',
+    adminCreateRoute: 'AdminCourseSectionDocumentCreate',
+    adminCreateRouteTitle: '新增文档小节',
+    adminEditRoute: 'AdminCourseSectionDocumentEdit',
+    adminEditRouteTitle: '编辑文档小节',
+    clientRoute: 'ClientCourseSectionDocument',
   },
   1: {
     sectionType: 1,
     sectionTypeName: '视频',
     sectionIcon: 'ri:vidicon-line',
     sectionIconBgColor: '#ff2814',
-    createRoute: 'AdminCourseSectionVideoCreate',
-    createRouteTitle: '新增视频小节',
-    editRoute: 'AdminCourseSectionVideoEdit',
-    editRouteTitle: '编辑视频小节',
+    adminCreateRoute: 'AdminCourseSectionVideoCreate',
+    adminCreateRouteTitle: '新增视频小节',
+    adminEditRoute: 'AdminCourseSectionVideoEdit',
+    adminEditRouteTitle: '编辑视频小节',
+    clientRoute: 'ClientCourseSectionVideo',
   },
   2: {
     sectionType: 2,
     sectionTypeName: '考试',
     sectionIcon: 'ri:medal-line',
     sectionIconBgColor: '#673ab8',
-    createRoute: 'AdminCourseSectionExamCreate',
-    createRouteTitle: '新增考试小节',
-    editRoute: 'AdminCourseSectionExamEdit',
-    editRouteTitle: '编辑考试小节',
+    adminCreateRoute: 'AdminCourseSectionExamCreate',
+    adminCreateRouteTitle: '新增考试小节',
+    adminEditRoute: 'AdminCourseSectionExamEdit',
+    adminEditRouteTitle: '编辑考试小节',
+    clientRoute: 'ClientCourseSectionExam',
   },
   3: {
     sectionType: 3,
     sectionTypeName: '问卷',
     sectionIcon: 'ri:survey-line',
     sectionIconBgColor: '#2cb870',
-    createRoute: 'AdminCourseSectionSurveyCreate',
-    createRouteTitle: '新增问卷小节',
-    editRoute: 'AdminCourseSectionSurveyEdit',
-    editRouteTitle: '编辑问卷小节',
+    adminCreateRoute: 'AdminCourseSectionSurveyCreate',
+    adminCreateRouteTitle: '新增问卷小节',
+    adminEditRoute: 'AdminCourseSectionSurveyEdit',
+    adminEditRouteTitle: '编辑问卷小节',
+    clientRoute: 'ClientCourseSectionSurvey',
   },
 }
 
@@ -92,29 +97,36 @@ export function getSectionTypeConfig(sectionType: SectionType) {
 }
 
 /**
- * 获取小节创建页路由
+ * 获取管理端 小节创建页路由
  */
-export function getSectionCreateRoute(sectionType: SectionType) {
-  return sectionTypeMap[sectionType].createRoute
+export function getAdminSectionCreateRoute(sectionType: SectionType) {
+  return sectionTypeMap[sectionType].adminCreateRoute
 }
 
 /**
- * 获取小节创建页路由标题
+ * 获取管理端 小节创建页路由标题
  */
-export function getSectionCreateRouteTitle(sectionType: SectionType) {
-  return sectionTypeMap[sectionType].createRouteTitle
+export function getAdminSectionCreateRouteTitle(sectionType: SectionType) {
+  return sectionTypeMap[sectionType].adminCreateRouteTitle
 }
 
 /**
- * 获取小节编辑页路由
+ * 获取管理端 小节编辑页路由
  */
-export function getSectionEditRoute(sectionType: SectionType) {
-  return sectionTypeMap[sectionType].editRoute
+export function getAdminSectionEditRoute(sectionType: SectionType) {
+  return sectionTypeMap[sectionType].adminEditRoute
 }
 
 /**
- * 获取小节编辑页路由标题
+ * 获取管理端 小节编辑页路由标题
  */
-export function getSectionEditRouteTitle(sectionType: SectionType) {
-  return sectionTypeMap[sectionType].editRouteTitle
+export function getAdminSectionEditRouteTitle(sectionType: SectionType) {
+  return sectionTypeMap[sectionType].adminEditRouteTitle
+}
+
+/**
+ * 获取客户端 小节路由
+ */
+export function getClientSectionRoute(sectionType: SectionType) {
+  return sectionTypeMap[sectionType].clientRoute
 }
