@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import type { FormInstance, FormRules } from 'element-plus'
 
-type RoleListItem = Api.SystemManage.RoleListItem
-
+type RoleListItem = any
 type Props = {
   modelValue?: boolean
   dialogType?: 'add' | 'edit'

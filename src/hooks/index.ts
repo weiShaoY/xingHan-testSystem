@@ -8,11 +8,6 @@ export {
   useAuth,
 } from './core/useAuth'
 
-// 礼花+文字滚动
-export {
-  useCeremony,
-} from './core/useCeremony'
-
 // 图表相关
 export {
   useChart,

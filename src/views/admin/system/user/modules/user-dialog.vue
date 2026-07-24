@@ -6,7 +6,7 @@ import { ROLE_LIST_DATA } from '@/mock/temp/formData'
 type Props = {
   visible: boolean
   type: string
-  userData?: Partial<Api.SystemManage.UserListItem>
+  userData?: Partial<any>
 }
 
 type Emits = {

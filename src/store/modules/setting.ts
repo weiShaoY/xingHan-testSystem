@@ -47,8 +47,6 @@ import { SETTING_DEFAULT_CONFIG } from '@/config/setting'
 
 import { SystemThemeEnum } from '@/enums/appEnum'
 
-import { useCeremony } from '@/hooks/core/useCeremony'
-
 import { StorageConfig } from '@/utils'
 
 import { setElementThemeColor } from '@/utils/ui'
@@ -111,9 +109,6 @@ export const useSettingStore = defineStore(
     /** 是否显示设置引导 */
     const showSettingGuide = ref(SETTING_DEFAULT_CONFIG.showSettingGuide)
 
-    /** 是否显示节日文本 */
-    const showFestivalText = ref(SETTING_DEFAULT_CONFIG.showFestivalText)
-
     /** 是否显示水印 */
     const watermarkVisible = ref(SETTING_DEFAULT_CONFIG.watermarkVisible)
 
@@ -130,9 +125,6 @@ export const useSettingStore = defineStore(
     /** 是否刷新 */
     const refresh = ref(SETTING_DEFAULT_CONFIG.refresh)
 
-    /** 是否加载节日烟花 */
-    const holidayFireworksLoaded = ref(SETTING_DEFAULT_CONFIG.holidayFireworksLoaded)
-
     // ==================== 样式设置 ====================
     /** 边框模式 */
     const boxBorderMode = ref(SETTING_DEFAULT_CONFIG.boxBorderMode)
@@ -148,10 +140,6 @@ export const useSettingStore = defineStore(
 
     /** 容器宽度 */
     const containerWidth = ref(SETTING_DEFAULT_CONFIG.containerWidth)
-
-    // ==================== 节日相关 ====================
-    /** 节日日期 */
-    const festivalDate = ref('')
 
     /**
      * 判断是否为暗色模式
@@ -187,14 +175,6 @@ export const useSettingStore = defineStore(
      */
     const getCustomRadius = computed((): string => {
       return `${customRadius.value}rem` || `${SETTING_DEFAULT_CONFIG.customRadius}rem`
-    })
-
-    /**
-     * 是否显示烟花
-     * 根据当前日期和节日日期判断是否显示烟花效果
-     */
-    const isShowFireworks = computed((): boolean => {
-      return festivalDate.value !== useCeremony().currentFestivalData.value?.date
     })
 
     /**
@@ -390,30 +370,6 @@ export const useSettingStore = defineStore(
     }
 
     /**
-     * 设置节日烟花加载状态
-     * @param isLoad 是否已加载
-     */
-    function setholidayFireworksLoaded(isLoad: boolean) {
-      holidayFireworksLoaded.value = isLoad
-    }
-
-    /**
-     * 设置节日文本显示
-     * @param show 是否显示
-     */
-    function setShowFestivalText(show: boolean) {
-      showFestivalText.value = show
-    }
-
-    /**
-     * 设置当前已展示节日效果的日期。
-     * @param date 节日日期
-     */
-    function setFestivalDate(date: string) {
-      festivalDate.value = date
-    }
-
-    /**
      * 设置双栏菜单是否显示文本。
      * @param show 是否显示文本
      */
@@ -494,15 +450,6 @@ export const useSettingStore = defineStore(
       /** 自定义圆角 */
       customRadius,
 
-      /** 是否已加载节日烟花 */
-      holidayFireworksLoaded,
-
-      /** 是否显示节日文本 */
-      showFestivalText,
-
-      /** 节日日期 */
-      festivalDate,
-
       /** 双栏菜单是否显示文本 */
       dualMenuShowText,
 
@@ -520,9 +467,6 @@ export const useSettingStore = defineStore(
 
       /** 获取自定义圆角 */
       getCustomRadius,
-
-      /** 是否显示烟花 */
-      isShowFireworks,
 
       /** 切换菜单布局 */
       switchMenuLayouts,
@@ -598,15 +542,6 @@ export const useSettingStore = defineStore(
 
       /** 设置自定义圆角 */
       setCustomRadius,
-
-      /** 设置节日烟花加载状态 */
-      setholidayFireworksLoaded,
-
-      /** 设置节日文本显示 */
-      setShowFestivalText,
-
-      /** 设置当前已展示节日效果的日期 */
-      setFestivalDate,
 
       /** 设置双栏菜单是否显示文本 */
       setDualMenuShowText,

@@ -44,119 +44,239 @@ function onRefresh() {
 
 const activeName = ref<number[]>([])
 
+const progress = computed(() => {
+  const value = Number(projectStageList.value.learningProgress)
+
+  return Number.isFinite(value) ? Math.min(Math.max(value, 0), 100) : 0
+})
+
+function getStageColor(index: number): string {
+  return ['from-teal-600 to-cyan-500', 'from-sky-600 to-teal-500', 'from-emerald-600 to-teal-500'][index % 3]
+}
+
 </script>
 
 <template>
   <van-pull-refresh
     v-model="loading"
-    class="h-full"
+    class="min-h-full"
     @refresh="onRefresh"
   >
     <div
-      class="flex flex-col gap-4"
+      class="flex flex-col gap-4 pb-4"
     >
-      <div>
-        <div>
-          {{ projectStageList.projName }}
-        </div>
+      <div
+        class="relative overflow-hidden rounded-md bg-linear-to-br from-teal-700 via-teal-600 to-cyan-500 px-5 py-5 text-white shadow-[0_12px_28px_rgb(13_148_136/22%)]"
+      >
+        <div
+          class="pointer-events-none absolute right--7 top--8 h-28 w-28 rounded-full bg-white/10"
+        />
 
-        <div>
-          {{ projectStageList.projIntro }}
-        </div>
+        <div
+          class="pointer-events-none absolute bottom--10 right-10 h-24 w-24 rounded-full bg-cyan-300/20 blur-2xl"
+        />
 
-        <div>
-          {{ projectStageList.projStage }} 个阶段
-        </div>
+        <div
+          class="relative z-1"
+        >
+          <h1
+            class="m-0 wrap-break-word text-6 font-700 leading-1.3"
+          >
+            {{ projectStageList.projName || '学习项目' }}
+          </h1>
 
-        <div>
-          {{ projectStageList.projStageCourseCount }} 门课程
-        </div>
+          <p
+            class="mt-3 mb-0 line-clamp-2 text-3.5 leading-1.65 text-white/85"
+          >
+            {{ projectStageList.projIntro || '按阶段完成课程，稳步推进学习目标' }}
+          </p>
 
+          <div
+            class="mt-5 flex items-center gap-5 text-3.5 text-white/90"
+          >
+            <span
+              class="inline-flex items-center gap-1.5"
+            ><van-icon
+              name="orders-o"
+              size="16"
+            />{{ projectStageList.projStage || 0 }} 个阶段</span>
+
+            <span
+              class="inline-flex items-center gap-1.5"
+            ><van-icon
+              name="notes-o"
+              size="16"
+            />{{ projectStageList.projStageCourseCount || 0 }} 门课程</span>
+          </div>
+        </div>
       </div>
 
       <div
-        class=""
+        class="rounded-md border border-teal-100 bg-linear-to-r from-teal-50 to-white px-4 py-3.5 shadow-[0_8px_20px_rgb(15_23_42/4%)]"
       >
-        学习进度
+        <div
+          class="mb-2.5 flex items-center justify-between text-3.5 text-slate-600"
+        >
+          <span
+            class="inline-flex items-center gap-1.5 font-600 text-slate-800"
+          ><van-icon
+            name="chart-trending-o"
+            color="#0f766e"
+            size="17"
+          />学习进度</span>
+
+          <span
+            class="font-700 text-teal-700"
+          >{{ progress }}%</span>
+        </div>
+
         <van-progress
-          :percentage="50"
+          :percentage="progress"
+          stroke-width="7"
+          color="linear-gradient(90deg, #0f766e 0%, #14b8a6 100%)"
+          track-color="#dbeafe"
           :show-pivot="false"
         />
       </div>
 
-      <van-collapse
-        v-model="activeName"
-      >
-        <van-collapse-item
-          v-for="item in projectStageList.projectDirectory"
-          :key="item.stageId"
-          :title="item.stageName"
-          :name="item.stageId"
-          class="mb-5"
+      <div>
+        <div
+          class="mb-3 flex items-center justify-between"
         >
-          <template
-            #title
+          <h2
+            class="m-0 text-5 text-slate-900 font-700"
           >
-            <div
-              class="flex"
-            >
-              <div>
-                {{ item.stageName }}
-              </div>
-            </div>
-          </template>
+            学习阶段
+          </h2>
 
-          <template
-            v-if="item.stageCourse.length > 0"
+          <span
+            class="text-3.25 text-slate-500"
+          >共 {{ projectStageList.projectDirectory.length }} 个阶段</span>
+        </div>
+
+        <van-collapse
+          v-model="activeName"
+          class="stage-collapse flex flex-col gap-3 bg-transparent"
+          :border="false"
+        >
+          <van-collapse-item
+            v-for="(item, index) in projectStageList.projectDirectory"
+            :key="item.stageId"
+            :title="item.stageName"
+            :name="item.stageId"
+            class="stage-item overflow-hidden rounded-md border border-slate-200 bg-white shadow-[0_8px_20px_rgb(15_23_42/5%)]"
           >
-            <div
-              v-for="course in item.stageCourse"
-              :key="course.couId"
-              class="mb-3 flex cursor-pointer items-center justify-between rounded-md bg-#f5f5f5 p-3"
+            <template
+              #title
             >
               <div
-                class="text-sm text-gray-500"
+                class="min-w-0 flex flex-1 items-center gap-3"
               >
-                {{ course.couTitle }}
-              </div>
-
-              <div>
                 <div
-                  class="text-xs text-gray-500"
+                  class="h-10 w-10 flex shrink-0 items-center justify-center rounded-md bg-linear-to-br text-4 text-white font-700 shadow-[0_6px_14px_rgb(13_148_136/20%)]"
+                  :class="getStageColor(index)"
                 >
-                  {{ course.couIntro }}%
+                  {{ index + 1 }}
+                </div>
+
+                <div
+                  class="min-w-0 flex-1"
+                >
+                  <div
+                    class="truncate text-4 text-slate-900 font-700"
+                  >
+                    {{ item.stageName }}
+                  </div>
+
+                  <div
+                    class="mt-1 text-3.25 text-slate-500"
+                  >
+                    {{ item.projStageCourseCount || item.stageCourse.length }} 门课程
+                    <template
+                      v-if="item.duration"
+                    >
+                      · {{ item.duration }} 分钟
+                    </template>
+                  </div>
                 </div>
               </div>
+            </template>
 
+            <template
+              v-if="item.stageCourse.length > 0"
+            >
               <div
-                class="flex items-center justify-between"
+                v-for="course in item.stageCourse"
+                :key="course.couId"
+                class="mb-3 flex items-center gap-3 rounded-md border border-slate-100 bg-slate-50 px-3 py-3 last:mb-0"
               >
-                <div>
-                  {{ 0 }}%
+                <div
+                  class="h-8 w-8 flex shrink-0 items-center justify-center rounded-md bg-white text-3.25 text-teal-700 font-700 shadow-sm"
+                >
+                  <van-icon
+                    name="play-circle-o"
+                    size="17"
+                  />
                 </div>
 
-                <van-progress
-                  :percentage="50"
-                  :show-pivot="false"
+                <div
+                  class="min-w-0 flex-1"
+                >
+                  <div
+                    class="truncate text-3.5 text-slate-800 font-600"
+                  >
+                    {{ course.couTitle || course.couName }}
+                  </div>
+
+                  <div
+                    v-if="course.couIntro"
+                    class="mt-1 truncate text-3 text-slate-500"
+                  >
+                    {{ course.couIntro }}
+                  </div>
+                </div>
+
+                <van-icon
+                  name="arrow"
+                  class="shrink-0 text-slate-400"
                 />
               </div>
-            </div>
-          </template>
+            </template>
 
-          <template
-            v-else
-          >
-            <div
-              class="text-center text-sm text-gray-500"
+            <template
+              v-else
             >
-              暂无课程
-            </div>
-          </template>
+              <div
+                class="rounded-md bg-slate-50 py-5 text-center text-3.25 text-slate-500"
+              >
+                <van-icon
+                  name="notes-o"
+                  class="mr-1 align--0.5"
+                />当前阶段暂无课程
+              </div>
+            </template>
 
-        </van-collapse-item>
-      </van-collapse>
+          </van-collapse-item>
+        </van-collapse>
+      </div>
     </div>
   </van-pull-refresh>
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.stage-collapse {
+  :deep(.van-collapse-item::after) {
+    display: none;
+  }
+
+  // :deep(.van-cell) {
+  //   min-height: 72px;
+  //   padding: 12px 14px;
+  // }
+
+  // :deep(.van-collapse-item__content) {
+  //   padding: 0 14px 14px;
+  //   background: #fff;
+  // }
+}
+</style>

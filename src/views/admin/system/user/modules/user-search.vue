@@ -1,10 +1,10 @@
 <script setup lang="ts">
 type Props = {
-  modelValue: Api.SystemManage.UserSearchParams
+  modelValue: any
 }
 type Emits = {
-  (e: 'update:modelValue', value: Api.SystemManage.UserSearchParams): void
-  (e: 'search', params: Api.SystemManage.UserSearchParams): void
+  (e: 'update:modelValue', value: any): void
+  (e: 'search', params: any): void
   (e: 'reset'): void
 }
 const props = defineProps<Props>()
@@ -117,7 +117,7 @@ function handleReset() {
   emit('reset')
 }
 
-async function handleSearch(params: Api.SystemManage.UserSearchParams) {
+async function handleSearch(params: any) {
   await searchBarRef.value.validate()
   emit('search', params)
   console.log('表单数据', params)

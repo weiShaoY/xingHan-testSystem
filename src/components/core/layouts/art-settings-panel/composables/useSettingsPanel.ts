@@ -12,8 +12,6 @@ import AppConfig from '@/config'
 
 import { MenuTypeEnum, SystemThemeEnum } from '@/enums/appEnum'
 
-import { useCeremony } from '@/hooks/core/useCeremony'
-
 import { useTheme } from '@/hooks/core/useTheme'
 
 import { useSettingStore } from '@/store/modules/setting'
@@ -33,9 +31,6 @@ export function useSettingsPanel() {
   const settingStore = useSettingStore()
 
   const { systemThemeType, systemThemeMode, menuType } = storeToRefs(settingStore)
-
-  // Composables
-  const { openFestival, cleanup } = useCeremony()
 
   const { setSystemTheme, setSystemAutoTheme } = useTheme()
 
@@ -242,13 +237,11 @@ export function useSettingsPanel() {
       domOperations.setRootAttribute('data-box-mode', boxMode)
 
       themeHandlers.initSystemTheme()
-      openFestival()
     }
 
     const cleanupSettings = () => {
       stopWatch()
       themeCleanup?.()
-      cleanup()
     }
 
     return {

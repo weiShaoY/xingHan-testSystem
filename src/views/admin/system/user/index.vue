@@ -28,18 +28,16 @@ defineOptions({
   name: 'User',
 })
 
-type UserListItem = Api.SystemManage.UserListItem
-
 // 弹窗相关
 const dialogType = ref<DialogType>('add')
 
 const dialogVisible = ref(false)
 
-const currentUserData = ref<Partial<UserListItem>>({
+const currentUserData = ref<Partial<any>>({
 })
 
 // 选中行
-const selectedRows = ref<UserListItem[]>([])
+const selectedRows = ref<any[]>([])
 
 // 搜索表单
 const searchForm = ref({
@@ -220,7 +218,7 @@ const {
    * 搜索处理
    * @param params 参数
    */
-function handleSearch(params: Api.SystemManage.UserSearchParams) {
+function handleSearch(params: any) {
   replaceSearchParams(params)
   getData()
 }
@@ -228,7 +226,7 @@ function handleSearch(params: Api.SystemManage.UserSearchParams) {
 /**
    * 显示用户弹窗
    */
-function showDialog(type: DialogType, row?: UserListItem): void {
+function showDialog(type: DialogType, row?: any): void {
   console.log('打开弹窗:', {
     type,
     row,
@@ -244,7 +242,7 @@ function showDialog(type: DialogType, row?: UserListItem): void {
 /**
    * 删除用户
    */
-function deleteUser(row: UserListItem): void {
+function deleteUser(row: any): void {
   console.log('删除用户:', row)
   ElMessageBox.confirm(`确定要注销该用户吗？`, '注销用户', {
     confirmButtonText: '确定',
@@ -272,7 +270,7 @@ async function handleDialogSubmit() {
 /**
    * 处理表格行选择变化
    */
-function handleSelectionChange(selection: UserListItem[]): void {
+function handleSelectionChange(selection: any[]): void {
   selectedRows.value = selection
   console.log('选中行数据:', selectedRows.value)
 }

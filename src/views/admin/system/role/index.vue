@@ -20,8 +20,8 @@ defineOptions({
   name: 'Role',
 })
 
-type RoleListItem = Api.SystemManage.RoleListItem
-type RoleSearchFormParams = Api.SystemManage.RoleSearchParams & {
+type RoleListItem = any
+type RoleSearchFormParams = any & {
   daterange?: string[]
 }
 

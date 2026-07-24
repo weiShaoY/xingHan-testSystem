@@ -81,9 +81,6 @@ export const SETTING_DEFAULT_CONFIG = {
   /** 是否显示设置引导 */
   showSettingGuide: true,
 
-  /** 是否显示节日文本 */
-  showFestivalText: false,
-
   /** 是否显示水印 */
   watermarkVisible: false,
 
@@ -98,9 +95,6 @@ export const SETTING_DEFAULT_CONFIG = {
 
   /** 是否刷新 */
   refresh: false,
-
-  /** 是否加载节日烟花 */
-  holidayFireworksLoaded: false,
 
   /** 边框模式 */
   boxBorderMode: true,
@@ -117,8 +111,6 @@ export const SETTING_DEFAULT_CONFIG = {
   /** 容器宽度 */
   containerWidth: ContainerWidthEnum.FULL,
 
-  /** 节日日期 */
-  festivalDate: '',
 }
 
 /**

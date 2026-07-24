@@ -38,8 +38,6 @@ type ImportMetaEnv = {
   /** 是否在开发环境跳过登录鉴权 */
   readonly VITE_APP_DEV_SKIP_AUTH: 'true' | 'false'
 
-  /** 锁屏加密密钥 */
-  readonly VITE_APP_LOCK_ENCRYPT_KEY: string
 }
 
 type ImportMeta = {

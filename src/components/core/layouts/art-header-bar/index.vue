@@ -60,7 +60,6 @@ const {
   shouldShowGlobalSearch,
   shouldShowFullscreen,
   shouldShowNotification,
-  shouldShowChat,
   shouldShowLanguage,
   shouldShowSettings,
   shouldShowThemeToggle,
@@ -201,12 +200,6 @@ function visibleNotice(): void {
   showNotice.value = !showNotice.value
 }
 
-/**
-   * 打开聊天窗口
-   */
-function openChat(): void {
-  mittBus.emit('openChat')
-}
 </script>
 
 <template>
@@ -403,18 +396,6 @@ function openChat(): void {
         >
           <div
             class="rounded-full size-1.5 right-2 top-2 absolute bg-danger!"
-          />
-        </ArtButton>
-
-        <!-- 聊天按钮 -->
-        <ArtButton
-          v-if="shouldShowChat"
-          icon="ri:message-3-line"
-          class="chat-button relative"
-          @click="openChat"
-        >
-          <div
-            class="breathing-dot rounded-full size-1.5 right-2 top-2 absolute bg-success!"
           />
         </ArtButton>
 

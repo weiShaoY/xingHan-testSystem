@@ -10,8 +10,6 @@ import { useCurrentUserStore } from '@/store'
 
 import { WEB_LINKS } from '@/utils/constants'
 
-import { mittBus } from '@/utils/sys'
-
 defineOptions({
   name: 'ArtUserMenu',
 })
@@ -39,13 +37,6 @@ function goPage(path: string): void {
    */
 function toDocs(): void {
   window.open(WEB_LINKS.DOCS)
-}
-
-/**
-   * 打开锁屏功能
-   */
-function lockScreen(): void {
-  mittBus.emit('openLockScreen')
 }
 
 /**
@@ -161,17 +152,6 @@ function closeUserMenu(): void {
             />
 
             <span>{{ $t('topBar.user.docs') }}</span>
-          </li>
-
-          <li
-            class="btn-item"
-            @click="lockScreen()"
-          >
-            <ArtSvgIcon
-              icon="ri:lock-line"
-            />
-
-            <span>{{ $t('topBar.user.lockScreen') }}</span>
           </li>
 
           <div

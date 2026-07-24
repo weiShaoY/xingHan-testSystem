@@ -1,5 +1,5 @@
 <script setup lang="ts">
-type RoleSearchFormParams = Api.SystemManage.RoleSearchParams & {
+type RoleSearchFormParams = any & {
   daterange?: string[]
 }
 

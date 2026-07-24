@@ -3,7 +3,7 @@ import { useMenuStore } from '@/store/modules/menu'
 
 import { formatMenuTitle } from '@/utils/router'
 
-type RoleListItem = Api.SystemManage.RoleListItem
+type RoleListItem = any
 
 type Props = {
   modelValue?: boolean

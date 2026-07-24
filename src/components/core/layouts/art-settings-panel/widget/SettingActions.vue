@@ -128,10 +128,6 @@ const CONFIG_ITEMS: ConfigItem[] = [
     key: 'showSettingGuide',
   },
   {
-    comment: '是否显示节日文本',
-    key: 'showFestivalText',
-  },
-  {
     comment: '是否显示水印',
     key: 'watermarkVisible',
   },
@@ -150,10 +146,6 @@ const CONFIG_ITEMS: ConfigItem[] = [
   {
     comment: '是否刷新',
     key: 'refresh',
-  },
-  {
-    comment: '是否加载节日烟花',
-    key: 'holidayFireworksLoaded',
   },
   {
     comment: '边框模式',
@@ -175,11 +167,6 @@ const CONFIG_ITEMS: ConfigItem[] = [
     comment: '容器宽度',
     key: 'containerWidth',
     enumMap: ENUM_MAPS.containerWidth,
-  },
-  {
-    comment: '节日日期',
-    key: 'festivalDate',
-    forceValue: '',
   },
 ]
 
@@ -291,7 +278,6 @@ async function handleResetConfig() {
 
     // 界面显示（直接设置类方法）
     settingStore.setWorkTab(config.showWorkTab)
-    settingStore.setShowFestivalText(config.showFestivalText)
     settingStore.setWatermarkVisible(config.watermarkVisible)
 
     // 功能设置
@@ -307,10 +293,6 @@ async function handleResetConfig() {
     settingStore.setTabStyle(config.tabStyle)
     settingStore.setCustomRadius(config.customRadius)
     settingStore.setContainerWidth(config.containerWidth)
-
-    // 节日相关
-    settingStore.setFestivalDate(config.festivalDate)
-    settingStore.setholidayFireworksLoaded(config.holidayFireworksLoaded)
 
     location.reload()
   }
