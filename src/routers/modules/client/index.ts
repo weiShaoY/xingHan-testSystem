@@ -26,8 +26,8 @@ export const clientRoutes: AppRouteRecord = {
       },
     },
     {
-      name: 'ClientUser',
       path: 'user',
+      name: 'ClientUser',
       component: '/client/user',
       meta: {
         title: '个人主页',
@@ -73,7 +73,7 @@ export const clientRoutes: AppRouteRecord = {
       component: '',
       redirect: '/client/course/list',
       meta: {
-        title: '报名的课程',
+        title: '课程',
         keepAlive: false,
       },
       children: [

@@ -1,7 +1,13 @@
 <script lang="ts" setup>
+import { useClientNavTitle } from '@/hooks/core/useClientNavTitle'
+
 const loading = ref(false)
 
 const route = useRoute()
+
+const DEFAULT_NAV_TITLE = '项目阶段列表'
+
+const { setClientNavTitle, clearClientNavTitle } = useClientNavTitle()
 
 /**
  * 当前项目 ID
@@ -27,16 +33,16 @@ async function getClientProjectStagesList() {
   loading.value = true
   try {
     projectStageList.value = await fetchClientProjectStagesList(projId.value)
+    setNavTitle(projectStageList.value.projName)
   }
   catch {
+    setNavTitle()
     loading.value = false
   }
   finally {
     loading.value = false
   }
 }
-
-getClientProjectStagesList()
 
 function onRefresh() {
   getClientProjectStagesList()
@@ -53,6 +59,31 @@ const progress = computed(() => {
 function getStageColor(index: number): string {
   return ['from-teal-600 to-cyan-500', 'from-sky-600 to-teal-500', 'from-emerald-600 to-teal-500'][index % 3]
 }
+
+/**
+ * 设置顶部导航标题。
+ *
+ * 当前页面的 VanNavBar 在 client/layout 中统一渲染，
+ * 这里通过响应式的客户端导航标题覆盖默认 route.meta.title。
+ */
+function setNavTitle(title?: string) {
+  setClientNavTitle(title?.trim() || DEFAULT_NAV_TITLE)
+}
+
+watch(
+  projId,
+  () => {
+    setNavTitle()
+    getClientProjectStagesList()
+  },
+  {
+    immediate: true,
+  },
+)
+
+onBeforeUnmount(() => {
+  clearClientNavTitle()
+})
 
 </script>
 

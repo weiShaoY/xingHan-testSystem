@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import avatar from '@imgs/avatar/avatar10.webp'
 
+import { useClientNavTitle } from '@/hooks/core/useClientNavTitle'
+
 defineOptions({
   name: 'ClientLayout',
 })
@@ -13,8 +15,10 @@ const router = useRouter()
 // const avatarUrl = computed(() => userStore.getUserInfo.avatar || avatar)
 const avatarUrl = computed(() => avatar)
 
+const { customClientNavTitle } = useClientNavTitle()
+
 const navTitle = computed(() => {
-  return String(route.meta?.title || '')
+  return customClientNavTitle.value || String(route.meta?.title || '')
 })
 
 function onBack() {
