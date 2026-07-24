@@ -195,8 +195,8 @@ type SearchBarEmits = {
 }
 
 const modelValue = defineModel<Record<string, any>>({
-  default: {
-  },
+  default: () => ({
+  }),
 })
 
 const initialModelValue = ref<Record<string, any>>({
@@ -333,7 +333,7 @@ function sanitizeOutputValue(value: unknown): unknown {
   }
 
   if (value && typeof value === 'object') {
-    const rawValue = toRaw(value)
+    const rawValue = toRaw(value) as Record<string, unknown>
 
     const sanitizedObject = Object.entries(rawValue).reduce<Record<string, unknown>>(
       (accumulator, [key, item]) => {

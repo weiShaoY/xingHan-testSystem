@@ -260,7 +260,9 @@ axiosInstance.interceptors.response.use(
       const contentType = response.headers?.['content-type']
 
       if (isJsonContentType(contentType) && response.data) {
-        const parsedData = await parseBinaryResponseData(response.data as Blob | ArrayBuffer)
+        const parsedData = await parseBinaryResponseData(
+          response.data as unknown as Blob | ArrayBuffer,
+        )
 
         if (parsedData && typeof parsedData === 'object' && 'code' in parsedData) {
           const parsedResponse = {

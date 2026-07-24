@@ -49,7 +49,7 @@ const searchForm = ref({
 })
 
 // 用户状态配置
-const USER_STATUS_CONFIG = {
+const USER_STATUS_CONFIG: Record<string, { type: 'success' | 'info' | 'warning' | 'danger', text: string }> = {
   1: {
     type: 'success' as const,
     text: '在线',
@@ -73,7 +73,7 @@ const USER_STATUS_CONFIG = {
    */
 function getUserStatusConfig(status: string) {
   return (
-    USER_STATUS_CONFIG[status as keyof typeof USER_STATUS_CONFIG] || {
+    USER_STATUS_CONFIG[status] || {
       type: 'info' as const,
       text: '未知',
     }

@@ -77,7 +77,9 @@ type InferRecordType<T> = T extends TablePaginatedResponse<infer U> ? U : never
  */
 export type UseTableConfig<
   TApiFn extends (params: any) => Promise<any> = (params: any) => Promise<any>,
-  TRecord = InferRecordType<InferApiResponse<TApiFn>>,
+  TRecord = [InferRecordType<InferApiResponse<TApiFn>>] extends [never]
+    ? any
+    : InferRecordType<InferApiResponse<TApiFn>>,
   TParams = InferApiParams<TApiFn>,
   TResponse = InferApiResponse<TApiFn>,
 > = {
@@ -188,13 +190,17 @@ export function useTable<TApiFn extends (params: any) => Promise<any>>(
  * - 错误处理
  * - 列配置管理
  */
-function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
-  config: UseTableConfig<TApiFn>,
+function useTableImpl<
+  TApiFn extends (params: any) => Promise<any>,
+  TRecord = [InferRecordType<InferApiResponse<TApiFn>>] extends [never]
+    ? any
+    : InferRecordType<InferApiResponse<TApiFn>>,
+>(
+  config: UseTableConfig<TApiFn, TRecord>,
 ) {
   /**
    * 表格单条记录类型。
    */
-  type TRecord = InferRecordType<InferApiResponse<TApiFn>>
 
   /**
    * 表格请求参数类型。

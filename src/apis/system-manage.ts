@@ -3,16 +3,16 @@ import type { AppRouteRecord } from '@/types/router'
 import request from '@/apis/http'
 
 // 获取用户列表
-export function fetchGetUserList(params: Api.SystemManage.UserSearchParams) {
-  return request.get<Api.SystemManage.UserList>({
+export function fetchGetUserList(params: any) {
+  return request.get({
     url: '/api/user/list',
     params,
   })
 }
 
 // 获取角色列表
-export function fetchGetRoleList(params: Api.SystemManage.RoleSearchParams) {
-  return request.get<Api.SystemManage.RoleList>({
+export function fetchGetRoleList(params: any) {
+  return request.get({
     url: '/api/role/list',
     params,
   })

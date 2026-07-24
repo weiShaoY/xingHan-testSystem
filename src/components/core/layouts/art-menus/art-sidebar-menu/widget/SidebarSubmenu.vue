@@ -191,7 +191,7 @@ function getUniqueKey(item: AppRouteRecord, index: number): string {
       </template>
 
       <SidebarSubmenu
-        :list="item.children"
+        :list="item.children || []"
         :is-mobile="isMobile"
         :level="level + 1"
         :theme="theme"
@@ -201,7 +201,7 @@ function getUniqueKey(item: AppRouteRecord, index: number): string {
 
     <ElMenuItem
       v-else
-      :index="isExternalLink(item) ? undefined : item.path || item.meta.title"
+      :index="isExternalLink(item) ? '' : item.path || item.meta.title"
       :level-item="level + 1"
       @click="goPage(item)"
     >

@@ -139,7 +139,7 @@ export type WorkTab = {
 export type UserState = {
 
   /** 用户信息 */
-  userInfo: Api.Auth.UserInfo | null
+  userInfo: any | null
 
   /** 认证令牌 */
   token: string | null
