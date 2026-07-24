@@ -1,9 +1,17 @@
 <!------  2026-04-15---16:08---星期三  ------>
 <!------------------------------------  课程大纲列表  ------------------------------------------------->
 <script lang="ts" setup>
-import type { SectionType } from './constants/section-type'
+import type { SectionType } from '@/config/course'
 
 import { computed, ref } from 'vue'
+
+import {
+  getSectionCreateRoute,
+  getSectionCreateRouteTitle,
+  getSectionEditRoute,
+  getSectionEditRouteTitle,
+  getSectionTypeConfig,
+} from '@/config/course'
 
 import AllocateCourseDialog from '../list/AllocateCourseDialog.vue'
 
@@ -12,14 +20,6 @@ import CourseChapterDialog from './components/CourseChapterDialog.vue'
 import CourseSectionItem from './components/CourseSectionItem.vue'
 
 import SectionTypeDialog from './components/SectionTypeDialog.vue'
-
-import {
-  getSectionCreateRoute,
-  getSectionCreateRouteTitle,
-  getSectionEditRoute,
-  getSectionEditRouteTitle,
-  getSectionTypeConfig,
-} from './constants/section-type'
 
 const route = useRoute()
 

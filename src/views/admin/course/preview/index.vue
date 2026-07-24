@@ -5,7 +5,7 @@ import cover6 from '@imgs/cover/img6.webp'
 
 import ClientLayout from '@/views/client/layout/index.vue'
 
-import { getSectionTypeConfig } from '../outline/constants/section-type'
+import { getSectionTypeConfig } from '@/config/course'
 
 const route = useRoute()
 

@@ -1,8 +1,8 @@
 <!-- 创建小节类型选择弹窗 -->
 <script lang="ts" setup>
-import type { SectionType } from '../constants/section-type'
+import type { SectionType } from '@/config/course'
 
-import { sectionTypeOptions } from '../constants/section-type'
+import { sectionTypeOptions } from '@/config/course'
 
 /**
  * 选择小节类型事件

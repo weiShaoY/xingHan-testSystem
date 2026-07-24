@@ -1,5 +1,17 @@
 <script lang="ts" setup>
+import type { SectionType } from '@/config/course'
+
+import {
+  getSectionCreateRoute,
+  getSectionCreateRouteTitle,
+  getSectionEditRoute,
+  getSectionEditRouteTitle,
+  getSectionTypeConfig,
+} from '@/config/course'
+
 import { useClientNavTitle } from '@/hooks/core/useClientNavTitle'
+
+import CourseSectionItem from './components/CourseSectionItem.vue'
 
 const DEFAULT_NAV_TITLE = '项目阶段列表'
 
@@ -83,6 +95,11 @@ function handleGoCourseDetail(couId: number) {
   })
 }
 
+const activeNames = ref([])
+
+function handleSection(section: AdminApi.Course.Section) {
+  console.log('🚀 ~ file: index.vue:101 ~ section:', section)
+}
 </script>
 
 <template>
@@ -165,7 +182,9 @@ function handleGoCourseDetail(couId: number) {
         />
       </div>
 
+      <!-- 底部  -->
       <div>
+
         <div
           class="mb-3 flex items-center justify-between"
         >
@@ -182,6 +201,83 @@ function handleGoCourseDetail(couId: number) {
           </span>
         </div>
 
+        <div>
+          <div
+            v-for="item in courseOutlineList.nodes"
+            :key="item.id"
+          >
+            <!-- 章节 -->
+            <van-collapse
+              v-if="item.itemType === 'chapter'"
+              v-model="activeNames"
+            >
+              <van-collapse-item
+                :key="item.id"
+                :name="item.id"
+                :title="`${item.name}  ( ${item.sectionList.length} 个小节 )`"
+              >
+                <template
+                  #title
+                >
+                  <div
+                    class="flex items-center gap-5"
+                  >
+                    <div
+                      class=""
+                    >
+                      {{ item.name }}
+                    </div>
+
+                    <van-tag
+                      :type="item.sectionList.length > 0 ? 'primary' : 'warning'"
+                    >
+                      {{ item.sectionList.length }} 个小节
+                    </van-tag>
+                  </div>
+                </template>
+
+                <van-cell-group
+                  v-if="item.sectionList.length"
+                  inset
+                >
+                  <van-cell
+                    v-for="section in item.sectionList"
+                    :key="section.id"
+                    @click="handleSection(section)"
+                  >
+                    <CourseSectionItem
+                      :section="section"
+                      inner
+                      :type-config="getSectionTypeConfig(section.sectionType)"
+                    />
+                  </van-cell>
+
+                </van-cell-group>
+
+                <div
+                  v-else
+                  class="text-center py-5"
+                >
+                  暂无内容
+                </div>
+              </van-collapse-item>
+            </van-collapse>
+
+            <!-- 独立小节 -->
+            <van-cell
+              v-else-if="item.itemType === 'section'"
+
+              @click="handleSection(item)"
+            >
+              <CourseSectionItem
+                :section="item"
+                inner
+                :type-config="getSectionTypeConfig(item.sectionType)"
+              />
+            </van-cell>
+
+          </div>
+        </div>
       </div>
     </div>
   </van-pull-refresh>
