@@ -12,32 +12,20 @@ defineProps<{
   /** 是否展示在章节内部 */
   inner?: boolean
 }>()
-
-// const emit = defineEmits<{
-
-//   /** 分配当前小节学习任务 */
-//   allocate: []
-
-//   /** 删除当前小节 */
-//   delete: [section: AdminApi.Course.Section]
-
-//   /** 编辑当前小节 */
-//   edit: [section: AdminApi.Course.Section]
-// }>()
 </script>
 
 <template>
   <div
-    class="flex items-start gap-5"
+    class="w-full flex items-center gap-3"
   >
     <div
-      class=" font-bold text-primary w-4 flex items-center"
+      class="h-8 w-8 flex shrink-0 items-center justify-center rounded-xl bg-white text-3.25 text-teal-700 font-700 shadow-sm"
     >
-      {{ section.order }}
+      {{ section.order || '-' }}
     </div>
 
     <div
-      class="flex items-center flex-col gap-1 justify-center "
+      class="flex shrink-0 flex-col items-center justify-center gap-1"
     >
       <ArtButton
         :icon="typeConfig.sectionIcon"
@@ -46,31 +34,37 @@ defineProps<{
       />
 
       <div
-        class="text-xs text-g-600"
+        class="text-sm text-slate-500"
       >
         {{ typeConfig.sectionTypeName }}
       </div>
     </div>
 
     <div
-      class="flex flex-col items-start"
+      class="min-w-0 flex flex-1 flex-col items-start"
     >
       <div
-        class="truncate text-sm font-semibold text-g-900"
+        class="max-w-full truncate text-3.5 text-slate-800 font-700"
       >
         {{ section.name }}
       </div>
 
       <div
-        class="mt-2 flex flex-col gap-1 text-xs text-g-600"
+        class="mt-1.5 flex max-w-full flex-col gap-1 text-3 text-slate-500"
       >
         <span
           v-if="section.participantCount > 0"
+          class="inline-flex items-center gap-1"
         >
+          <van-icon
+            name="friends-o"
+            size="13"
+          />
           {{ section.participantCount }} 人参与
         </span>
 
         <span
+          v-if="section.description"
           class="wrap-break-word leading-relaxed"
         >
           {{ section.description }}
@@ -78,5 +72,9 @@ defineProps<{
       </div>
     </div>
 
+    <van-icon
+      name="arrow"
+      class="shrink-0 text-slate-400"
+    />
   </div>
 </template>
