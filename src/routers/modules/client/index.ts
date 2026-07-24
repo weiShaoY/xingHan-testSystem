@@ -34,7 +34,7 @@ const sectionRouteConfigs = [
 ]
 
 const SectionRoutes: AppRouteRecord[] = sectionRouteConfigs.map(item => ({
-  path: `:couId/section/${item.type}/:olPID?`,
+  path: `:couId/section/${item.type}/:olId?`,
   name: `ClientCourseSection${item.name}`,
   component: item.component,
   meta: {

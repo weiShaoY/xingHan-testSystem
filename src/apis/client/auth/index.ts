@@ -28,5 +28,6 @@ export function fetchClientGetUserInfo() {
     userInfo: ClientApi.Auth.UserInfo
   }>({
     url: '/client/auth/userInfo',
+    authPath: '/client',
   })
 }

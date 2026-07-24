@@ -7,6 +7,7 @@ import request from '@/apis/http'
 export function fetchClientProjectStagesList(projId: number) {
   return request.post<ClientApi.Project.ProjectStagesListResponse>({
     url: '/client/learningtask/getLearningTaskAppPreview',
+    authPath: '/client',
     data: {
       projId,
     },

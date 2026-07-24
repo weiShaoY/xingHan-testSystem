@@ -6,6 +6,7 @@ import request from '@/apis/http'
 export function fetchClientTaskList(params: ClientApi.Task.TaskListParams) {
   return request.post<ClientApi.Task.TaskListResponse>({
     url: '/client/learningtask/list',
+    authPath: '/client',
     data: params,
   })
 }

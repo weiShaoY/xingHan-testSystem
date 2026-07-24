@@ -58,6 +58,7 @@ declare global {
   const effectScope: typeof import('vue').effectScope
   const emojo: typeof import('../../utils/ui/emojo').default
   const extendRef: typeof import('@vueuse/core').extendRef
+  const fetCourseDocumentFile: typeof import('../../apis/client/course/index').fetCourseDocumentFile
   const fetchAdminCourseAdd: typeof import('../../apis/admin/course/index').fetchAdminCourseAdd
   const fetchAdminCourseDelete: typeof import('../../apis/admin/course/index').fetchAdminCourseDelete
   const fetchAdminCourseList: typeof import('../../apis/admin/course/index').fetchAdminCourseList
@@ -103,6 +104,8 @@ declare global {
   const fetchAdminQuestionSetting: typeof import('../../apis/admin/question/index').fetchAdminQuestionSetting
   const fetchAdminQuestionUpdate: typeof import('../../apis/admin/question/index').fetchAdminQuestionUpdate
   const fetchAdminUploadFile: typeof import('../../apis/file/index').fetchAdminUploadFile
+  const fetchClientCourseDocumentFile: typeof import('../../apis/client/course/index').fetchClientCourseDocumentFile
+  const fetchClientCourseDocumentInfo: typeof import('../../apis/client/course/index').fetchClientCourseDocumentInfo
   const fetchClientCourseOutlineList: typeof import('../../apis/client/course/index').fetchClientCourseOutlineList
   const fetchClientGetPublicKey: typeof import('../../apis/client/auth/index').fetchClientGetPublicKey
   const fetchClientGetUserInfo: typeof import('../../apis/client/auth/index').fetchClientGetUserInfo
@@ -118,6 +121,7 @@ declare global {
   const formatMenuTitle: typeof import('../../utils/router').formatMenuTitle
   const formatTimestampToChineseDate: typeof import('../../utils/time').formatTimestampToChineseDate
   const getActivePinia: typeof import('pinia').getActivePinia
+  const getCourseDocumentFile: typeof import('../../apis/client/course/index').getCourseDocumentFile
   const getCssVar: typeof import('../../utils/ui/colors').getCssVar
   const getCurrentInstance: typeof import('vue').getCurrentInstance
   const getCurrentScope: typeof import('vue').getCurrentScope
@@ -578,6 +582,8 @@ declare module 'vue' {
     readonly fetchAdminQuestionSetting: UnwrapRef<typeof import('../../apis/admin/question/index')['fetchAdminQuestionSetting']>
     readonly fetchAdminQuestionUpdate: UnwrapRef<typeof import('../../apis/admin/question/index')['fetchAdminQuestionUpdate']>
     readonly fetchAdminUploadFile: UnwrapRef<typeof import('../../apis/file/index')['fetchAdminUploadFile']>
+    readonly fetchClientCourseDocumentFile: UnwrapRef<typeof import('../../apis/client/course/index')['fetchClientCourseDocumentFile']>
+    readonly fetchClientCourseDocumentInfo: UnwrapRef<typeof import('../../apis/client/course/index')['fetchClientCourseDocumentInfo']>
     readonly fetchClientCourseOutlineList: UnwrapRef<typeof import('../../apis/client/course/index')['fetchClientCourseOutlineList']>
     readonly fetchClientGetPublicKey: UnwrapRef<typeof import('../../apis/client/auth/index')['fetchClientGetPublicKey']>
     readonly fetchClientGetUserInfo: UnwrapRef<typeof import('../../apis/client/auth/index')['fetchClientGetUserInfo']>

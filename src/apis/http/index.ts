@@ -132,7 +132,7 @@ function handleBusinessError(response: AxiosResponse<BaseResponse>) {
 
   if (code === ApiStatus.success) { return response }
 
-  if (code === ApiStatus.unauthorized) { handleUnauthorizedError(msg) }
+  if (code === ApiStatus.unauthorized) { handleUnauthorizedError(msg, response.config) }
 
   throw createHttpError(msg || $t('httpMsg.requestFailed'), code, {
     data: response.data,
@@ -283,7 +283,7 @@ axiosInstance.interceptors.response.use(
   // 非 HTTP 2xx 或网络错误会进入这里。
   (error) => {
     // HTTP 401 直接走未授权处理。
-    if (error.response?.status === ApiStatus.unauthorized) { handleUnauthorizedError() }
+    if (error.response?.status === ApiStatus.unauthorized) { handleUnauthorizedError(undefined, error.config) }
 
     // 将 Axios 错误标准化为 HttpError 后继续抛出。
     return Promise.reject(handleError(error))
@@ -322,12 +322,15 @@ function createHttpError(
  * @param message 后端返回的未授权提示。
  * @throws {HttpError} 始终抛出未授权错误。
  */
-function handleUnauthorizedError(message?: string): never {
+function handleUnauthorizedError(
+  message?: string,
+  requestConfig?: AxiosRequestConfig,
+): never {
   const error = createHttpError(message || $t('httpMsg.unauthorized'), ApiStatus.unauthorized)
 
   if (!isUnauthorizedErrorShown) {
     isUnauthorizedErrorShown = true
-    logOut()
+    logOut(getAuthPathFromRequest(requestConfig))
 
     unauthorizedTimer = setTimeout(resetUnauthorizedError, UNAUTHORIZED_DEBOUNCE_TIME)
 
@@ -336,6 +339,22 @@ function handleUnauthorizedError(message?: string): never {
   }
 
   throw error
+}
+
+/**
+ * 获取本次请求所属端路径。
+ *
+ * 优先使用接口显式传入的 `authPath`，否则根据当前路由兜底判断。
+ * 401 处理必须在错误发生时固定所属端，避免延迟退出时当前路由变化导致跳错登录页。
+ *
+ * @param requestConfig Axios 请求配置。
+ * @returns 用于判断所属端的路径。
+ */
+function getAuthPathFromRequest(requestConfig?: AxiosRequestConfig) {
+  const { authPath } = (requestConfig || {
+  }) as ExtendedAxiosRequestConfig
+
+  return authPath || router.currentRoute.value.path
 }
 
 /**
@@ -353,9 +372,11 @@ function resetUnauthorizedError() {
  *
  * 这里使用短延迟让当前错误提示、状态变更和路由跳转有稳定的执行顺序。
  */
-function logOut() {
+function logOut(authPath: string) {
+  const userStore = getUserStoreByPath(authPath)
+
   setTimeout(() => {
-    getCurrentUserStore().logOut()
+    userStore.logOut()
   }, LOGOUT_DELAY)
 }
 
