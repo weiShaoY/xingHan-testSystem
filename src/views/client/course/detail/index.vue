@@ -1,443 +1,192 @@
-<!------  2026-06-03---12:49---星期三  ------>
-<!------------------------------------    ------------------------------------------------->
 <script lang="ts" setup>
-type CatalogItem = {
-  id: number
-  title: string
-  type: 'file' | 'exam'
-  label: string
-  likes?: number
-  participants: number
-  questions?: number
-  done: boolean
-}
+import { useClientNavTitle } from '@/hooks/core/useClientNavTitle'
 
-type CatalogSection = {
-  id: number
-  title: string
-  done: boolean
-  expanded: boolean
-  children: CatalogItem[]
-}
+const DEFAULT_NAV_TITLE = '项目阶段列表'
 
-const keyword = ref('')
+const route = useRoute()
 
-const isDesc = ref(false)
+const router = useRouter()
 
-const sections = ref<CatalogSection[]>([
-  {
-    id: 1,
-    title: '11',
-    done: true,
-    expanded: true,
-    children: [
-      {
-        id: 3,
-        title: '3. PackagePart.xlsx',
-        type: 'file',
-        label: 'tst',
-        likes: 1,
-        participants: 2,
-        done: true,
-      },
-      {
-        id: 4,
-        title: '4. test 2',
-        type: 'exam',
-        label: '考试',
-        participants: 2,
-        questions: 2,
-        done: false,
-      },
-    ],
-  },
-  {
-    id: 2,
-    title: '22',
-    done: false,
-    expanded: false,
-    children: [],
-  },
-])
+const { setClientNavTitle, clearClientNavTitle } = useClientNavTitle()
 
-const sectionTotal = computed(() => sections.value.length)
+const loading = ref(false)
 
-const sortedSections = computed(() => {
-  const list = [...sections.value]
+/**
+ * 当前课程 ID
+ */
+const couId = computed(() => Number(route.params.couId || 0))
 
-  return isDesc.value
-    ? list.reverse()
-    : list
-})
-
-const filteredSections = computed(() => {
-  const value = keyword.value.trim().toLowerCase()
-
-  if (!value) {
-    return sortedSections.value
-  }
-
-  return sortedSections.value
-    .map((section) => {
-      const sectionMatched = section.title.toLowerCase().includes(value)
-
-      const children = section.children.filter((item) => {
-        return item.title.toLowerCase().includes(value) || item.label.toLowerCase().includes(value)
-      })
-
-      if (!sectionMatched && !children.length) {
-        return null
-      }
-
-      return {
-        ...section,
-        expanded: true,
-        children: sectionMatched
-          ? section.children
-          : children,
-      }
-    })
-    .filter((section): section is CatalogSection => Boolean(section))
+const courseOutlineList = ref<ClientApi.Course.CourseOutlineListResponse>({
+  couChapterCount: 0,
+  couContent: '',
+  couId: 0,
+  couIntro: '',
+  couName: '',
+  couSectionCount: 0,
+  nodes: [],
 })
 
 /**
- * 切换章节展开状态
- * @param section 章节
+ *  获取课程章节列表
  */
-function toggleSection(section: CatalogSection) {
-  const target = sections.value.find(item => item.id === section.id)
+async function getClientCourseOutlineList(showSuccessToast = false) {
+  loading.value = true
 
-  if (target) {
-    target.expanded = !target.expanded
+  try {
+    courseOutlineList.value = await fetchClientCourseOutlineList(couId.value)
+    console.log('🚀 ~ file: index.vue:48 ~ courseOutlineList.value:', courseOutlineList.value)
+
+    setNavTitle(courseOutlineList.value?.couName)
+
+    if (showSuccessToast) {
+      window.$toast('刷新成功')
+    }
+  }
+
+  finally {
+    loading.value = false
   }
 }
 
-function toggleSort() {
-  isDesc.value = !isDesc.value
+/**
+ * 设置顶部导航标题。
+ *
+ * 当前页面的 VanNavBar 在 client/layout 中统一渲染，
+ * 这里通过响应式的客户端导航标题覆盖默认 route.meta.title。
+ */
+function setNavTitle(title?: string) {
+  setClientNavTitle(title?.trim() || DEFAULT_NAV_TITLE)
 }
+
+/**
+ * 下拉刷新。
+ */
+function onRefresh() {
+  getClientCourseOutlineList(true)
+}
+
+onBeforeUnmount(() => {
+  clearClientNavTitle()
+})
+
+onMounted(() => {
+  getClientCourseOutlineList()
+})
+
+// eslint-disable-next-line unused-imports/no-unused-vars
+function handleGoCourseDetail(couId: number) {
+  router.push({
+    name: 'ClientCourseDetail',
+    params: {
+      couId,
+    },
+  })
+}
+
 </script>
 
 <template>
-  <div
-    class="mb-10 flex flex-col"
+  <van-pull-refresh
+    v-model="loading"
+    class="min-h-full"
+    @refresh="onRefresh"
   >
-    <ClientPageHeader
-      title="课程详情"
-    />
-
-    <section
-      class="art-card course-catalog p-0"
+    <div
+      class="flex flex-col gap-4 pb-4"
     >
       <div
-        class="flex items-center justify-between gap-4 border-b border-(--art-card-border) px-5 py-4 max-sm:flex-col max-sm:items-stretch max-sm:px-4"
+        class="relative overflow-hidden rounded-md bg-linear-to-br from-teal-700 via-teal-600 to-cyan-500 px-5 py-5 text-white shadow-[0_12px_28px_rgb(13_148_136/22%)]"
       >
         <div
-          class="min-w-0"
-        >
-          <h2
-            class="m-0 text-xl text-g-900 font-semibold leading-8"
-          >
-            目录（{{ sectionTotal }}）
-          </h2>
-
-          <p
-            class="mt-1 mb-0 text-sm text-g-600"
-          >
-            已完成 2 个内容
-          </p>
-        </div>
+          class="pointer-events-none absolute right--7 top--8 h-28 w-28 rounded-full bg-white/10"
+        />
 
         <div
-          class="flex min-w-0 flex-1 items-center justify-end gap-3 max-sm:w-full"
+          class="pointer-events-none absolute bottom--10 right-10 h-24 w-24 rounded-full bg-cyan-300/20 blur-2xl"
+        />
+
+        <div
+          class="relative z-1"
         >
-          <el-input
-            v-model="keyword"
-            placeholder="搜索小节"
-            clearable
-            class="max-w-110 flex-1"
+          <h1
+            class="m-0 wrap-break-word text-6 font-700 leading-1.3"
           >
-            <template
-              #prefix
-            >
-              <ArtSvgIcon
-                icon="ri:search-line"
-              />
-            </template>
-          </el-input>
+            {{ courseOutlineList?.couName }}
+          </h1>
 
-          <button
-            type="button"
-            class="h-8 shrink-0 flex items-center gap-1 border-0 bg-transparent px-0 text-sm text-g-700 font-500 cursor-pointer hover:text-primary"
-            @click="toggleSort"
+          <div
+            class="mt-5 flex items-center gap-5 text-3.5 text-white/90"
           >
-            <ArtSvgIcon
-              :icon="isDesc ? 'ri:sort-desc' : 'ri:sort-asc'"
-              class="text-lg"
-            />
+            <span
+              class="inline-flex items-center gap-1.5"
+            ><van-icon
+              name="orders-o"
+              size="16"
+            />{{ 0 }} 个章节</span>
 
-            <span>{{ isDesc ? '倒序' : '正序' }}</span>
-          </button>
+            <span
+              class="inline-flex items-center gap-1.5"
+            ><van-icon
+              name="notes-o"
+              size="16"
+            />{{ 0 }} 个小节</span>
+          </div>
         </div>
       </div>
 
       <div
-        class="px-5 max-sm:px-4"
+        class="rounded-md border border-teal-100 bg-linear-to-r from-teal-50 to-white px-4 py-3.5 shadow-[0_8px_20px_rgb(15_23_42/4%)]"
       >
-        <template
-          v-for="section in filteredSections"
-          :key="section.id"
+        <div
+          class="mb-2.5 flex items-center justify-between text-3.5 text-slate-600"
         >
-          <div
-            class="catalog-row section-row"
+          <span
+            class="inline-flex items-center gap-1.5 font-600 text-slate-800"
           >
-            <div
-              class="status-line"
-            >
-              <span
-                class="status-dot"
-                :class="{ 'is-done': section.done }"
-              >
-                <ArtSvgIcon
-                  icon="ri:check-line"
-                />
-              </span>
-            </div>
+            <van-icon
+              name="chart-trending-o"
+              color="#0f766e"
+              size="17"
+            />
+            学习进度
+          </span>
 
-            <button
-              type="button"
-              class="min-w-0 flex flex-1 items-center justify-between gap-4 border-0 bg-transparent py-5 pl-0 pr-1 text-left cursor-pointer"
-              @click="toggleSection(section)"
-            >
-              <div
-                class="min-w-0 flex items-center gap-5"
-              >
-                <h3
-                  class="m-0 truncate text-lg text-g-900 font-500"
-                >
-                  {{ section.title }}
-                </h3>
+          <span
+            class="font-700 text-teal-700"
+          >{{ 199 }}%</span>
+        </div>
 
-                <span
-                  class="shrink-0 text-base text-g-800"
-                >
-                  （{{ section.children.length }} 个小节）
-                </span>
-              </div>
-
-              <ArtSvgIcon
-                icon="ri:arrow-down-s-line"
-                class="shrink-0 text-2xl text-g-500 transition"
-                :class="{ 'rotate-180': !section.expanded }"
-              />
-            </button>
-          </div>
-
-          <div
-            v-show="section.expanded"
-          >
-            <div
-              v-for="item in section.children"
-              :key="item.id"
-              class="catalog-row item-row"
-            >
-              <div
-                class="status-line"
-              >
-                <span
-                  class="status-dot"
-                  :class="{ 'is-done': item.done, 'is-current': !item.done }"
-                >
-                  <ArtSvgIcon
-                    :icon="item.done ? 'ri:check-line' : 'ri:book-open-line'"
-                  />
-                </span>
-              </div>
-
-              <div
-                class="flex min-w-0 flex-1 items-center gap-5 py-5 max-sm:gap-3"
-              >
-                <div
-                  class="resource-badge"
-                  :class="`is-${item.type}`"
-                >
-                  <ArtSvgIcon
-                    :icon="item.type === 'file' ? 'ri:file-list-3-line' : 'ri:survey-line'"
-                    class="text-2xl"
-                  />
-                </div>
-
-                <div
-                  class="min-w-0 flex-1"
-                >
-                  <h4
-                    class="m-0 truncate text-lg text-g-900 font-500 leading-7"
-                  >
-                    {{ item.title }}
-                  </h4>
-
-                  <div
-                    class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-g-600"
-                  >
-                    <span>{{ item.label }}</span>
-
-                    <span
-                      v-if="item.likes"
-                      class="inline-flex items-center gap-1"
-                    >
-                      <ArtSvgIcon
-                        icon="ri:thumb-up-fill"
-                      />
-
-                      {{ item.likes }}
-                    </span>
-
-                    <span
-                      class="inline-flex items-center gap-1"
-                    >
-                      <ArtSvgIcon
-                        icon="ri:user-fill"
-                      />
-
-                      {{ item.participants }}人参与
-                    </span>
-
-                    <span
-                      v-if="item.questions"
-                      class="inline-flex items-center gap-1"
-                    >
-                      <ArtSvgIcon
-                        icon="ri:question-fill"
-                      />
-
-                      {{ item.questions }}个问题
-                    </span>
-                  </div>
-                </div>
-
-                <el-dropdown
-                  trigger="click"
-                >
-                  <button
-                    type="button"
-                    class="size-8 flex items-center justify-center border-0 rounded bg-transparent text-g-500 cursor-pointer hover:bg-g-100 hover:text-primary"
-                  >
-                    <ArtSvgIcon
-                      icon="ri:more-2-fill"
-                      class="text-xl"
-                    />
-                  </button>
-
-                  <template
-                    #dropdown
-                  >
-                    <el-dropdown-menu>
-                      <el-dropdown-item>
-                        查看详情
-                      </el-dropdown-item>
-
-                      <el-dropdown-item>
-                        标记完成
-                      </el-dropdown-item>
-                    </el-dropdown-menu>
-                  </template>
-                </el-dropdown>
-              </div>
-            </div>
-          </div>
-        </template>
-
-        <el-empty
-          v-if="!filteredSections.length"
-          description="暂无匹配的小节"
-          :image-size="120"
+        <van-progress
+          :percentage="0"
+          stroke-width="7"
+          color="linear-gradient(90deg, #0f766e 0%, #14b8a6 100%)"
+          track-color="#dbeafe"
+          :show-pivot="false"
         />
       </div>
-    </section>
-  </div>
+
+      <div>
+        <div
+          class="mb-3 flex items-center justify-between"
+        >
+          <h2
+            class="m-0 text-5 text-slate-900 font-700"
+          >
+            全部小节
+          </h2>
+
+          <span
+            class="text-3.25 text-slate-500"
+          >
+            (5)
+          </span>
+        </div>
+
+      </div>
+    </div>
+  </van-pull-refresh>
 </template>
 
 <style lang="scss" scoped>
-.course-catalog {
-  overflow: hidden;
-}
 
-.catalog-row {
-  display: flex;
-  min-height: 88px;
-
-  & + & {
-    border-top: 1px solid var(--art-card-border);
-  }
-}
-
-.section-row {
-  min-height: 84px;
-}
-
-.item-row {
-  min-height: 104px;
-}
-
-.status-line {
-  position: relative;
-  width: 52px;
-  flex: 0 0 52px;
-
-  &::before {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 18px;
-    width: 1px;
-    content: '';
-    background: var(--art-card-border);
-  }
-}
-
-.status-dot {
-  position: absolute;
-  top: 50%;
-  left: 0;
-  z-index: 1;
-  display: flex;
-  width: 36px;
-  height: 36px;
-  align-items: center;
-  justify-content: center;
-  color: var(--art-gray-500);
-  background: var(--default-box-color);
-  border: 2px solid var(--art-card-border);
-  border-radius: 50%;
-  transform: translateY(-50%);
-
-  &.is-done {
-    color: #fff;
-    background: var(--el-color-success);
-    border-color: var(--el-color-success);
-  }
-
-  &.is-current {
-    color: var(--el-color-success);
-    border-color: var(--el-color-success);
-  }
-}
-
-.resource-badge {
-  display: flex;
-  width: 44px;
-  height: 44px;
-  flex: 0 0 44px;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  border-radius: 6px;
-
-  &.is-file {
-    background: #f7b731;
-  }
-
-  &.is-exam {
-    background: #6f42c1;
-  }
-}
 </style>

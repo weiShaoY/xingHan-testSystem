@@ -13,6 +13,8 @@ type ProjectStagesData = ClientApi.Project.ProjectStagesListResponse
 
 const route = useRoute()
 
+const router = useRouter()
+
 const { setClientNavTitle, clearClientNavTitle } = useClientNavTitle()
 
 const loading = ref(false)
@@ -75,6 +77,29 @@ function getStageColor(index: number): string {
 }
 
 /**
+ * 获取项目阶段列表。
+ *
+ * @param options.showSuccessToast 是否在请求成功后提示刷新成功。
+ */
+async function getClientProjectStagesList(showSuccessToast = false) {
+  loading.value = true
+
+  try {
+    const data = await fetchClientProjectStagesList(projId.value)
+
+    projectStageList.value = data
+    setNavTitle(data.projName)
+
+    if (showSuccessToast) {
+      window.$toast('刷新成功')
+    }
+  }
+  finally {
+    loading.value = false
+  }
+}
+
+/**
  * 设置顶部导航标题。
  *
  * 当前页面的 VanNavBar 在 client/layout 中统一渲染，
@@ -85,63 +110,26 @@ function setNavTitle(title?: string) {
 }
 
 /**
- * 获取项目阶段列表。
- *
- * @param options.showSuccessToast 是否在请求成功后提示刷新成功。
- */
-async function getClientProjectStagesList(options: { showSuccessToast?: boolean } = {
-}) {
-  const currentProjId = projId.value
-
-  loading.value = true
-
-  try {
-    const data = await fetchClientProjectStagesList(currentProjId)
-
-    projectStageList.value = data
-    setNavTitle(data.projName)
-
-    if (options.showSuccessToast) {
-      window.$toast('刷新成功')
-    }
-  }
-  catch {
-    projectStageList.value = createEmptyProjectStagesData(currentProjId)
-    setNavTitle()
-  }
-  finally {
-    loading.value = false
-  }
-}
-
-/**
  * 下拉刷新。
  */
 function onRefresh() {
-  getClientProjectStagesList({
-    showSuccessToast: true,
-  })
+  getClientProjectStagesList(true)
 }
-
-/**
- * 项目切换时，重置页面状态并重新拉取数据。
- *
- * @param currentProjId 当前项目 ID。
- */
-function handleProjectChange(currentProjId: number) {
-  activeName.value = []
-  projectStageList.value = createEmptyProjectStagesData(currentProjId)
-  setNavTitle()
-  getClientProjectStagesList()
-}
-
-watch(projId, handleProjectChange, {
-  immediate: true,
-})
 
 onBeforeUnmount(() => {
   clearClientNavTitle()
 })
+onMounted(() => {
+  getClientProjectStagesList()
+})
+function handleGoCourseDetail(couId: number) {
+  router.push({
+    name: 'ClientCourseDetail',
+    params: {
+      couId,
+    },
+  })
+}
 
 </script>
 
@@ -240,7 +228,9 @@ onBeforeUnmount(() => {
 
           <span
             class="text-3.25 text-slate-500"
-          >共 {{ projectStageList.projectDirectory.length }} 个阶段</span>
+          >
+            共 {{ projectStageList.projectDirectory.length }} 个阶段
+          </span>
         </div>
 
         <van-collapse
@@ -298,6 +288,7 @@ onBeforeUnmount(() => {
                 v-for="course in item.stageCourse"
                 :key="course.couId"
                 class="mb-3 flex items-center gap-3 rounded-md border border-slate-100 bg-slate-50 px-3 py-3 last:mb-0"
+                @click="handleGoCourseDetail(course.couId)"
               >
                 <div
                   class="h-8 w-8 flex shrink-0 items-center justify-center rounded-md bg-white text-3.25 text-teal-700 font-700 shadow-sm"
@@ -353,19 +344,5 @@ onBeforeUnmount(() => {
 </template>
 
 <style lang="scss" scoped>
-.stage-collapse {
-  :deep(.van-collapse-item::after) {
-    display: none;
-  }
 
-  // :deep(.van-cell) {
-  //   min-height: 72px;
-  //   padding: 12px 14px;
-  // }
-
-  // :deep(.van-collapse-item__content) {
-  //   padding: 0 14px 14px;
-  //   background: #fff;
-  // }
-}
 </style>

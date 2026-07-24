@@ -54,7 +54,6 @@ function goToDetail(item: CourseItem) {
   <div
     class="flex flex-col"
   >
-    <ClientPageHeader />
 
     <section
       class="flex flex-col gap-4"

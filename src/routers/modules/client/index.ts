@@ -76,26 +76,26 @@ export const clientRoutes: AppRouteRecord = {
         title: '课程',
         keepAlive: false,
       },
-      children: [
-        {
-          path: 'list',
-          name: 'ClientCourseList',
-          component: '/client/course/list',
-          meta: {
-            title: '报名的课程',
-            keepAlive: false,
-          },
+      children: [{
+        path: 'detail/:couId',
+        name: 'ClientCourseDetail',
+        component: '/client/course/detail',
+        meta: {
+          title: '课程详情',
+          keepAlive: false,
         },
-        {
-          path: 'detail',
-          name: 'ClientCourseDetail',
-          component: '/client/course/detail',
-          meta: {
-            title: '课程详情',
-            keepAlive: false,
-          },
+      },
+
+      // ////////
+      {
+        path: 'list',
+        name: 'ClientCourseList',
+        component: '/client/course/list',
+        meta: {
+          title: '报名的课程',
+          keepAlive: false,
         },
-      ],
+      }],
     },
 
     {
