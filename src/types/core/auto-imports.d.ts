@@ -58,7 +58,6 @@ declare global {
   const effectScope: typeof import('vue').effectScope
   const emojo: typeof import('../../utils/ui/emojo').default
   const extendRef: typeof import('@vueuse/core').extendRef
-  const fetCourseDocumentFile: typeof import('../../apis/client/course/index').fetCourseDocumentFile
   const fetchAdminCourseAdd: typeof import('../../apis/admin/course/index').fetchAdminCourseAdd
   const fetchAdminCourseDelete: typeof import('../../apis/admin/course/index').fetchAdminCourseDelete
   const fetchAdminCourseList: typeof import('../../apis/admin/course/index').fetchAdminCourseList
@@ -121,7 +120,6 @@ declare global {
   const formatMenuTitle: typeof import('../../utils/router').formatMenuTitle
   const formatTimestampToChineseDate: typeof import('../../utils/time').formatTimestampToChineseDate
   const getActivePinia: typeof import('pinia').getActivePinia
-  const getCourseDocumentFile: typeof import('../../apis/client/course/index').getCourseDocumentFile
   const getCssVar: typeof import('../../utils/ui/colors').getCssVar
   const getCurrentInstance: typeof import('vue').getCurrentInstance
   const getCurrentScope: typeof import('vue').getCurrentScope
@@ -491,10 +489,14 @@ declare module 'vue' {
   interface ComponentCustomProperties {
     readonly ApiStatus: UnwrapRef<typeof import('../../apis/http/status')['ApiStatus']>
     readonly EffectScope: UnwrapRef<typeof import('vue')['EffectScope']>
+    readonly ElCheckbox: UnwrapRef<typeof import('element-plus/es')['ElCheckbox']>
+    readonly ElEmpty: UnwrapRef<typeof import('element-plus/es')['ElEmpty']>
     readonly ElLoading: UnwrapRef<typeof import('element-plus/es')['ElLoading']>
     readonly ElMessage: UnwrapRef<typeof import('element-plus/es')['ElMessage']>
     readonly ElMessageBox: UnwrapRef<typeof import('element-plus/es')['ElMessageBox']>
     readonly ElNotification: UnwrapRef<typeof import('element-plus/es')['ElNotification']>
+    readonly ElRadio: UnwrapRef<typeof import('element-plus/es')['ElRadio']>
+    readonly ElTag: UnwrapRef<typeof import('element-plus/es')['ElTag']>
     readonly HttpError: UnwrapRef<typeof import('../../apis/http/error')['HttpError']>
     readonly PasswordStrength: UnwrapRef<typeof import('../../utils/form/validator')['PasswordStrength']>
     readonly StorageConfig: UnwrapRef<typeof import('../../utils/storage/storage-config')['StorageConfig']>
