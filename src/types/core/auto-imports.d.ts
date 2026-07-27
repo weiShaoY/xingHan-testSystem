@@ -106,6 +106,8 @@ declare global {
   const fetchClientCourseDocumentFile: typeof import('../../apis/client/course/index').fetchClientCourseDocumentFile
   const fetchClientCourseDocumentInfo: typeof import('../../apis/client/course/index').fetchClientCourseDocumentInfo
   const fetchClientCourseOutlineList: typeof import('../../apis/client/course/index').fetchClientCourseOutlineList
+  const fetchClientCourseVideoFile: typeof import('../../apis/client/course/index').fetchClientCourseVideoFile
+  const fetchClientCourseVideoInfo: typeof import('../../apis/client/course/index').fetchClientCourseVideoInfo
   const fetchClientGetPublicKey: typeof import('../../apis/client/auth/index').fetchClientGetPublicKey
   const fetchClientGetUserInfo: typeof import('../../apis/client/auth/index').fetchClientGetUserInfo
   const fetchClientLogin: typeof import('../../apis/client/auth/index').fetchClientLogin
@@ -489,10 +491,14 @@ declare module 'vue' {
   interface ComponentCustomProperties {
     readonly ApiStatus: UnwrapRef<typeof import('../../apis/http/status')['ApiStatus']>
     readonly EffectScope: UnwrapRef<typeof import('vue')['EffectScope']>
+    readonly ElCheckbox: UnwrapRef<typeof import('element-plus/es')['ElCheckbox']>
+    readonly ElEmpty: UnwrapRef<typeof import('element-plus/es')['ElEmpty']>
     readonly ElLoading: UnwrapRef<typeof import('element-plus/es')['ElLoading']>
     readonly ElMessage: UnwrapRef<typeof import('element-plus/es')['ElMessage']>
     readonly ElMessageBox: UnwrapRef<typeof import('element-plus/es')['ElMessageBox']>
     readonly ElNotification: UnwrapRef<typeof import('element-plus/es')['ElNotification']>
+    readonly ElRadio: UnwrapRef<typeof import('element-plus/es')['ElRadio']>
+    readonly ElTag: UnwrapRef<typeof import('element-plus/es')['ElTag']>
     readonly HttpError: UnwrapRef<typeof import('../../apis/http/error')['HttpError']>
     readonly PasswordStrength: UnwrapRef<typeof import('../../utils/form/validator')['PasswordStrength']>
     readonly StorageConfig: UnwrapRef<typeof import('../../utils/storage/storage-config')['StorageConfig']>
@@ -583,6 +589,8 @@ declare module 'vue' {
     readonly fetchClientCourseDocumentFile: UnwrapRef<typeof import('../../apis/client/course/index')['fetchClientCourseDocumentFile']>
     readonly fetchClientCourseDocumentInfo: UnwrapRef<typeof import('../../apis/client/course/index')['fetchClientCourseDocumentInfo']>
     readonly fetchClientCourseOutlineList: UnwrapRef<typeof import('../../apis/client/course/index')['fetchClientCourseOutlineList']>
+    readonly fetchClientCourseVideoFile: UnwrapRef<typeof import('../../apis/client/course/index')['fetchClientCourseVideoFile']>
+    readonly fetchClientCourseVideoInfo: UnwrapRef<typeof import('../../apis/client/course/index')['fetchClientCourseVideoInfo']>
     readonly fetchClientGetPublicKey: UnwrapRef<typeof import('../../apis/client/auth/index')['fetchClientGetPublicKey']>
     readonly fetchClientGetUserInfo: UnwrapRef<typeof import('../../apis/client/auth/index')['fetchClientGetUserInfo']>
     readonly fetchClientLogin: UnwrapRef<typeof import('../../apis/client/auth/index')['fetchClientLogin']>

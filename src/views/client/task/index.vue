@@ -215,7 +215,6 @@ function goToProject(item: ClientApi.Task.TaskListItem) {
     <van-tabbar
       v-model="active"
       placeholder
-      safe-area-inset-bottom
       @change="handleChange"
     >
       <van-tabbar-item

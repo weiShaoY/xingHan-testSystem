@@ -12,11 +12,26 @@ const props = withDefaults(defineProps<Props>(), {
   playerId: '',
   videoUrl: '',
   posterUrl: '',
+  startTime: 0,
   autoplay: false,
   volume: 1,
   loop: false,
   muted: false,
 })
+
+const emit = defineEmits<{
+  ready: [player: Player]
+  play: [player: Player]
+  pause: [player: Player]
+  ended: [player: Player]
+  error: [error: unknown]
+  timeupdate: [
+    payload: {
+      currentTime: number
+      duration: number
+    },
+  ]
+}>()
 
 type Props = {
 
@@ -28,6 +43,9 @@ type Props = {
 
   /** 视频封面图URL */
   posterUrl?: string
+
+  /** 初始播放时间，单位秒 */
+  startTime?: number
 
   /** 是否自动播放 */
   autoplay?: boolean
@@ -48,7 +66,9 @@ type Props = {
   commonStyle?: VideoPlayerStyle
 }
 
-const localPlayerId = `art-video-player-${Math.random().toString(36).slice(2, 10)}`
+const localPlayerId = `art-video-player-${Math.random()
+  .toString(36)
+  .slice(2, 10)}`
 
 const resolvedPlayerId = computed(() => props.playerId || localPlayerId)
 
@@ -140,6 +160,9 @@ function initPlayer() {
     /** 是否静音 */
     muted: props.muted,
 
+    /** 初始播放时间 */
+    currentTime: props.startTime,
+
     /** 自定义播放器样式 */
     commonStyle: {
       ...defaultStyle,
@@ -147,20 +170,54 @@ function initPlayer() {
     },
   })
 
+  playerInstance.value.on('ready', () => {
+    emit('ready', playerInstance.value as Player)
+  })
+
+  playerInstance.value.on('loadedmetadata', () => {
+    seekToStartTime()
+  })
+
   // 播放事件监听器
   playerInstance.value.on('play', () => {
-    console.log('Video is playing')
+    emit('play', playerInstance.value as Player)
   })
 
   // 暂停事件监听器
   playerInstance.value.on('pause', () => {
-    console.log('Video is paused')
+    emit('pause', playerInstance.value as Player)
+  })
+
+  playerInstance.value.on('ended', () => {
+    emit('ended', playerInstance.value as Player)
+  })
+
+  playerInstance.value.on('timeupdate', () => {
+    if (!playerInstance.value) {
+      return
+    }
+
+    emit('timeupdate', {
+      currentTime: playerInstance.value.currentTime || 0,
+      duration: playerInstance.value.duration || 0,
+    })
   })
 
   // 错误事件监听器
   playerInstance.value.on('error', (error) => {
-    console.error('Error occurred:', error)
+    emit('error', error)
   })
+}
+
+/**
+ * 跳转到初始播放位置。
+ */
+function seekToStartTime() {
+  if (!playerInstance.value || !props.startTime) {
+    return
+  }
+
+  playerInstance.value.currentTime = props.startTime
 }
 
 // 组件挂载时初始化播放器

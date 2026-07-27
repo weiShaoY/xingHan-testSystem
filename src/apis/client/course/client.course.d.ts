@@ -59,4 +59,56 @@ export namespace Course {
     nodes: NodeBase[]
 
   }
+
+  /**
+   *  客户端视频信息响应
+   */
+  type CourseVideoInfoResponse = {
+
+    /**
+     * 附件id
+     */
+    accessoryId: number
+
+    /**
+     * 课程id
+     */
+    couId: number
+
+    /**
+     * 课程名称
+     */
+    couName: string
+
+    /**
+     * 当前小节ID
+     */
+    currentOlId: number
+
+    /**
+     * 下一篇小节ID
+     */
+    nextOlId: number
+
+    /**
+     * 上一小节ID
+     */
+    previousOlId: number
+
+    /**
+     * 学习数量
+     */
+    studyCount: number
+
+    /**
+     *  当前学习进度秒数
+     */
+    videoStudyTime: number
+
+    /**
+     * 当前课程目录
+     */
+    nodes: NodeBase[]
+
+  }
 }

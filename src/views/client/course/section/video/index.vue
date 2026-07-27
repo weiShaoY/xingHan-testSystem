@@ -1,589 +1,240 @@
-<!------------------------------------  创建视频小节  ------------------------------------------------->
-<script lang="ts" setup>
-import type { ColumnOption } from '@/types'
+<script setup lang="ts">
+import { showFailToast } from 'vant'
 
-import { h } from 'vue'
+import { getClientSectionRoute } from '@/config/course'
 
-import ArtPreviewImage from '@/components/core/media/art-preview-image/index.vue'
-
-import { useTable } from '@/hooks'
+import { useClientNavTitle } from '@/hooks/core/useClientNavTitle'
 
 const route = useRoute()
 
 const router = useRouter()
 
-/**
- * 工作标签页 Store。
- */
-const workTabStore = useWorkTabStore()
+const loading = ref(false)
+
+const loadError = ref('')
+
+const videoUrl = ref('')
+
+const currentTime = ref(0)
+
+const duration = ref(0)
+
+const { setClientNavTitle, clearClientNavTitle } = useClientNavTitle()
+
+const DEFAULT_NAV_TITLE = '视频标题'
+
+const courseVideoInfo = ref<ClientApi.Course.CourseVideoInfoResponse>(createDefaultCourseVideoInfo())
 
 /**
- * 当前课程 ID
+ * 是否存在可播放的视频地址。
  */
-const couId = computed(() => {
-  return Number(route.params.couId || 0)
-})
+const hasVideo = computed(() => Boolean(videoUrl.value))
 
 /**
- * 当前编辑的小节 ID
+ * 当前小节 ID。
  */
 const olId = computed(() => {
   return Number(route.params.olId || 0)
 })
 
-/**
- * 新增小节时所属的章节 ID；为空时表示课程直属小节。
- */
-const olPID = computed(() => {
-  return Number(route.params.olPID || 0)
-})
+let requestSeq = 0
 
-/**
- * 是否为编辑模式
- */
-const isEditMode = computed(() => {
-  return Boolean(olId.value)
-})
-
-/**
- * 页面标题
- */
-const pageTitle = computed(() => {
-  return isEditMode.value ? '编辑视频' : '添加视频'
-})
-
-/** 页面详情加载状态。 */
-const pageLoading = ref(false)
-
-/**
- * 是否显示文件选择弹窗
- */
-const isShowFileSelectDialog = ref(false)
-
-/**
- * 是否显示上传区域
- */
-const isShowUploadArea = ref(!isEditMode.value)
-
-/** 视频列表搜索条件。 */
-const searchFormState = ref({
-  name: '',
-  type: 'video' as const,
-})
-
-/**
- * 视频选择表格。
- */
-const {
-  columns,
-  data,
-  loading,
-  pagination,
-  getData,
-  replaceSearchParams,
-  handleSizeChange,
-  handleCurrentChange,
-} = useTable({
-  core: {
-    apiFn: fetchAdminFileList,
-    apiParams: {
-      name: '',
-      type: 'video',
-      pageSize: 10,
-      currentPage: 1,
-    },
-    immediate: false,
-    columnsFactory: (): ColumnOption<FileApi.FileListItem>[] => [
-      {
-        label: '文件名称',
-        prop: 'asName',
-        minWidth: 460,
-        formatter: (row) => {
-          return h('div', {
-            class: 'min-w-0 flex items-center gap-2',
-          }, [
-            h(ArtPreviewImage, {
-              path: row.asThumbnailPath,
-              preview: false,
-              class: 'h-20 w-15 shrink-0 cursor-pointer',
-              onClick: () => playVideo(row),
-            }),
-            h('div', {
-              class: 'truncate text-sm font-medium text-g-900',
-            }, row.asName || '-'),
-          ])
-        },
-      },
-      {
-        label: '上传时间',
-        prop: 'createTime',
-        minWidth: 140,
-        sortable: true,
-        formatter: row => formatDateTime(row.createTime),
-      },
-      {
-        label: '文件大小',
-        prop: 'asSize',
-        minWidth: 140,
-        sortable: true,
-        formatter: row => fileSizeFormat(row.asSize),
-      },
-    ],
-  },
-  hooks: {
-    onError: () => {
-      ElNotification.error('获取视频列表失败')
-    },
-  },
-})
-
-/**
- * 表格当前选中的文件。只有点击“选择视频”后才会写入 formData。
- */
-const selectedFile = ref<FileApi.FileListItem>()
-
-/**
- * 小节表单数据
- */
-const formData = ref<AdminApi.Course.CourseOutlineSectionVideoEditor>(createInitialFormData())
-
-/**
- * 创建新增或编辑模式下的小节初始表单
- */
-function createInitialFormData(): AdminApi.Course.CourseOutlineSectionVideoEditor {
-  const baseFormData = {
-    couId: couId.value,
-    olName: '',
-    olIntro: '',
-    asId: 0,
-    olIsAccessory: 1,
-  } as const
-
-  if (isEditMode.value) {
-    return {
-      ...baseFormData,
-      olId: olId.value,
-    }
-  }
-
-  return {
-    ...baseFormData,
-    olPID: olPID.value || 0,
-    olLevel: olPID.value ? 2 : 1,
-  }
-}
-
-/**
- * 清空表格当前选择
- */
-function clearSelectedFile() {
-  selectedFile.value = undefined
-}
-
-/** 翻页或切换每页条数时清空上一页的单选文件。 */
 watch(
-  () => [pagination.current, pagination.size],
-  clearSelectedFile,
+  olId,
+  () => {
+    getCourseVideoInfo()
+  },
+  {
+    immediate: true,
+  },
 )
 
-/**
- * 获取小节详情
- */
-async function getSectionDetail() {
-  if (!olId.value) {
-    return
-  }
-
-  pageLoading.value = true
-
-  try {
-    const section = await fetchAdminCourseOutlineSectionVideoDetail(olId.value)
-
-    formData.value = {
-      ...formData.value,
-      ...section,
-    }
-    selectedFile.value = section.accessory
-  }
-  catch {
-    ElNotification.error('获取小节详情失败')
-  }
-  finally {
-    pageLoading.value = false
-  }
-}
-
-/**
- * 打开表格弹窗
- */
-function handleOpenTableDialog() {
-  isShowFileSelectDialog.value = true
-  replaceSearchParams(searchFormState.value)
-  void getData()
-}
-
-/**
- * 选择表格行
- */
-function handleTableCurrentChange(row?: FileApi.FileListItem) {
-  selectedFile.value = row
-}
-
-/**
- * 确认选择
- */
-function confirmSelectFile() {
-  if (!selectedFile.value) {
-    return
-  }
-
-  formData.value = {
-    ...formData.value,
-    asId: selectedFile.value.asId,
-  }
-
-  isShowFileSelectDialog.value = false
-  isShowUploadArea.value = false
-}
-
-/**
- * 更换文件
- */
-function handleReplaceFileClick() {
-  isShowUploadArea.value = true
-  clearSelectedFile()
-  isShowFileSelectDialog.value = true
-  replaceSearchParams(searchFormState.value)
-  void getData()
-}
-
-/**
- * 搜索
- */
-function handleSearch() {
-  clearSelectedFile()
-  replaceSearchParams(searchFormState.value)
-  void getData()
-}
-
-/**
- * 提交小节
- */
-async function handleSubmit() {
-  if (!formData.value.asId) {
-    ElNotification.warning('请先选择文件')
-    return
-  }
-
-  try {
-    if (isEditMode.value) {
-      await fetchAdminCourseOutlineSectionVideoUpdate(formData.value)
-      ElNotification.success('小节更新成功')
-    }
-    else {
-      await fetchAdminCourseOutlineSectionVideoAdd(formData.value)
-      ElNotification.success('小节创建成功')
-    }
-
-    // 关闭当前标签页
-    workTabStore.removeTab(route.path)
-
-    backToCourseOutline()
-  }
-  catch {
-    ElNotification.error(isEditMode.value ? '小节更新失败' : '小节新增失败')
-  }
-}
-
-onMounted(() => {
-  if (isEditMode.value) {
-    void getSectionDetail()
-  }
+onBeforeUnmount(() => {
+  revokeVideoUrl()
+  clearClientNavTitle()
 })
 
 /**
- * 是否显示播放弹窗
+ * 获取小节视频信息。
  */
-const isShowVideoPlayDialog = ref(false)
+async function getCourseVideoInfo() {
+  const currentRequestSeq = ++requestSeq
 
-/**
- * 视频播放地址
- */
-const videoPlayUrl = ref('')
+  loading.value = true
+  loadError.value = ''
+  currentTime.value = 0
+  duration.value = 0
+  revokeVideoUrl()
 
-/**
- * 重置视频播放器
- */
-function resetVideoPlayer() {
-  isShowVideoPlayDialog.value = false
-
-  if (videoPlayUrl.value) {
-    URL.revokeObjectURL(videoPlayUrl.value)
-    videoPlayUrl.value = ''
-  }
-}
-
-/**
- * 播放视频
- */
-async function playVideo(item: FileApi.FileListItem) {
   try {
-    resetVideoPlayer()
-    videoPlayUrl.value = URL.createObjectURL(await fetchAdminFileAttachment(item.asId))
-    isShowVideoPlayDialog.value = true
+    courseVideoInfo.value = await fetchClientCourseVideoInfo(olId.value)
+    setNavTitle(courseVideoInfo.value.couName)
+
+    await getCourseVideoFile(currentRequestSeq)
   }
-  catch {
-    ElNotification.error('播放视频失败')
+  catch (error) {
+    console.error(error)
+    loadError.value = '视频加载失败，请稍后重试'
+    showFailToast(loadError.value)
+  }
+  finally {
+    if (currentRequestSeq === requestSeq) {
+      loading.value = false
+    }
   }
 }
 
 /**
- * 返回课程大纲页。
+ * 获取小节视频文件流。
+ *
+ * @param currentRequestSeq 当前请求序号，用于避免快速切换路由时旧响应覆盖新视频。
  */
-function backToCourseOutline() {
-  router.push({
-    name: 'AdminCourseOutline',
-    params: {
-      couId: couId.value,
-    },
-  })
+async function getCourseVideoFile(currentRequestSeq: number) {
+  if (!courseVideoInfo.value.accessoryId) {
+    loadError.value = '暂无可播放的视频'
+
+    return
+  }
+
+  const file = await fetchClientCourseVideoFile(courseVideoInfo.value.accessoryId)
+
+  if (currentRequestSeq !== requestSeq) {
+    return
+  }
+
+  setVideoUrl(file)
+}
+
+/**
+ * 设置视频预览地址。
+ *
+ * 接口返回的是 Blob 文件流，播放器需要可访问的 URL，
+ * 所以这里通过 URL.createObjectURL 转成本地临时地址。
+ *
+ * @param file 视频文件流。
+ */
+function setVideoUrl(file: Blob) {
+  revokeVideoUrl()
+  videoUrl.value = URL.createObjectURL(file)
+}
+
+/**
+ * 释放当前视频临时地址。
+ */
+function revokeVideoUrl() {
+  if (!videoUrl.value) { return }
+
+  URL.revokeObjectURL(videoUrl.value)
+  videoUrl.value = ''
+}
+
+/**
+ * 设置顶部导航标题。
+ *
+ * 当前页面的 VanNavBar 在 client/layout 中统一渲染，
+ * 这里通过响应式的客户端导航标题覆盖默认 route.meta.title。
+ */
+function setNavTitle(title?: string) {
+  setClientNavTitle(title?.trim() || DEFAULT_NAV_TITLE)
+}
+
+/**
+ * 记录播放器时间变化。
+ *
+ * @param payload 播放器时间信息。
+ */
+function handleVideoTimeUpdate(payload: { currentTime: number, duration: number }) {
+  currentTime.value = payload.currentTime
+  duration.value = payload.duration
+}
+
+/**
+ * 处理播放器错误。
+ */
+function handleVideoError() {
+  loadError.value = '视频播放失败，请刷新后重试'
+  showFailToast(loadError.value)
+}
+
+/**
+ * 创建默认视频信息。
+ */
+function createDefaultCourseVideoInfo(): ClientApi.Course.CourseVideoInfoResponse {
+  return {
+    accessoryId: 0,
+    couId: 0,
+    couName: '',
+    currentOlId: 0,
+    nextOlId: 0,
+    videoStudyTime: 0,
+    previousOlId: 0,
+    studyCount: 0,
+    nodes: [],
+  }
 }
 </script>
 
 <template>
   <div
-    v-loading="pageLoading"
-    class="mx-auto mb-10 flex w-full max-w-7xl flex-col gap-4 px-10 max-lg:px-6 max-sm:px-4"
+    class="h-full min-h-0 flex flex-1 flex-col gap-4 overflow-hidden pb-4"
   >
-    <el-dialog
-      v-if="isShowVideoPlayDialog && videoPlayUrl"
-      v-model="isShowVideoPlayDialog"
-      title="播放视频"
-      width="50%"
-      @close="resetVideoPlayer"
+    <section
+      class="min-h-0 flex flex-1 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_10px_24px_rgb(15_23_42/6%)]"
     >
-      <ArtVideoPlayer
-        player-id="file-video-player"
-        :video-url="videoPlayUrl"
-        :autoplay="true"
-        :volume="0.5"
-      />
 
-    </el-dialog>
-
-    <el-dialog
-      v-if="isShowFileSelectDialog"
-      v-model="isShowFileSelectDialog"
-      title="选择视频"
-      width="50%"
-      :show-close="false"
-    >
       <div
-        class="flex justify-between items-center"
+        class="min-h-0 flex flex-1 items-center justify-center overflow-hidden bg-slate-950 p-3"
       >
-        <el-input
-          v-model.trim="searchFormState.name"
-          class="max-w-110 max-md:max-w-none max-sm:w-full"
-          placeholder="请输入文件名称"
-          clearable
-          @keyup.enter="handleSearch"
-          @clear="handleSearch"
+        <div
+          v-if="loading"
+          class="h-full min-h-80 w-full flex flex-col items-center justify-center gap-3 rounded-xl bg-slate-900 text-3.5 text-white/70"
         >
-          <template
-            #append
-          >
-            <ArtSvgIcon
-              icon="tdesign:search"
-            />
-          </template>
-        </el-input>
+          <van-loading
+            color="#ffffff"
+          />
+          视频加载中...
+        </div>
 
         <div
-          class="flex gap-2 items-center"
+          v-else-if="loadError || !hasVideo"
+          class="h-full min-h-80 w-full flex flex-col items-center justify-center gap-4 rounded-xl bg-slate-900 px-6 text-center text-white/70"
         >
-          <ArtButton
-            @click="$router.push({ name: 'AdminFileVideo' })"
-          >
-            去上传视频
-          </ArtButton>
+          <van-icon
+            name="video-o"
+            size="42"
+            class="text-white/40"
+          />
 
-          <ArtButton
-            :disabled="!selectedFile"
+          <div
+            class="text-3.5"
+          >
+            {{ loadError || '暂无视频内容' }}
+          </div>
+
+          <van-button
+            v-if="loadError"
+            size="small"
             type="primary"
-            @click="confirmSelectFile"
+            @click="getCourseVideoInfo"
           >
-            选择视频
-          </ArtButton>
+            重新加载
+          </van-button>
         </div>
+
+        <ArtVideoPlayer
+          v-else
+          :key="videoUrl"
+          player-id="client-course-video-player"
+          class="w-full overflow-hidden rounded-xl bg-black"
+          :video-url="videoUrl"
+          :start-time="courseVideoInfo.videoStudyTime"
+          :autoplay="false"
+          :volume="0.7"
+          :playback-rates="[0.75, 1, 1.25, 1.5, 2]"
+          @timeupdate="handleVideoTimeUpdate"
+          @error="handleVideoError"
+        />
       </div>
-
-      <!-- 视频表格 -->
-      <ArtTable
-        row-key="asId"
-        :loading="loading"
-        :data="data"
-        :columns="columns"
-        :pagination="pagination"
-        highlight-current-row
-        @current-change="handleTableCurrentChange"
-        @pagination:size-change="handleSizeChange"
-        @pagination:current-change="handleCurrentChange"
-      />
-    </el-dialog>
-
-    <AdminPageHeader
-      :title="pageTitle"
-      @back="backToCourseOutline"
-    >
-      <template
-        #extra
-      >
-        <ArtButton
-          v-if="!isShowUploadArea"
-          type="warning"
-          class="mr-2"
-          @click="handleReplaceFileClick"
-        >
-          更换视频
-        </ArtButton>
-
-        <ArtButton
-          type="primary"
-          @click="handleSubmit"
-        >
-          完成
-        </ArtButton>
-      </template>
-    </AdminPageHeader>
-
-    <!-- 视频选择区域 -->
-    <div
-      v-if="isShowUploadArea"
-      class="art-card flex flex-col items-center justify-center"
-    >
-      <ArtButton
-        icon="ri:upload-line"
-        class="text-2xl w-20 h-20"
-        @click="handleOpenTableDialog"
-      />
-
-      <div
-        class="my-5"
-      >
-        选择一个视频
-      </div>
-
-      <div
-        class="text-sm text-g-600"
-      >
-        <p>
-          1.点击上方图标，选取转码、审核完成的视频;
-        </p>
-
-        <p>
-          2.视频支持mp4格式;
-        </p>
-      </div>
-    </div>
-
-    <!-- 视频编辑区 -->
-    <div
-      v-else
-      class="art-card flex items-center justify-between gap-20"
-    >
-      <aside
-        v-if="selectedFile"
-      >
-
-        <div
-          class="space-y-4 text-sm text-g-600"
-        >
-          <div
-            class="text-lg font-semibold text-g-900"
-          >
-            视频信息
-          </div>
-
-          <div
-            class=""
-          >
-            <ArtPreviewImage
-              :path="selectedFile?.asThumbnailPath"
-              class="w-15 h-20"
-              :preview="false"
-              @click="playVideo(selectedFile)"
-            />
-          </div>
-
-          <div>
-            <div>
-              视频名称
-            </div>
-
-            <div>
-              {{ selectedFile?.asName || '-' }}
-            </div>
-          </div>
-
-          <div>
-            <div>
-              上传时间：
-            </div>
-
-            <div>
-              {{ formatDateTime(selectedFile?.createTime) || '' }}
-            </div>
-          </div>
-
-          <div>
-            <div>
-              视频大小
-            </div>
-
-            <div>
-              {{ fileSizeFormat(selectedFile?.asSize || 0) }}
-            </div>
-          </div>
-        </div>
-      </aside>
-
-      <!-- 右侧 -->
-      <div
-        class="flex-1"
-      >
-        <el-form
-          :model="formData"
-          label-position="top"
-          class="min-w-0"
-        >
-          <el-form-item
-            label="节点名称"
-            required
-          >
-            <el-input
-              v-model="formData.olName"
-              placeholder="请输入节点名称"
-            />
-          </el-form-item>
-
-          <el-form-item
-            label="节点描述"
-            required
-          >
-            <el-input
-              v-model="formData.olIntro"
-              placeholder="请输入节点描述"
-              type="textarea"
-            />
-          </el-form-item>
-        </el-form>
-      </div>
-
-    </div>
-
+    </section>
   </div>
 </template>
-
-<style lang="scss" scoped>
-
-</style>

@@ -42,3 +42,31 @@ export function fetchClientCourseDocumentFile(asId: number) {
     },
   })
 }
+
+/**
+ *  获取客户端 视频信息
+ */
+export function fetchClientCourseVideoInfo(olId: number) {
+  return request.get<ClientApi.Course.CourseVideoInfoResponse>({
+    url: '/client/video/getVideoInfo',
+    authPath: '/client',
+    params: {
+      olId,
+    },
+  })
+}
+
+/**
+ * 获取客户端 视频文件流
+ * @param asId 附件ID
+ */
+export function fetchClientCourseVideoFile(asId: number) {
+  return request.get<Blob>({
+    url: '/client/video/getVideo',
+    authPath: '/client',
+    responseType: 'blob',
+    params: {
+      asId,
+    },
+  })
+}
