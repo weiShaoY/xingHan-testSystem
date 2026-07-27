@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useClientNavTitle } from '@/hooks/core/useClientNavTitle'
+
 import DocumentPdfViewer from './components/DocumentPdfViewer.vue'
 
 const route = useRoute()
@@ -10,6 +12,10 @@ const pdfUrl = ref('')
 const totalPages = ref(0)
 
 const currentPage = ref(1)
+
+const { setClientNavTitle, clearClientNavTitle } = useClientNavTitle()
+
+const DEFAULT_NAV_TITLE = '文档标题'
 
 /**
  * 当前编辑的小节 ID
@@ -43,6 +49,8 @@ async function getCourseDocumentInfo() {
   loading.value = true
   try {
     courseDocumentInfo.value = await fetchClientCourseDocumentInfo(olId.value)
+    setNavTitle(courseDocumentInfo.value.couName)
+
     await getCourseDocumentFile()
   }
   catch (error) {
@@ -103,11 +111,24 @@ onMounted(() => {
   getCourseDocumentInfo()
 })
 
+/**
+ * 设置顶部导航标题。
+ *
+ * 当前页面的 VanNavBar 在 client/layout 中统一渲染，
+ * 这里通过响应式的客户端导航标题覆盖默认 route.meta.title。
+ */
+function setNavTitle(title?: string) {
+  setClientNavTitle(title?.trim() || DEFAULT_NAV_TITLE)
+}
+
+onBeforeUnmount(() => {
+  clearClientNavTitle()
+})
 </script>
 
 <template>
   <div
-    class="min-h-full flex flex-col gap-4 pb-4"
+    class="h-full min-h-0 flex flex-1 flex-col gap-4 overflow-hidden pb-4"
   >
 
     <DocumentPdfViewer
