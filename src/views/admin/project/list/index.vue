@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 
-import AllocateProjectDialog from './AllocateProjectDialog.vue'
+import AminAssignUserDialog from '@/components/admin/admin-assign-user-dialog/index.vue'
 
 import CreateProjectDialog from './CreateProjectDialog.vue'
 
@@ -225,7 +225,8 @@ async function deleteProject(item: AdminApi.Project.ProjectListItem) {
   <div
     class="relative mx-auto max-w-7xl px-10 max-lg:px-6 max-sm:px-4"
   >
-    <AllocateProjectDialog
+
+    <AminAssignUserDialog
       v-if="isShowAllocateDialog"
       v-model="isShowAllocateDialog"
     />

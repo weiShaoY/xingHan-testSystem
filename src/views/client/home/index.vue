@@ -38,13 +38,15 @@ const navList: NavItem[] = [
     accentClass: 'bg-teal-500 shadow-[0_10px_18px_rgb(20_184_166/28%)]',
     cardClass: 'border-teal-100 bg-linear-to-b from-teal-50 to-white',
   },
-  {
-    name: '报名课程',
-    path: '/client/course/list',
-    icon: 'tdesign:course',
-    accentClass: 'bg-rose-400 shadow-[0_10px_18px_rgb(251_113_133/28%)]',
-    cardClass: 'border-rose-100 bg-linear-to-b from-rose-50 to-white',
-  },
+
+  // {
+  //   name: '报名课程',
+  //   path: '/client/course/list',
+  //   icon: 'tdesign:course',
+  //   accentClass: 'bg-rose-400 shadow-[0_10px_18px_rgb(251_113_133/28%)]',
+  //   cardClass: 'border-rose-100 bg-linear-to-b from-rose-50 to-white',
+  // },
+
   {
     name: '学习历史',
     path: '/client/history/list',
@@ -52,13 +54,14 @@ const navList: NavItem[] = [
     accentClass: 'bg-amber-500 shadow-[0_10px_18px_rgb(245_158_11/28%)]',
     cardClass: 'border-amber-100 bg-linear-to-b from-amber-50 to-white',
   },
-  {
-    name: '个人主页',
-    path: '/client/user-center',
-    icon: 'tdesign:architecture-hui-style',
-    accentClass: 'bg-orange-500 shadow-[0_10px_18px_rgb(249_115_22/28%)]',
-    cardClass: 'border-orange-100 bg-linear-to-b from-orange-50 to-white',
-  },
+
+  // {
+  //   name: '个人主页',
+  //   path: '/client/user-center',
+  //   icon: 'tdesign:architecture-hui-style',
+  //   accentClass: 'bg-orange-500 shadow-[0_10px_18px_rgb(249_115_22/28%)]',
+  //   cardClass: 'border-orange-100 bg-linear-to-b from-orange-50 to-white',
+  // },
 ]
 
 const recommendList: RecommendCourse[] = [
