@@ -88,6 +88,8 @@ declare global {
   const fetchAdminFileList: typeof import('../../apis/file/index').fetchAdminFileList
   const fetchAdminFileRecover: typeof import('../../apis/file/index').fetchAdminFileRecover
   const fetchAdminFileRecyclingList: typeof import('../../apis/file/index').fetchAdminFileRecyclingList
+  const fetchAdminGetOrganizationTree: typeof import('../../apis/admin/organization/index').fetchAdminGetOrganizationTree
+  const fetchAdminGetOrganizationTreeWithAllUsers: typeof import('../../apis/admin/organization/index').fetchAdminGetOrganizationTreeWithAllUsers
   const fetchAdminGetPublicKey: typeof import('../../apis/admin/auth/index').fetchAdminGetPublicKey
   const fetchAdminGetUserInfo: typeof import('../../apis/admin/auth/index').fetchAdminGetUserInfo
   const fetchAdminLogin: typeof import('../../apis/admin/auth/index').fetchAdminLogin
@@ -567,6 +569,7 @@ declare module 'vue' {
     readonly fetchAdminFileList: UnwrapRef<typeof import('../../apis/file/index')['fetchAdminFileList']>
     readonly fetchAdminFileRecover: UnwrapRef<typeof import('../../apis/file/index')['fetchAdminFileRecover']>
     readonly fetchAdminFileRecyclingList: UnwrapRef<typeof import('../../apis/file/index')['fetchAdminFileRecyclingList']>
+    readonly fetchAdminGetOrganizationTreeWithAllUsers: UnwrapRef<typeof import('../../apis/admin/organization/index')['fetchAdminGetOrganizationTreeWithAllUsers']>
     readonly fetchAdminGetPublicKey: UnwrapRef<typeof import('../../apis/admin/auth/index')['fetchAdminGetPublicKey']>
     readonly fetchAdminGetUserInfo: UnwrapRef<typeof import('../../apis/admin/auth/index')['fetchAdminGetUserInfo']>
     readonly fetchAdminLogin: UnwrapRef<typeof import('../../apis/admin/auth/index')['fetchAdminLogin']>

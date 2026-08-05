@@ -2,6 +2,8 @@ import { Auth as AuthNamespace } from './auth/admin.auth'
 
 import { Course as CourseNamespace } from './course/admin.course'
 
+import { organization as OrganizationNamespace } from './organization/admin.organization'
+
 import { Project as ProjectNamespace } from './project/admin.project.d'
 
 import { Question as QuestionNamespace } from './question/admin.question'
@@ -12,5 +14,6 @@ declare global {
     export import Course = CourseNamespace
     export import Project = ProjectNamespace
     export import Question = QuestionNamespace
+    export import Organization = OrganizationNamespace
   }
 }
