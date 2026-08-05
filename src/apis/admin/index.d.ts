@@ -2,7 +2,7 @@ import { Auth as AuthNamespace } from './auth/admin.auth'
 
 import { Course as CourseNamespace } from './course/admin.course'
 
-import { organization as OrganizationNamespace } from './organization/admin.organization'
+import { Organization as OrganizationNamespace } from './organization/admin.organization'
 
 import { Project as ProjectNamespace } from './project/admin.project.d'
 
