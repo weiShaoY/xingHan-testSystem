@@ -65,14 +65,6 @@ function handleCurrentChange(currentPage: number) {
   getProjectList()
 }
 
-/**
- * 打开分配弹窗
- */
-function openAllocateProjectDialog(item: AdminApi.Project.ProjectListItem) {
-  console.log('🚀 ~ file: index.vue:83 ~ item:', item)
-  isShowAllocateDialog.value = true
-}
-
 const router = useRouter()
 
 /**
@@ -219,16 +211,53 @@ async function deleteProject(item: AdminApi.Project.ProjectListItem) {
   }
 }
 
+const assignmentCreateAssignmentRequest = ref<AdminApi.Organization.AssignmentCreateAssignmentRequest>({
+  targetId: 0,
+  targetName: '',
+  targetType: 1,
+  recipients: [],
+})
+
+/**
+ * 打开分配弹窗
+ */
+function openAllocateDialog(item: AdminApi.Project.ProjectListItem) {
+  console.log('🚀 ~ file: index.vue:83 ~ item:', item)
+  assignmentCreateAssignmentRequest.value = {
+    targetId: item.projId,
+    targetName: item.projName,
+    targetType: 1,
+    recipients: [],
+  }
+  isShowAllocateDialog.value = true
+}
+
+/**
+ * 分配用户
+ */
+async function allocateUser(organizationTree: AdminApi.Organization.OrganizationTreeWithAllUsersResponse) {
+  try {
+    assignmentCreateAssignmentRequest.value.recipients = organizationTree
+
+    await fetchAdminAssignmentCreateAssignment(assignmentCreateAssignmentRequest.value)
+
+    ElNotification.success('分配成功')
+  }
+  catch {
+    ElNotification.error('分配失败')
+  }
+}
 </script>
 
 <template>
   <div
     class="relative mx-auto max-w-7xl px-10 max-lg:px-6 max-sm:px-4"
   >
-
+    <!-- 分配用户弹窗 -->
     <AminAssignUserDialog
       v-if="isShowAllocateDialog"
       v-model="isShowAllocateDialog"
+      @confirm="allocateUser"
     />
 
     <CreateProjectDialog
@@ -378,7 +407,7 @@ async function deleteProject(item: AdminApi.Project.ProjectListItem) {
 
               <ArtButton
                 type="allocate"
-                @click="openAllocateProjectDialog(item)"
+                @click="openAllocateDialog(item)"
               />
             </div>
           </div>

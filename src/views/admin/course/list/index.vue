@@ -1,7 +1,7 @@
 <!------  2026-04-15---16:08---星期三  ------>
 <!------------------------------------    ------------------------------------------------->
 <script lang="ts" setup>
-import AllocateCourseDialog from './AllocateCourseDialog.vue'
+import AminAssignUserDialog from '@/components/admin/admin-assign-user-dialog/index.vue'
 
 /**
  * 分页条数选项。
@@ -24,9 +24,9 @@ const workTabStore = useWorkTabStore()
 const loading = ref(false)
 
 /**
- * 分配学习任务弹窗显示状态。
+ * 是否显示分配弹窗
  */
-const isShowAllocateCourseDialog = ref(false)
+const isShowAllocateDialog = ref(false)
 
 /**
  * 列表查询参数。
@@ -96,14 +96,6 @@ function handleSizeChange(pageSize: number) {
 function handleCurrentChange(currentPage: number) {
   params.currentPage = currentPage
   getCourseList()
-}
-
-/**
- * 打开分配学习任务弹窗。
- */
-function openAllocateCourseDialog(item: AdminApi.Course.CourseListItem) {
-  console.log('🚀 ~ file: index.vue:114 ~ item:', item)
-  isShowAllocateCourseDialog.value = true
 }
 
 /**
@@ -209,16 +201,54 @@ async function deleteCourse(item: AdminApi.Course.CourseListItem) {
 }
 
 getCourseList()
+
+const assignmentCreateAssignmentRequest = ref<AdminApi.Organization.AssignmentCreateAssignmentRequest>({
+  targetId: 0,
+  targetName: '',
+  targetType: 2,
+  recipients: [],
+})
+
+/**
+ * 打开分配弹窗
+ */
+function openAllocateDialog(item: AdminApi.Course.CourseListItem) {
+  console.log('🚀 ~ file: index.vue:83 ~ item:', item)
+  assignmentCreateAssignmentRequest.value = {
+    targetId: item.couId,
+    targetName: item.couName,
+    targetType: 2,
+    recipients: [],
+  }
+  isShowAllocateDialog.value = true
+}
+
+/**
+ * 分配用户
+ */
+async function allocateUser(organizationTree: AdminApi.Organization.OrganizationTreeWithAllUsersResponse) {
+  try {
+    assignmentCreateAssignmentRequest.value.recipients = organizationTree
+
+    await fetchAdminAssignmentCreateAssignment(assignmentCreateAssignmentRequest.value)
+
+    ElNotification.success('分配成功')
+  }
+  catch {
+    ElNotification.error('分配失败')
+  }
+}
 </script>
 
 <template>
   <div
     class="mx-auto max-w-7xl px-10 relative max-lg:px-6 max-sm:px-4"
   >
-    <!-- 分配学习任务弹窗 -->
-    <AllocateCourseDialog
-      v-if="isShowAllocateCourseDialog"
-      v-model="isShowAllocateCourseDialog"
+    <!-- 分配用户弹窗 -->
+    <AminAssignUserDialog
+      v-if="isShowAllocateDialog"
+      v-model="isShowAllocateDialog"
+      @confirm="allocateUser"
     />
 
     <div
@@ -361,7 +391,7 @@ getCourseList()
 
               <ArtButton
                 type="allocate"
-                @click="openAllocateCourseDialog(item)"
+                @click="openAllocateDialog(item)"
               />
             </div>
           </div>

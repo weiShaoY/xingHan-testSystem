@@ -88,7 +88,7 @@ export namespace Organization {
     /**
      * 目标名称（冗余字段，便于显示）
      */
-    targetName: null | string
+    targetName: string
 
     /**
      * 目标类型
@@ -99,6 +99,6 @@ export namespace Organization {
     /**
      * 分配对象列表
      */
-    recipients: number[]
+    recipients: OrganizationTreeWithAllUsersResponse
   }
 }
