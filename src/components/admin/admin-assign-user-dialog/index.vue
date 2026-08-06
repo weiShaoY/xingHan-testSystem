@@ -7,10 +7,10 @@ import {
 
 /**
  * 弹窗确认事件。
- * 返回当前勾选的题库题目列表。
+ * 返回当前勾选的组织树。
  */
 const emit = defineEmits<{
-  confirm: [questions: AdminApi.Organization.OrganizationTreeWithAllUsersResponse[]]
+  confirm: [organizationTree: AdminApi.Organization.OrganizationTreeWithAllUsersResponse]
 }>()
 
 /** 控制分配用户弹窗的显示状态。 */
@@ -21,52 +21,41 @@ const visible = defineModel<boolean>({
 /** 分配用户接口返回的组织树节点类型。 */
 type OrganizationTreeItem = AdminApi.Organization.OrganizationTreeItem
 
+/** 分配用户接口返回的完整组织树类型。 */
+type OrganizationTree = AdminApi.Organization.OrganizationTreeWithAllUsersResponse
+
 /** 分配用户接口返回的用户节点类型。 */
 type OrganizationUser = AdminApi.Organization.UserNode
 
-/** 用于树组件展示的用户节点。 */
-type UserNode = OrganizationUser & {
-  id: string
-  name: string
-  account: string
-  type: 'user'
-}
-
-/** 用于树组件展示的组织节点，子组织与直属用户统一放入 children。 */
-type DepartmentNode = Omit<OrganizationTreeItem, 'children' | 'users'> & {
-  children: TreeNode[]
-  type: 'department'
-}
-
-/** 组织树中的节点类型。 */
-type TreeNode = DepartmentNode | UserNode
-
-/** 待选用户树实例，用于读取勾选节点。 */
-const treeRef = ref()
-
-/** 接口组织树转换后的完整组件树。 */
-const departmentTree = ref<DepartmentNode[]>([])
-
 /** 接口返回的原始组织树，用于保存和回显。 */
-const organizationTree = ref<OrganizationTreeItem[]>([])
+const organizationTree = ref<OrganizationTree>([])
 
 /** 完整组织树中的所有用户。 */
-const users = computed(() => getUsers(departmentTree.value))
+const users = computed(() => getUsers(organizationTree.value))
 
 /** 当前已选用户的 ID 集合。 */
 const selectedUserIds = ref<number[]>([])
+
+/** 待选区域当前勾选、尚未添加的用户 ID 集合。 */
+const pendingUserIds = ref<number[]>([])
 
 /** 当前已选用户的完整信息。 */
 const selectedUsers = computed(() => users.value.filter(user => selectedUserIds.value.includes(user.userId)))
 
 /** 过滤掉已选用户后，在待选区域展示的组织树。 */
-const availableDepartmentTree = computed(() => filterTree(departmentTree.value, user => !selectedUserIds.value.includes(user.userId)))
+const availableDepartmentTree = computed<OrganizationTree>(() => filterOrganizationTree(
+  organizationTree.value,
+  user => !selectedUserIds.value.includes(user.userId),
+))
 
 /** 仅保留已选用户后，在已选区域展示的组织树。 */
-const selectedDepartmentTree = computed(() => filterTree(departmentTree.value, user => selectedUserIds.value.includes(user.userId)))
+const selectedDepartmentTree = computed<OrganizationTree>(() => filterOrganizationTree(
+  organizationTree.value,
+  user => selectedUserIds.value.includes(user.userId),
+))
 
 /** 保持接口数据结构的已选组织树，可直接用于保存。 */
-const selectedOrganizationTree = computed(() => filterOrganizationTree(
+const selectedOrganizationTree = computed<OrganizationTree>(() => filterOrganizationTree(
   organizationTree.value,
   user => selectedUserIds.value.includes(user.userId),
 ))
@@ -79,13 +68,11 @@ const treeProps = {
 
 /** 将待选树中勾选的用户加入已选列表。 */
 function addUsers() {
-  const checkedUsers = (treeRef.value?.getCheckedNodes(false, true) ?? [])
-    .filter((node: DepartmentNode | UserNode): node is UserNode => node.type === 'user')
-
   selectedUserIds.value = Array.from(new Set([
     ...selectedUserIds.value,
-    ...checkedUsers.map((user: UserNode) => user.userId),
+    ...pendingUserIds.value,
   ]))
+  pendingUserIds.value = []
 }
 
 /** 从已选列表中移除指定用户。 */
@@ -93,68 +80,30 @@ function removeUser(userId: number) {
   selectedUserIds.value = selectedUserIds.value.filter(id => id !== userId)
 }
 
+/** 更新待添加的用户勾选状态。 */
+function togglePendingUser(userId: number, checked: boolean) {
+  pendingUserIds.value = checked
+    ? Array.from(new Set([...pendingUserIds.value, userId]))
+    : pendingUserIds.value.filter(id => id !== userId)
+}
+
 /** 从已选列表中移除指定组织及其所有后代组织的用户。 */
-function removeDepartment(department: DepartmentNode) {
+function removeDepartment(department: OrganizationTreeItem) {
   const departmentUserIds = getUsers([department]).map(user => user.userId)
 
   selectedUserIds.value = selectedUserIds.value.filter(id => !departmentUserIds.includes(id))
 }
 
-/** 获取接口组织树并转换为树组件需要的统一节点结构。 */
-async function getUserList() {
+/** 获取接口组织树。 */
+async function getOrganizationTree() {
   const res = await fetchAdminGetOrganizationTreeWithAllUsers()
 
   organizationTree.value = res
-  departmentTree.value = res.map(toDepartmentNode)
-}
-
-/**
- * 将接口组织节点递归转换为组件树节点。
- * 子组织和直属用户都放入 children，使有 children 的节点按文件夹展示。
- */
-function toDepartmentNode(department: OrganizationTreeItem): DepartmentNode {
-  return {
-    ...department,
-    type: 'department',
-    children: [
-      ...department.children.map(toDepartmentNode),
-      ...department.users.map((user: OrganizationUser) => ({
-        ...user,
-        id: `user-${user.userId}`,
-        name: user.userName,
-        account: user.userAccount,
-        type: 'user' as const,
-      })),
-    ],
-  }
 }
 
 /** 从任意层级的树节点中递归获取全部用户。 */
-function getUsers(nodes: TreeNode[]): UserNode[] {
-  return nodes.flatMap(node => node.type === 'user' ? [node] : getUsers(node.children))
-}
-
-/**
- * 按用户条件过滤组织树，并保留包含匹配用户的祖先组织节点。
- *
- * @param nodes 待过滤的组织节点
- * @param predicate 用户保留条件
- */
-function filterTree(nodes: DepartmentNode[], predicate: (user: UserNode) => boolean): DepartmentNode[] {
-  return nodes
-    .map(department => ({
-      ...department,
-      children: department.children.flatMap((node): TreeNode[] => {
-        if (node.type === 'user') {
-          return predicate(node) ? [node] : []
-        }
-
-        const children = filterTree([node], predicate)
-
-        return children
-      }),
-    }))
-    .filter(department => department.children.length)
+function getUsers(nodes: OrganizationTreeItem[]): OrganizationUser[] {
+  return nodes.flatMap(node => [...node.users, ...getUsers(node.children)])
 }
 
 /**
@@ -177,7 +126,7 @@ function filterOrganizationTree(
     .filter(node => node.children.length || node.users.length)
 }
 
-getUserList()
+getOrganizationTree()
 
 /**
  * 关闭弹窗。
@@ -187,8 +136,8 @@ function closeDialog() {
 }
 
 /**
- * 确认当前选择的题目。
- * 未选择题目时给出提示，否则将结果回传给父组件。
+ * 确认当前选择的用户。
+ * 未选择用户时给出提示，否则将结果回传给父组件。
  */
 function confirmSelectQuestions() {
   if (!selectedOrganizationTree.value.length) {
@@ -201,7 +150,7 @@ function confirmSelectQuestions() {
 
   emit('confirm', selectedOrganizationTree.value)
 
-  visible.value = false
+  // visible.value = false
 }
 
 </script>
@@ -236,11 +185,10 @@ function confirmSelectQuestions() {
           class="min-h-0 flex-1 overflow-auto"
         >
           <el-tree
-            ref="treeRef"
+            class="assign-user-tree"
             :data="availableDepartmentTree"
             :props="treeProps"
             node-key="id"
-            show-checkbox
             default-expand-all
             :expand-on-click-node="false"
             :indent="40"
@@ -248,28 +196,46 @@ function confirmSelectQuestions() {
             <template
               #default="{ data }"
             >
-              <span
-                class="flex items-center gap-2"
+              <div
+                class="tree-node"
               >
-                <el-icon
-                  v-if="data.children?.length"
+                <div
+                  class="flex items-center gap-2"
                 >
-                  <FolderOpened />
-                </el-icon>
+                  <el-icon>
+                    <FolderOpened />
+                  </el-icon>
 
-                <el-icon
-                  v-else
+                  <span>{{ data.name }}</span>
+
+                  <span
+                    class="text-12px"
+                  >（{{ data.users.length }}）</span>
+                </div>
+
+                <div
+                  v-if="data.users.length"
+                  class="ml-7 mt-2 flex flex-col gap-2"
+                  @click.stop
                 >
-                  <User />
-                </el-icon>
-
-                <span>{{ data.name }}</span>
-
-                <span
-                  v-if="data.type === 'user'"
-                  class="text-12px "
-                >{{ data.account }}</span>
-              </span>
+                  <el-checkbox
+                    v-for="user in data.users"
+                    :key="user.userId"
+                    :model-value="pendingUserIds.includes(user.userId)"
+                    @update:model-value="togglePendingUser(user.userId, $event === true)"
+                  >
+                    <el-icon
+                      class="mr-1"
+                    >
+                      <User />
+                    </el-icon>
+                    {{ user.userName }}
+                    <span
+                      class="ml-2 text-12px"
+                    >{{ user.userAccount }}</span>
+                  </el-checkbox>
+                </div>
+              </div>
             </template>
           </el-tree>
         </div>
@@ -310,6 +276,7 @@ function confirmSelectQuestions() {
 
           <el-tree
             v-else
+            class="assign-user-tree"
             :data="selectedDepartmentTree"
             :props="treeProps"
             node-key="id"
@@ -320,36 +287,60 @@ function confirmSelectQuestions() {
             <template
               #default="{ data }"
             >
-              <span
-                class="flex w-full items-center gap-2"
+              <div
+                class="tree-node"
               >
-                <el-icon
-                  v-if="data.children?.length"
-                ><FolderOpened /></el-icon>
-
-                <el-avatar
-                  v-else
-                  :size="24"
-                >{{ data.name.slice(0, 1) }}</el-avatar>
-
-                <span>{{ data.name }}</span>
-
-                <span
-                  v-if="data.type === 'user'"
-                  class="text-12px "
+                <div
+                  class="flex w-full items-center gap-2"
                 >
-                  {{ data.account }}
-                </span>
+                  <el-icon>
+                    <FolderOpened />
+                  </el-icon>
 
-                <el-button
-                  class="ml-auto"
-                  link
-                  type="danger"
-                  @click.stop="data.children?.length ? removeDepartment(data) : removeUser(data.userId)"
+                  <span>{{ data.name }}</span>
+
+                  <el-button
+                    class="ml-auto"
+                    link
+                    type="danger"
+                    @click.stop="removeDepartment(data)"
+                  >
+                    移除
+                  </el-button>
+                </div>
+
+                <div
+                  v-if="data.users.length"
+                  class="ml-7 mt-2 flex flex-col gap-2"
                 >
-                  移除
-                </el-button>
-              </span>
+                  <div
+                    v-for="user in data.users"
+                    :key="user.userId"
+                    class="flex items-center gap-2"
+                  >
+                    <el-avatar
+                      :size="24"
+                    >
+                      {{ user.userName.slice(0, 1) }}
+                    </el-avatar>
+
+                    <span>{{ user.userName }}</span>
+
+                    <span
+                      class="text-12px"
+                    >{{ user.userAccount }}</span>
+
+                    <el-button
+                      class="ml-auto"
+                      link
+                      type="danger"
+                      @click.stop="removeUser(user.userId)"
+                    >
+                      移除
+                    </el-button>
+                  </div>
+                </div>
+              </div>
             </template>
           </el-tree>
         </div>
@@ -370,6 +361,7 @@ function confirmSelectQuestions() {
 
         <ArtButton
           type="primary"
+          :disabled="!selectedOrganizationTree.length"
           @click="confirmSelectQuestions"
         >
           添加所选题目
@@ -378,3 +370,21 @@ function confirmSelectQuestions() {
     </template>
   </el-dialog>
 </template>
+
+<style scoped>
+.assign-user-tree :deep(.el-tree-node__content) {
+  height: auto;
+  min-height: 32px;
+  align-items: flex-start;
+}
+
+.assign-user-tree :deep(.el-tree-node__expand-icon) {
+  margin-top: 8px;
+}
+
+.tree-node {
+  min-width: 0;
+  flex: 1;
+  padding: 4px 0;
+}
+</style>
