@@ -11,10 +11,8 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
-    AdminAssignUserDialog: typeof import('./../../components/admin/admin-assign-user-dialog/index.vue')['default']
     AdminPageHeader: typeof import('./../../components/admin/admin-page-header/index.vue')['default']
     AdminUpload: typeof import('./../../components/admin/admin-upload/index.vue')['default']
-    AllocateProjectDialog: typeof import('./../../components/admin/admin-assign-user-dialog/AllocateProjectDialog.vue')['default']
     ArtBackToTop: typeof import('./../../components/core/base/art-back-to-top/index.vue')['default']
     ArtBasicBanner: typeof import('./../../components/core/banners/art-basic-banner/index.vue')['default']
     ArtBreadcrumb: typeof import('./../../components/core/layouts/art-breadcrumb/index.vue')['default']
@@ -52,7 +50,7 @@ declare module 'vue' {
     ArtWangEditor: typeof import('./../../components/core/forms/art-wang-editor/index.vue')['default']
     ArtWatermark: typeof import('./../../components/core/others/art-watermark/index.vue')['default']
     ArtWorkTab: typeof import('./../../components/core/layouts/art-work-tab/index.vue')['default']
-    AssignUserDialog: typeof import('./../../components/admin/assign-user-dialog/index.vue')['default']
+    AssignUserDialog: typeof import('../../components/admin/admin-assign-user-dialog/index.vue')['default']
     AuthTopBar: typeof import('./../../components/core/views/login/AuthTopBar.vue')['default']
     BasicSettings: typeof import('./../../components/core/layouts/art-settings-panel/widget/BasicSettings.vue')['default']
     BoxStyleSettings: typeof import('./../../components/core/layouts/art-settings-panel/widget/BoxStyleSettings.vue')['default']

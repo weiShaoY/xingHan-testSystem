@@ -11,8 +11,12 @@ export function fetchAdminGetOrganizationTreeWithAllUsers() {
   })
 }
 
-// export function fetchAdminGetOrganizationTree() {
-//   return request.post<AdminApi.Organization.OrganizationTreeResponse>({
-//     url: '/admin/organization/tree',
-//   })
-// }
+/**
+ *  分配项目或课程
+ */
+export function fetchAdminAssignmentCreateAssignment(data: AdminApi.Organization.AssignmentCreateAssignmentRequest) {
+  return request.post({
+    url: '/admin/assignment/createAssignment',
+    data,
+  })
+}

@@ -70,5 +70,35 @@ export namespace Organization {
     users: UserNode[]
   }
 
+  /**
+   *  获取组织树（包含所有用户）
+   */
   type OrganizationTreeWithAllUsersResponse = OrganizationTreeItem[]
+
+  /**
+   *  分配项目或课程请求参数
+   */
+  type AssignmentCreateAssignmentRequest = {
+
+    /**
+     * 目标ID（Proj_Id 或 Cou_Id）
+     */
+    targetId: number
+
+    /**
+     * 目标名称（冗余字段，便于显示）
+     */
+    targetName: null | string
+
+    /**
+     * 目标类型
+     * @description 1=项目，2=课程
+     */
+    targetType: 1 | 2
+
+    /**
+     * 分配对象列表
+     */
+    recipients: number[]
+  }
 }

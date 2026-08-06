@@ -1,4 +1,18 @@
 <script lang="ts" setup>
+import {
+  ArrowRight,
+  FolderOpened,
+  User,
+} from '@element-plus/icons-vue'
+
+/**
+ * 弹窗确认事件。
+ * 返回当前勾选的题库题目列表。
+ */
+const emit = defineEmits<{
+  confirm: [questions: AdminApi.Organization.OrganizationTreeWithAllUsersResponse[]]
+}>()
+
 /** 控制分配用户弹窗的显示状态。 */
 const visible = defineModel<boolean>({
   default: false,
@@ -33,6 +47,9 @@ const treeRef = ref()
 /** 接口组织树转换后的完整组件树。 */
 const departmentTree = ref<DepartmentNode[]>([])
 
+/** 接口返回的原始组织树，用于保存和回显。 */
+const organizationTree = ref<OrganizationTreeItem[]>([])
+
 /** 完整组织树中的所有用户。 */
 const users = computed(() => getUsers(departmentTree.value))
 
@@ -47,6 +64,12 @@ const availableDepartmentTree = computed(() => filterTree(departmentTree.value, 
 
 /** 仅保留已选用户后，在已选区域展示的组织树。 */
 const selectedDepartmentTree = computed(() => filterTree(departmentTree.value, user => selectedUserIds.value.includes(user.userId)))
+
+/** 保持接口数据结构的已选组织树，可直接用于保存。 */
+const selectedOrganizationTree = computed(() => filterOrganizationTree(
+  organizationTree.value,
+  user => selectedUserIds.value.includes(user.userId),
+))
 
 /** Element Plus 树组件的节点字段映射。 */
 const treeProps = {
@@ -81,6 +104,7 @@ function removeDepartment(department: DepartmentNode) {
 async function getUserList() {
   const res = await fetchAdminGetOrganizationTreeWithAllUsers()
 
+  organizationTree.value = res
   departmentTree.value = res.map(toDepartmentNode)
 }
 
@@ -133,7 +157,53 @@ function filterTree(nodes: DepartmentNode[], predicate: (user: UserNode) => bool
     .filter(department => department.children.length)
 }
 
+/**
+ * 按用户条件筛选接口原始组织树，并保留包含匹配用户的组织节点。
+ * 返回结构与 getOrganizationTreeWithAllUsers 接口完全一致。
+ *
+ * @param nodes 接口返回的组织节点
+ * @param predicate 用户保留条件
+ */
+function filterOrganizationTree(
+  nodes: OrganizationTreeItem[],
+  predicate: (user: OrganizationUser) => boolean,
+): OrganizationTreeItem[] {
+  return nodes
+    .map(node => ({
+      ...node,
+      children: filterOrganizationTree(node.children, predicate),
+      users: node.users.filter(predicate),
+    }))
+    .filter(node => node.children.length || node.users.length)
+}
+
 getUserList()
+
+/**
+ * 关闭弹窗。
+ */
+function closeDialog() {
+  visible.value = false
+}
+
+/**
+ * 确认当前选择的题目。
+ * 未选择题目时给出提示，否则将结果回传给父组件。
+ */
+function confirmSelectQuestions() {
+  if (!selectedOrganizationTree.value.length) {
+    ElNotification.warning('请先选择用户')
+
+    return
+  }
+
+  console.log('🚀 ~ file: index.vue:157 ~ selectedOrganizationTree.value:', selectedOrganizationTree.value)
+
+  emit('confirm', selectedOrganizationTree.value)
+
+  visible.value = false
+}
+
 </script>
 
 <template>
@@ -173,6 +243,7 @@ getUserList()
             show-checkbox
             default-expand-all
             :expand-on-click-node="false"
+            :indent="40"
           >
             <template
               #default="{ data }"
@@ -244,6 +315,7 @@ getUserList()
             node-key="id"
             default-expand-all
             :expand-on-click-node="false"
+            :indent="40"
           >
             <template
               #default="{ data }"
@@ -283,5 +355,26 @@ getUserList()
         </div>
       </section>
     </div>
+
+    <template
+      #footer
+    >
+      <div
+        class="flex items-center justify-end gap-3"
+      >
+        <el-button
+          @click="closeDialog"
+        >
+          取消
+        </el-button>
+
+        <ArtButton
+          type="primary"
+          @click="confirmSelectQuestions"
+        >
+          添加所选题目
+        </ArtButton>
+      </div>
+    </template>
   </el-dialog>
 </template>

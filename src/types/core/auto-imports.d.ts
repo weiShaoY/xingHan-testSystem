@@ -58,6 +58,9 @@ declare global {
   const effectScope: typeof import('vue').effectScope
   const emojo: typeof import('../../utils/ui/emojo').default
   const extendRef: typeof import('@vueuse/core').extendRef
+  const fetchAdminAssignProjectOrCourse: typeof import('../../apis/admin/organization/index').fetchAdminAssignProjectOrCourse
+  const fetchAdminAssignment: typeof import('../../apis/admin/organization/index').fetchAdminAssignment
+  const fetchAdminAssignmentCreateAssignment: typeof import('../../apis/admin/organization/index').fetchAdminAssignmentCreateAssignment
   const fetchAdminCourseAdd: typeof import('../../apis/admin/course/index').fetchAdminCourseAdd
   const fetchAdminCourseDelete: typeof import('../../apis/admin/course/index').fetchAdminCourseDelete
   const fetchAdminCourseList: typeof import('../../apis/admin/course/index').fetchAdminCourseList
@@ -539,6 +542,7 @@ declare module 'vue' {
     readonly effectScope: UnwrapRef<typeof import('vue')['effectScope']>
     readonly emojo: UnwrapRef<typeof import('../../utils/ui/emojo')['default']>
     readonly extendRef: UnwrapRef<typeof import('@vueuse/core')['extendRef']>
+    readonly fetchAdminAssignmentCreateAssignment: UnwrapRef<typeof import('../../apis/admin/organization/index')['fetchAdminAssignmentCreateAssignment']>
     readonly fetchAdminCourseAdd: UnwrapRef<typeof import('../../apis/admin/course/index')['fetchAdminCourseAdd']>
     readonly fetchAdminCourseDelete: UnwrapRef<typeof import('../../apis/admin/course/index')['fetchAdminCourseDelete']>
     readonly fetchAdminCourseList: UnwrapRef<typeof import('../../apis/admin/course/index')['fetchAdminCourseList']>
