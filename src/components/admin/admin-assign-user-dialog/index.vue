@@ -2,6 +2,7 @@
 import {
   ArrowRight,
   FolderOpened,
+  Search,
   User,
 } from '@element-plus/icons-vue'
 
@@ -43,13 +44,16 @@ const selectedUserIds = ref<number[]>([])
 /** 待选区域当前勾选、尚未添加的用户 ID 集合。 */
 const pendingUserIds = ref<number[]>([])
 
+/** 待选组织树搜索关键字。 */
+const keyword = ref('')
+
 /** 当前已选用户的完整信息。 */
 const selectedUsers = computed(() => users.value.filter(user => selectedUserIds.value.includes(user.userId)))
 
 /** 过滤掉已选用户后，在待选区域展示的组织树。 */
 const availableDepartmentTree = computed<OrganizationTree>(() => filterOrganizationTree(
   organizationTree.value,
-  user => !selectedUserIds.value.includes(user.userId),
+  user => !selectedUserIds.value.includes(user.userId) && matchesKeyword(user),
 ))
 
 /** 仅保留已选用户后，在已选区域展示的组织树。 */
@@ -138,6 +142,15 @@ async function getOrganizationTree() {
 /** 从任意层级的树节点中递归获取全部用户。 */
 function getUsers(nodes: OrganizationTreeItem[]): OrganizationUser[] {
   return nodes.flatMap(node => [...node.users, ...getUsers(node.children)])
+}
+
+/** 判断用户信息是否符合待选区搜索关键字。 */
+function matchesKeyword(user: OrganizationUser) {
+  const normalizedKeyword = keyword.value.trim().toLowerCase()
+
+  return !normalizedKeyword
+    || user.userName.toLowerCase().includes(normalizedKeyword)
+    || user.userAccount.toLowerCase().includes(normalizedKeyword)
 }
 
 /**
@@ -238,29 +251,54 @@ async function openAllocateDialog() {
     v-if="visible"
     v-model="visible"
     title="分配用户"
-    width="72%"
+    width="80%"
     destroy-on-close
   >
     <div
-      class="flex h-[min(640px,calc(100vh-200px))] min-h-0 gap-5"
+      class="assign-user-layout"
     >
       <section
-        class="flex min-w-0 flex-1 flex-col rounded border border-info p-4"
+        class="assign-user-panel"
       >
         <div
-          class="mb-4 font-600"
+          class="mb-4 flex items-center justify-between"
         >
-          待选
+          <div>
+            <div
+              class="font-600 text-g-900"
+            >
+              待选用户
+            </div>
+
+            <div
+              class="mt-1 text-xs text-g-500"
+            >
+              按部门或人员选择
+            </div>
+          </div>
+
+          <span
+            class="assign-user-count"
+          >{{ pendingUserIds.length }}</span>
         </div>
 
         <el-input
-          placeholder="搜索部门或用户"
+          v-model="keyword"
+          placeholder="搜索用户姓名或账号"
           clearable
-          class="mb-3"
-        />
+          class="mb-4"
+        >
+          <template
+            #prefix
+          >
+            <el-icon>
+              <Search />
+            </el-icon>
+          </template>
+        </el-input>
 
         <div
-          class="min-h-0 flex-1 overflow-auto"
+          class="assign-user-scroll"
         >
           <el-tree
             class="assign-user-tree"
@@ -275,7 +313,7 @@ async function openAllocateDialog() {
               #default="{ data }"
             >
               <div
-                class="tree-node"
+                class="tree-node tree-node-available"
               >
                 <div
                   class="flex items-center gap-2"
@@ -291,16 +329,18 @@ async function openAllocateDialog() {
                     <FolderOpened />
                   </el-icon>
 
-                  <span>{{ data.name }}</span>
+                  <span
+                    class="truncate font-500"
+                  >{{ data.name }}</span>
 
                   <span
                     class="text-12px"
-                  >（{{ data.users.length }}）</span>
+                  >{{ getDepartmentUsers(data).length }}</span>
                 </div>
 
                 <div
                   v-if="data.users.length"
-                  class="ml-7 mt-2 flex flex-col gap-2"
+                  class="ml-7 mt-2 flex flex-col gap-1"
                   @click.stop
                 >
                   <el-checkbox
@@ -314,7 +354,11 @@ async function openAllocateDialog() {
                     >
                       <User />
                     </el-icon>
-                    {{ user.userName }}
+
+                    <span
+                      class="font-500"
+                    >{{ user.userName }}</span>
+
                     <span
                       class="ml-2 text-12px"
                     >{{ user.userAccount }}</span>
@@ -327,31 +371,48 @@ async function openAllocateDialog() {
       </section>
 
       <div
-        class="flex items-center"
+        class="assign-user-transfer"
       >
         <el-button
           type="primary"
+          circle
+          :disabled="!pendingUserIds.length"
+          title="添加所选用户"
           @click="addUsers"
         >
-          添加 <el-icon
-            class="ml-1"
-          >
+          <el-icon>
             <ArrowRight />
           </el-icon>
         </el-button>
       </div>
 
       <section
-        class="flex min-w-0 flex-1 flex-col rounded border border-info p-4"
+        class="assign-user-panel assign-user-panel-selected"
       >
         <div
-          class="mb-4 font-600"
+          class="mb-4 flex items-center justify-between"
         >
-          已选（{{ selectedUsers.length }}）
+          <div>
+            <div
+              class="font-600 text-g-900"
+            >
+              已选用户
+            </div>
+
+            <div
+              class="mt-1 text-xs text-g-500"
+            >
+              保存后将获得访问权限
+            </div>
+          </div>
+
+          <span
+            class="assign-user-count assign-user-count-selected"
+          >{{ selectedUsers.length }}</span>
         </div>
 
         <div
-          class="min-h-0 flex-1 overflow-auto"
+          class="assign-user-scroll"
         >
           <el-empty
             v-if="!selectedUsers.length"
@@ -373,7 +434,7 @@ async function openAllocateDialog() {
               #default="{ data }"
             >
               <div
-                class="tree-node"
+                class="tree-node tree-node-selected"
               >
                 <div
                   class="flex w-full items-center gap-2"
@@ -382,10 +443,12 @@ async function openAllocateDialog() {
                     <FolderOpened />
                   </el-icon>
 
-                  <span>{{ data.name }}</span>
+                  <span
+                    class="truncate font-500"
+                  >{{ data.name }}</span>
 
                   <el-button
-                    class="ml-auto"
+                    class="ml-auto mr-2"
                     link
                     type="danger"
                     @click.stop="removeDepartment(data)"
@@ -396,12 +459,12 @@ async function openAllocateDialog() {
 
                 <div
                   v-if="data.users.length"
-                  class="ml-7 mt-2 flex flex-col gap-2"
+                  class="ml-7 mt-2 flex flex-col gap-1"
                 >
                   <div
                     v-for="user in data.users"
                     :key="user.userId"
-                    class="flex items-center gap-2"
+                    class="selected-user-row"
                   >
                     <el-avatar
                       :size="24"
@@ -409,14 +472,16 @@ async function openAllocateDialog() {
                       {{ user.userName.slice(0, 1) }}
                     </el-avatar>
 
-                    <span>{{ user.userName }}</span>
+                    <span
+                      class="font-500"
+                    >{{ user.userName }}</span>
 
                     <span
                       class="text-12px"
                     >{{ user.userAccount }}</span>
 
                     <el-button
-                      class="ml-auto"
+                      class="ml-auto mr-2"
                       link
                       type="danger"
                       @click.stop="removeUser(user.userId)"
@@ -449,7 +514,7 @@ async function openAllocateDialog() {
           :disabled="!selectedOrganizationTree.length"
           @click="confirmSelectQuestions"
         >
-          添加所选题目
+          保存分配
         </ArtButton>
       </div>
     </template>
@@ -457,19 +522,111 @@ async function openAllocateDialog() {
 </template>
 
 <style scoped>
+.assign-user-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 52px minmax(0, 1fr);
+  height: min(640px, calc(100vh - 200px));
+  min-height: 0;
+  gap: 20px;
+}
+
+.assign-user-panel {
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  flex-direction: column;
+  padding: 16px;
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 8px;
+  background: var(--el-fill-color-blank);
+  overflow: hidden;
+}
+
+.assign-user-panel-selected {
+  border-color: var(--el-color-primary-light-7);
+  background: var(--el-color-primary-light-9);
+}
+
+.assign-user-count {
+  display: grid;
+  min-width: 26px;
+  height: 26px;
+  padding: 0 7px;
+  place-items: center;
+  border-radius: 13px;
+  background: var(--el-fill-color-light);
+  color: var(--el-text-color-secondary);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.assign-user-count-selected {
+  background: var(--el-color-primary);
+  color: #fff;
+}
+
+.assign-user-scroll {
+  min-height: 0;
+  flex: 1;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+.assign-user-transfer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .assign-user-tree :deep(.el-tree-node__content) {
   height: auto;
-  min-height: 32px;
+  min-height: 36px;
   align-items: flex-start;
+  border-radius: 6px;
 }
 
 .assign-user-tree :deep(.el-tree-node__expand-icon) {
-  margin-top: 8px;
+  margin-top: 10px;
 }
 
 .tree-node {
   min-width: 0;
   flex: 1;
-  padding: 4px 0;
+  padding: 4px;
+}
+
+.tree-node-available:hover,
+.tree-node-selected:hover {
+  border-radius: 6px;
+  background: var(--el-fill-color-light);
+}
+
+.selected-user-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 32px;
+  padding: 2px 4px;
+}
+
+@media (max-width: 640px) {
+  .assign-user-layout {
+    grid-template-columns: 1fr;
+    grid-template-rows: minmax(0, 1fr) 44px minmax(0, 1fr);
+    height: min(680px, calc(100vh - 180px));
+  }
+
+  .assign-user-panel {
+    min-height: 0;
+  }
+
+  .assign-user-transfer {
+    height: 44px;
+  }
+
+  .assign-user-transfer :deep(.el-button) {
+    transform: rotate(90deg);
+  }
 }
 </style>
