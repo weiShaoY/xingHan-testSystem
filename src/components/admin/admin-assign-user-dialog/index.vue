@@ -5,12 +5,16 @@ import {
   User,
 } from '@element-plus/icons-vue'
 
-/**
- * 弹窗确认事件。
- * 返回当前勾选的组织树。
- */
-const emit = defineEmits<{
-  confirm: [organizationTree: AdminApi.Organization.OrganizationTreeWithAllUsersResponse]
+const props = defineProps<{
+
+  /** 控制分配用户弹窗的显示状态。 */
+  type: 'course' | 'project'
+
+  /** 课程或项目 ID。 */
+  id: number
+
+  /** 课程或项目名称。 */
+  name: string
 }>()
 
 /** 控制分配用户弹窗的显示状态。 */
@@ -136,10 +140,24 @@ function closeDialog() {
 }
 
 /**
+ * 获取回显数组
+ */
+async function getPartialOrganizationTree() {
+  const res = await fetchAdminAssignmentGetPartialOrganizationTree({
+    targetId: props.id,
+    targetType: props.type === 'project' ? 1 : 2,
+  })
+
+  selectedOrganizationTree.value = res
+}
+
+getPartialOrganizationTree()
+
+/**
  * 确认当前选择的用户。
  * 未选择用户时给出提示，否则将结果回传给父组件。
  */
-function confirmSelectQuestions() {
+async function confirmSelectQuestions() {
   if (!selectedOrganizationTree.value.length) {
     ElNotification.warning('请先选择用户')
 
@@ -148,14 +166,37 @@ function confirmSelectQuestions() {
 
   console.log('🚀 ~ file: index.vue:157 ~ selectedOrganizationTree.value:', selectedOrganizationTree.value)
 
-  emit('confirm', selectedOrganizationTree.value)
+  try {
+    const assignmentCreateAssignmentRequest: AdminApi.Organization.AssignmentCreateAssignmentRequest = {
+      targetId: props.id,
+      targetName: props.name,
+      targetType: props.type === 'project' ? 1 : 2,
+      recipients: selectedOrganizationTree.value,
+    }
 
-  // visible.value = false
+    await fetchAdminAssignmentCreateAssignment(assignmentCreateAssignmentRequest)
+
+    ElNotification.success('分配成功')
+
+    visible.value = false
+  }
+  catch {
+    ElNotification.error('分配失败')
+  }
+}
+
+function openAllocateDialog() {
+  visible.value = true
 }
 
 </script>
 
 <template>
+  <ArtButton
+    type="allocate"
+    @click="openAllocateDialog()"
+  />
+
   <el-dialog
     v-if="visible"
     v-model="visible"

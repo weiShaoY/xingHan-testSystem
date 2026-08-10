@@ -61,6 +61,8 @@ declare global {
   const fetchAdminAssignProjectOrCourse: typeof import('../../apis/admin/organization/index').fetchAdminAssignProjectOrCourse
   const fetchAdminAssignment: typeof import('../../apis/admin/organization/index').fetchAdminAssignment
   const fetchAdminAssignmentCreateAssignment: typeof import('../../apis/admin/organization/index').fetchAdminAssignmentCreateAssignment
+  const fetchAdminAssignmentGetAssignedOrganizationTreeWithAllUsers: typeof import('../../apis/admin/organization/index').fetchAdminAssignmentGetAssignedOrganizationTreeWithAllUsers
+  const fetchAdminAssignmentGetPartialOrganizationTree: typeof import('../../apis/admin/organization/index').fetchAdminAssignmentGetPartialOrganizationTree
   const fetchAdminCourseAdd: typeof import('../../apis/admin/course/index').fetchAdminCourseAdd
   const fetchAdminCourseDelete: typeof import('../../apis/admin/course/index').fetchAdminCourseDelete
   const fetchAdminCourseList: typeof import('../../apis/admin/course/index').fetchAdminCourseList
@@ -543,6 +545,7 @@ declare module 'vue' {
     readonly emojo: UnwrapRef<typeof import('../../utils/ui/emojo')['default']>
     readonly extendRef: UnwrapRef<typeof import('@vueuse/core')['extendRef']>
     readonly fetchAdminAssignmentCreateAssignment: UnwrapRef<typeof import('../../apis/admin/organization/index')['fetchAdminAssignmentCreateAssignment']>
+    readonly fetchAdminAssignmentGetPartialOrganizationTree: UnwrapRef<typeof import('../../apis/admin/organization/index')['fetchAdminAssignmentGetPartialOrganizationTree']>
     readonly fetchAdminCourseAdd: UnwrapRef<typeof import('../../apis/admin/course/index')['fetchAdminCourseAdd']>
     readonly fetchAdminCourseDelete: UnwrapRef<typeof import('../../apis/admin/course/index')['fetchAdminCourseDelete']>
     readonly fetchAdminCourseList: UnwrapRef<typeof import('../../apis/admin/course/index')['fetchAdminCourseList']>

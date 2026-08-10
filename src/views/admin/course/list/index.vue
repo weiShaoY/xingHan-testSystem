@@ -24,11 +24,6 @@ const workTabStore = useWorkTabStore()
 const loading = ref(false)
 
 /**
- * 是否显示分配弹窗
- */
-const isShowAllocateDialog = ref(false)
-
-/**
  * 列表查询参数。
  */
 const params = reactive<AdminApi.Course.CourseListParams>({
@@ -202,54 +197,12 @@ async function deleteCourse(item: AdminApi.Course.CourseListItem) {
 
 getCourseList()
 
-const assignmentCreateAssignmentRequest = ref<AdminApi.Organization.AssignmentCreateAssignmentRequest>({
-  targetId: 0,
-  targetName: '',
-  targetType: 2,
-  recipients: [],
-})
-
-/**
- * 打开分配弹窗
- */
-function openAllocateDialog(item: AdminApi.Course.CourseListItem) {
-  console.log('🚀 ~ file: index.vue:83 ~ item:', item)
-  assignmentCreateAssignmentRequest.value = {
-    targetId: item.couId,
-    targetName: item.couName,
-    targetType: 2,
-    recipients: [],
-  }
-  isShowAllocateDialog.value = true
-}
-
-/**
- * 分配用户
- */
-async function allocateUser(organizationTree: AdminApi.Organization.OrganizationTreeWithAllUsersResponse) {
-  try {
-    assignmentCreateAssignmentRequest.value.recipients = organizationTree
-
-    await fetchAdminAssignmentCreateAssignment(assignmentCreateAssignmentRequest.value)
-
-    ElNotification.success('分配成功')
-  }
-  catch {
-    ElNotification.error('分配失败')
-  }
-}
 </script>
 
 <template>
   <div
     class="mx-auto max-w-7xl px-10 relative max-lg:px-6 max-sm:px-4"
   >
-    <!-- 分配用户弹窗 -->
-    <AminAssignUserDialog
-      v-if="isShowAllocateDialog"
-      v-model="isShowAllocateDialog"
-      @confirm="allocateUser"
-    />
 
     <div
       class="my-5 flex w-full items-center justify-between gap-4 max-sm:items-start"
@@ -389,9 +342,10 @@ async function allocateUser(organizationTree: AdminApi.Organization.Organization
                 @click="deleteCourse(item)"
               />
 
-              <ArtButton
-                type="allocate"
-                @click="openAllocateDialog(item)"
+              <AminAssignUserDialog
+                :id="item.couId"
+                :name="item.couName"
+                type="course"
               />
             </div>
           </div>

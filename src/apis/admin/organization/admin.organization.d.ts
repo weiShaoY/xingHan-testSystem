@@ -101,4 +101,22 @@ export namespace Organization {
      */
     recipients: OrganizationTreeWithAllUsersResponse
   }
+
+  /**
+   *  获取已经分配的组织架构树形(包含用户) 请求参数
+   */
+  type AssignmentGetPartialOrganizationTreeRequest = {
+
+    /**
+     * 目标类型
+     * @description 1=项目，2=课程
+     */
+    targetType: 1 | 2
+
+    /**
+     * 目标ID（Proj_Id 或 Cou_Id）
+     */
+    targetId: number
+
+  }
 }

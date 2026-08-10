@@ -15,9 +15,6 @@ defineProps<{
 
 const emit = defineEmits<{
 
-  /** 分配当前小节学习任务 */
-  allocate: []
-
   /** 删除当前小节 */
   delete: [section: AdminApi.Course.Section]
 
@@ -86,10 +83,6 @@ const emit = defineEmits<{
         class="flex gap-2 items-center justify-end max-md:col-span-3 max-sm:col-span-1 max-sm:w-full max-sm:justify-end"
         @click.stop
       >
-        <ArtButton
-          type="allocate"
-          @click="emit('allocate')"
-        />
 
         <ArtButton
           type="delete"

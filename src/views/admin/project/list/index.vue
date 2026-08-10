@@ -11,11 +11,6 @@ import CreateProjectDialog from './CreateProjectDialog.vue'
 const isShowCreateProjectDialog = ref(false)
 
 /**
- * 是否显示分配弹窗
- */
-const isShowAllocateDialog = ref(false)
-
-/**
  * 分页条数选项。
  */
 const PAGE_SIZE_OPTIONS = [10, 20, 30, 50]
@@ -211,54 +206,12 @@ async function deleteProject(item: AdminApi.Project.ProjectListItem) {
   }
 }
 
-const assignmentCreateAssignmentRequest = ref<AdminApi.Organization.AssignmentCreateAssignmentRequest>({
-  targetId: 0,
-  targetName: '',
-  targetType: 1,
-  recipients: [],
-})
-
-/**
- * 打开分配弹窗
- */
-function openAllocateDialog(item: AdminApi.Project.ProjectListItem) {
-  console.log('🚀 ~ file: index.vue:83 ~ item:', item)
-  assignmentCreateAssignmentRequest.value = {
-    targetId: item.projId,
-    targetName: item.projName,
-    targetType: 1,
-    recipients: [],
-  }
-  isShowAllocateDialog.value = true
-}
-
-/**
- * 分配用户
- */
-async function allocateUser(organizationTree: AdminApi.Organization.OrganizationTreeWithAllUsersResponse) {
-  try {
-    assignmentCreateAssignmentRequest.value.recipients = organizationTree
-
-    await fetchAdminAssignmentCreateAssignment(assignmentCreateAssignmentRequest.value)
-
-    ElNotification.success('分配成功')
-  }
-  catch {
-    ElNotification.error('分配失败')
-  }
-}
 </script>
 
 <template>
   <div
     class="relative mx-auto max-w-7xl px-10 max-lg:px-6 max-sm:px-4"
   >
-    <!-- 分配用户弹窗 -->
-    <AminAssignUserDialog
-      v-if="isShowAllocateDialog"
-      v-model="isShowAllocateDialog"
-      @confirm="allocateUser"
-    />
 
     <CreateProjectDialog
       v-if="isShowCreateProjectDialog"
@@ -390,9 +343,16 @@ async function allocateUser(organizationTree: AdminApi.Organization.Organization
               class="flex shrink-0 gap-2 items-center justify-center max-sm:w-full max-sm:justify-end"
               @click.stop
             >
-              <ArtButton
+              <!-- <ArtButton
                 type="preview"
                 @click="goToPreview(item)"
+              /> -->
+
+              <!-- 分配用户弹窗 -->
+              <AminAssignUserDialog
+                :id="item.projId"
+                :name="item.projName"
+                type="project"
               />
 
               <ArtButton
@@ -405,10 +365,6 @@ async function allocateUser(organizationTree: AdminApi.Organization.Organization
                 @click="deleteProject(item)"
               />
 
-              <ArtButton
-                type="allocate"
-                @click="openAllocateDialog(item)"
-              />
             </div>
           </div>
 

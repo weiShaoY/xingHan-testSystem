@@ -5,6 +5,8 @@ import type { SectionType } from '@/config/course'
 
 import { computed, ref } from 'vue'
 
+import AminAssignUserDialog from '@/components/admin/admin-assign-user-dialog/index.vue'
+
 import {
   getAdminSectionCreateRoute,
   getAdminSectionCreateRouteTitle,
@@ -12,8 +14,6 @@ import {
   getAdminSectionEditRouteTitle,
   getSectionTypeConfig,
 } from '@/config/course'
-
-import AllocateCourseDialog from '../list/AllocateCourseDialog.vue'
 
 import CourseChapterDialog from './components/CourseChapterDialog.vue'
 
@@ -53,11 +53,6 @@ const courseOutlineList = ref<AdminApi.Course.CourseOutlineListResponse>(
 const couId = computed(() => {
   return Number(route.params.couId || 0)
 })
-
-/**
- * 是否显示分配学习任务弹窗
- */
-const isShowAllocateCourseDialog = ref(false)
 
 /**
  * 是否显示章节新增或者编辑弹窗
@@ -155,13 +150,6 @@ function editChapter(chapter: AdminApi.Course.Chapter) {
 function addSection(chapter?: AdminApi.Course.Chapter) {
   currentCreateSectionChapter.value = chapter || undefined
   isShowCreateSectionDialog.value = true
-}
-
-/**
- * 打开小节分配学习任务弹窗
- */
-function allocateSection() {
-  isShowAllocateCourseDialog.value = true
 }
 
 /**
@@ -263,12 +251,6 @@ async function editSection({
       @select="goToAddSection"
     />
 
-    <!-- 分配学习任务弹窗 -->
-    <AllocateCourseDialog
-      v-if="isShowAllocateCourseDialog"
-      v-model="isShowAllocateCourseDialog"
-    />
-
     <AdminPageHeader
       :title="` ${courseOutlineList.couName}`"
       :stats="[`
@@ -278,9 +260,10 @@ async function editSection({
       <template
         #extra
       >
-        <ArtButton
-          type="allocate"
-          @click="isShowAllocateCourseDialog = true"
+        <AminAssignUserDialog
+          :id="couId"
+          :name="courseOutlineList.couName"
+          type="course"
         />
 
         <ArtButton
@@ -388,7 +371,6 @@ async function editSection({
               inner
               :section="section"
               :type-config="getSectionTypeConfig(section.sectionType)"
-              @allocate="allocateSection"
               @delete="deleteSection"
               @edit="editSection({
                 section,
@@ -414,7 +396,6 @@ async function editSection({
           v-else-if="item.itemType === 'section'"
           :section="item"
           :type-config="getSectionTypeConfig(item.sectionType)"
-          @allocate="allocateSection"
           @delete="deleteSection"
           @edit="editSection({
             section: item,
