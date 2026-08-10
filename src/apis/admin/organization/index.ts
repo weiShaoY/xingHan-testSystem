@@ -28,6 +28,7 @@ export function fetchAdminAssignmentGetPartialOrganizationTree(
   data: AdminApi.Organization.AssignmentGetPartialOrganizationTreeRequest,
 ) {
   return request.get<AdminApi.Organization.OrganizationTreeWithAllUsersResponse>({
-    url: '/admin/assignment/getPartialOrganizationTree',
+    url: '/admin/organization/getPartialOrganizationTree',
+    params: data,
   })
 }

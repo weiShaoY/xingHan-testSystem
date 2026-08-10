@@ -130,8 +130,6 @@ function filterOrganizationTree(
     .filter(node => node.children.length || node.users.length)
 }
 
-getOrganizationTree()
-
 /**
  * 关闭弹窗。
  */
@@ -140,7 +138,7 @@ function closeDialog() {
 }
 
 /**
- * 获取回显数组
+ * 获取已分配用户并同步到选中状态。
  */
 async function getPartialOrganizationTree() {
   const res = await fetchAdminAssignmentGetPartialOrganizationTree({
@@ -148,10 +146,9 @@ async function getPartialOrganizationTree() {
     targetType: props.type === 'project' ? 1 : 2,
   })
 
-  selectedOrganizationTree.value = res
+  selectedUserIds.value = getUsers(res).map(user => user.userId)
+  pendingUserIds.value = []
 }
-
-getPartialOrganizationTree()
 
 /**
  * 确认当前选择的用户。
@@ -185,8 +182,18 @@ async function confirmSelectQuestions() {
   }
 }
 
-function openAllocateDialog() {
+async function openAllocateDialog() {
   visible.value = true
+
+  try {
+    await Promise.all([
+      getOrganizationTree(),
+      getPartialOrganizationTree(),
+    ])
+  }
+  catch {
+    ElNotification.error('获取已分配用户失败')
+  }
 }
 
 </script>
