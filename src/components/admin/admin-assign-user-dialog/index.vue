@@ -91,6 +91,36 @@ function togglePendingUser(userId: number, checked: boolean) {
     : pendingUserIds.value.filter(id => id !== userId)
 }
 
+/** 获取文件夹下当前可选的用户。 */
+function getDepartmentUsers(department: OrganizationTreeItem) {
+  return getUsers([department])
+}
+
+/** 获取文件夹复选框状态。 */
+function getDepartmentCheckedState(department: OrganizationTreeItem) {
+  const userIds = getDepartmentUsers(department).map(user => user.userId)
+
+  return userIds.length > 0 && userIds.every(userId => pendingUserIds.value.includes(userId))
+}
+
+/** 获取文件夹复选框半选状态。 */
+function getDepartmentIndeterminateState(department: OrganizationTreeItem) {
+  const userIds = getDepartmentUsers(department).map(user => user.userId)
+
+  const selectedCount = userIds.filter(userId => pendingUserIds.value.includes(userId)).length
+
+  return selectedCount > 0 && selectedCount < userIds.length
+}
+
+/** 切换文件夹下所有用户的待选状态。 */
+function toggleDepartmentUsers(department: OrganizationTreeItem, checked: boolean) {
+  const userIds = getDepartmentUsers(department).map(user => user.userId)
+
+  pendingUserIds.value = checked
+    ? Array.from(new Set([...pendingUserIds.value, ...userIds]))
+    : pendingUserIds.value.filter(userId => !userIds.includes(userId))
+}
+
 /** 从已选列表中移除指定组织及其所有后代组织的用户。 */
 function removeDepartment(department: OrganizationTreeItem) {
   const departmentUserIds = getUsers([department]).map(user => user.userId)
@@ -249,7 +279,14 @@ async function openAllocateDialog() {
               >
                 <div
                   class="flex items-center gap-2"
+                  @click.stop
                 >
+                  <el-checkbox
+                    :model-value="getDepartmentCheckedState(data)"
+                    :indeterminate="getDepartmentIndeterminateState(data)"
+                    @update:model-value="toggleDepartmentUsers(data, $event === true)"
+                  />
+
                   <el-icon>
                     <FolderOpened />
                   </el-icon>
