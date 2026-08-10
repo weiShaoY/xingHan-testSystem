@@ -115,6 +115,7 @@ declare global {
   const fetchClientCourseOutlineList: typeof import('../../apis/client/course/index').fetchClientCourseOutlineList
   const fetchClientCourseVideoFile: typeof import('../../apis/client/course/index').fetchClientCourseVideoFile
   const fetchClientCourseVideoInfo: typeof import('../../apis/client/course/index').fetchClientCourseVideoInfo
+  const fetchClientGetCourseProgress: typeof import('../../apis/client/course/index').fetchClientGetCourseProgress
   const fetchClientGetPublicKey: typeof import('../../apis/client/auth/index').fetchClientGetPublicKey
   const fetchClientGetUserInfo: typeof import('../../apis/client/auth/index').fetchClientGetUserInfo
   const fetchClientLogin: typeof import('../../apis/client/auth/index').fetchClientLogin
@@ -594,9 +595,9 @@ declare module 'vue' {
     readonly fetchAdminUploadFile: UnwrapRef<typeof import('../../apis/file/index')['fetchAdminUploadFile']>
     readonly fetchClientCourseDocumentFile: UnwrapRef<typeof import('../../apis/client/course/index')['fetchClientCourseDocumentFile']>
     readonly fetchClientCourseDocumentInfo: UnwrapRef<typeof import('../../apis/client/course/index')['fetchClientCourseDocumentInfo']>
-    readonly fetchClientCourseOutlineList: UnwrapRef<typeof import('../../apis/client/course/index')['fetchClientCourseOutlineList']>
     readonly fetchClientCourseVideoFile: UnwrapRef<typeof import('../../apis/client/course/index')['fetchClientCourseVideoFile']>
     readonly fetchClientCourseVideoInfo: UnwrapRef<typeof import('../../apis/client/course/index')['fetchClientCourseVideoInfo']>
+    readonly fetchClientGetCourseProgress: UnwrapRef<typeof import('../../apis/client/course/index')['fetchClientGetCourseProgress']>
     readonly fetchClientGetPublicKey: UnwrapRef<typeof import('../../apis/client/auth/index')['fetchClientGetPublicKey']>
     readonly fetchClientGetUserInfo: UnwrapRef<typeof import('../../apis/client/auth/index')['fetchClientGetUserInfo']>
     readonly fetchClientLogin: UnwrapRef<typeof import('../../apis/client/auth/index')['fetchClientLogin']>

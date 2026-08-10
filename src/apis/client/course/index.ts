@@ -4,15 +4,31 @@ import request from '@/apis/http'
  *  获取客户端 课程大纲列表
  *  @param couId 课程ID
  */
-export function fetchClientCourseOutlineList(couId: number) {
-  return request.post<ClientApi.Course.CourseOutlineListResponse>({
-    url: '/client/learningtask/outlinelist',
+// export function fetchClientCourseOutlineList(couId: number) {
+//   return request.post<ClientApi.Course.CourseOutlineListResponse>({
+//     url: '/client/learningtask/outlinelist',
+//     authPath: '/client',
+//     data: {
+//       couId,
+//     },
+//   })
+// }
+
+/**
+ *  获获取课程学习记录
+ *  @param couId 课程ID
+ */
+export function fetchClientGetCourseProgress(couId: number) {
+  return request.get<ClientApi.Course.CourseProgressResponse>({
+    url: '/client/learning/getCourseProgress',
     authPath: '/client',
-    data: {
+    params: {
       couId,
     },
   })
 }
+
+// / /////////// ////////////////////////  2026-08-10---15:45---星期一  ////////////////////////
 
 /**
  * 获取客户端 文档信息

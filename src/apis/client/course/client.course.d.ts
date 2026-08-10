@@ -6,7 +6,181 @@ export namespace Course {
   /**
    * 课程章节列表响应
    */
-  type CourseOutlineListResponse = AdminApi.Course.CourseOutlineListResponse
+  type ChaptersItem = {
+
+    /**
+     * 章节是否已完成
+     */
+    isCompleted: boolean
+
+    /**
+     * 学习进度（页数/具体位置）
+     */
+    learningProgressSpecific: number
+
+    /**
+     * 章节ID
+     */
+    olId: number
+
+    /**
+     * 章节层级
+     */
+    olLevel: number
+
+    /**
+     * 章节名称
+     */
+    olName: string
+
+    /**
+     * 父章节ID
+     */
+    olPID: number
+
+    /**
+     * 章节类型：1=章节，2=小节
+     */
+    olType: number
+
+    /**
+     * 学习进度百分比（0-100）
+     */
+    progress: number
+
+    /**
+     * 学习状态（0=未开始，1=学习中，2=已完成，3=已跳过）
+     */
+    status: number
+
+    /**
+     * 本章累计学习时长（秒）
+     */
+    totalLearningTime: number
+
+    /**
+     * 视频播放进度百分比（0-100）
+     */
+    videoProgress: number
+
+    /**
+     * 视频播放进度（秒）
+     */
+    videoTime: number
+  }
+
+  /**
+   *
+   */
+  type CourseProgressResponse = {
+
+    /**
+     * 已完成章节数量
+     */
+    completedChapters: number
+
+    /**
+     * 课程ID
+     */
+    courseId: number
+
+    /**
+     * 课程名称
+     */
+    courseName: string
+
+    /**
+     * 课程是否已完成
+     */
+    isCompleted: boolean
+
+    /**
+     * 整体学习进度百分比（0-100）
+     */
+    overallProgress: number
+
+    /**
+     * 课程总章节数量
+     */
+    totalChapters: number
+
+    /**
+     * 累计学习时长（秒）
+     */
+    totalStudyTime: number
+
+    /**
+     * 章节进度
+     */
+    currentChapter: {
+
+      /**
+       * 章节是否已完成
+       */
+      isCompleted?: boolean
+
+      /**
+       * 学习进度（页数/具体位置）
+       */
+      learningProgressSpecific?: number
+
+      /**
+       * 章节ID
+       */
+      olId?: number
+
+      /**
+       * 章节层级
+       */
+      olLevel?: number
+
+      /**
+       * 章节名称
+       */
+      olName?: null | string
+
+      /**
+       * 父章节ID
+       */
+      olPID?: number
+
+      /**
+       * 章节类型：1=章节，2=小节
+       */
+      olType?: number
+
+      /**
+       * 学习进度百分比（0-100）
+       */
+      progress?: number
+
+      /**
+       * 学习状态（0=未开始，1=学习中，2=已完成，3=已跳过）
+       */
+      status?: number
+
+      /**
+       * 本章累计学习时长（秒）
+       */
+      totalLearningTime?: number
+
+      /**
+       * 视频播放进度百分比（0-100）
+       */
+      videoProgress?: number | null
+
+      /**
+       * 视频播放进度（秒）
+       */
+      videoTime?: number | null
+    }
+
+    /**
+     * 所有章节的学习进度列表
+     */
+    chapters: ChaptersItem[]
+
+  }
 
   /**
    * 客户端 文档信息响应

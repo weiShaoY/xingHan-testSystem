@@ -22,20 +22,35 @@ const activeNames = ref<number[]>([])
  */
 const couId = computed(() => Number(route.params.couId || 0))
 
-const courseOutlineList = ref<ClientApi.Course.CourseOutlineListResponse>({
-  couChapterCount: 0,
-  couContent: '',
-  couId: 0,
-  couIntro: '',
-  couName: '',
-  couSectionCount: 0,
-  nodes: [],
+const courseProgress = ref<ClientApi.Course.CourseProgressResponse>({
+  completedChapters: 0,
+  courseId: 0,
+  courseName: '',
+  isCompleted: false,
+  overallProgress: 0,
+  totalChapters: 0,
+  totalStudyTime: 0,
+  currentChapter: {
+    isCompleted: false,
+    learningProgressSpecific: 0,
+    olId: 0,
+    olLevel: 0,
+    olName: '',
+    olPID: 0,
+    olType: 0,
+    progress: 0,
+    status: 0,
+    totalLearningTime: 0,
+    videoProgress: 0,
+    videoTime: 0,
+  },
+  chapters: [],
 })
 
 /**
  * 课程目录节点。
  */
-const courseNodes = computed(() => courseOutlineList.value.nodes || [])
+const courseNodes = computed(() => courseProgress.value.nodes || [])
 
 /**
  * 章节节点。
@@ -50,14 +65,14 @@ const independentSectionNodes = computed(() => courseNodes.value.filter(isSectio
 /**
  * 课程章节数量。
  */
-const chapterCount = computed(() => courseOutlineList.value.couChapterCount || chapterNodes.value.length)
+const chapterCount = computed(() => courseProgress.value.couChapterCount || chapterNodes.value.length)
 
 /**
  * 课程小节数量。
  */
 const sectionCount = computed(() => {
-  if (courseOutlineList.value.couSectionCount) {
-    return courseOutlineList.value.couSectionCount
+  if (courseProgress.value.couSectionCount) {
+    return courseProgress.value.couSectionCount
   }
 
   const chapterSectionCount = chapterNodes.value.reduce((total, chapter) => {
@@ -79,9 +94,10 @@ async function getClientCourseOutlineList(showSuccessToast = false) {
   loading.value = true
 
   try {
-    courseOutlineList.value = await fetchClientCourseOutlineList(couId.value)
+    courseProgress.value = await fetchClientGetCourseProgress(couId.value)
+    console.log('🚀 ~ file: index.vue:83 ~ courseProgress.value:', courseProgress.value)
 
-    setNavTitle(courseOutlineList.value?.couName)
+    setNavTitle(courseProgress.value?.couName)
 
     if (showSuccessToast) {
       window.$toast('刷新成功')
@@ -209,14 +225,14 @@ onMounted(() => {
           <h1
             class="m-0 wrap-break-word text-6 font-700 leading-1.3"
           >
-            {{ courseOutlineList.couName || DEFAULT_NAV_TITLE }}
+            {{ courseProgress.couName || DEFAULT_NAV_TITLE }}
           </h1>
 
           <p
-            v-if="courseOutlineList.couIntro"
+            v-if="courseProgress.couIntro"
             class="mt-3 mb-0 line-clamp-2 text-3.5 leading-1.65 text-white/85"
           >
-            {{ courseOutlineList.couIntro }}
+            {{ courseProgress.couIntro }}
           </p>
 
           <div
@@ -256,7 +272,7 @@ onMounted(() => {
         <p
           class="m-0 wrap-break-word text-3.5 leading-1.7 text-slate-600"
         >
-          {{ courseOutlineList.couContent || courseOutlineList.couIntro || '暂无课程简介，先从下方目录开始学习吧。' }}
+          {{ courseProgress.couContent || courseProgress.couIntro || '暂无课程简介，先从下方目录开始学习吧。' }}
         </p>
       </div>
 
