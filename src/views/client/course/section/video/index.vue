@@ -112,6 +112,7 @@ async function getCourseVideoInfo(sectionId = olId.value) {
 
   try {
     courseVideoInfo.value = await fetchClientCourseVideoInfo(sectionId)
+    currentTime.value = courseVideoInfo.value.videoStudyTime || 0
     setNavTitle(courseVideoInfo.value.couName)
 
     await getCourseVideoFile(currentRequestSeq)
@@ -223,14 +224,15 @@ async function recordVideoRecordProgress() {
 
 onMounted(() => {
   getCourseVideoInfo()
-  recordVideoRecordProgress()
 
   pageOpenTimer = setInterval(() => {
     pageOpenTime.value += 1
   }, 1000)
 
   recordProgressTimer = setInterval(() => {
-    recordVideoRecordProgress()
+    if (isPlaying.value) {
+      recordVideoRecordProgress()
+    }
   }, 5000)
 })
 
@@ -255,6 +257,7 @@ function handleVideoPlay() {
 /** 处理视频暂停事件。 */
 function handleVideoPause() {
   isPlaying.value = false
+  recordVideoRecordProgress()
 }
 
 /** 处理视频播放结束事件。 */
