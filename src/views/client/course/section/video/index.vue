@@ -1,13 +1,9 @@
 <script setup lang="ts">
 import { showFailToast } from 'vant'
 
-import { getClientSectionRoute } from '@/config/course'
-
 import { useClientNavTitle } from '@/hooks/core/useClientNavTitle'
 
 const route = useRoute()
-
-const router = useRouter()
 
 const loading = ref(false)
 
@@ -39,15 +35,9 @@ const olId = computed(() => {
 
 let requestSeq = 0
 
-watch(
-  olId,
-  () => {
-    getCourseVideoInfo()
-  },
-  {
-    immediate: true,
-  },
-)
+onMounted(() => {
+  getCourseVideoInfo()
+})
 
 onBeforeUnmount(() => {
   revokeVideoUrl()
@@ -57,7 +47,11 @@ onBeforeUnmount(() => {
 /**
  * 获取小节视频信息。
  */
-async function getCourseVideoInfo() {
+async function getCourseVideoInfo(sectionId = olId.value) {
+  if (!sectionId) {
+    return
+  }
+
   const currentRequestSeq = ++requestSeq
 
   loading.value = true
@@ -67,7 +61,7 @@ async function getCourseVideoInfo() {
   revokeVideoUrl()
 
   try {
-    courseVideoInfo.value = await fetchClientCourseVideoInfo(olId.value)
+    courseVideoInfo.value = await fetchClientCourseVideoInfo(sectionId)
     setNavTitle(courseVideoInfo.value.couName)
 
     await getCourseVideoFile(currentRequestSeq)
