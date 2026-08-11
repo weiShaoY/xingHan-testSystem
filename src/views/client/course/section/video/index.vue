@@ -1,4 +1,5 @@
 <script setup lang="ts">
+
 import { showFailToast } from 'vant'
 
 import { useClientNavTitle } from '@/hooks/core/useClientNavTitle'
@@ -11,9 +12,43 @@ const loadError = ref('')
 
 const videoUrl = ref('')
 
+/**
+   *  当前播放的时间点
+   */
 const currentTime = ref(0)
 
-const duration = ref(0)
+/**
+   *  视频是否播放完成
+   */
+const isVideoCompleted = ref(false)
+
+/**
+   *  视频总时长
+   */
+const totalVideoTime = ref(0)
+
+/**
+ * 当前小节 ID。
+ */
+const olId = computed(() => {
+  return Number(route.params.olId || 0)
+})
+
+const couId = computed(() => {
+  return Number(route.params.couId || 0)
+})
+
+/**
+   *  记录视频学习记录 参数
+   */
+const courseVideoRecordProgressParams = ref<ClientApi.Course.CourseVideoRecordProgressParams>({
+  couId: couId.value,
+  olId: olId.value,
+  isCompleted: false,
+  videoTime: 0,
+  totalLearningTime: 0,
+  totalVideoTime: 0,
+})
 
 const { setClientNavTitle, clearClientNavTitle } = useClientNavTitle()
 
@@ -25,13 +60,6 @@ const courseVideoInfo = ref<ClientApi.Course.CourseVideoInfoResponse>(createDefa
  * 是否存在可播放的视频地址。
  */
 const hasVideo = computed(() => Boolean(videoUrl.value))
-
-/**
- * 当前小节 ID。
- */
-const olId = computed(() => {
-  return Number(route.params.olId || 0)
-})
 
 let requestSeq = 0
 
@@ -48,7 +76,6 @@ async function getCourseVideoInfo(sectionId = olId.value) {
   loading.value = true
   loadError.value = ''
   currentTime.value = 0
-  duration.value = 0
   revokeVideoUrl()
 
   try {
@@ -130,7 +157,7 @@ function setNavTitle(title?: string) {
  */
 function handleVideoTimeUpdate(payload: { currentTime: number, duration: number }) {
   currentTime.value = payload.currentTime
-  duration.value = payload.duration
+  totalVideoTime.value = payload.duration
 }
 
 /**
@@ -164,17 +191,49 @@ function createDefaultCourseVideoInfo(): ClientApi.Course.CourseVideoInfoRespons
     previousOlId: 0,
     studyCount: 0,
     nodes: [],
+    nextNode: {
+      description: '',
+      id: 0,
+      itemType: '',
+      name: '',
+    },
   }
 }
+
+/**
+   *  当前页面打开时长
+   */
+const pageOpenTime = ref(0)
+
+setInterval(() => {
+  pageOpenTime.value += 1
+}, 1000)
 
 /**
  * 记录视频学习记录
  */
 async function recordVideoRecordProgress() {
+  try {
+    courseVideoRecordProgressParams.value = {
+      couId: couId.value,
+      olId: olId.value,
+      isCompleted: isVideoCompleted.value,
+      videoTime: currentTime.value,
+      totalLearningTime: pageOpenTime.value,
+      totalVideoTime: totalVideoTime.value,
+    }
 
+    await fetchClientCourseVideoRecordProgress(courseVideoRecordProgressParams.value)
+  }
+  catch (error) {
+    console.error('记录视频学习记录失败', error)
+  }
 }
 
 recordVideoRecordProgress()
+setInterval(() => {
+  recordVideoRecordProgress()
+}, 5000)
 </script>
 
 <template>
@@ -237,6 +296,7 @@ recordVideoRecordProgress()
           :disable-progress-drag="true"
           @timeupdate="handleVideoTimeUpdate"
           @error="handleVideoError"
+          @ended="isVideoCompleted = true"
         />
       </div>
     </section>

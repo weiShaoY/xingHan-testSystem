@@ -280,7 +280,7 @@ export namespace Course {
     previousOlId: number
 
     /**
-     * 学习数量
+     * 学习人数
      */
     studyCount: number
 
@@ -288,6 +288,32 @@ export namespace Course {
      *  当前学习进度秒数
      */
     videoStudyTime: number
+
+    /**
+     *  下一小节信息
+     */
+    nextNode: {
+
+      /**
+       * 备注
+       */
+      description: string
+
+      /**
+       * Id
+       */
+      id: number
+
+      /**
+       * 节点类型
+       */
+      itemType: string
+
+      /**
+       * 名称
+       */
+      name: string
+    }
 
     /**
      * 当前课程目录
@@ -307,14 +333,14 @@ export namespace Course {
     couId: number
 
     /**
-     * 是否完成
-     */
-    isCompleted: boolean
-
-    /**
      * 小节ID
      */
     olId: number
+
+    /**
+     * 是否完成
+     */
+    isCompleted: boolean
 
     /**
      * 小节总共学习时间
@@ -322,9 +348,9 @@ export namespace Course {
     totalLearningTime: number
 
     /**
-     * 小节视频进度
+     * 小节视频总时长
      */
-    videoProgress: number
+    totalVideoTime?: number | null
 
     /**
      * 小节视频播放时间

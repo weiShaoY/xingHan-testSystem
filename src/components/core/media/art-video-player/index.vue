@@ -23,14 +23,32 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits<{
+
+  /** 播放器准备完成时触发。 */
   ready: [player: Player]
+
+  /** 视频开始播放时触发。 */
   play: [player: Player]
+
+  /** 视频暂停时触发。 */
   pause: [player: Player]
+
+  /** 视频播放结束时触发。 */
   ended: [player: Player]
+
+  /** 播放器发生错误时触发。 */
   error: [error: unknown]
+
+  /** 播放进度更新时触发，返回当前播放时间与视频总时长。 */
   timeupdate: [
+
+    /** 播放进度信息。 */
     payload: {
+
+      /** 当前播放时间，单位秒。 */
       currentTime: number
+
+      /** 视频总时长，单位秒。 */
       duration: number
     },
   ]
