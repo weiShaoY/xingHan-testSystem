@@ -4,28 +4,18 @@ import { showFailToast } from 'vant'
 
 import { useClientNavTitle } from '@/hooks/core/useClientNavTitle'
 
+const DEFAULT_NAV_TITLE = '视频标题'
+
 const route = useRoute()
 
-const loading = ref(false)
-
-const loadError = ref('')
-
-const videoUrl = ref('')
+const { setClientNavTitle, clearClientNavTitle } = useClientNavTitle()
 
 /**
-   *  当前播放的时间点
-   */
-const currentTime = ref(0)
-
-/**
-   *  视频是否播放完成
-   */
-const isVideoCompleted = ref(false)
-
-/**
-   *  视频总时长
-   */
-const totalVideoTime = ref(0)
+ * 当前课程 ID。
+ */
+const couId = computed(() => {
+  return Number(route.params.couId || 0)
+})
 
 /**
  * 当前小节 ID。
@@ -34,13 +24,34 @@ const olId = computed(() => {
   return Number(route.params.olId || 0)
 })
 
-const couId = computed(() => {
-  return Number(route.params.couId || 0)
-})
+const loading = ref(false)
+
+const loadError = ref('')
+
+const videoUrl = ref('')
+
+/** 当前播放的时间点，单位秒。 */
+const currentTime = ref(0)
+
+/** 视频是否播放完成。 */
+const isVideoCompleted = ref(false)
+
+/** 视频总时长，单位秒。 */
+const totalVideoTime = ref(0)
+
+/** 当前页面打开时长，单位秒。 */
+const pageOpenTime = ref(0)
 
 /**
-   *  记录视频学习记录 参数
+   *  是否在播放中
    */
+const isPlaying = ref(false)
+
+const courseVideoInfo = ref<ClientApi.Course.CourseVideoInfoResponse>(createDefaultCourseVideoInfo())
+
+/**
+ * 记录视频学习进度的请求参数。
+ */
 const courseVideoRecordProgressParams = ref<ClientApi.Course.CourseVideoRecordProgressParams>({
   couId: couId.value,
   olId: olId.value,
@@ -50,18 +61,39 @@ const courseVideoRecordProgressParams = ref<ClientApi.Course.CourseVideoRecordPr
   totalVideoTime: 0,
 })
 
-const { setClientNavTitle, clearClientNavTitle } = useClientNavTitle()
-
-const DEFAULT_NAV_TITLE = '视频标题'
-
-const courseVideoInfo = ref<ClientApi.Course.CourseVideoInfoResponse>(createDefaultCourseVideoInfo())
-
 /**
  * 是否存在可播放的视频地址。
  */
 const hasVideo = computed(() => Boolean(videoUrl.value))
 
 let requestSeq = 0
+
+let pageOpenTimer: ReturnType<typeof setInterval> | undefined
+
+let recordProgressTimer: ReturnType<typeof setInterval> | undefined
+
+/**
+ * 创建默认视频信息。
+ */
+function createDefaultCourseVideoInfo(): ClientApi.Course.CourseVideoInfoResponse {
+  return {
+    accessoryId: 0,
+    couId: 0,
+    couName: '',
+    currentOlId: 0,
+    nextOlId: 0,
+    videoStudyTime: 0,
+    previousOlId: 0,
+    studyCount: 0,
+    nodes: [],
+    nextNode: {
+      description: '',
+      id: 0,
+      itemType: '',
+      name: '',
+    },
+  }
+}
 
 /**
  * 获取小节视频信息。
@@ -168,49 +200,8 @@ function handleVideoError() {
   showFailToast(loadError.value)
 }
 
-onMounted(() => {
-  getCourseVideoInfo()
-})
-
-onBeforeUnmount(() => {
-  revokeVideoUrl()
-  clearClientNavTitle()
-})
-
 /**
- * 创建默认视频信息。
- */
-function createDefaultCourseVideoInfo(): ClientApi.Course.CourseVideoInfoResponse {
-  return {
-    accessoryId: 0,
-    couId: 0,
-    couName: '',
-    currentOlId: 0,
-    nextOlId: 0,
-    videoStudyTime: 0,
-    previousOlId: 0,
-    studyCount: 0,
-    nodes: [],
-    nextNode: {
-      description: '',
-      id: 0,
-      itemType: '',
-      name: '',
-    },
-  }
-}
-
-/**
-   *  当前页面打开时长
-   */
-const pageOpenTime = ref(0)
-
-setInterval(() => {
-  pageOpenTime.value += 1
-}, 1000)
-
-/**
- * 记录视频学习记录
+ * 记录视频学习进度。
  */
 async function recordVideoRecordProgress() {
   try {
@@ -230,10 +221,48 @@ async function recordVideoRecordProgress() {
   }
 }
 
-recordVideoRecordProgress()
-setInterval(() => {
+onMounted(() => {
+  getCourseVideoInfo()
   recordVideoRecordProgress()
-}, 5000)
+
+  pageOpenTimer = setInterval(() => {
+    pageOpenTime.value += 1
+  }, 1000)
+
+  recordProgressTimer = setInterval(() => {
+    recordVideoRecordProgress()
+  }, 5000)
+})
+
+onBeforeUnmount(() => {
+  revokeVideoUrl()
+  clearClientNavTitle()
+
+  if (pageOpenTimer !== undefined) {
+    clearInterval(pageOpenTimer)
+  }
+
+  if (recordProgressTimer !== undefined) {
+    clearInterval(recordProgressTimer)
+  }
+})
+
+/** 处理视频播放开始事件。 */
+function handleVideoPlay() {
+  isPlaying.value = true
+}
+
+/** 处理视频暂停事件。 */
+function handleVideoPause() {
+  isPlaying.value = false
+}
+
+/** 处理视频播放结束事件。 */
+function handleVideoEnded() {
+  isPlaying.value = false
+  isVideoCompleted.value = true
+  recordVideoRecordProgress()
+}
 </script>
 
 <template>
@@ -296,7 +325,9 @@ setInterval(() => {
           :disable-progress-drag="true"
           @timeupdate="handleVideoTimeUpdate"
           @error="handleVideoError"
-          @ended="isVideoCompleted = true"
+          @play="handleVideoPlay"
+          @pause="handleVideoPause"
+          @ended="handleVideoEnded"
         />
       </div>
     </section>
