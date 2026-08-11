@@ -43,6 +43,11 @@ const totalVideoTime = ref(0)
 const pageOpenTime = ref(0)
 
 /**
+   *  播放开始时间
+   */
+const startTime = ref(new Date().toISOString())
+
+/**
    *  是否在播放中
    */
 const isPlaying = ref(false)
@@ -252,6 +257,7 @@ onBeforeUnmount(() => {
 /** 处理视频播放开始事件。 */
 function handleVideoPlay() {
   isPlaying.value = true
+  startTime.value = new Date().toISOString()
 }
 
 /** 处理视频暂停事件。 */
@@ -261,10 +267,24 @@ function handleVideoPause() {
 }
 
 /** 处理视频播放结束事件。 */
-function handleVideoEnded() {
+async function handleVideoEnded() {
   isPlaying.value = false
   isVideoCompleted.value = true
   recordVideoRecordProgress()
+
+  // 播放完后 记录完成视频记录
+  await fetchClientCourseVideoRecordPlayback({
+    couId: couId.value,
+    olId: olId.value,
+    durationSeconds: pageOpenTime.value,
+    isValid: true,
+    playbackSpeed: 1,
+    startProgress: 0,
+    endProgress: currentTime.value,
+    startTime: startTime.value,
+    endTime: new Date().toISOString(),
+
+  })
 }
 </script>
 

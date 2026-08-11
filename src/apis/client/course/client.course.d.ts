@@ -357,4 +357,55 @@ export namespace Course {
      */
     videoTime: number
   }
+
+  /**
+   * 记录完成视频记录
+   */
+  type CourseVideoRecordPlaybackParams = {
+
+    /**
+     * 课程ID
+     */
+    couId: number
+
+    /**
+     * 持续播放时间
+     */
+    durationSeconds: number
+
+    /**
+     * 播放结束进度
+     */
+    endProgress: number
+
+    /**
+     * 是否有效
+     */
+    isValid: boolean
+
+    /**
+     * 小节ID
+     */
+    olId: number
+
+    /**
+     * 播放速度
+     */
+    playbackSpeed: number
+
+    /**
+     * 播放开始进度
+     */
+    startProgress: number
+
+    /**
+     * 视频播放开始的世界时间
+     */
+    startTime: string
+
+    /**
+     * 视频结束时间
+     */
+    endTime: string
+  }
 }

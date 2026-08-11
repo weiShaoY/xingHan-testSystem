@@ -115,7 +115,10 @@ declare global {
   const fetchClientCourseOutlineList: typeof import('../../apis/client/course/index').fetchClientCourseOutlineList
   const fetchClientCourseVideoFile: typeof import('../../apis/client/course/index').fetchClientCourseVideoFile
   const fetchClientCourseVideoInfo: typeof import('../../apis/client/course/index').fetchClientCourseVideoInfo
+  const fetchClientCourseVideoPlayback: typeof import('../../apis/client/course/index').fetchClientCourseVideoPlayback
   const fetchClientCourseVideoRecord: typeof import('../../apis/client/course/index').fetchClientCourseVideoRecord
+  const fetchClientCourseVideoRecordComplete: typeof import('../../apis/client/course/index').fetchClientCourseVideoRecordComplete
+  const fetchClientCourseVideoRecordPlayback: typeof import('../../apis/client/course/index').fetchClientCourseVideoRecordPlayback
   const fetchClientCourseVideoRecordProgress: typeof import('../../apis/client/course/index').fetchClientCourseVideoRecordProgress
   const fetchClientGetCourseProgress: typeof import('../../apis/client/course/index').fetchClientGetCourseProgress
   const fetchClientGetPublicKey: typeof import('../../apis/client/auth/index').fetchClientGetPublicKey
@@ -598,6 +601,7 @@ declare module 'vue' {
     readonly fetchClientCourseDocumentInfo: UnwrapRef<typeof import('../../apis/client/course/index')['fetchClientCourseDocumentInfo']>
     readonly fetchClientCourseVideoFile: UnwrapRef<typeof import('../../apis/client/course/index')['fetchClientCourseVideoFile']>
     readonly fetchClientCourseVideoInfo: UnwrapRef<typeof import('../../apis/client/course/index')['fetchClientCourseVideoInfo']>
+    readonly fetchClientCourseVideoRecordPlayback: UnwrapRef<typeof import('../../apis/client/course/index')['fetchClientCourseVideoRecordPlayback']>
     readonly fetchClientCourseVideoRecordProgress: UnwrapRef<typeof import('../../apis/client/course/index')['fetchClientCourseVideoRecordProgress']>
     readonly fetchClientGetCourseProgress: UnwrapRef<typeof import('../../apis/client/course/index')['fetchClientGetCourseProgress']>
     readonly fetchClientGetPublicKey: UnwrapRef<typeof import('../../apis/client/auth/index')['fetchClientGetPublicKey']>

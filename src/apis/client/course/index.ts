@@ -99,3 +99,14 @@ export function fetchClientCourseVideoRecordProgress(data: ClientApi.Course.Cour
     data,
   })
 }
+
+/**
+ * 记录完成视频记录
+ */
+export function fetchClientCourseVideoRecordPlayback(data: ClientApi.Course.CourseVideoRecordPlaybackParams) {
+  return request.post<boolean>({
+    url: '/client/learning/recordVideoPlayback',
+    authPath: '/client',
+    data,
+  })
+}
