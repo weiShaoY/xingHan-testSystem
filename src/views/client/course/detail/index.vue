@@ -1,9 +1,9 @@
 <script lang="ts" setup>
+import type { SectionTypeConfig } from '@/config/course'
+
 import { getClientSectionRoute, getSectionTypeConfig } from '@/config/course'
 
 import { useClientNavTitle } from '@/hooks/core/useClientNavTitle'
-
-import CourseSectionItem from './components/CourseSectionItem.vue'
 
 const DEFAULT_NAV_TITLE = '课程详情'
 
@@ -15,6 +15,7 @@ const { setClientNavTitle, clearClientNavTitle } = useClientNavTitle()
 
 const loading = ref(false)
 
+/** 当前展开的章节。 */
 const activeNames = ref<number[]>([])
 
 /**
@@ -48,56 +49,38 @@ const courseProgress = ref<ClientApi.Course.CourseProgressResponse>({
 })
 
 /**
- * 课程目录节点。
+ * 课程学习记录。
  */
-const courseNodes = computed(() => courseProgress.value.nodes || [])
+const courseRecords = computed(() => courseProgress.value.chapters || [])
 
-/**
- * 章节节点。
- */
-const chapterNodes = computed(() => courseNodes.value.filter(isChapterNode))
+/** 章节记录。 */
+const chapterRecords = computed(() => courseRecords.value.filter(record => record.olType === 1))
 
-/**
- * 未归属章节的独立小节。
- */
-const independentSectionNodes = computed(() => courseNodes.value.filter(isSectionNode))
+/** 不属于任何章节的小节记录。 */
+const independentSectionRecords = computed(() => courseRecords.value.filter((record) => {
+  return record.olType === 2
+}))
 
 /**
  * 课程章节数量。
  */
-const chapterCount = computed(() => courseProgress.value.couChapterCount || chapterNodes.value.length)
-
-/**
- * 课程小节数量。
- */
-const sectionCount = computed(() => {
-  if (courseProgress.value.couSectionCount) {
-    return courseProgress.value.couSectionCount
-  }
-
-  const chapterSectionCount = chapterNodes.value.reduce((total, chapter) => {
-    return total + getChapterSectionCount(chapter)
-  }, 0)
-
-  return chapterSectionCount + independentSectionNodes.value.length
-})
+const chapterCount = computed(() => courseProgress.value.totalChapters)
 
 /**
  * 是否暂无课程目录。
  */
-const isEmpty = computed(() => courseNodes.value.length === 0)
+const isEmpty = computed(() => courseRecords.value.length === 0)
 
 /**
  *  获取课程章节列表
  */
-async function getClientCourseOutlineList(showSuccessToast = false) {
+async function getClientCourseProgress(showSuccessToast = false) {
   loading.value = true
 
   try {
     courseProgress.value = await fetchClientGetCourseProgress(couId.value)
-    console.log('🚀 ~ file: index.vue:83 ~ courseProgress.value:', courseProgress.value)
 
-    setNavTitle(courseProgress.value?.couName)
+    setNavTitle(courseProgress.value.courseName)
 
     if (showSuccessToast) {
       window.$toast('刷新成功')
@@ -110,37 +93,35 @@ async function getClientCourseOutlineList(showSuccessToast = false) {
 }
 
 /**
- * 判断目录节点是否是章节。
- *
- * @param node 课程目录节点。
- * @returns 是否是章节节点。
+ * 将学习时长格式化为易读文本。
  */
-function isChapterNode(
-  node: AdminApi.Course.CourseOutlineListNodesItem,
-): node is AdminApi.Course.Chapter {
-  return node.itemType === 'chapter'
+function formatStudyTime(seconds: number) {
+  if (seconds < 60) {
+    return `${seconds} 秒`
+  }
+
+  const minutes = Math.floor(seconds / 60)
+
+  const remainingSeconds = seconds % 60
+
+  return remainingSeconds ? `${minutes} 分 ${remainingSeconds} 秒` : `${minutes} 分`
 }
 
 /**
- * 判断目录节点是否是独立小节。
- *
- * @param node 课程目录节点。
- * @returns 是否是小节节点。
+ * 获取学习状态文本。
  */
-function isSectionNode(
-  node: AdminApi.Course.CourseOutlineListNodesItem,
-): node is AdminApi.Course.Section {
-  return node.itemType === 'section'
+function getLearningStatus(status: number) {
+  return ['未开始', '学习中', '已完成', '已跳过'][status] || '未开始'
 }
 
-/**
- * 获取章节下小节数量。
- *
- * @param chapter 章节节点。
- * @returns 章节下的小节数量。
- */
-function getChapterSectionCount(chapter: AdminApi.Course.Chapter) {
-  return chapter.sectionList?.length || 0
+/** 获取指定章节下的小节。 */
+function getChapterSections(chapter: ClientApi.Course.ChaptersItem) {
+  return chapter.children || []
+}
+
+/** 获取小节附件类型对应的图标配置。 */
+function getSectionType(section: ClientApi.Course.ChaptersItem): SectionTypeConfig {
+  return getSectionTypeConfig(section.olIsAccessory)
 }
 
 /**
@@ -157,8 +138,16 @@ function setNavTitle(title?: string) {
  * 下拉刷新。
  */
 function onRefresh() {
-  getClientCourseOutlineList(true)
+  getClientCourseProgress(true)
 }
+
+onBeforeUnmount(() => {
+  clearClientNavTitle()
+})
+
+onMounted(() => {
+  getClientCourseProgress()
+})
 
 /**
  * 点击课程小节。
@@ -167,26 +156,18 @@ function onRefresh() {
  *
  * @param section 小节数据。
  */
-function handleSection(section: AdminApi.Course.Section) {
+function handleSection(section: ClientApi.Course.ChaptersItem) {
   // ClientCourseSection
   const targetRoute = router.resolve({
-    name: getClientSectionRoute(section.sectionType),
+    name: getClientSectionRoute(section.olIsAccessory),
     params: {
       couId: couId.value,
-      olId: section.id,
+      olId: section.olId,
     },
   })
 
   router.push(targetRoute)
 }
-
-onBeforeUnmount(() => {
-  clearClientNavTitle()
-})
-
-onMounted(() => {
-  getClientCourseOutlineList()
-})
 </script>
 
 <template>
@@ -225,15 +206,8 @@ onMounted(() => {
           <h1
             class="m-0 wrap-break-word text-6 font-700 leading-1.3"
           >
-            {{ courseProgress.couName || DEFAULT_NAV_TITLE }}
+            {{ courseProgress.courseName || DEFAULT_NAV_TITLE }}
           </h1>
-
-          <p
-            v-if="courseProgress.couIntro"
-            class="mt-3 mb-0 line-clamp-2 text-3.5 leading-1.65 text-white/85"
-          >
-            {{ courseProgress.couIntro }}
-          </p>
 
           <div
             class="mt-5 flex items-center gap-5 text-3.5 text-white/90"
@@ -243,14 +217,14 @@ onMounted(() => {
             ><van-icon
               name="orders-o"
               size="16"
-            />{{ chapterCount }} 个章节</span>
+            />{{ courseProgress.completedChapters }}/{{ chapterCount }} 个章节</span>
 
             <span
               class="inline-flex items-center gap-1.5"
             ><van-icon
-              name="notes-o"
+              name="clock-o"
               size="16"
-            />{{ sectionCount }} 个小节</span>
+            />{{ formatStudyTime(courseProgress.totalStudyTime) }}</span>
           </div>
         </div>
       </div>
@@ -259,21 +233,39 @@ onMounted(() => {
         class="rounded-2xl border border-teal-100 bg-linear-to-r from-teal-50 to-white px-4 py-4 shadow-[0_8px_20px_rgb(15_23_42/4%)]"
       >
         <div
-          class="mb-2 flex items-center gap-2 text-3.75 text-slate-800 font-700"
+          class="flex items-center justify-between text-3.5 text-slate-700"
         >
-          <van-icon
-            name="description-o"
-            color="#0f766e"
-            size="17"
-          />
-          课程简介
+          <span
+            class="font-700"
+          >
+            课程进度
+          </span>
+
+          <span
+            class="text-teal-700 font-700"
+          >
+            {{ courseProgress.overallProgress }}%
+          </span>
         </div>
 
-        <p
-          class="m-0 wrap-break-word text-3.5 leading-1.7 text-slate-600"
+        <van-progress
+          class="mt-3"
+          :percentage="courseProgress.overallProgress"
+          stroke-width="8"
+          color="#0f766e"
+          track-color="#ccfbf1"
+          :show-pivot="false"
+        />
+
+        <div
+          v-if="courseProgress.currentChapter.olName"
+          class="mt-3 flex items-center gap-2 text-3.25 text-slate-500"
         >
-          {{ courseProgress.couContent || courseProgress.couIntro || '暂无课程简介，先从下方目录开始学习吧。' }}
-        </p>
+          <van-icon
+            name="play-circle-o"
+          />
+          当前学习：{{ courseProgress.currentChapter.olName }}
+        </div>
       </div>
 
       <div>
@@ -283,20 +275,20 @@ onMounted(() => {
           <h2
             class="m-0 text-5 text-slate-900 font-700"
           >
-            课程目录
+            学习目录
           </h2>
 
           <span
             class="text-3.25 text-slate-500"
           >
-            共 {{ sectionCount }} 个小节
+            共 {{ courseRecords.length }} 条学习记录
           </span>
         </div>
 
         <van-empty
           v-if="isEmpty"
           image="search"
-          description="暂无课程目录"
+          description="暂无学习记录"
           class="rounded-2xl bg-white"
         />
 
@@ -304,15 +296,15 @@ onMounted(() => {
           v-else
         >
           <van-collapse
-            v-if="chapterNodes.length"
+            v-if="chapterRecords.length"
             v-model="activeNames"
             class="course-collapse flex flex-col gap-3 bg-transparent"
             :border="false"
           >
             <van-collapse-item
-              v-for="(chapter, index) in chapterNodes"
-              :key="chapter.id"
-              :name="chapter.id"
+              v-for="(chapter, index) in chapterRecords"
+              :key="chapter.olId"
+              :name="chapter.olId"
               class="chapter-item overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_8px_20px_rgb(15_23_42/5%)]"
             >
               <template
@@ -322,7 +314,7 @@ onMounted(() => {
                   class="min-w-0 flex flex-1 items-center gap-3"
                 >
                   <div
-                    class="h-10 w-10 flex shrink-0 items-center justify-center rounded-xl bg-linear-to-br from-teal-600 to-cyan-500 text-4 text-white font-700 shadow-[0_6px_14px_rgb(13_148_136/20%)]"
+                    class="h-9 w-9 flex shrink-0 items-center justify-center rounded-xl bg-teal-600 text-3.5 text-white font-700"
                   >
                     {{ index + 1 }}
                   </div>
@@ -331,69 +323,149 @@ onMounted(() => {
                     class="min-w-0 flex-1"
                   >
                     <div
-                      class="truncate text-4 text-slate-900 font-700"
+                      class="truncate text-3.75 text-slate-900 font-700"
                     >
-                      {{ chapter.name }}
+                      {{ chapter.olName }}
                     </div>
 
                     <div
-                      class="mt-1 text-3.25 text-slate-500"
+                      class="mt-1 flex items-center gap-2 text-3 text-slate-500"
                     >
-                      {{ getChapterSectionCount(chapter) }} 个小节
+                      <span>{{ getChapterSections(chapter).length }} 个小节</span>
+
+                      <span>{{ getLearningStatus(chapter.status) }}</span>
                     </div>
                   </div>
+
+                  <span
+                    class="shrink-0 text-3.25 text-teal-700 font-700"
+                  >{{ chapter.progress }}%</span>
                 </div>
               </template>
 
               <div
-                v-if="chapter.description"
-                class="mb-3 rounded-xl bg-slate-50 px-3 py-2.5 text-3.25 leading-1.6 text-slate-500"
+                class="mb-3"
               >
-                {{ chapter.description }}
+                <van-progress
+                  :percentage="chapter.progress"
+                  stroke-width="5"
+                  :color="chapter.isCompleted ? '#16a34a' : '#0f766e'"
+                  :show-pivot="false"
+                />
               </div>
 
-              <template
-                v-if="getChapterSectionCount(chapter)"
+              <div
+                v-for="section in getChapterSections(chapter)"
+                :key="section.olId"
+                class="mb-2 rounded-xl bg-slate-50 px-3 py-3 last:mb-0 active:bg-slate-100"
+                @click="handleSection(section)"
               >
                 <div
-                  v-for="section in chapter.sectionList"
-                  :key="section.id"
-                  class="mb-3 rounded-xl border border-slate-100 bg-slate-50 px-3 py-3 last:mb-0 active:bg-slate-100"
-                  @click="handleSection(section)"
+                  class="flex items-center gap-3"
                 >
-                  <CourseSectionItem
-                    :section="section"
-                    inner
-                    :type-config="getSectionTypeConfig(section.sectionType)"
-                  />
-                </div>
-              </template>
+                  <div
+                    class="h-8 w-8 flex shrink-0 items-center justify-center rounded-lg text-white"
+                    :style="{ backgroundColor: getSectionType(section).sectionIconBgColor }"
+                  >
+                    <ArtSvgIcon
+                      :icon="getSectionType(section).sectionIcon"
+                      class="text-4.5"
+                    />
+                  </div>
 
-              <template
-                v-else
-              >
-                <div
-                  class="rounded-xl bg-slate-50 py-5 text-center text-3.25 text-slate-500"
-                >
-                  暂无小节
+                  <div
+                    class="min-w-0 flex-1"
+                  >
+                    <div
+                      class="truncate text-3.5 text-slate-800 font-600"
+                    >
+                      {{ section.olName }}
+                    </div>
+
+                    <div
+                      class="mt-1 flex items-center gap-2 text-3 text-slate-500"
+                    >
+                      <span>{{ getLearningStatus(section.status) }}</span>
+
+                      <span>{{ formatStudyTime(section.totalLearningTime) }}</span>
+                    </div>
+                  </div>
+
+                  <span
+                    class="shrink-0 text-3.25 text-teal-700 font-700"
+                  >{{ section.progress }}%</span>
                 </div>
-              </template>
+
+                <van-progress
+                  class="mt-2"
+                  :percentage="section.progress"
+                  stroke-width="4"
+                  :color="section.isCompleted ? '#16a34a' : '#0f766e'"
+                  :show-pivot="false"
+                />
+              </div>
+
+              <div
+                v-if="!getChapterSections(chapter).length"
+                class="rounded-xl bg-slate-50 py-4 text-center text-3.25 text-slate-500"
+              >
+                暂无小节
+              </div>
             </van-collapse-item>
           </van-collapse>
 
           <div
-            v-if="independentSectionNodes.length"
+            v-if="independentSectionRecords.length"
             class="mt-3 flex flex-col gap-3"
           >
             <div
-              v-for="section in independentSectionNodes"
-              :key="section.id"
-              class="rounded-2xl border border-slate-200 bg-white px-3 py-3 shadow-[0_8px_20px_rgb(15_23_42/5%)] active:bg-slate-50"
+              v-for="section in independentSectionRecords"
+              :key="section.olId"
+              class="rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-[0_8px_20px_rgb(15_23_42/5%)] active:bg-slate-50"
               @click="handleSection(section)"
             >
-              <CourseSectionItem
-                :section="section"
-                :type-config="getSectionTypeConfig(section.sectionType)"
+              <div
+                class="flex items-center gap-3"
+              >
+                <div
+                  class="h-9 w-9 flex shrink-0 items-center justify-center rounded-xl text-white"
+                  :style="{ backgroundColor: getSectionType(section).sectionIconBgColor }"
+                >
+                  <ArtSvgIcon
+                    :icon="getSectionType(section).sectionIcon"
+                    class="text-5"
+                  />
+                </div>
+
+                <div
+                  class="min-w-0 flex-1"
+                >
+                  <div
+                    class="truncate text-3.75 text-slate-900 font-700"
+                  >
+                    {{ section.olName }}
+                  </div>
+
+                  <div
+                    class="mt-1 flex items-center gap-2 text-3 text-slate-500"
+                  >
+                    <span>{{ getLearningStatus(section.status) }}</span>
+
+                    <span>{{ formatStudyTime(section.totalLearningTime) }}</span>
+                  </div>
+                </div>
+
+                <span
+                  class="shrink-0 text-3.25 text-teal-700 font-700"
+                >{{ section.progress }}%</span>
+              </div>
+
+              <van-progress
+                class="mt-3"
+                :percentage="section.progress"
+                stroke-width="5"
+                :color="section.isCompleted ? '#16a34a' : '#0f766e'"
+                :show-pivot="false"
               />
             </div>
           </div>
@@ -410,7 +482,7 @@ onMounted(() => {
   }
 
   :deep(.van-cell) {
-    min-height: 72px;
+    min-height: 68px;
     padding: 12px 14px;
   }
 

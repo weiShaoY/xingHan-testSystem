@@ -9,6 +9,11 @@ export namespace Course {
   type ChaptersItem = {
 
     /**
+     * 子节点列表
+     */
+    children?: ChaptersItem[]
+
+    /**
      * 章节是否已完成
      */
     isCompleted: boolean
@@ -67,6 +72,11 @@ export namespace Course {
      * 视频播放进度（秒）
      */
     videoTime: number
+
+    /**
+     * 附件类型（0=文档，1=视频，2=考试，3=问卷）
+     */
+    olIsAccessory: 0 | 1 | 2 | 3
   }
 
   /**
