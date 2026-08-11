@@ -80,7 +80,7 @@ export namespace Course {
   }
 
   /**
-   *
+   *  客户端 课程学习进度响应
    */
   type CourseProgressResponse = {
 
@@ -294,5 +294,41 @@ export namespace Course {
      */
     nodes: NodeBase[]
 
+  }
+
+  /**
+   *  记录视频学习记录
+   */
+  type CourseVideoRecordProgressParams = {
+
+    /**
+     * 课程ID
+     */
+    couId: number
+
+    /**
+     * 是否完成
+     */
+    isCompleted: boolean
+
+    /**
+     * 小节ID
+     */
+    olId: number
+
+    /**
+     * 小节总共学习时间
+     */
+    totalLearningTime: number
+
+    /**
+     * 小节视频进度
+     */
+    videoProgress: number
+
+    /**
+     * 小节视频播放时间
+     */
+    videoTime: number
   }
 }

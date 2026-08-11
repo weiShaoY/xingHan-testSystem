@@ -166,6 +166,15 @@ function createDefaultCourseVideoInfo(): ClientApi.Course.CourseVideoInfoRespons
     nodes: [],
   }
 }
+
+/**
+ * 记录视频学习记录
+ */
+async function recordVideoRecordProgress() {
+
+}
+
+recordVideoRecordProgress()
 </script>
 
 <template>
@@ -225,6 +234,7 @@ function createDefaultCourseVideoInfo(): ClientApi.Course.CourseVideoInfoRespons
           :autoplay="false"
           :volume="0.7"
           :playback-rates="[0.75, 1, 1.25, 1.5, 2]"
+          :disable-progress-drag="true"
           @timeupdate="handleVideoTimeUpdate"
           @error="handleVideoError"
         />

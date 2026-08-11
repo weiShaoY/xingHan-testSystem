@@ -2,6 +2,8 @@
 <script setup lang="ts">
 import Player from 'xgplayer'
 
+import Mobile from 'xgplayer/es/plugins/mobile'
+
 import 'xgplayer/dist/index.min.css'
 
 defineOptions({
@@ -17,6 +19,7 @@ const props = withDefaults(defineProps<Props>(), {
   volume: 1,
   loop: false,
   muted: false,
+  disableProgressDrag: false,
 })
 
 const emit = defineEmits<{
@@ -64,6 +67,12 @@ type Props = {
 
   /** 自定义播放器样式 */
   commonStyle?: VideoPlayerStyle
+
+  /** 是否禁用拖拽进度 */
+  isDraggingSeek?: boolean
+
+  /** 是否禁用拖拽进度 */
+  disableProgressDrag?: boolean
 }
 
 const localPlayerId = `art-video-player-${Math.random()
@@ -140,7 +149,7 @@ function initPlayer() {
     autoplay: props.autoplay,
 
     /** 启用截图功能 */
-    screenShot: true,
+    screenShot: false,
 
     /** 视频源URL */
     url: props.videoUrl,
@@ -150,6 +159,9 @@ function initPlayer() {
 
     /** 启用流式布局，自适应容器大小 */
     fluid: true,
+
+    /** 启用移动端交互插件 */
+    plugins: [Mobile],
 
     /** 可选的播放速率 */
     playbackRate: props.playbackRates,
@@ -167,6 +179,14 @@ function initPlayer() {
     commonStyle: {
       ...defaultStyle,
       ...props.commonStyle,
+    },
+
+    progress: {
+      /** 关闭滑块拖拽seek，不能拖动小圆点 */
+      closeMoveSeek: props.disableProgressDrag,
+
+      /** 关闭点击进度条跳转 */
+      isCloseClickSeek: props.disableProgressDrag,
     },
   })
 

@@ -86,3 +86,16 @@ export function fetchClientCourseVideoFile(asId: number) {
     },
   })
 }
+
+// # / //// ////////////////////////  2026-08-11---14:07---星期二  ////////////////////////
+
+/**
+ *  记录视频学习记录
+ */
+export function fetchClientCourseVideoRecordProgress(data: ClientApi.Course.CourseVideoRecordProgressParams) {
+  return request.post<boolean>({
+    url: '/client/learning/videoRecordProgress',
+    authPath: '/client',
+    data,
+  })
+}
