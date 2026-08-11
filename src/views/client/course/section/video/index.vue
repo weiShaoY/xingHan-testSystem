@@ -35,15 +35,6 @@ const olId = computed(() => {
 
 let requestSeq = 0
 
-onMounted(() => {
-  getCourseVideoInfo()
-})
-
-onBeforeUnmount(() => {
-  revokeVideoUrl()
-  clearClientNavTitle()
-})
-
 /**
  * 获取小节视频信息。
  */
@@ -150,6 +141,15 @@ function handleVideoError() {
   showFailToast(loadError.value)
 }
 
+onMounted(() => {
+  getCourseVideoInfo()
+})
+
+onBeforeUnmount(() => {
+  revokeVideoUrl()
+  clearClientNavTitle()
+})
+
 /**
  * 创建默认视频信息。
  */
@@ -177,11 +177,11 @@ function createDefaultCourseVideoInfo(): ClientApi.Course.CourseVideoInfoRespons
     >
 
       <div
-        class="min-h-0 flex flex-1 items-center justify-center overflow-hidden bg-slate-950 p-3"
+        class="min-h-0 flex flex-1 items-center justify-center overflow-hidden  p-3"
       >
         <div
           v-if="loading"
-          class="h-full min-h-80 w-full flex flex-col items-center justify-center gap-3 rounded-xl bg-slate-900 text-3.5 text-white/70"
+          class="h-full min-h-80 w-full flex flex-col items-center justify-center gap-3 rounded-xl  text-3.5 text-white/70"
         >
           <van-loading
             color="#ffffff"
@@ -191,7 +191,7 @@ function createDefaultCourseVideoInfo(): ClientApi.Course.CourseVideoInfoRespons
 
         <div
           v-else-if="loadError || !hasVideo"
-          class="h-full min-h-80 w-full flex flex-col items-center justify-center gap-4 rounded-xl bg-slate-900 px-6 text-center text-white/70"
+          class="h-full min-h-80 w-full flex flex-col items-center justify-center gap-4 rounded-xl  px-6 text-center text-white/70"
         >
           <van-icon
             name="video-o"
@@ -219,7 +219,7 @@ function createDefaultCourseVideoInfo(): ClientApi.Course.CourseVideoInfoRespons
           v-else
           :key="videoUrl"
           player-id="client-course-video-player"
-          class="w-full overflow-hidden rounded-xl bg-black"
+          class="w-full overflow-hidden rounded-xl "
           :video-url="videoUrl"
           :start-time="courseVideoInfo.videoStudyTime"
           :autoplay="false"
