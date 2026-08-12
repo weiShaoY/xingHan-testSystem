@@ -367,7 +367,7 @@ export namespace Course {
     /**
      * 小节视频总时长
      */
-    totalVideoTime?: number | null
+    totalVideoTime: number
 
     /**
      * 小节视频播放时间
