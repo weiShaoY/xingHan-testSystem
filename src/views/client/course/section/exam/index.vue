@@ -17,7 +17,7 @@ import { VueDraggable } from 'vue-draggable-plus'
 import QuestionBankSelectDialog from './QuestionBankSelectDialog.vue'
 
 defineOptions({
-  name: 'CourseSectionExam',
+  name: 'ClientCourseSectionExam',
 })
 
 const route = useRoute()

@@ -15,7 +15,7 @@ import {
 import { VueDraggable } from 'vue-draggable-plus'
 
 defineOptions({
-  name: 'CourseSectionExam',
+  name: 'ClientCourseSectionSurvey',
 })
 
 const route = useRoute()

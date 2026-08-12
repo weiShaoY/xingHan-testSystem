@@ -166,6 +166,8 @@ function handleSection(section: ClientApi.Course.ChaptersItem) {
     },
   })
 
+  console.log('🚀 ~ file: index.vue:170 ~ targetRoute:', targetRoute)
+
   router.push(targetRoute)
 }
 </script>
