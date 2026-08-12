@@ -110,3 +110,14 @@ export function fetchClientCourseVideoRecordPlayback(data: ClientApi.Course.Cour
     data,
   })
 }
+
+/**
+ *  记录文档学习记录
+ */
+export function fetchClientCourseDocumentRecordProgress(data: ClientApi.Course.CourseDocumentRecordProgressParams) {
+  return request.post<boolean>({
+    url: '/client/learning/pdfRecordProgress',
+    authPath: '/client',
+    data,
+  })
+}

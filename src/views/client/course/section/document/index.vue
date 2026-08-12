@@ -17,9 +17,20 @@ const totalPages = ref(0)
 
 const currentPage = ref(1)
 
+/** 文档加载完成后需要恢复的学习页码。 */
+const resumePage = ref(1)
+
 const { setClientNavTitle, clearClientNavTitle } = useClientNavTitle()
 
 const DEFAULT_NAV_TITLE = '文档标题'
+
+/** 当前页面打开时长，单位秒。 */
+const pageOpenTime = ref(0)
+
+/** PDF 已完成渲染，可以开始计时和记录学习进度。 */
+const isPdfReady = ref(false)
+
+let pageOpenTimer: ReturnType<typeof setInterval> | undefined
 
 /**
  * 当前编辑的小节 ID
@@ -36,12 +47,19 @@ const courseDocumentInfo = ref<ClientApi.Course.CourseDocumentInfoResponse>({
   nextOlId: 0,
   pdfStudyPage: 0,
   previousOlId: 0,
-  studyCount: 0,
+  previousNode: {
+    olId: 0,
+    olType: 0,
+  },
+  nextNode: {
+    olId: 0,
+    olType: 0,
+  },
   nodes: [],
 })
 
 const initialPage = computed(() => {
-  const page = Number(courseDocumentInfo.value.pdfStudyPage || 1)
+  const page = Number(resumePage.value || 1)
 
   return Number.isFinite(page) && page > 0 ? page : 1
 })
@@ -67,11 +85,15 @@ async function getCourseDocumentInfo() {
 
   loading.value = true
   loadError.value = ''
+  isPdfReady.value = false
+  pageOpenTime.value = 0
+  stopPageOpenTimer()
   revokePdfUrl()
   try {
     courseDocumentInfo.value = await fetchClientCourseDocumentInfo(olId.value)
     setNavTitle(courseDocumentInfo.value.couName)
-
+    resumePage.value = normalizePage(courseDocumentInfo.value.pdfStudyPage)
+    currentPage.value = resumePage.value
     await getCourseDocumentFile()
   }
   catch (error) {
@@ -81,6 +103,13 @@ async function getCourseDocumentInfo() {
   finally {
     loading.value = false
   }
+}
+
+/** 将接口返回的学习页码转换为有效页码。 */
+function normalizePage(page: number) {
+  const value = Number(page || 1)
+
+  return Number.isFinite(value) && value > 0 ? Math.floor(value) : 1
 }
 
 /**
@@ -133,6 +162,32 @@ onBeforeUnmount(() => {
 function handlePdfPageChange(payload: { currentPage: number, totalPages: number }) {
   currentPage.value = payload.currentPage
   totalPages.value = payload.totalPages
+
+  if (isPdfReady.value) {
+    recordDocumentProgress()
+  }
+}
+
+/** PDF 页面完成渲染后，开始统计本次有效阅读时长。 */
+function handlePdfLoaded(payload: { currentPage: number, totalPages: number }) {
+  currentPage.value = payload.currentPage
+  totalPages.value = payload.totalPages
+  isPdfReady.value = true
+  startPageOpenTimer()
+}
+
+function startPageOpenTimer() {
+  stopPageOpenTimer()
+  pageOpenTimer = setInterval(() => {
+    pageOpenTime.value += 1
+  }, 1000)
+}
+
+function stopPageOpenTimer() {
+  if (pageOpenTimer === undefined) { return }
+
+  clearInterval(pageOpenTimer)
+  pageOpenTimer = undefined
 }
 
 function goBackToCourse() {
@@ -149,10 +204,6 @@ function goBackToCourse() {
   router.back()
 }
 
-onMounted(() => {
-  getCourseDocumentInfo()
-})
-
 /**
  * 设置顶部导航标题。
  *
@@ -163,9 +214,36 @@ function setNavTitle(title?: string) {
   setClientNavTitle(title?.trim() || DEFAULT_NAV_TITLE)
 }
 
+/**
+ * 记录文档学习进度。
+ */
+async function recordDocumentProgress() {
+  if (!olId.value || !courseDocumentInfo.value.couId) { return }
+
+  try {
+    await fetchClientCourseDocumentRecordProgress({
+      olId: olId.value,
+      couId: courseDocumentInfo.value.couId,
+      totalPages: totalPages.value,
+      progressSpecific: currentPage.value,
+      totalLearningTime: pageOpenTime.value,
+    })
+  }
+  catch (error) {
+    console.error(error)
+  }
+}
+
+onMounted(() => {
+  getCourseDocumentInfo()
+})
+
 onBeforeUnmount(() => {
   clearClientNavTitle()
+
+  stopPageOpenTimer()
 })
+
 </script>
 
 <template>
@@ -238,6 +316,7 @@ onBeforeUnmount(() => {
       :loading="loading"
       :source="pdfUrl"
       :initial-page="initialPage"
+      @document-loaded="handlePdfLoaded"
       @page-change="handlePdfPageChange"
     />
 

@@ -192,6 +192,19 @@ export namespace Course {
 
   }
 
+  type PreviousNodeOrNextNode = {
+
+    /**
+     * 小节ID
+     */
+    olId: number
+
+    /**
+     * 小节类型（0=文档，1=视频，2=考试，3=问卷）
+     */
+    olType: 0 | 1 | 2 | 3
+  }
+
   /**
    * 客户端 文档信息响应
    */
@@ -233,9 +246,19 @@ export namespace Course {
     previousOlId: number
 
     /**
-     * 学习数量
+     * pdf学习到的页码
      */
-    studyCount: number
+    pdfStudyPage: number
+
+    /**
+     *  上一小节信息
+     */
+    previousNode: PreviousNodeOrNextNode
+
+    /**
+     *  下一小节信息
+     */
+    nextNode: PreviousNodeOrNextNode
 
     /**
      * 当前课程目录
@@ -290,30 +313,14 @@ export namespace Course {
     videoStudyTime: number
 
     /**
+     *  上一小节信息
+     */
+    previousNode: PreviousNodeOrNextNode
+
+    /**
      *  下一小节信息
      */
-    nextNode: {
-
-      /**
-       * 备注
-       */
-      description: string
-
-      /**
-       * Id
-       */
-      id: number
-
-      /**
-       * 节点类型
-       */
-      itemType: string
-
-      /**
-       * 名称
-       */
-      name: string
-    }
+    nextNode: PreviousNodeOrNextNode
 
     /**
      * 当前课程目录
@@ -407,5 +414,36 @@ export namespace Course {
      * 视频结束时间
      */
     endTime: string
+  }
+
+  /**
+   * 记录文档学习记录
+   */
+  type CourseDocumentRecordProgressParams = {
+
+    /**
+     * 课程ID
+     */
+    couId: number
+
+    /**
+     * 小节ID
+     */
+    olId: number
+
+    /**
+     * 当前学习到的页码
+     */
+    progressSpecific: number
+
+    /**
+     * 总页码数
+     */
+    totalPages: number
+
+    /**
+     * 小节总共学习时间
+     */
+    totalLearningTime: number
   }
 }

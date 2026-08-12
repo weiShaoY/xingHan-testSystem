@@ -91,11 +91,14 @@ function createDefaultCourseVideoInfo(): ClientApi.Course.CourseVideoInfoRespons
     previousOlId: 0,
     studyCount: 0,
     nodes: [],
+
+    previousNode: {
+      olId: 0,
+      olType: 0,
+    },
     nextNode: {
-      description: '',
-      id: 0,
-      itemType: '',
-      name: '',
+      olId: 0,
+      olType: 0,
     },
   }
 }

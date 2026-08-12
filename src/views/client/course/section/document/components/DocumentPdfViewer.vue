@@ -28,6 +28,12 @@ const props = withDefaults(defineProps<{
 })
 
 const emit = defineEmits<{
+  'document-loaded': [
+    payload: {
+      currentPage: number
+      totalPages: number
+    },
+  ]
   'page-change': [
     payload: {
       currentPage: number
@@ -156,6 +162,10 @@ function handleDocumentLoad(document: { numPages?: number }) {
   currentPage.value = Math.min(normalizedInitialPage.value, totalPages.value || normalizedInitialPage.value)
   pageInput.value = String(currentPage.value)
   emitPageChange()
+  emit('document-loaded', {
+    currentPage: currentPage.value,
+    totalPages: totalPages.value,
+  })
   nextTick(() => {
     updatePageBaseWidth()
   })
