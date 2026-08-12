@@ -110,6 +110,8 @@ declare global {
   const fetchAdminQuestionSetting: typeof import('../../apis/admin/question/index').fetchAdminQuestionSetting
   const fetchAdminQuestionUpdate: typeof import('../../apis/admin/question/index').fetchAdminQuestionUpdate
   const fetchAdminUploadFile: typeof import('../../apis/file/index').fetchAdminUploadFile
+  const fetchClientCourseCompleteChapter: typeof import('../../apis/client/course/index').fetchClientCourseCompleteChapter
+  const fetchClientCourseCompleteSection: typeof import('../../apis/client/course/index').fetchClientCourseCompleteSection
   const fetchClientCourseDocumentFile: typeof import('../../apis/client/course/index').fetchClientCourseDocumentFile
   const fetchClientCourseDocumentInfo: typeof import('../../apis/client/course/index').fetchClientCourseDocumentInfo
   const fetchClientCourseDocumentRecordProgress: typeof import('../../apis/client/course/index').fetchClientCourseDocumentRecordProgress
@@ -598,6 +600,7 @@ declare module 'vue' {
     readonly fetchAdminQuestionSetting: UnwrapRef<typeof import('../../apis/admin/question/index')['fetchAdminQuestionSetting']>
     readonly fetchAdminQuestionUpdate: UnwrapRef<typeof import('../../apis/admin/question/index')['fetchAdminQuestionUpdate']>
     readonly fetchAdminUploadFile: UnwrapRef<typeof import('../../apis/file/index')['fetchAdminUploadFile']>
+    readonly fetchClientCourseCompleteChapter: UnwrapRef<typeof import('../../apis/client/course/index')['fetchClientCourseCompleteChapter']>
     readonly fetchClientCourseDocumentFile: UnwrapRef<typeof import('../../apis/client/course/index')['fetchClientCourseDocumentFile']>
     readonly fetchClientCourseDocumentInfo: UnwrapRef<typeof import('../../apis/client/course/index')['fetchClientCourseDocumentInfo']>
     readonly fetchClientCourseDocumentRecordProgress: UnwrapRef<typeof import('../../apis/client/course/index')['fetchClientCourseDocumentRecordProgress']>

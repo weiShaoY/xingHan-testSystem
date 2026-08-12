@@ -121,3 +121,14 @@ export function fetchClientCourseDocumentRecordProgress(data: ClientApi.Course.C
     data,
   })
 }
+
+/**
+ * 完成章节
+ */
+export function fetchClientCourseCompleteChapter(params: ClientApi.Course.CourseCompleteChapterParams) {
+  return request.get<boolean>({
+    url: '/client/learning/completeChapter',
+    authPath: '/client',
+    params,
+  })
+}

@@ -456,4 +456,20 @@ export namespace Course {
      */
     totalLearningTime: number
   }
+
+  /**
+   *  完成章节请求参数
+   */
+  type CourseCompleteChapterParams = {
+
+    /**
+     * 课程ID
+     */
+    couId: number
+
+    /**
+     * 章节ID
+     */
+    olId: number
+  }
 }

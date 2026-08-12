@@ -175,6 +175,14 @@ function handlePdfLoaded(payload: { currentPage: number, totalPages: number }) {
   startPageOpenTimer()
 }
 
+/** 文档首次阅读至最后一页。 */
+async function handleReachedLastPage() {
+  await fetchClientCourseCompleteChapter({
+    couId: courseDocumentInfo.value.couId,
+    olId: olId.value,
+  })
+}
+
 function startPageOpenTimer() {
   stopPageOpenTimer()
   pageOpenTimer = setInterval(() => {
@@ -282,6 +290,7 @@ onBeforeUnmount(() => {
       :initial-page="initialPage"
       @document-loaded="handlePdfLoaded"
       @page-change="handlePdfPageChange"
+      @reached-last-page="handleReachedLastPage"
     />
 
     <van-empty

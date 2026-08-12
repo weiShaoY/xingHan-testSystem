@@ -34,6 +34,12 @@ const emit = defineEmits<{
       totalPages: number
     },
   ]
+  'reached-last-page': [
+    payload: {
+      currentPage: number
+      totalPages: number
+    },
+  ]
   'page-change': [
     payload: {
       currentPage: number
@@ -166,6 +172,7 @@ function handleDocumentLoad(document: { numPages?: number }) {
     currentPage: currentPage.value,
     totalPages: totalPages.value,
   })
+  checkReachedLastPage()
   nextTick(() => {
     updatePageBaseWidth()
   })
@@ -237,6 +244,7 @@ function goToPage(page: number) {
   currentPage.value = Math.min(maxPage, Math.max(1, Math.round(page)))
   pageInput.value = String(currentPage.value)
   emitPageChange()
+  checkReachedLastPage()
 
   if (isFullscreen.value) {
     nextTick(() => {
@@ -340,6 +348,19 @@ function handleKeydown(event: KeyboardEvent) {
  */
 function emitPageChange() {
   emit('page-change', {
+    currentPage: currentPage.value,
+    totalPages: totalPages.value,
+  })
+}
+
+/**
+ * 检查是否已阅读至文档最后一页。
+ * 每次跳转至最后一页时通知父组件。
+ */
+function checkReachedLastPage() {
+  if (!totalPages.value || currentPage.value < totalPages.value) { return }
+
+  emit('reached-last-page', {
     currentPage: currentPage.value,
     totalPages: totalPages.value,
   })
