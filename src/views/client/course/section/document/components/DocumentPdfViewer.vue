@@ -44,6 +44,8 @@ const ZOOM_SCALE_STEP = 0.25
 
 const DEFAULT_PAGE_WIDTH = 760
 
+const pageInput = ref('1')
+
 /**
  * PDF 总页数。
  */
@@ -58,6 +60,8 @@ const currentPage = ref(1)
  * 全屏阅读器根节点，用于页面内全屏时重置滚动位置。
  */
 const fullscreenViewerRef = ref<HTMLElement>()
+
+const viewerRef = ref<HTMLElement>()
 
 /**
  * 当前是否处于全屏阅读模式。
@@ -121,6 +125,7 @@ watch(
   () => {
     totalPages.value = 0
     currentPage.value = normalizedInitialPage.value
+    pageInput.value = String(currentPage.value)
     emitPageChange()
   },
 )
@@ -135,6 +140,7 @@ watch(
       currentPage.value = page
     }
 
+    pageInput.value = String(currentPage.value)
     emitPageChange()
   },
   {
@@ -148,6 +154,7 @@ watch(
 function handleDocumentLoad(document: { numPages?: number }) {
   totalPages.value = document.numPages || 0
   currentPage.value = Math.min(normalizedInitialPage.value, totalPages.value || normalizedInitialPage.value)
+  pageInput.value = String(currentPage.value)
   emitPageChange()
   nextTick(() => {
     updatePageBaseWidth()
@@ -203,7 +210,22 @@ function updatePageBaseWidth() {
  * 切换到上一页。
  */
 function goToPreviousPage() {
-  currentPage.value = Math.max(1, currentPage.value - 1)
+  goToPage(currentPage.value - 1)
+}
+
+/**
+ * 切换到下一页。
+ */
+function goToNextPage() {
+  goToPage(currentPage.value + 1)
+}
+
+/** 跳转到指定页面，并在全屏模式保持阅读位置。 */
+function goToPage(page: number) {
+  const maxPage = totalPages.value || 1
+
+  currentPage.value = Math.min(maxPage, Math.max(1, Math.round(page)))
+  pageInput.value = String(currentPage.value)
   emitPageChange()
 
   if (isFullscreen.value) {
@@ -213,17 +235,15 @@ function goToPreviousPage() {
   }
 }
 
-/**
- * 切换到下一页。
- */
-function goToNextPage() {
-  currentPage.value = Math.min(totalPages.value, currentPage.value + 1)
-  emitPageChange()
+/** 校验手动输入的页码。 */
+function handlePageInput() {
+  const page = Number(pageInput.value)
 
-  if (isFullscreen.value) {
-    nextTick(() => {
-      scrollFullscreenToCurrentPage()
-    })
+  if (Number.isFinite(page) && page > 0) {
+    goToPage(page)
+  }
+  else {
+    pageInput.value = String(currentPage.value)
   }
 }
 
@@ -260,6 +280,51 @@ function updateZoom(step: number) {
   }
 }
 
+/** 恢复默认阅读缩放。 */
+function resetZoom() {
+  zoomScale.value = 1
+}
+
+/** 切换浏览器原生全屏阅读。 */
+async function toggleFullscreen() {
+  const element = viewerRef.value
+
+  if (!element) { return }
+
+  try {
+    if (document.fullscreenElement) {
+      await document.exitFullscreen()
+    }
+    else {
+      await element.requestFullscreen()
+    }
+  }
+  catch (error) {
+    console.error('切换全屏阅读失败', error)
+  }
+}
+
+function handleFullscreenChange() {
+  isFullscreen.value = document.fullscreenElement === viewerRef.value
+
+  if (isFullscreen.value) {
+    nextTick(scrollFullscreenToCurrentPage)
+  }
+}
+
+function handleKeydown(event: KeyboardEvent) {
+  if (!hasPdf.value || event.target instanceof HTMLInputElement) { return }
+
+  if (event.key === 'ArrowLeft') {
+    event.preventDefault()
+    goToPreviousPage()
+  }
+  else if (event.key === 'ArrowRight') {
+    event.preventDefault()
+    goToNextPage()
+  }
+}
+
 /**
  * 向父组件同步当前页码和总页数。
  */
@@ -269,15 +334,26 @@ function emitPageChange() {
     totalPages: totalPages.value,
   })
 }
+
+onMounted(() => {
+  document.addEventListener('fullscreenchange', handleFullscreenChange)
+  window.addEventListener('keydown', handleKeydown)
+})
+
+onBeforeUnmount(() => {
+  document.removeEventListener('fullscreenchange', handleFullscreenChange)
+  window.removeEventListener('keydown', handleKeydown)
+})
 </script>
 
 <template>
   <div
+    ref="viewerRef"
     class="document-pdf-viewer h-full min-h-0 flex flex-1 flex-col gap-5 overflow-hidden"
   >
     <div
       v-if="hasPdf"
-      class="document-pdf-toolbar  flex flex-wrap items-center justify-between gap-4 p-3"
+      class="document-pdf-toolbar flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white p-3 shadow-sm"
     >
       <div
         class="flex items-center gap-2"
@@ -291,11 +367,20 @@ function emitPageChange() {
           @click="goToPreviousPage"
         />
 
-        <span
-          class="text-3.5 text-slate-600"
+        <div
+          class="flex items-center gap-1 text-3.5 text-slate-600"
         >
-          {{ currentPage }} / {{ totalPages || 0 }}
-        </span>
+          <input
+            v-model="pageInput"
+            class="h-8 w-11 border border-slate-200 rounded-lg bg-slate-50 px-1 text-center text-3.5 outline-none focus:border-teal-500"
+            inputmode="numeric"
+            aria-label="跳转页码"
+            @change="handlePageInput"
+            @keyup.enter="handlePageInput"
+          >
+
+          <span>/ {{ totalPages || 0 }}</span>
+        </div>
 
         <van-button
           plain
@@ -305,6 +390,24 @@ function emitPageChange() {
           icon-position="right"
           :disabled="currentPage >= totalPages"
           @click="goToNextPage"
+        />
+
+        <van-button
+          plain
+          size="small"
+          type="primary"
+          icon="replay"
+          aria-label="恢复默认缩放"
+          @click="resetZoom"
+        />
+
+        <van-button
+          plain
+          size="small"
+          type="primary"
+          :icon="isFullscreen ? 'shrink' : 'expand-o'"
+          :aria-label="isFullscreen ? '退出全屏阅读' : '全屏阅读'"
+          @click="toggleFullscreen"
         />
 
       </div>
@@ -341,6 +444,7 @@ function emitPageChange() {
     </div>
 
     <div
+      ref="fullscreenViewerRef"
       class="document-pdf-panel scrollbar-hide min-h-0 flex-1 overflow-auto rounded-2xl border border-slate-200 bg-slate-100 shadow-[0_10px_24px_rgb(15_23_42/6%)]"
     >
       <div
@@ -386,6 +490,16 @@ function emitPageChange() {
     background: #fff;
     box-shadow: 0 8px 18px rgb(15 23 42 / 8%);
   }
+}
+
+.document-pdf-viewer:fullscreen {
+  gap: 12px;
+  padding: 12px;
+  background: #f1f5f9;
+}
+
+.document-pdf-viewer:fullscreen .document-pdf-panel {
+  border-radius: 12px;
 }
 
 .scrollbar-hide {

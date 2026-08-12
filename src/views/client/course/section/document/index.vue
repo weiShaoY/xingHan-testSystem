@@ -5,7 +5,11 @@ import DocumentPdfViewer from './components/DocumentPdfViewer.vue'
 
 const route = useRoute()
 
+const router = useRouter()
+
 const loading = ref(false)
+
+const loadError = ref('')
 
 const pdfUrl = ref('')
 
@@ -42,11 +46,28 @@ const initialPage = computed(() => {
   return Number.isFinite(page) && page > 0 ? page : 1
 })
 
+const readingProgress = computed(() => {
+  if (!totalPages.value) { return 0 }
+
+  return Math.min(100, Math.round((currentPage.value / totalPages.value) * 100))
+})
+
+const completedPages = computed(() => {
+  return Math.min(currentPage.value, totalPages.value || currentPage.value)
+})
+
 /**
  *  获取小节 文档信息
  */
 async function getCourseDocumentInfo() {
+  if (!olId.value) {
+    loadError.value = '未找到可学习的文档'
+    return
+  }
+
   loading.value = true
+  loadError.value = ''
+  revokePdfUrl()
   try {
     courseDocumentInfo.value = await fetchClientCourseDocumentInfo(olId.value)
     setNavTitle(courseDocumentInfo.value.couName)
@@ -55,6 +76,7 @@ async function getCourseDocumentInfo() {
   }
   catch (error) {
     console.error(error)
+    loadError.value = '文档加载失败，请稍后重试'
   }
   finally {
     loading.value = false
@@ -65,6 +87,11 @@ async function getCourseDocumentInfo() {
  *  获取小节 文档信息数据流
  */
 async function getCourseDocumentFile() {
+  if (!courseDocumentInfo.value.accessoryId) {
+    loadError.value = '暂无可预览的文档'
+    return
+  }
+
   try {
     const res = await fetchClientCourseDocumentFile(courseDocumentInfo.value.accessoryId)
 
@@ -72,6 +99,7 @@ async function getCourseDocumentFile() {
   }
   catch (error) {
     console.error(error)
+    loadError.value = '文档文件加载失败，请稍后重试'
   }
 }
 
@@ -107,6 +135,20 @@ function handlePdfPageChange(payload: { currentPage: number, totalPages: number 
   totalPages.value = payload.totalPages
 }
 
+function goBackToCourse() {
+  if (courseDocumentInfo.value.couId) {
+    router.push({
+      name: 'ClientCourseDetail',
+      params: {
+        couId: courseDocumentInfo.value.couId,
+      },
+    })
+    return
+  }
+
+  router.back()
+}
+
 onMounted(() => {
   getCourseDocumentInfo()
 })
@@ -130,12 +172,88 @@ onBeforeUnmount(() => {
   <div
     class="h-full min-h-0 flex flex-1 flex-col gap-4 overflow-hidden pb-4"
   >
+    <section
+      class="rounded-2xl border border-teal-100 bg-linear-to-r from-teal-50 via-white to-cyan-50 px-4 py-4 shadow-[0_8px_20px_rgb(15_23_42/4%)]"
+    >
+      <div
+        class="flex items-start justify-between gap-3"
+      >
+        <div
+          class="min-w-0"
+        >
+          <div
+            class="mb-1 flex items-center gap-1.5 text-3 text-teal-700 font-600"
+          >
+            <van-icon
+              name="description-o"
+              size="16"
+            />
+            课程文档
+          </div>
+
+          <h1
+            class="m-0 truncate text-4.5 text-slate-900 font-700"
+          >
+            {{ courseDocumentInfo.couName || DEFAULT_NAV_TITLE }}
+          </h1>
+        </div>
+
+        <van-button
+          plain
+          size="small"
+          type="primary"
+          icon="orders-o"
+          @click="goBackToCourse"
+        >
+          课程目录
+        </van-button>
+      </div>
+
+      <div
+        v-if="totalPages"
+        class="mt-4"
+      >
+        <div
+          class="mb-2 flex items-center justify-between text-3.25 text-slate-500"
+        >
+          <span>已阅读 {{ completedPages }} / {{ totalPages }} 页</span>
+
+          <span
+            class="text-teal-700 font-700"
+          >{{ readingProgress }}%</span>
+        </div>
+
+        <van-progress
+          :percentage="readingProgress"
+          :show-pivot="false"
+          stroke-width="7"
+          color="#0f766e"
+          track-color="#ccfbf1"
+        />
+      </div>
+    </section>
 
     <DocumentPdfViewer
+      v-if="!loadError || pdfUrl"
       :loading="loading"
       :source="pdfUrl"
       :initial-page="initialPage"
       @page-change="handlePdfPageChange"
     />
+
+    <van-empty
+      v-else
+      image="error"
+      :description="loadError"
+      class="min-h-0 flex-1 rounded-2xl bg-white"
+    >
+      <van-button
+        size="small"
+        type="primary"
+        @click="getCourseDocumentInfo"
+      >
+        重新加载
+      </van-button>
+    </van-empty>
   </div>
 </template>
