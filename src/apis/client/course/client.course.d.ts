@@ -550,4 +550,48 @@ export namespace Course {
      */
     nodes: NodeBase[]
   }
+
+  type CourseExamSubmitParamsAnswersItem = {
+
+    /**
+     * 答题状态（0=未做，1=已做，2=标记待定）
+     */
+    answerStatus: number
+
+    /**
+     * 本题答题耗时（秒）
+     */
+    answerTime: number
+
+    /**
+     * 题目ID
+     */
+    qusId: number
+
+    /**
+     * 用户作答的答案
+     */
+    userAnswer: string
+  }
+
+  /**
+   *  提交考试请求参数
+   */
+  type CourseExamSubmitParams = {
+
+    /**
+     * 考试用时（秒）
+     */
+    durationSeconds: number
+
+    /**
+     * 考试ID
+     */
+    examId: number
+
+    /**
+     * 答题记录列表
+     */
+    answers: CourseExamSubmitParamsAnswersItem[]
+  }
 }

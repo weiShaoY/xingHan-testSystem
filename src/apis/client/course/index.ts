@@ -138,10 +138,21 @@ export function fetchClientCourseCompleteChapter(params: ClientApi.Course.Course
  */
 export function fetchClientCourseExamInfo(olId: number) {
   return request.get<ClientApi.Course.CourseExamInfoResponse>({
-    url: '/client/learning/getExamInfo',
+    url: '/client/testpaper/getQuestionPaperInfo',
     authPath: '/client',
     params: {
       olId,
     },
+  })
+}
+
+/**
+ *  提交考试
+ */
+export function fetchClientCourseExamSubmit(data: ClientApi.Course.CourseExamSubmitParams) {
+  return request.post<boolean>({
+    url: '/client/learning/submitExam',
+    authPath: '/client',
+    data,
   })
 }
