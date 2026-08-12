@@ -472,4 +472,82 @@ export namespace Course {
      */
     olId: number
   }
+
+  type CourseExamInfoResponseQuestionsItem = {
+
+    /**
+     * 难度
+     */
+    qusDiff: number
+
+    /**
+     * 题目解析
+     */
+    qusExplain: string
+
+    /**
+     * 题目Id
+     */
+    qusId: number
+
+    /**
+     * 分数
+     */
+    qusScore: number
+
+    /**
+     * 题干
+     */
+    qusTitle: string
+
+    /**
+     * 题目类型
+     */
+    qusType: number
+
+    /**
+     * 题目选项
+     */
+    qusItems: AnswerItemDto[]
+  }
+
+  /**
+   *  获取考试信息响应
+   */
+  type CourseExamInfoResponse = {
+
+    /**
+     * 课程ID
+     */
+    couId?: number
+
+    /**
+     * 课程名称
+     */
+    couName: string
+
+    /**
+     * 当前学习小节ID
+     */
+    currentOlId: number
+
+    /**
+     * 试卷名称
+     */
+    testPaperName: string
+
+    nextNode: PreviousNodeOrNextNode
+
+    previousNode: PreviousNodeOrNextNode
+
+    /**
+     * 题目列表
+     */
+    questions: AdminApi.Question.Question[]
+
+    /**
+     * 课程树形
+     */
+    nodes: NodeBase[]
+  }
 }
