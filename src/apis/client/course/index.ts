@@ -132,3 +132,16 @@ export function fetchClientCourseCompleteChapter(params: ClientApi.Course.Course
     params,
   })
 }
+
+/**
+ *  获取客户端 考试信息
+ */
+export function fetchClientCourseExamInfo(olId: number) {
+  return request.get<ClientApi.Course.CourseExamInfoResponse>({
+    url: '/client/learning/getExamInfo',
+    authPath: '/client',
+    params: {
+      olId,
+    },
+  })
+}
