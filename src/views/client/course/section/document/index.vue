@@ -5,8 +5,6 @@ import DocumentPdfViewer from './components/DocumentPdfViewer.vue'
 
 const route = useRoute()
 
-const router = useRouter()
-
 const loading = ref(false)
 
 const loadError = ref('')
@@ -44,6 +42,7 @@ const courseDocumentInfo = ref<ClientApi.Course.CourseDocumentInfoResponse>({
   couId: 0,
   couName: '',
   currentOlId: 0,
+  olName: '',
   nextOlId: 0,
   pdfStudyPage: 0,
   previousOlId: 0,
@@ -190,20 +189,6 @@ function stopPageOpenTimer() {
   pageOpenTimer = undefined
 }
 
-function goBackToCourse() {
-  if (courseDocumentInfo.value.couId) {
-    router.push({
-      name: 'ClientCourseDetail',
-      params: {
-        couId: courseDocumentInfo.value.couId,
-      },
-    })
-    return
-  }
-
-  router.back()
-}
-
 /**
  * 设置顶部导航标题。
  *
@@ -254,37 +239,16 @@ onBeforeUnmount(() => {
       class="rounded-2xl border border-teal-100 bg-linear-to-r from-teal-50 via-white to-cyan-50 px-4 py-4 shadow-[0_8px_20px_rgb(15_23_42/4%)]"
     >
       <div
-        class="flex items-start justify-between gap-3"
+        class="mb-1 flex items-center gap-1.5 text-3 text-teal-700 font-600"
       >
-        <div
-          class="min-w-0"
-        >
-          <div
-            class="mb-1 flex items-center gap-1.5 text-3 text-teal-700 font-600"
-          >
-            <van-icon
-              name="description-o"
-              size="16"
-            />
-            课程文档
-          </div>
+        <van-icon
+          name="description-o"
+          size="16"
+        />
 
-          <h1
-            class="m-0 truncate text-4.5 text-slate-900 font-700"
-          >
-            {{ courseDocumentInfo.couName || DEFAULT_NAV_TITLE }}
-          </h1>
-        </div>
-
-        <van-button
-          plain
-          size="small"
-          type="primary"
-          icon="orders-o"
-          @click="goBackToCourse"
-        >
-          课程目录
-        </van-button>
+        <span>
+          {{ courseDocumentInfo.olName }}
+        </span>
       </div>
 
       <div

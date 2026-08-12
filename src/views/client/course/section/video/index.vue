@@ -85,6 +85,7 @@ function createDefaultCourseVideoInfo(): ClientApi.Course.CourseVideoInfoRespons
     accessoryId: 0,
     couId: 0,
     couName: '',
+    olName: '',
     currentOlId: 0,
     nextOlId: 0,
     videoStudyTime: 0,

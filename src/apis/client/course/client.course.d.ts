@@ -226,6 +226,11 @@ export namespace Course {
     couName: string
 
     /**
+     * 小节名称
+     */
+    olName: string
+
+    /**
      * 当前小节ID
      */
     currentOlId: number
@@ -286,6 +291,11 @@ export namespace Course {
      * 课程名称
      */
     couName: string
+
+    /**
+     * 小节名称
+     */
+    olName: string
 
     /**
      * 当前小节ID
