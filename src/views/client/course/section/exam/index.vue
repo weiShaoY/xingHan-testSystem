@@ -17,12 +17,29 @@ const { setClientNavTitle, clearClientNavTitle } = useClientNavTitle()
 
 const loading = ref(false)
 
+const submitting = ref(false)
+
 const loadError = ref('')
 
 const activeQuestionIndex = ref(0)
 
+/** 当前考试总用时（秒）。 */
+const pageOpenTime = ref(0)
+
+let pageOpenTimer: ReturnType<typeof setInterval> | undefined
+
 const selectedAnswers = ref<Record<number, number[]>>({
 })
+
+/** 每道题首次进入时的时间戳。 */
+const questionStartedAt = ref<Record<number, number>>({
+})
+
+/** 每道题从进入到首次作答的耗时（秒）。 */
+const questionAnswerTimes = ref<Record<number, number>>({
+})
+
+const examStartedAt = ref(0)
 
 const examInfo = ref<ClientApi.Course.CourseExamInfoResponse>({
   couId: 0,
@@ -72,10 +89,20 @@ async function getExamInfo() {
   activeQuestionIndex.value = 0
   selectedAnswers.value = {
   }
+  questionStartedAt.value = {
+  }
+  questionAnswerTimes.value = {
+  }
+  examStartedAt.value = 0
+  pageOpenTime.value = 0
+  stopPageOpenTimer()
 
   try {
     examInfo.value = await fetchClientCourseExamInfo(olId.value)
     setClientNavTitle(examInfo.value.testPaperName || '课程考试')
+    examStartedAt.value = Date.now()
+    markQuestionStarted(0)
+    startPageOpenTimer()
   }
   catch (error) {
     console.error(error)
@@ -93,6 +120,12 @@ function getSelectedAnswers(questionIndex: number) {
 function selectAnswer(question: Question, questionIndex: number, optionIndex: number) {
   const selected = getSelectedAnswers(questionIndex)
 
+  if (questionAnswerTimes.value[questionIndex] === undefined) {
+    const startedAt = questionStartedAt.value[questionIndex] || Date.now()
+
+    questionAnswerTimes.value[questionIndex] = Math.max(0, Math.round((Date.now() - startedAt) / 1000))
+  }
+
   if (question.qusType === 2) {
     selectedAnswers.value[questionIndex] = selected.includes(optionIndex)
       ? selected.filter(index => index !== optionIndex)
@@ -104,7 +137,31 @@ function selectAnswer(question: Question, questionIndex: number, optionIndex: nu
 }
 
 function goToQuestion(index: number) {
-  activeQuestionIndex.value = Math.min(Math.max(index, 0), questions.value.length - 1)
+  const nextIndex = Math.min(Math.max(index, 0), questions.value.length - 1)
+
+  activeQuestionIndex.value = nextIndex
+  markQuestionStarted(nextIndex)
+}
+
+function markQuestionStarted(questionIndex: number) {
+  if (questionStartedAt.value[questionIndex] === undefined) {
+    questionStartedAt.value[questionIndex] = Date.now()
+  }
+}
+
+function startPageOpenTimer() {
+  stopPageOpenTimer()
+  pageOpenTime.value = 0
+  pageOpenTimer = setInterval(() => {
+    pageOpenTime.value = Math.floor((Date.now() - examStartedAt.value) / 1000)
+  }, 1000)
+}
+
+function stopPageOpenTimer() {
+  if (pageOpenTimer === undefined) { return }
+
+  clearInterval(pageOpenTimer)
+  pageOpenTimer = undefined
 }
 
 function goToPreviousQuestion() {
@@ -124,45 +181,56 @@ function backToCourse() {
   })
 }
 
-/** 当前页面打开时长，单位秒。 */
-const pageOpenTime = ref(0)
-
-let pageOpenTimer: ReturnType<typeof setInterval> | undefined
-
 onMounted(() => {
   getExamInfo()
-
-  pageOpenTimer = setInterval(() => {
-    pageOpenTime.value += 1
-  }, 1000)
 })
 
 onBeforeUnmount(() => {
   clearClientNavTitle()
-
-  if (pageOpenTimer !== undefined) {
-    clearInterval(pageOpenTimer)
-  }
+  stopPageOpenTimer()
 })
 
 async function submitExam() {
+  if (submitting.value) { return }
+
   if (answeredCount.value < questions.value.length) {
     showToast(`还有 ${questions.value.length - answeredCount.value} 题未作答`)
     return
   }
 
   const submitParams: ClientApi.Course.CourseExamSubmitParams = {
-    durationSeconds: pageOpenTime.value,
+    durationSeconds: getExamDuration(),
     examId: examInfo.value.currentOlId,
     answers: questions.value.map((question, index) => ({
       answerStatus: getSelectedAnswers(index).length ? 1 : 0,
-      answerTime: 0,
-      qusId: question.qusId,
+      answerTime: questionAnswerTimes.value[index] || 0,
+      qusId: question.qusId || 0,
       userAnswer: getSelectedAnswers(index).join(','),
     })),
   }
 
-  // showToast('当前服务暂未提供交卷接口')
+  submitting.value = true
+
+  try {
+    console.log('🚀 ~ file: index.vue:216 ~ submitParams:', submitParams)
+
+    await fetchClientCourseExamSubmit(submitParams)
+    stopPageOpenTimer()
+    showToast('考试交卷成功')
+  }
+  catch (error) {
+    console.error(error)
+    showToast('考试交卷失败，请稍后重试')
+  }
+  finally {
+    submitting.value = false
+  }
+}
+
+function getExamDuration() {
+  if (!examStartedAt.value) { return pageOpenTime.value }
+
+  return Math.max(0, Math.floor((Date.now() - examStartedAt.value) / 1000))
 }
 </script>
 
@@ -274,7 +342,9 @@ async function submitExam() {
 
           <span
             class="text-teal-700 font-700"
-          >{{ progress }}%</span>
+          >
+            {{ progress }}%
+          </span>
         </div>
 
         <van-progress
@@ -295,11 +365,17 @@ async function submitExam() {
         >
           <span
             class="inline-flex items-center rounded-lg bg-teal-50 px-2.5 py-1 text-3 text-teal-700 font-600"
-          >第 {{ activeQuestionIndex + 1 }} 题</span>
+          >
+            第 {{ activeQuestionIndex + 1 }} 题
+          </span>
 
-          <span
-            class="text-3.25 text-slate-500"
-          >{{ questionTypeLabel }} · {{ activeQuestion?.qusScore || 0 }} 分</span>
+          <van-tag
+            plain
+            size="large"
+            type="primary"
+          >
+            {{ questionTypeLabel }} · {{ activeQuestion?.qusScore || 0 }} 分
+          </van-tag>
         </div>
 
         <h2
@@ -322,7 +398,9 @@ async function submitExam() {
             <span
               class="option-label flex size-7 shrink-0 items-center justify-center border rounded-full text-3 font-600"
               :class="getSelectedAnswers(activeQuestionIndex).includes(index) ? 'border-teal-600 bg-teal-600 text-white' : 'border-slate-300 text-slate-500'"
-            >{{ String.fromCharCode(65 + index) }}</span>
+            >
+              {{ String.fromCharCode(65 + index) }}
+            </span>
 
             <span
               class="min-w-0 flex-1 text-3.5 text-slate-700 leading-6"
@@ -394,6 +472,7 @@ async function submitExam() {
         <van-button
           v-else
           type="primary"
+          :loading="submitting"
           @click="submitExam"
         >
           完成并交卷
