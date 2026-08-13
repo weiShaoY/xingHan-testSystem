@@ -522,14 +522,14 @@ export namespace Course {
     couId?: number
 
     /**
-     * 课程名称
-     */
-    couName: string
-
-    /**
      * 当前学习小节ID
      */
-    currentOlId: number
+    examId: number
+
+    /**
+     *  考试名称
+     */
+    examName: string
 
     /**
      * 试卷名称

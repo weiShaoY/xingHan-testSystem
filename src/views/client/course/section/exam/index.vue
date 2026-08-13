@@ -43,8 +43,8 @@ const examStartedAt = ref(0)
 
 const examInfo = ref<ClientApi.Course.CourseExamInfoResponse>({
   couId: 0,
-  couName: '',
-  currentOlId: 0,
+  examId: 0,
+  examName: '',
   testPaperName: '',
   previousNode: {
     olId: 0,
@@ -200,7 +200,7 @@ async function submitExam() {
 
   const submitParams: ClientApi.Course.CourseExamSubmitParams = {
     durationSeconds: getExamDuration(),
-    examId: examInfo.value.currentOlId,
+    examId: examInfo.value.examId,
     answers: questions.value.map((question, index) => ({
       answerStatus: getSelectedAnswers(index).length ? 1 : 0,
       answerTime: questionAnswerTimes.value[index] || 0,
@@ -311,10 +311,10 @@ function getExamDuration() {
             </h1>
 
             <p
-              v-if="examInfo.couName"
+              v-if="examInfo.examName"
               class="mb-0 mt-1 truncate text-3.25 text-slate-500"
             >
-              {{ examInfo.couName }}
+              {{ examInfo.examName }}
             </p>
           </div>
 

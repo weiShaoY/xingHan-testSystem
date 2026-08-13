@@ -138,7 +138,7 @@ export function fetchClientCourseCompleteChapter(params: ClientApi.Course.Course
  */
 export function fetchClientCourseExamInfo(olId: number) {
   return request.get<ClientApi.Course.CourseExamInfoResponse>({
-    url: '/client/testpaper/getQuestionPaperInfo',
+    url: '/client/testpaper/getTestPaperInfo',
     authPath: '/client',
     params: {
       olId,
