@@ -801,7 +801,7 @@ export namespace Course {
   /**
    *  问卷小节 新增或编辑请求参数
    */
-  type CourseOutlineSectionSurveyEditor = {
+  type CourseOutlineSectionQuestionEditor = {
 
     /**
      * 课程ID

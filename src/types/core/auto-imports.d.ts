@@ -80,9 +80,9 @@ declare global {
   const fetchAdminCourseOutlineSectionExamQuestionBank: typeof import('../../apis/admin/course/index').fetchAdminCourseOutlineSectionExamQuestionBank
   const fetchAdminCourseOutlineSectionExamQuestionList: typeof import('../../apis/admin/course/index').fetchAdminCourseOutlineSectionExamQuestionList
   const fetchAdminCourseOutlineSectionExamUpdate: typeof import('../../apis/admin/course/index').fetchAdminCourseOutlineSectionExamUpdate
-  const fetchAdminCourseOutlineSectionSurveyAdd: typeof import('../../apis/admin/course/index').fetchAdminCourseOutlineSectionSurveyAdd
-  const fetchAdminCourseOutlineSectionSurveyDetail: typeof import('../../apis/admin/course/index').fetchAdminCourseOutlineSectionSurveyDetail
-  const fetchAdminCourseOutlineSectionSurveyUpdate: typeof import('../../apis/admin/course/index').fetchAdminCourseOutlineSectionSurveyUpdate
+  const fetchAdminCourseOutlineSectionQuestionAdd: typeof import('../../apis/admin/course/index').fetchAdminCourseOutlineSectionQuestionAdd
+  const fetchAdminCourseOutlineSectionQuestionDetail: typeof import('../../apis/admin/course/index').fetchAdminCourseOutlineSectionQuestionDetail
+  const fetchAdminCourseOutlineSectionQuestionUpdate: typeof import('../../apis/admin/course/index').fetchAdminCourseOutlineSectionQuestionUpdate
   const fetchAdminCourseOutlineSectionVideoAdd: typeof import('../../apis/admin/course/index').fetchAdminCourseOutlineSectionVideoAdd
   const fetchAdminCourseOutlineSectionVideoDetail: typeof import('../../apis/admin/course/index').fetchAdminCourseOutlineSectionVideoDetail
   const fetchAdminCourseOutlineSectionVideoUpdate: typeof import('../../apis/admin/course/index').fetchAdminCourseOutlineSectionVideoUpdate
@@ -119,6 +119,7 @@ declare global {
   const fetchClientCourseExamSubmit: typeof import('../../apis/client/course/index').fetchClientCourseExamSubmit
   const fetchClientCourseOutlineList: typeof import('../../apis/client/course/index').fetchClientCourseOutlineList
   const fetchClientCourseQuestionInfo: typeof import('../../apis/client/course/index').fetchClientCourseQuestionInfo
+  const fetchClientCourseQuestionSubmit: typeof import('../../apis/client/course/index').fetchClientCourseQuestionSubmit
   const fetchClientCourseVideoFile: typeof import('../../apis/client/course/index').fetchClientCourseVideoFile
   const fetchClientCourseVideoInfo: typeof import('../../apis/client/course/index').fetchClientCourseVideoInfo
   const fetchClientCourseVideoPlayback: typeof import('../../apis/client/course/index').fetchClientCourseVideoPlayback
@@ -510,10 +511,14 @@ declare module 'vue' {
   interface ComponentCustomProperties {
     readonly ApiStatus: UnwrapRef<typeof import('../../apis/http/status')['ApiStatus']>
     readonly EffectScope: UnwrapRef<typeof import('vue')['EffectScope']>
+    readonly ElCheckbox: UnwrapRef<typeof import('element-plus/es')['ElCheckbox']>
+    readonly ElEmpty: UnwrapRef<typeof import('element-plus/es')['ElEmpty']>
     readonly ElLoading: UnwrapRef<typeof import('element-plus/es')['ElLoading']>
     readonly ElMessage: UnwrapRef<typeof import('element-plus/es')['ElMessage']>
     readonly ElMessageBox: UnwrapRef<typeof import('element-plus/es')['ElMessageBox']>
     readonly ElNotification: UnwrapRef<typeof import('element-plus/es')['ElNotification']>
+    readonly ElRadio: UnwrapRef<typeof import('element-plus/es')['ElRadio']>
+    readonly ElTag: UnwrapRef<typeof import('element-plus/es')['ElTag']>
     readonly HttpError: UnwrapRef<typeof import('../../apis/http/error')['HttpError']>
     readonly PasswordStrength: UnwrapRef<typeof import('../../utils/form/validator')['PasswordStrength']>
     readonly StorageConfig: UnwrapRef<typeof import('../../utils/storage/storage-config')['StorageConfig']>
@@ -575,9 +580,9 @@ declare module 'vue' {
     readonly fetchAdminCourseOutlineSectionExamQuestionBank: UnwrapRef<typeof import('../../apis/admin/course/index')['fetchAdminCourseOutlineSectionExamQuestionBank']>
     readonly fetchAdminCourseOutlineSectionExamQuestionList: UnwrapRef<typeof import('../../apis/admin/course/index')['fetchAdminCourseOutlineSectionExamQuestionList']>
     readonly fetchAdminCourseOutlineSectionExamUpdate: UnwrapRef<typeof import('../../apis/admin/course/index')['fetchAdminCourseOutlineSectionExamUpdate']>
-    readonly fetchAdminCourseOutlineSectionSurveyAdd: UnwrapRef<typeof import('../../apis/admin/course/index')['fetchAdminCourseOutlineSectionSurveyAdd']>
-    readonly fetchAdminCourseOutlineSectionSurveyDetail: UnwrapRef<typeof import('../../apis/admin/course/index')['fetchAdminCourseOutlineSectionSurveyDetail']>
-    readonly fetchAdminCourseOutlineSectionSurveyUpdate: UnwrapRef<typeof import('../../apis/admin/course/index')['fetchAdminCourseOutlineSectionSurveyUpdate']>
+    readonly fetchAdminCourseOutlineSectionQuestionAdd: UnwrapRef<typeof import('../../apis/admin/course/index')['fetchAdminCourseOutlineSectionQuestionAdd']>
+    readonly fetchAdminCourseOutlineSectionQuestionDetail: UnwrapRef<typeof import('../../apis/admin/course/index')['fetchAdminCourseOutlineSectionQuestionDetail']>
+    readonly fetchAdminCourseOutlineSectionQuestionUpdate: UnwrapRef<typeof import('../../apis/admin/course/index')['fetchAdminCourseOutlineSectionQuestionUpdate']>
     readonly fetchAdminCourseOutlineSectionVideoAdd: UnwrapRef<typeof import('../../apis/admin/course/index')['fetchAdminCourseOutlineSectionVideoAdd']>
     readonly fetchAdminCourseOutlineSectionVideoDetail: UnwrapRef<typeof import('../../apis/admin/course/index')['fetchAdminCourseOutlineSectionVideoDetail']>
     readonly fetchAdminCourseOutlineSectionVideoUpdate: UnwrapRef<typeof import('../../apis/admin/course/index')['fetchAdminCourseOutlineSectionVideoUpdate']>
@@ -611,6 +616,7 @@ declare module 'vue' {
     readonly fetchClientCourseExamInfo: UnwrapRef<typeof import('../../apis/client/course/index')['fetchClientCourseExamInfo']>
     readonly fetchClientCourseExamSubmit: UnwrapRef<typeof import('../../apis/client/course/index')['fetchClientCourseExamSubmit']>
     readonly fetchClientCourseQuestionInfo: UnwrapRef<typeof import('../../apis/client/course/index')['fetchClientCourseQuestionInfo']>
+    readonly fetchClientCourseQuestionSubmit: UnwrapRef<typeof import('../../apis/client/course/index')['fetchClientCourseQuestionSubmit']>
     readonly fetchClientCourseVideoFile: UnwrapRef<typeof import('../../apis/client/course/index')['fetchClientCourseVideoFile']>
     readonly fetchClientCourseVideoInfo: UnwrapRef<typeof import('../../apis/client/course/index')['fetchClientCourseVideoInfo']>
     readonly fetchClientCourseVideoRecordPlayback: UnwrapRef<typeof import('../../apis/client/course/index')['fetchClientCourseVideoRecordPlayback']>

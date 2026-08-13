@@ -15,7 +15,7 @@ import {
 import { VueDraggable } from 'vue-draggable-plus'
 
 defineOptions({
-  name: 'CourseSectionExam',
+  name: 'CourseSectionQuestion',
 })
 
 const route = useRoute()
@@ -28,7 +28,7 @@ const router = useRouter()
 const activeTab = ref<'edit' | 'setting'>('edit')
 
 /** Element Plus 自定义校验函数类型。 */
-type ExamValidator = NonNullable<FormItemRule['validator']>
+type QuestionValidator = NonNullable<FormItemRule['validator']>
 
 /** 题目对象对应的稳定渲染标识。 */
 const questionKeys = new WeakMap<AdminApi.Question.Question, string>()
@@ -85,12 +85,12 @@ const pageLoading = ref(false)
 /**
  * 小节表单数据
  */
-const formData = ref<AdminApi.Course.CourseOutlineSectionSurveyEditor>(createInitialFormData())
+const formData = ref<AdminApi.Course.CourseOutlineSectionQuestionEditor>(createInitialFormData())
 
 /**
  * 问卷编辑表单实例。
  */
-const examFormRef = ref<FormInstance>()
+const questionFormRef = ref<FormInstance>()
 
 // ==================== Static Options ====================
 
@@ -113,9 +113,9 @@ const questionTypes: { label: string, value: 1 | 2 }[] = [
  * 正确答案校验规则。
  */
 function validateCorrectAnswer(
-  _rule: Parameters<ExamValidator>[0],
-  _value: Parameters<ExamValidator>[1],
-  callback: Parameters<ExamValidator>[2],
+  _rule: Parameters<QuestionValidator>[0],
+  _value: Parameters<QuestionValidator>[1],
+  callback: Parameters<QuestionValidator>[2],
 ) {
   const field = String(_rule.field || '')
 
@@ -143,7 +143,7 @@ function validateCorrectAnswer(
 /**
  * 问卷编辑表单规则。
  */
-const examFormRules: FormRules = {
+const questionFormRules: FormRules = {
   testPaperName: [
     {
       required: true,
@@ -191,7 +191,7 @@ const examFormRules: FormRules = {
 /**
  * 问卷统计
  */
-const examStats = computed(() => {
+const questionStats = computed(() => {
   return [
     `题目数 ${formData.value.questions.length}`,
   ]
@@ -200,8 +200,8 @@ const examStats = computed(() => {
 /**
  * 创建新增或编辑模式下的小节初始表单
  */
-function createInitialFormData(): AdminApi.Course.CourseOutlineSectionSurveyEditor {
-  const baseFormData: AdminApi.Course.CourseOutlineSectionSurveyEditor = {
+function createInitialFormData(): AdminApi.Course.CourseOutlineSectionQuestionEditor {
+  const baseFormData: AdminApi.Course.CourseOutlineSectionQuestionEditor = {
     couId: couId.value,
     attemptLimit: 1,
     durationMinutes: 60,
@@ -396,7 +396,7 @@ function removeOption(question: AdminApi.Question.Question, index: number) {
 /** 拖动排序结束后清除基于旧索引生成的表单校验状态。 */
 function handleQuestionDragEnd() {
   void nextTick(() => {
-    examFormRef.value?.clearValidate()
+    questionFormRef.value?.clearValidate()
   })
 }
 
@@ -405,12 +405,12 @@ function handleQuestionDragEnd() {
  * 包括试卷标题、题目内容、选项内容、分值和正确答案约束。
  */
 async function validateFormData() {
-  if (!examFormRef.value) {
+  if (!questionFormRef.value) {
     return false
   }
 
   try {
-    return await examFormRef.value.validate()
+    return await questionFormRef.value.validate()
   }
   catch {
     ElNotification.warning('请先完善问卷表单内容')
@@ -429,7 +429,7 @@ async function getSectionDetail() {
   pageLoading.value = true
 
   try {
-    formData.value = await fetchAdminCourseOutlineSectionSurveyDetail(olId.value)
+    formData.value = await fetchAdminCourseOutlineSectionQuestionDetail(olId.value)
   }
   catch {
     ElNotification.error('获取问卷详情失败')
@@ -454,19 +454,19 @@ async function handleSubmit() {
   pageLoading.value = true
 
   try {
-    const examTabPath = route.path
+    const questionTabPath = route.path
 
     if (isEditMode.value) {
-      await fetchAdminCourseOutlineSectionSurveyUpdate(formData.value)
+      await fetchAdminCourseOutlineSectionQuestionUpdate(formData.value)
       ElNotification.success('问卷更新成功')
     }
     else {
-      await fetchAdminCourseOutlineSectionSurveyAdd(formData.value)
+      await fetchAdminCourseOutlineSectionQuestionAdd(formData.value)
       ElNotification.success('问卷创建成功')
     }
 
     await backToCourseOutline()
-    workTabStore.removeTab(examTabPath)
+    workTabStore.removeTab(questionTabPath)
   }
   catch {
     ElNotification.error(isEditMode.value ? '问卷更新失败' : '问卷创建失败')
@@ -501,7 +501,7 @@ onMounted(() => {
 
     <AdminPageHeader
       :title="pageTitle"
-      :stats="examStats"
+      :stats="questionStats"
       @back="backToCourseOutline"
     >
       <template
@@ -523,16 +523,16 @@ onMounted(() => {
     >
       <el-tabs
         v-model="activeTab"
-        class="exam-tabs"
+        class="question-tabs"
       >
         <el-tab-pane
           label="问卷编辑"
           name="edit"
         >
           <el-form
-            ref="examFormRef"
+            ref="questionFormRef"
             :model="formData"
-            :rules="examFormRules"
+            :rules="questionFormRules"
             label-position="top"
             class="flex flex-col gap-4"
           >
@@ -628,7 +628,7 @@ onMounted(() => {
 
                     <el-form-item
                       :prop="`questions.${questionIndex}.qusTitle`"
-                      :rules="examFormRules.questionTitle"
+                      :rules="questionFormRules.questionTitle"
                       class="mb-0! w-full flex-1"
                     >
                       <el-input
@@ -681,7 +681,7 @@ onMounted(() => {
                     >
                       <el-form-item
                         :prop="`questions.${questionIndex}.qusItems.${optionIndex}.ansContext`"
-                        :rules="examFormRules.optionContent"
+                        :rules="questionFormRules.optionContent"
                         class="mb-0! flex-1"
                       >
                         <el-input

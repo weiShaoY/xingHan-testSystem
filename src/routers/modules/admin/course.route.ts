@@ -26,12 +26,12 @@ const sectionRouteConfigs = [
     component: '/admin/course/section/exam',
   },
   {
-    type: 'survey',
-    name: 'Survey',
+    type: 'question',
+    name: 'Question',
     title: '问卷',
     icon: 'ri:file-text-line',
-    cacheName: 'CourseSectionSurvey',
-    component: '/admin/course/section/survey',
+    cacheName: 'CourseSectionQuestion',
+    component: '/admin/course/section/question',
   },
 ]
 

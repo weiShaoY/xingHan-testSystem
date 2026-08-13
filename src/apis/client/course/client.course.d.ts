@@ -596,6 +596,11 @@ export namespace Course {
   }
 
   /**
+   *  提交问卷请求参数
+   */
+  type CourseQuestionSubmitParams = CourseExamSubmitParams
+
+  /**
    *  获取客户端 问卷信息响应
    */
   type CourseQuestionInfoResponse = {

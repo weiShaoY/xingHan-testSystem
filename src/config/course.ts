@@ -64,13 +64,13 @@ const sectionTypeMap: Record<SectionType, SectionTypeMeta> = {
   3: {
     sectionType: 3,
     sectionTypeName: '问卷',
-    sectionIcon: 'ri:survey-line',
+    sectionIcon: 'ri:question-line',
     sectionIconBgColor: '#2cb870',
-    adminCreateRoute: 'AdminCourseSectionSurveyCreate',
+    adminCreateRoute: 'AdminCourseSectionQuestionCreate',
     adminCreateRouteTitle: '新增问卷小节',
-    adminEditRoute: 'AdminCourseSectionSurveyEdit',
+    adminEditRoute: 'AdminCourseSectionQuestionEdit',
     adminEditRouteTitle: '编辑问卷小节',
-    clientRoute: 'ClientCourseSectionSurvey',
+    clientRoute: 'ClientCourseSectionQuestion',
   },
 }
 

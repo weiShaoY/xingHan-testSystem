@@ -261,7 +261,7 @@ function toggleSort() {
                   :class="`is-${item.type}`"
                 >
                   <ArtSvgIcon
-                    :icon="item.type === 'file' ? 'ri:file-list-3-line' : 'ri:survey-line'"
+                    :icon="item.type === 'file' ? 'ri:file-list-3-line' : 'ri:question-line'"
                     class="text-2xl"
                   />
                 </div>
