@@ -114,19 +114,22 @@ declare global {
   const fetchClientCourseCompleteSection: typeof import('../../apis/client/course/index').fetchClientCourseCompleteSection
   const fetchClientCourseDocumentFile: typeof import('../../apis/client/course/index').fetchClientCourseDocumentFile
   const fetchClientCourseDocumentInfo: typeof import('../../apis/client/course/index').fetchClientCourseDocumentInfo
-  const fetchClientCourseDocumentRecordProgress: typeof import('../../apis/client/course/index').fetchClientCourseDocumentRecordProgress
+  const fetchClientCourseDocumentRecordProgress: typeof import('../../apis/client/course/index').fetchClientCourseDocumentSubmit
+  const fetchClientCourseDocumentSubmit: typeof import('../../apis/client/course/index').fetchClientCourseDocumentSubmit
   const fetchClientCourseExamInfo: typeof import('../../apis/client/course/index').fetchClientCourseExamInfo
   const fetchClientCourseExamSubmit: typeof import('../../apis/client/course/index').fetchClientCourseExamSubmit
   const fetchClientCourseOutlineList: typeof import('../../apis/client/course/index').fetchClientCourseOutlineList
   const fetchClientCourseQuestionInfo: typeof import('../../apis/client/course/index').fetchClientCourseQuestionInfo
   const fetchClientCourseQuestionSubmit: typeof import('../../apis/client/course/index').fetchClientCourseQuestionSubmit
+  const fetchClientCourseSubmitDocument: typeof import('../../apis/client/course/index').fetchClientCourseDocumentSubmit
   const fetchClientCourseVideoFile: typeof import('../../apis/client/course/index').fetchClientCourseVideoFile
   const fetchClientCourseVideoInfo: typeof import('../../apis/client/course/index').fetchClientCourseVideoInfo
   const fetchClientCourseVideoPlayback: typeof import('../../apis/client/course/index').fetchClientCourseVideoPlayback
   const fetchClientCourseVideoRecord: typeof import('../../apis/client/course/index').fetchClientCourseVideoRecord
   const fetchClientCourseVideoRecordComplete: typeof import('../../apis/client/course/index').fetchClientCourseVideoRecordComplete
   const fetchClientCourseVideoRecordPlayback: typeof import('../../apis/client/course/index').fetchClientCourseVideoRecordPlayback
-  const fetchClientCourseVideoRecordProgress: typeof import('../../apis/client/course/index').fetchClientCourseVideoRecordProgress
+  const fetchClientCourseVideoRecordProgress: typeof import('../../apis/client/course/index').fetchClientCourseVideoSubmit
+  const fetchClientCourseVideoSubmit: typeof import('../../apis/client/course/index').fetchClientCourseVideoSubmit
   const fetchClientGetCourseProgress: typeof import('../../apis/client/course/index').fetchClientGetCourseProgress
   const fetchClientGetPublicKey: typeof import('../../apis/client/auth/index').fetchClientGetPublicKey
   const fetchClientGetUserInfo: typeof import('../../apis/client/auth/index').fetchClientGetUserInfo
@@ -511,14 +514,9 @@ declare module 'vue' {
   interface ComponentCustomProperties {
     readonly ApiStatus: UnwrapRef<typeof import('../../apis/http/status')['ApiStatus']>
     readonly EffectScope: UnwrapRef<typeof import('vue')['EffectScope']>
-    readonly ElCheckbox: UnwrapRef<typeof import('element-plus/es')['ElCheckbox']>
-    readonly ElEmpty: UnwrapRef<typeof import('element-plus/es')['ElEmpty']>
     readonly ElLoading: UnwrapRef<typeof import('element-plus/es')['ElLoading']>
     readonly ElMessage: UnwrapRef<typeof import('element-plus/es')['ElMessage']>
-    readonly ElMessageBox: UnwrapRef<typeof import('element-plus/es')['ElMessageBox']>
     readonly ElNotification: UnwrapRef<typeof import('element-plus/es')['ElNotification']>
-    readonly ElRadio: UnwrapRef<typeof import('element-plus/es')['ElRadio']>
-    readonly ElTag: UnwrapRef<typeof import('element-plus/es')['ElTag']>
     readonly HttpError: UnwrapRef<typeof import('../../apis/http/error')['HttpError']>
     readonly PasswordStrength: UnwrapRef<typeof import('../../utils/form/validator')['PasswordStrength']>
     readonly StorageConfig: UnwrapRef<typeof import('../../utils/storage/storage-config')['StorageConfig']>
@@ -609,18 +607,16 @@ declare module 'vue' {
     readonly fetchAdminQuestionSetting: UnwrapRef<typeof import('../../apis/admin/question/index')['fetchAdminQuestionSetting']>
     readonly fetchAdminQuestionUpdate: UnwrapRef<typeof import('../../apis/admin/question/index')['fetchAdminQuestionUpdate']>
     readonly fetchAdminUploadFile: UnwrapRef<typeof import('../../apis/file/index')['fetchAdminUploadFile']>
-    readonly fetchClientCourseCompleteChapter: UnwrapRef<typeof import('../../apis/client/course/index')['fetchClientCourseCompleteChapter']>
     readonly fetchClientCourseDocumentFile: UnwrapRef<typeof import('../../apis/client/course/index')['fetchClientCourseDocumentFile']>
     readonly fetchClientCourseDocumentInfo: UnwrapRef<typeof import('../../apis/client/course/index')['fetchClientCourseDocumentInfo']>
-    readonly fetchClientCourseDocumentRecordProgress: UnwrapRef<typeof import('../../apis/client/course/index')['fetchClientCourseDocumentRecordProgress']>
+    readonly fetchClientCourseDocumentSubmit: UnwrapRef<typeof import('../../apis/client/course/index')['fetchClientCourseDocumentSubmit']>
     readonly fetchClientCourseExamInfo: UnwrapRef<typeof import('../../apis/client/course/index')['fetchClientCourseExamInfo']>
     readonly fetchClientCourseExamSubmit: UnwrapRef<typeof import('../../apis/client/course/index')['fetchClientCourseExamSubmit']>
     readonly fetchClientCourseQuestionInfo: UnwrapRef<typeof import('../../apis/client/course/index')['fetchClientCourseQuestionInfo']>
     readonly fetchClientCourseQuestionSubmit: UnwrapRef<typeof import('../../apis/client/course/index')['fetchClientCourseQuestionSubmit']>
     readonly fetchClientCourseVideoFile: UnwrapRef<typeof import('../../apis/client/course/index')['fetchClientCourseVideoFile']>
     readonly fetchClientCourseVideoInfo: UnwrapRef<typeof import('../../apis/client/course/index')['fetchClientCourseVideoInfo']>
-    readonly fetchClientCourseVideoRecordPlayback: UnwrapRef<typeof import('../../apis/client/course/index')['fetchClientCourseVideoRecordPlayback']>
-    readonly fetchClientCourseVideoRecordProgress: UnwrapRef<typeof import('../../apis/client/course/index')['fetchClientCourseVideoRecordProgress']>
+    readonly fetchClientCourseVideoSubmit: UnwrapRef<typeof import('../../apis/client/course/index')['fetchClientCourseVideoSubmit']>
     readonly fetchClientGetCourseProgress: UnwrapRef<typeof import('../../apis/client/course/index')['fetchClientGetCourseProgress']>
     readonly fetchClientGetPublicKey: UnwrapRef<typeof import('../../apis/client/auth/index')['fetchClientGetPublicKey']>
     readonly fetchClientGetUserInfo: UnwrapRef<typeof import('../../apis/client/auth/index')['fetchClientGetUserInfo']>

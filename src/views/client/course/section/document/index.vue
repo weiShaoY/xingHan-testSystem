@@ -175,14 +175,6 @@ function handlePdfLoaded(payload: { currentPage: number, totalPages: number }) {
   startPageOpenTimer()
 }
 
-/** 文档首次阅读至最后一页。 */
-async function handleReachedLastPage() {
-  await fetchClientCourseCompleteChapter({
-    couId: courseDocumentInfo.value.couId,
-    olId: olId.value,
-  })
-}
-
 function startPageOpenTimer() {
   stopPageOpenTimer()
   pageOpenTimer = setInterval(() => {
@@ -214,12 +206,13 @@ async function recordDocumentProgress() {
   if (!olId.value || !courseDocumentInfo.value.couId) { return }
 
   try {
-    await fetchClientCourseDocumentRecordProgress({
+    await fetchClientCourseDocumentSubmit({
       olId: olId.value,
       couId: courseDocumentInfo.value.couId,
       totalPages: totalPages.value,
       progressSpecific: currentPage.value,
       totalLearningTime: pageOpenTime.value,
+      isCompleted: currentPage.value === totalPages.value,
     })
   }
   catch (error) {
@@ -290,7 +283,6 @@ onBeforeUnmount(() => {
       :initial-page="initialPage"
       @document-loaded="handlePdfLoaded"
       @page-change="handlePdfPageChange"
-      @reached-last-page="handleReachedLastPage"
     />
 
     <van-empty

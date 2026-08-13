@@ -14,7 +14,7 @@ export function fetchClientGetCourseProgress(couId: number) {
   })
 }
 
-// / /////////// ////////////////////////  2026-08-10---15:45---星期一  ////////////////////////
+// / /////////// ////////////////////////  文档  ////////////////////////
 
 /**
  * 获取客户端 文档信息
@@ -46,15 +46,17 @@ export function fetchClientCourseDocumentFile(asId: number) {
 }
 
 /**
- *  记录文档学习记录
+ *  提交文档
  */
-export function fetchClientCourseDocumentRecordProgress(data: ClientApi.Course.CourseDocumentRecordProgressParams) {
+export function fetchClientCourseDocumentSubmit(data: ClientApi.Course.CourseDocumentRecordProgressParams) {
   return request.post<boolean>({
     url: '/client/learning/pdfRecordProgress',
     authPath: '/client',
     data,
   })
 }
+
+// # / //// ////////////////////////  视频  ////////////////////////
 
 /**
  *  获取客户端 视频信息
@@ -85,9 +87,9 @@ export function fetchClientCourseVideoFile(asId: number) {
 }
 
 /**
- *  记录视频学习记录
+ *  提交视频
  */
-export function fetchClientCourseVideoRecordProgress(data: ClientApi.Course.CourseVideoRecordProgressParams) {
+export function fetchClientCourseVideoSubmit(data: ClientApi.Course.CourseVideoRecordProgressParams) {
   return request.post<boolean>({
     url: '/client/learning/videoRecordProgress',
     authPath: '/client',
@@ -95,29 +97,7 @@ export function fetchClientCourseVideoRecordProgress(data: ClientApi.Course.Cour
   })
 }
 
-/**
- * 记录完成视频记录
- */
-export function fetchClientCourseVideoRecordPlayback(data: ClientApi.Course.CourseVideoRecordPlaybackParams) {
-  return request.post<boolean>({
-    url: '/client/learning/recordVideoPlayback',
-    authPath: '/client',
-    data,
-  })
-}
-
-// # / //// ////////////////////////  2026-08-11---14:07---星期二  ////////////////////////
-
-/**
- * 完成章节
- */
-export function fetchClientCourseCompleteChapter(params: ClientApi.Course.CourseCompleteChapterParams) {
-  return request.get<boolean>({
-    url: '/client/learning/completeChapter',
-    authPath: '/client',
-    params,
-  })
-}
+// $ / //// ////////////////////////  考试  ////////////////////////
 
 /**
  *  获取客户端 考试信息
@@ -143,6 +123,8 @@ export function fetchClientCourseExamSubmit(data: ClientApi.Course.CourseExamSub
   })
 }
 
+// % / //// ////////////////////////  问卷  ////////////////////////
+
 /**
  *  获取客户端 问卷信息
  */
@@ -161,7 +143,7 @@ export function fetchClientCourseQuestionInfo(olId: number) {
  */
 export function fetchClientCourseQuestionSubmit(data: ClientApi.Course.CourseQuestionSubmitParams) {
   return request.post<boolean>({
-    url: '/client/learning/submitQuestion',
+    url: '/client/learning/submitQuestionnaire',
     authPath: '/client',
     data,
   })

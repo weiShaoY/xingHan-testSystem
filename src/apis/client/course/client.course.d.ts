@@ -355,11 +355,6 @@ export namespace Course {
     olId: number
 
     /**
-     * 是否完成
-     */
-    isCompleted: boolean
-
-    /**
      * 小节总共学习时间
      */
     totalLearningTime: number
@@ -373,6 +368,12 @@ export namespace Course {
      * 小节视频播放时间
      */
     videoTime: number
+
+    /**
+     * 是否完成
+     */
+    isCompleted: boolean
+
   }
 
   /**
@@ -455,6 +456,11 @@ export namespace Course {
      * 小节总共学习时间
      */
     totalLearningTime: number
+
+    /**
+     *  是否已完成
+     */
+    isCompleted: boolean
   }
 
   /**
@@ -590,15 +596,20 @@ export namespace Course {
     examId: number
 
     /**
+     * 当前学习小节ID
+     */
+    olId: number
+
+    /**
+     * 课程ID
+     */
+    couId: number
+
+    /**
      * 答题记录列表
      */
     answers: CourseExamSubmitParamsAnswersItem[]
   }
-
-  /**
-   *  提交问卷请求参数
-   */
-  type CourseQuestionSubmitParams = CourseExamSubmitParams
 
   /**
    *  获取客户端 问卷信息响应
@@ -644,5 +655,42 @@ export namespace Course {
      */
     questions: AdminApi.Question.Question[]
   }
+  type CourseQuestionSubmitParamsAnswersItem = {
 
+    /**
+     * 题目ID
+     */
+    qusId: number
+
+    /**
+     * 用户作答的答案
+     */
+    userAnswer: string
+  }
+
+  /**
+   *  提交问卷请求参数
+   */
+  type CourseQuestionSubmitParams = {
+
+    /**
+     * 问卷ID
+     */
+    examId: number
+
+    /**
+     * 当前学习小节ID
+     */
+    olId: number
+
+    /**
+     * 课程ID
+     */
+    couId: number
+
+    /**
+     * 答题记录列表
+     */
+    answers: CourseQuestionSubmitParamsAnswersItem[]
+  }
 }

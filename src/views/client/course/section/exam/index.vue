@@ -199,8 +199,11 @@ async function submitExam() {
   }
 
   const submitParams: ClientApi.Course.CourseExamSubmitParams = {
-    durationSeconds: getExamDuration(),
     examId: examInfo.value.examId,
+    olId: olId.value,
+    couId: examInfo.value.couId || 0,
+    durationSeconds: getExamDuration(),
+
     answers: questions.value.map((question, index) => ({
       answerStatus: getSelectedAnswers(index).length ? 1 : 0,
       answerTime: questionAnswerTimes.value[index] || 0,

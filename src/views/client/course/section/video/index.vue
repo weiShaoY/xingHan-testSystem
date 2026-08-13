@@ -224,7 +224,7 @@ async function recordVideoRecordProgress() {
       totalVideoTime: totalVideoTime.value,
     }
 
-    await fetchClientCourseVideoRecordProgress(courseVideoRecordProgressParams.value)
+    await fetchClientCourseVideoSubmit(courseVideoRecordProgressParams.value)
   }
   catch (error) {
     console.error('记录视频学习记录失败', error)
@@ -275,20 +275,6 @@ async function handleVideoEnded() {
   isPlaying.value = false
   isVideoCompleted.value = true
   recordVideoRecordProgress()
-
-  // 播放完后 记录完成视频记录
-  await fetchClientCourseVideoRecordPlayback({
-    couId: couId.value,
-    olId: olId.value,
-    durationSeconds: pageOpenTime.value,
-    isValid: true,
-    playbackSpeed: 1,
-    startProgress: 0,
-    endProgress: currentTime.value,
-    startTime: startTime.value,
-    endTime: new Date().toISOString(),
-
-  })
 }
 </script>
 
