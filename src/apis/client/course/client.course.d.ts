@@ -512,7 +512,7 @@ export namespace Course {
   }
 
   /**
-   *  获取考试信息响应
+   *  获取客户端 考试信息响应
    */
   type CourseExamInfoResponse = {
 
@@ -522,7 +522,7 @@ export namespace Course {
     couId?: number
 
     /**
-     * 当前学习小节ID
+     * 问卷ID
      */
     examId: number
 
@@ -594,4 +594,50 @@ export namespace Course {
      */
     answers: CourseExamSubmitParamsAnswersItem[]
   }
+
+  /**
+   *  获取客户端 问卷信息响应
+   */
+  type CourseQuestionInfoResponse = {
+
+    /**
+     * 课程ID
+     */
+    couId?: number
+
+    /**
+     * 问卷ID
+     */
+    examId: number
+
+    /**
+     * 当前学习小节ID
+     */
+    examId: number
+
+    /**
+     *  考试名称
+     */
+    examName: string
+
+    /**
+     * 问卷名称
+     */
+    testPaperName: string
+
+    nextNode: PreviousNodeOrNextNode
+
+    previousNode: PreviousNodeOrNextNode
+
+    /**
+     * 课程树形
+     */
+    nodes: NodeBase[]
+
+    /**
+     * 题目列表
+     */
+    questions: AdminApi.Question.Question[]
+  }
+
 }

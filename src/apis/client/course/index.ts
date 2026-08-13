@@ -156,3 +156,16 @@ export function fetchClientCourseExamSubmit(data: ClientApi.Course.CourseExamSub
     data,
   })
 }
+
+/**
+ *  获取客户端 问卷信息
+ */
+export function fetchClientCourseQuestionInfo(olId: number) {
+  return request.get<ClientApi.Course.CourseQuestionInfoResponse>({
+    url: '/client/questionpaper/getQuestionPaperInfo',
+    authPath: '/client',
+    params: {
+      olId,
+    },
+  })
+}
