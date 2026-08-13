@@ -11,15 +11,37 @@ export namespace Task {
     learningType: 0 | 1 | 2
   }
 
-  /**
-   * 任务列表项
-   */
-  type TaskListItem = {
+  /** 任务列表 课程项 */
+  type TaskListResponseCourseListItem = {
 
     /**
-     * 任务ID
+     * 课程ID
      */
-    taskId: number
+    couId: number
+
+    /**
+     * 课程名称
+     */
+    couName: string
+
+    /**
+     * 课程小节数量
+     */
+    couOutlineCount: number
+
+    /**
+     * 学习进度
+     */
+    learningProgress: number
+  }
+
+  /** 任务列表 项目项 */
+  type TaskListResponseProjectListItem = {
+
+    /**
+     * 学习进度
+     */
+    learningProgress: number
 
     /**
      * 项目ID
@@ -32,28 +54,20 @@ export namespace Task {
     projName: string
 
     /**
-     * 项目学习阶段
+     * 阶段数量
      */
     projStage: number
 
     /**
-     * 项目学习阶段课程
+     * 课程数量
      */
     projStageCourse: number
-
-    /**
-     *  学习类型
-     *  @description  1: 项目 2: 课程
-     */
-    learningType: 1 | 2
-
-    /**
-     * 项目学习进度
-     */
-    learningProgress: string
   }
 
   /** 任务列表响应 */
-  type TaskListResponse = TaskListItem[]
+  type TaskListResponse = {
+    courseList: TaskListResponseCourseListItem[]
+    projectList: TaskListResponseProjectListItem[]
+  }
 
 }

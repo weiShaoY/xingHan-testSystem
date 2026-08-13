@@ -13,6 +13,20 @@ const surfaceClasses = [
   'border-emerald-100 bg-linear-to-b from-emerald-50 to-white',
 ]
 
+type TaskListResponse = ClientApi.Task.TaskListResponse
+
+type ProjectTaskItem = TaskListResponse['projectList'][number]
+
+type CourseTaskItem = TaskListResponse['courseList'][number]
+
+type TaskViewItem = {
+  id: number
+  title: string
+  subtitle: string
+  type: 'project' | 'course'
+  progress: number
+}
+
 function getAccentClass(index: number): string {
   return accentClasses[index % accentClasses.length]
 }
@@ -21,8 +35,48 @@ function getSurfaceClass(index: number): string {
   return surfaceClasses[index % surfaceClasses.length]
 }
 
-function getTaskSubtitle(item: ClientApi.Task.TaskListItem): string {
-  return `${item.projStage}个学习阶段 ${item.projStageCourse}门课程`
+function clampProgress(progress: number): number {
+  if (!Number.isFinite(progress)) { return 0 }
+
+  return Math.min(Math.max(progress, 0), 100)
+}
+
+function normalizeProjectTask(item: ProjectTaskItem): TaskViewItem {
+  return {
+    id: item.projId,
+    title: item.projName,
+    subtitle: `${item.projStage || 0}个学习阶段 ${item.projStageCourse || 0}门课程`,
+    type: 'project',
+    progress: clampProgress(Number(item.learningProgress || 0)),
+  }
+}
+
+function normalizeCourseTask(item: CourseTaskItem): TaskViewItem {
+  return {
+    id: item.couId,
+    title: item.couName,
+    subtitle: `${item.couOutlineCount || 0}个课程小节`,
+    type: 'course',
+    progress: clampProgress(Number(item.learningProgress || 0)),
+  }
+}
+
+function normalizeTaskList(
+  data: TaskListResponse,
+  learningType: ClientApi.Task.TaskListParams['learningType'],
+): TaskViewItem[] {
+  if (learningType === 1) {
+    return data.projectList.map(normalizeProjectTask)
+  }
+
+  if (learningType === 2) {
+    return data.courseList.map(normalizeCourseTask)
+  }
+
+  return [
+    ...data.projectList.map(normalizeProjectTask),
+    ...data.courseList.map(normalizeCourseTask),
+  ]
 }
 
 const params = ref<ClientApi.Task.TaskListParams>({
@@ -32,7 +86,7 @@ const params = ref<ClientApi.Task.TaskListParams>({
 /**
  * 列表响应数据。
  */
-const taskList = ref<ClientApi.Task.TaskListResponse>([])
+const taskList = ref<TaskViewItem[]>([])
 
 const refreshing = ref(false)
 
@@ -45,7 +99,9 @@ const finished = ref(false)
  */
 async function fetchTaskList() {
   try {
-    taskList.value = await fetchClientTaskList(params.value)
+    const data = await fetchClientTaskList(params.value)
+
+    taskList.value = normalizeTaskList(data, params.value.learningType)
     finished.value = true
   }
   finally {
@@ -84,11 +140,21 @@ function onLoad() {
   fetchTaskList()
 }
 
-function goToProject(item: ClientApi.Task.TaskListItem) {
+function goToTask(item: TaskViewItem) {
+  if (item.type === 'project') {
+    router.push({
+      name: 'ClientProjectStages',
+      params: {
+        projId: item.id,
+      },
+    })
+    return
+  }
+
   router.push({
-    name: 'ClientProjectStages',
+    name: 'ClientCourseDetail',
     params: {
-      projId: item.projId,
+      couId: item.id,
     },
   })
 }
@@ -112,7 +178,7 @@ function goToProject(item: ClientApi.Task.TaskListItem) {
         >
           <div
             v-for="(item, index) in taskList"
-            :key="item.taskId"
+            :key="`${item.type}-${item.id}`"
             class="overflow-hidden rounded-md border border-slate-200 bg-white shadow-[0_10px_24px_rgb(15_23_42/5%)] transition duration-200 active:scale-[0.992]"
           >
             <div
@@ -133,13 +199,13 @@ function goToProject(item: ClientApi.Task.TaskListItem) {
                 <h3
                   class="m-0 wrap-break-word text-5.5 font-700 leading-1.35"
                 >
-                  {{ item.projName }}
+                  {{ item.title }}
                 </h3>
 
                 <p
                   class="mt-3 mb-0 text-4 leading-1.6 text-white/90"
                 >
-                  {{ getTaskSubtitle(item) }}
+                  {{ item.subtitle }}
                 </p>
               </div>
             </div>
@@ -157,9 +223,9 @@ function goToProject(item: ClientApi.Task.TaskListItem) {
                 >
                   <van-tag
                     size="large"
-                    :type="params.learningType === 1 ? 'primary' : 'warning'"
+                    :type="item.type === 'project' ? 'primary' : 'warning'"
                   >
-                    {{ item.learningType === 1 ? '项目' : '课程' }}
+                    {{ item.type === 'project' ? '项目' : '课程' }}
                   </van-tag>
                 </template>
 
@@ -170,9 +236,9 @@ function goToProject(item: ClientApi.Task.TaskListItem) {
                     size="small"
                     type="primary"
                     class="border-0 bg-linear-to-r from-teal-600 to-cyan-500 px-3 shadow-[0_10px_18px_rgb(20_184_166/22%)]!"
-                    @click.stop="goToProject(item)"
+                    @click.stop="goToTask(item)"
                   >
-                    {{ Number(item.learningProgress) > 0 ? '继续学习' : '开始学习' }}
+                    {{ item.progress > 0 ? '继续学习' : '开始学习' }}
                     <van-icon
                       name="arrow"
                       class="ml-1"
@@ -190,12 +256,12 @@ function goToProject(item: ClientApi.Task.TaskListItem) {
                   <span>学习进度</span>
 
                   <span>
-                    {{ item.learningProgress ? item.learningProgress : 0 }}%
+                    {{ item.progress }}%
                   </span>
                 </div>
 
                 <van-progress
-                  :percentage="item.learningProgress"
+                  :percentage="item.progress"
                   stroke-width="6"
                   color="linear-gradient(90deg, #0f766e 0%, #14b8a6 100%)"
                   track-color="#e2e8f0"
@@ -204,6 +270,12 @@ function goToProject(item: ClientApi.Task.TaskListItem) {
               </div>
             </div>
           </div>
+
+          <van-empty
+            v-if="finished && !listLoading && !taskList.length"
+            class="py-16"
+            description="暂无"
+          />
         </div>
       </van-list>
 
