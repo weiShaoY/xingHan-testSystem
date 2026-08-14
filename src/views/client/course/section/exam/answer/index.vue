@@ -208,15 +208,13 @@ async function submitExam() {
       answerStatus: getSelectedAnswers(index).length ? 1 : 0,
       answerTime: questionAnswerTimes.value[index] || 0,
       qusId: question.qusId || 0,
-      userAnswer: getSelectedAnswers(index).join(','),
+      userAnswer: getSelectedAnswers(index),
     })),
   }
 
   submitting.value = true
 
   try {
-    console.log('🚀 ~ file: index.vue:216 ~ submitParams:', submitParams)
-
     await fetchClientCourseExamSubmit(submitParams)
     stopPageOpenTimer()
     showToast('考试交卷成功')

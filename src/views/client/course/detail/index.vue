@@ -181,7 +181,8 @@ function handleSection(section: ClientApi.Course.ChaptersItem) {
   else if (section.olIsAccessory === 2) {
     // 'ClientCourseSectionExamAnswer
     router.push({
-      name: section.progress === 100 ? 'ClientCourseSectionExamResult' : 'ClientCourseSectionExamAnswer',
+      // name: section.progress === 100 ? 'ClientCourseSectionExamResult' : 'ClientCourseSectionExamAnswer',
+      name: 'ClientCourseSectionExamAnswer',
       params: {
         couId: couId.value,
         olId: section.olId,
@@ -191,9 +192,9 @@ function handleSection(section: ClientApi.Course.ChaptersItem) {
   }
   else if (section.olIsAccessory === 3) {
     router.push({
-      // name: section.progress === 100 ? 'ClientCourseSectionQuestionResult' : 'ClientCourseSectionQuestionAnswer',
+      name: section.progress === 100 ? 'ClientCourseSectionQuestionResult' : 'ClientCourseSectionQuestionAnswer',
 
-      name: 'ClientCourseSectionQuestionAnswer',
+      // name: 'ClientCourseSectionQuestionAnswer',
       params: {
         couId: couId.value,
         olId: section.olId,

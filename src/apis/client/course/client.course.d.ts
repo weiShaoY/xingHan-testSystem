@@ -567,9 +567,9 @@ export namespace Course {
     qusId: number
 
     /**
-     * 用户作答的答案
+     * 用户作答的答案 (选项索引数组)
      */
-    userAnswer: string
+    userAnswer: number[]
   }
 
   /**
@@ -606,9 +606,14 @@ export namespace Course {
   type CourseExamResultResponseUserQuestionAnswerItem = {
 
     /**
-     * 正确答案
+     * 正确答案 (选项索引数组)
      */
-    correctAnswer: string
+    correctAnswer: number[]
+
+    /**
+     * 用户答案 (选项索引数组)
+     */
+    userAnswer: number[]
 
     /**
      * 题目难度

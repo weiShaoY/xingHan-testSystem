@@ -41,13 +41,32 @@ async function getCourseExamResult() {
   }
 }
 
-function splitAnswer(answer: string) {
-  return answer.split(',').map(item => item.trim()).filter(Boolean)
+function isUserOption(question: ExamAnswer, optionIndex: number) {
+  return question.userAnswer?.includes(optionIndex) || false
 }
 
-function isCorrectOption(question: ExamAnswer, optionIndex: number, optionId?: number) {
-  const correctAnswers = splitAnswer(question.correctAnswer)
-  return correctAnswers.includes(String(optionIndex)) || (optionId !== undefined && correctAnswers.includes(String(optionId)))
+function isCorrectOption(question: ExamAnswer, optionIndex: number) {
+  return question.correctAnswer?.includes(optionIndex) || false
+}
+
+function optionClass(question: ExamAnswer, optionIndex: number) {
+  if (isCorrectOption(question, optionIndex)) { return 'border-teal-500 bg-teal-50' }
+  if (isUserOption(question, optionIndex)) { return 'border-rose-400 bg-rose-50' }
+  return 'border-slate-200 bg-white'
+}
+
+function optionLabelClass(question: ExamAnswer, optionIndex: number) {
+  if (isCorrectOption(question, optionIndex)) { return 'border-teal-600 bg-teal-600 text-white' }
+  if (isUserOption(question, optionIndex)) { return 'border-rose-500 bg-rose-500 text-white' }
+  return 'border-slate-300 text-slate-500'
+}
+
+function getOptionText(question: ExamAnswer, answerIndexes: number[]) {
+  const texts = answerIndexes
+    .map(index => question.qusItems[index]?.ansContext)
+    .filter(Boolean)
+
+  return texts.length ? texts.join('、') : '未作答'
 }
 
 function questionTypeLabel(type: number) {
@@ -95,16 +114,17 @@ onBeforeUnmount(clearClientNavTitle)
       <van-empty v-if="!answers.length" image="search" description="暂无试题解析" class="rounded-2xl bg-white" />
 
       <section v-for="(question, index) in answers" :key="question.qusId || index" class="rounded-2xl border border-slate-200 bg-white p-4 shadow-[0_8px_20px_rgb(15_23_42/5%)]">
-        <div class="mb-3 flex items-center justify-between gap-3"><span class="inline-flex items-center rounded-lg bg-teal-50 px-2.5 py-1 text-3 text-teal-700 font-600">第 {{ question.sortOrder || index + 1 }} 题</span><van-tag plain type="primary">{{ questionTypeLabel(question.qusType) }} · {{ question.score }} 分</van-tag></div>
+        <div class="mb-3 flex items-center justify-between gap-3"><span class="inline-flex items-center rounded-lg bg-teal-50 px-2.5 py-1 text-3 text-teal-700 font-600">第 {{ question.sortOrder + 1 }} 题</span><van-tag plain type="primary">{{ questionTypeLabel(question.qusType) }} · {{ question.score }} 分</van-tag></div>
         <h2 class="m-0 text-4 text-slate-900 font-600 leading-7">{{ question.qusTitle }}</h2>
         <div v-if="question.qusItems?.length" class="mt-5 flex flex-col gap-2.5">
-          <div v-for="(option, optionIndex) in question.qusItems" :key="option.ansId || optionIndex" class="flex items-center gap-3 border rounded-xl px-3 py-3" :class="isCorrectOption(question, optionIndex, option.ansId) ? 'border-teal-500 bg-teal-50' : 'border-slate-200 bg-white'">
-            <span class="flex size-7 shrink-0 items-center justify-center border rounded-full text-3 font-600" :class="isCorrectOption(question, optionIndex, option.ansId) ? 'border-teal-600 bg-teal-600 text-white' : 'border-slate-300 text-slate-500'">{{ String.fromCharCode(65 + optionIndex) }}</span>
+          <div v-for="(option, optionIndex) in question.qusItems" :key="option.ansId || optionIndex" class="flex items-center gap-3 border rounded-xl px-3 py-3" :class="optionClass(question, optionIndex)">
+            <span class="flex size-7 shrink-0 items-center justify-center border rounded-full text-3 font-600" :class="optionLabelClass(question, optionIndex)">{{ String.fromCharCode(65 + optionIndex) }}</span>
             <span class="min-w-0 flex-1 text-3.5 text-slate-700 leading-6">{{ option.ansContext }}</span>
-            <van-icon v-if="isCorrectOption(question, optionIndex, option.ansId)" name="success" color="#0f766e" size="18" />
+            <span v-if="isCorrectOption(question, optionIndex)" class="text-3 text-teal-700 font-600">正确答案</span>
+            <span v-else-if="isUserOption(question, optionIndex)" class="text-3 text-rose-600 font-600">我的选择</span>
           </div>
         </div>
-        <div v-else class="mt-4 rounded-xl bg-teal-50 px-3 py-3 text-3.5 text-teal-800">正确答案：{{ question.correctAnswer || '暂无' }}</div>
+        <div class="mt-4 grid grid-cols-1 gap-2 text-3.25 sm:grid-cols-2"><div class="rounded-xl bg-rose-50 px-3 py-2 text-rose-700">我的答案：{{ getOptionText(question, question.userAnswer) }}</div><div class="rounded-xl bg-teal-50 px-3 py-2 text-teal-800">正确答案：{{ getOptionText(question, question.correctAnswer) }}</div></div>
         <div v-if="question.qusExplain" class="mt-4 border-t border-slate-100 pt-4"><div class="mb-1 text-3 text-slate-500">题目解析</div><p class="m-0 text-3.5 text-slate-700 leading-6">{{ question.qusExplain }}</p></div>
       </section>
 
