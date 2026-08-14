@@ -59,7 +59,7 @@ const sectionTypeMap: Record<SectionType, SectionTypeMeta> = {
     adminCreateRouteTitle: '新增考试小节',
     adminEditRoute: 'AdminCourseSectionExamEdit',
     adminEditRouteTitle: '编辑考试小节',
-    clientRoute: 'ClientCourseSectionExam',
+    clientRoute: 'ClientCourseSectionExamAnswer',
   },
   3: {
     sectionType: 3,
@@ -70,7 +70,7 @@ const sectionTypeMap: Record<SectionType, SectionTypeMeta> = {
     adminCreateRouteTitle: '新增问卷小节',
     adminEditRoute: 'AdminCourseSectionQuestionEdit',
     adminEditRouteTitle: '编辑问卷小节',
-    clientRoute: 'ClientCourseSectionQuestion',
+    clientRoute: 'ClientCourseSectionQuestionAnswer',
   },
 }
 

@@ -4,7 +4,7 @@ import { showToast } from 'vant'
 import { useClientNavTitle } from '@/hooks/core/useClientNavTitle'
 
 defineOptions({
-  name: 'ClientCourseSectionQuestion',
+  name: 'ClientCourseSectionExam',
 })
 
 type Question = AdminApi.Question.Question
@@ -23,18 +23,25 @@ const loadError = ref('')
 
 const activeQuestionIndex = ref(0)
 
+/** 当前考试总用时（秒）。 */
+const pageOpenTime = ref(0)
+
+let pageOpenTimer: ReturnType<typeof setInterval> | undefined
+
 const selectedAnswers = ref<Record<number, number[]>>({
 })
 
+/** 每道题首次进入时的时间戳。 */
 const questionStartedAt = ref<Record<number, number>>({
 })
 
+/** 每道题从进入到首次作答的耗时（秒）。 */
 const questionAnswerTimes = ref<Record<number, number>>({
 })
 
-const questionStartedAtPage = ref(0)
+const examStartedAt = ref(0)
 
-const questionInfo = ref<ClientApi.Course.CourseQuestionInfoResponse>({
+const examInfo = ref<ClientApi.Course.CourseExamInfoResponse>({
   couId: 0,
   examId: 0,
   examName: '',
@@ -53,21 +60,27 @@ const questionInfo = ref<ClientApi.Course.CourseQuestionInfoResponse>({
 
 const olId = computed(() => Number(route.params.olId || 0))
 
-const questions = computed(() => questionInfo.value.questions || [])
+const questions = computed(() => examInfo.value.questions || [])
 
 const activeQuestion = computed(() => questions.value[activeQuestionIndex.value])
 
+const totalScore = computed(() => questions.value.reduce((sum, question) => sum + Number(question.qusScore || 0), 0))
+
 const answeredCount = computed(() => questions.value.filter((_, index) => getSelectedAnswers(index).length).length)
 
-const progress = computed(() => questions.value.length ? Math.round((answeredCount.value / questions.value.length) * 100) : 0)
+const progress = computed(() => {
+  if (!questions.value.length) { return 0 }
+
+  return Math.round((answeredCount.value / questions.value.length) * 100)
+})
 
 const isLastQuestion = computed(() => activeQuestionIndex.value === questions.value.length - 1)
 
 const questionTypeLabel = computed(() => activeQuestion.value?.qusType === 2 ? '多选题' : '单选题')
 
-async function getQuestionInfo() {
+async function getExamInfo() {
   if (!olId.value) {
-    loadError.value = '未找到问卷小节'
+    loadError.value = '未找到考试小节'
     return
   }
 
@@ -80,17 +93,20 @@ async function getQuestionInfo() {
   }
   questionAnswerTimes.value = {
   }
-  questionStartedAtPage.value = 0
+  examStartedAt.value = 0
+  pageOpenTime.value = 0
+  stopPageOpenTimer()
 
   try {
-    questionInfo.value = await fetchClientCourseQuestionInfo(olId.value)
-    setClientNavTitle(questionInfo.value.testPaperName || '课程问卷')
-    questionStartedAtPage.value = Date.now()
+    examInfo.value = await fetchClientCourseExamInfo(olId.value)
+    setClientNavTitle(examInfo.value.testPaperName || '课程考试')
+    examStartedAt.value = Date.now()
     markQuestionStarted(0)
+    startPageOpenTimer()
   }
   catch (error) {
     console.error(error)
-    loadError.value = '问卷内容加载失败，请稍后重试'
+    loadError.value = '考试内容加载失败，请稍后重试'
   }
   finally {
     loading.value = false
@@ -120,27 +136,61 @@ function selectAnswer(question: Question, questionIndex: number, optionIndex: nu
   selectedAnswers.value[questionIndex] = [optionIndex]
 }
 
+function goToQuestion(index: number) {
+  const nextIndex = Math.min(Math.max(index, 0), questions.value.length - 1)
+
+  activeQuestionIndex.value = nextIndex
+  markQuestionStarted(nextIndex)
+}
+
 function markQuestionStarted(questionIndex: number) {
   if (questionStartedAt.value[questionIndex] === undefined) {
     questionStartedAt.value[questionIndex] = Date.now()
   }
 }
 
-function goToQuestion(index: number) {
-  activeQuestionIndex.value = Math.min(Math.max(index, 0), questions.value.length - 1)
-  markQuestionStarted(activeQuestionIndex.value)
+function startPageOpenTimer() {
+  stopPageOpenTimer()
+  pageOpenTime.value = 0
+  pageOpenTimer = setInterval(() => {
+    pageOpenTime.value = Math.floor((Date.now() - examStartedAt.value) / 1000)
+  }, 1000)
+}
+
+function stopPageOpenTimer() {
+  if (pageOpenTimer === undefined) { return }
+
+  clearInterval(pageOpenTimer)
+  pageOpenTimer = undefined
+}
+
+function goToPreviousQuestion() {
+  goToQuestion(activeQuestionIndex.value - 1)
+}
+
+function goToNextQuestion() {
+  goToQuestion(activeQuestionIndex.value + 1)
 }
 
 function backToCourse() {
   router.push({
     name: 'ClientCourseDetail',
     params: {
-      couId: questionInfo.value.couId || route.params.couId,
+      couId: examInfo.value.couId || route.params.couId,
     },
   })
 }
 
-async function submitQuestion() {
+onMounted(() => {
+  getExamInfo()
+})
+
+onBeforeUnmount(() => {
+  clearClientNavTitle()
+  stopPageOpenTimer()
+})
+
+async function submitExam() {
   if (submitting.value) { return }
 
   if (answeredCount.value < questions.value.length) {
@@ -148,49 +198,68 @@ async function submitQuestion() {
     return
   }
 
-  const submitParams: ClientApi.Course.CourseQuestionSubmitParams = {
+  const submitParams: ClientApi.Course.CourseExamSubmitParams = {
+    examId: examInfo.value.examId,
     olId: olId.value,
-    couId: questionInfo.value.couId || 0,
-    examId: questionInfo.value.examId || 0,
+    couId: examInfo.value.couId || 0,
+    durationSeconds: getExamDuration(),
+
     answers: questions.value.map((question, index) => ({
+      answerStatus: getSelectedAnswers(index).length ? 1 : 0,
+      answerTime: questionAnswerTimes.value[index] || 0,
       qusId: question.qusId || 0,
       userAnswer: getSelectedAnswers(index).join(','),
     })),
   }
 
   submitting.value = true
+
   try {
-    await fetchClientCourseQuestionSubmit(submitParams)
-    showToast('问卷提交成功')
-    backToCourse()
+    console.log('🚀 ~ file: index.vue:216 ~ submitParams:', submitParams)
+
+    await fetchClientCourseExamSubmit(submitParams)
+    stopPageOpenTimer()
+    showToast('考试交卷成功')
+    router.replace({
+      name: 'ClientCourseSectionExamResult',
+      params: {
+        couId: examInfo.value.couId || route.params.couId,
+        olId: olId.value,
+      },
+    })
   }
   catch (error) {
     console.error(error)
-    showToast('问卷提交失败，请稍后重试')
+    showToast('考试交卷失败，请稍后重试')
   }
   finally {
     submitting.value = false
   }
 }
 
-onMounted(getQuestionInfo)
+function getExamDuration() {
+  if (!examStartedAt.value) { return pageOpenTime.value }
 
-onBeforeUnmount(clearClientNavTitle)
+  return Math.max(0, Math.floor((Date.now() - examStartedAt.value) / 1000))
+}
 </script>
 
 <template>
   <div
     class="min-h-full flex flex-col gap-4 pb-4"
   >
-    <div
+    <template
       v-if="loading"
-      class="min-h-90 flex flex-1 flex-col items-center justify-center gap-3 rounded-2xl bg-white text-3.5 text-slate-500"
     >
-      <van-loading
-        color="#0f766e"
-      />
-      正在加载问卷内容...
-    </div>
+      <div
+        class="min-h-90 flex flex-1 flex-col items-center justify-center gap-3 rounded-2xl bg-white text-3.5 text-slate-500"
+      >
+        <van-loading
+          color="#0f766e"
+        />
+        正在加载考试内容...
+      </div>
+    </template>
 
     <van-empty
       v-else-if="loadError"
@@ -201,7 +270,7 @@ onBeforeUnmount(clearClientNavTitle)
       <van-button
         size="small"
         type="primary"
-        @click="getQuestionInfo"
+        @click="getExamInfo"
       >
         重新加载
       </van-button>
@@ -210,7 +279,7 @@ onBeforeUnmount(clearClientNavTitle)
     <van-empty
       v-else-if="!questions.length"
       image="search"
-      description="暂无问卷题目"
+      description="暂无考试题目"
       class="min-h-90 rounded-2xl bg-white"
     >
       <van-button
@@ -230,32 +299,49 @@ onBeforeUnmount(clearClientNavTitle)
         class="rounded-2xl border border-teal-100 bg-linear-to-r from-teal-50 via-white to-cyan-50 px-4 py-4 shadow-[0_8px_20px_rgb(15_23_42/4%)]"
       >
         <div
-          class="flex items-start gap-3"
+          class="flex items-start justify-between gap-3"
         >
           <div
-            class="min-w-0 flex-1"
+            class="min-w-0"
           >
             <div
               class="mb-1 flex items-center gap-1.5 text-3 text-teal-700 font-600"
             >
               <van-icon
-                name="description"
+                name="medal-o"
                 size="16"
-              />课程问卷
+              />
+              课程考试
             </div>
 
             <h1
               class="m-0 truncate text-4.5 text-slate-900 font-700"
             >
-              {{ questionInfo.testPaperName || '课程问卷' }}
+              {{ examInfo.testPaperName || '课程考试' }}
             </h1>
 
             <p
-              v-if="questionInfo.examName"
+              v-if="examInfo.examName"
               class="mb-0 mt-1 truncate text-3.25 text-slate-500"
             >
-              {{ questionInfo.examName }}
+              {{ examInfo.examName }}
             </p>
+          </div>
+
+          <div
+            class="shrink-0 text-right"
+          >
+            <div
+              class="text-4.5 text-teal-700 font-700"
+            >
+              {{ totalScore }}
+            </div>
+
+            <div
+              class="text-3 text-slate-500"
+            >
+              总分
+            </div>
           </div>
         </div>
 
@@ -266,7 +352,9 @@ onBeforeUnmount(clearClientNavTitle)
 
           <span
             class="text-teal-700 font-700"
-          >{{ progress }}%</span>
+          >
+            {{ progress }}%
+          </span>
         </div>
 
         <van-progress
@@ -287,14 +375,16 @@ onBeforeUnmount(clearClientNavTitle)
         >
           <span
             class="inline-flex items-center rounded-lg bg-teal-50 px-2.5 py-1 text-3 text-teal-700 font-600"
-          >第 {{ activeQuestionIndex + 1 }} 题</span>
+          >
+            第 {{ activeQuestionIndex + 1 }} 题
+          </span>
 
           <van-tag
             plain
             size="large"
             type="primary"
           >
-            {{ questionTypeLabel }}
+            {{ questionTypeLabel }} · {{ activeQuestion?.qusScore || 0 }} 分
           </van-tag>
         </div>
 
@@ -318,7 +408,9 @@ onBeforeUnmount(clearClientNavTitle)
             <span
               class="option-label flex size-7 shrink-0 items-center justify-center border rounded-full text-3 font-600"
               :class="getSelectedAnswers(activeQuestionIndex).includes(index) ? 'border-teal-600 bg-teal-600 text-white' : 'border-slate-300 text-slate-500'"
-            >{{ String.fromCharCode(65 + index) }}</span>
+            >
+              {{ String.fromCharCode(65 + index) }}
+            </span>
 
             <span
               class="min-w-0 flex-1 text-3.5 text-slate-700 leading-6"
@@ -374,7 +466,7 @@ onBeforeUnmount(clearClientNavTitle)
           plain
           type="primary"
           :disabled="activeQuestionIndex === 0"
-          @click="goToQuestion(activeQuestionIndex - 1)"
+          @click="goToPreviousQuestion"
         >
           上一题
         </van-button>
@@ -382,7 +474,7 @@ onBeforeUnmount(clearClientNavTitle)
         <van-button
           v-if="!isLastQuestion"
           type="primary"
-          @click="goToQuestion(activeQuestionIndex + 1)"
+          @click="goToNextQuestion"
         >
           下一题
         </van-button>
@@ -391,9 +483,9 @@ onBeforeUnmount(clearClientNavTitle)
           v-else
           type="primary"
           :loading="submitting"
-          @click="submitQuestion"
+          @click="submitExam"
         >
-          提交问卷
+          完成并交卷
         </van-button>
       </div>
     </template>

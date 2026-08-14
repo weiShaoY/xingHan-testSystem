@@ -2,47 +2,66 @@ import type { AppRouteRecord } from '@/types/router'
 
 import { RoutesAlias } from '../../constants/route-alias'
 
-const sectionRouteConfigs = [
+const SectionRoutes: AppRouteRecord[] = [
   {
-    type: 'document',
-    name: 'Document',
-    title: '文档',
-    cacheName: 'ClientCourseSectionDocument',
+    path: ':couId/section/document/:olId?',
+    name: 'ClientCourseSectionDocument',
     component: '/client/course/section/document',
+    meta: {
+      title: '文档',
+      keepAlive: true,
+      cacheName: 'ClientCourseSectionDocument',
+    },
   },
   {
-    type: 'video',
-    name: 'Video',
-    title: '视频',
-    cacheName: 'ClientCourseSectionVideo',
+    path: ':couId/section/video/:olId?',
+    name: 'ClientCourseSectionVideo',
     component: '/client/course/section/video',
+    meta: {
+      title: '视频',
+      keepAlive: true,
+      cacheName: 'ClientCourseSectionVideo',
+    },
   },
   {
-    type: 'exam',
-    name: 'Exam',
-    title: '考试',
-    cacheName: 'ClientCourseSectionExam',
-    component: '/client/course/section/exam',
+    path: ':couId/section/exam/:olId/answer',
+    name: 'ClientCourseSectionExamAnswer',
+    component: '/client/course/section/exam/answer',
+    meta: {
+      title: '考试',
+      keepAlive: true,
+      cacheName: 'ClientCourseSectionExamAnswer',
+    },
   },
   {
-    type: 'question',
-    name: 'Question',
-    title: '问卷',
-    cacheName: 'ClientCourseSectionQuestion',
-    component: '/client/course/section/question',
+    path: ':couId/section/exam/:olId/result',
+    name: 'ClientCourseSectionExamResult',
+    component: '/client/course/section/exam/result',
+    meta: {
+      title: '考试结果',
+      keepAlive: false,
+    },
+  },
+  {
+    path: ':couId/section/question/:olId/answer',
+    name: 'ClientCourseSectionQuestionAnswer',
+    component: '/client/course/section/question/answer',
+    meta: {
+      title: '问卷',
+      keepAlive: true,
+      cacheName: 'ClientCourseSectionQuestionAnswer',
+    },
+  },
+  {
+    path: ':couId/section/question/:olId/result',
+    name: 'ClientCourseSectionQuestionResult',
+    component: '/client/course/section/question/result',
+    meta: {
+      title: '问卷结果',
+      keepAlive: false,
+    },
   },
 ]
-
-const SectionRoutes: AppRouteRecord[] = sectionRouteConfigs.map(item => ({
-  path: `:couId/section/${item.type}/:olId?`,
-  name: `ClientCourseSection${item.name}`,
-  component: item.component,
-  meta: {
-    title: item.title,
-    keepAlive: true,
-    cacheName: item.cacheName,
-  },
-}))
 
 /**
  * 客户端根路由

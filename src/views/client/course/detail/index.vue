@@ -1,6 +1,8 @@
 <script lang="ts" setup>
 import type { SectionTypeConfig } from '@/config/course'
 
+import { el } from 'element-plus/es/locale/index.mjs'
+
 import { getClientSectionRoute, getSectionTypeConfig } from '@/config/course'
 
 import { useClientNavTitle } from '@/hooks/core/useClientNavTitle'
@@ -157,18 +159,59 @@ onMounted(() => {
  * @param section 小节数据。
  */
 function handleSection(section: ClientApi.Course.ChaptersItem) {
-  // ClientCourseSection
-  const targetRoute = router.resolve({
-    name: getClientSectionRoute(section.olIsAccessory),
-    params: {
-      couId: couId.value,
-      olId: section.olId,
-    },
-  })
+  console.log('🚀 ~ file: index.vue:160 ~ section:', section)
+  console.log('🚀 ~ file: index.vue:194 ~ section.progress:', section.progress)
 
-  console.log('🚀 ~ file: index.vue:170 ~ targetRoute:', targetRoute)
+  if (section.olIsAccessory === 0) {
+    router.push({
+      name: 'ClientCourseSectionDocument',
+      params: {
+        couId: couId.value,
+        olId: section.olId,
+      },
+    })
+  }
+  else if (section.olIsAccessory === 1) {
+    router.push({
+      name: 'ClientCourseSectionVideo',
+      params: {
+        couId: couId.value,
+        olId: section.olId,
+      },
+    })
+  }
+  else if (section.olIsAccessory === 2) {
+    // 'ClientCourseSectionExamAnswer
+    router.push({
+      name: section.progress === 100 ? 'ClientCourseSectionExamResult' : 'ClientCourseSectionExamAnswer',
+      params: {
+        couId: couId.value,
+        olId: section.olId,
+      },
+    })
+  }
+  else if (section.olIsAccessory === 3) {
+    router.push({
+      name: section.progress === 100 ? 'ClientCourseSectionQuestionResult' : 'ClientCourseSectionQuestionAnswer',
+      params: {
+        couId: couId.value,
+        olId: section.olId,
+      },
+    })
+  }
 
-  router.push(targetRoute)
+  // // ClientCourseSection
+  // const targetRoute = router.resolve({
+  //   name: getClientSectionRoute(section.olIsAccessory),
+  //   params: {
+  //     couId: couId.value,
+  //     olId: section.olId,
+  //   },
+  // })
+
+  // console.log('🚀 ~ file: index.vue:170 ~ targetRoute:', targetRoute)
+
+  // router.push(targetRoute)
 }
 </script>
 
