@@ -194,6 +194,7 @@ function handleSection(section: ClientApi.Course.ChaptersItem) {
       params: {
         couId: couId.value,
         olId: section.olId,
+        questionId: section.examId,
       },
     })
   }
@@ -430,7 +431,7 @@ function handleSection(section: ClientApi.Course.ChaptersItem) {
                     >
                       <span>{{ getLearningStatus(section.status) }}</span>
 
-                      <span>{{ formatStudyTime(section.totalLearningTime) }}</span>
+                      <!-- <span>{{ formatStudyTime(section.totalLearningTime) }}</span> -->
                     </div>
                   </div>
 
@@ -494,7 +495,7 @@ function handleSection(section: ClientApi.Course.ChaptersItem) {
                   >
                     <span>{{ getLearningStatus(section.status) }}</span>
 
-                    <span>{{ formatStudyTime(section.totalLearningTime) }}</span>
+                    <!-- <span>{{ formatStudyTime(section.totalLearningTime) }}</span> -->
                   </div>
                 </div>
 

@@ -120,6 +120,7 @@ declare global {
   const fetchClientCourseExamSubmit: typeof import('../../apis/client/course/index').fetchClientCourseExamSubmit
   const fetchClientCourseOutlineList: typeof import('../../apis/client/course/index').fetchClientCourseOutlineList
   const fetchClientCourseQuestionInfo: typeof import('../../apis/client/course/index').fetchClientCourseQuestionInfo
+  const fetchClientCourseQuestionResult: typeof import('../../apis/client/course/index').fetchClientCourseQuestionResult
   const fetchClientCourseQuestionSubmit: typeof import('../../apis/client/course/index').fetchClientCourseQuestionSubmit
   const fetchClientCourseSubmitDocument: typeof import('../../apis/client/course/index').fetchClientCourseDocumentSubmit
   const fetchClientCourseVideoFile: typeof import('../../apis/client/course/index').fetchClientCourseVideoFile
@@ -614,6 +615,7 @@ declare module 'vue' {
     readonly fetchClientCourseExamInfo: UnwrapRef<typeof import('../../apis/client/course/index')['fetchClientCourseExamInfo']>
     readonly fetchClientCourseExamSubmit: UnwrapRef<typeof import('../../apis/client/course/index')['fetchClientCourseExamSubmit']>
     readonly fetchClientCourseQuestionInfo: UnwrapRef<typeof import('../../apis/client/course/index')['fetchClientCourseQuestionInfo']>
+    readonly fetchClientCourseQuestionResult: UnwrapRef<typeof import('../../apis/client/course/index')['fetchClientCourseQuestionResult']>
     readonly fetchClientCourseQuestionSubmit: UnwrapRef<typeof import('../../apis/client/course/index')['fetchClientCourseQuestionSubmit']>
     readonly fetchClientCourseVideoFile: UnwrapRef<typeof import('../../apis/client/course/index')['fetchClientCourseVideoFile']>
     readonly fetchClientCourseVideoInfo: UnwrapRef<typeof import('../../apis/client/course/index')['fetchClientCourseVideoInfo']>

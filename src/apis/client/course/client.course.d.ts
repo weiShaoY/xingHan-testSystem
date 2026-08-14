@@ -77,6 +77,11 @@ export namespace Course {
      * 附件类型（0=文档，1=视频，2=考试，3=问卷）
      */
     olIsAccessory: 0 | 1 | 2 | 3
+
+    /**
+     *  考试ID or 问卷ID （仅当olIsAccessory为2或3时有效）
+     */
+    examId?: number
   }
 
   /**

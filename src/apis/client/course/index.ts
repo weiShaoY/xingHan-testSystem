@@ -148,3 +148,16 @@ export function fetchClientCourseQuestionSubmit(data: ClientApi.Course.CourseQue
     data,
   })
 }
+
+/**
+ *  获取客户端 问卷结果
+ */
+export function fetchClientCourseQuestionResult(questionId: number) {
+  return request.get<ClientApi.Course.CourseQuestionResultResponse>({
+    url: '/client/learning/getUserQuestionAnswers',
+    authPath: '/client',
+    params: {
+      questionId,
+    },
+  })
+}

@@ -1,13 +1,16 @@
-<script setup lang="ts">
-import SectionSubmissionResult from '../../components/SectionSubmissionResult.vue'
-
-defineOptions({
-  name: 'ClientCourseSectionExamResult',
-})
+<!------  2026-08-14---10:59---星期五  ------>
+<!------------------------------------    ------------------------------------------------->
+<script lang="ts" setup>
 </script>
 
 <template>
-  <SectionSubmissionResult
-    type="exam"
-  />
+  <div
+    class=""
+  >
+    1
+  </div>
 </template>
+
+<style lang="scss" scoped>
+
+</style>
