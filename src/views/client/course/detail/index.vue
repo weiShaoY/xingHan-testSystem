@@ -194,7 +194,7 @@ function handleSection(section: ClientApi.Course.ChaptersItem) {
       params: {
         couId: couId.value,
         olId: section.olId,
-        questionId: section.examId,
+        questionId: section.examId || undefined,
       },
     })
   }

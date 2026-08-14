@@ -53,7 +53,7 @@ const SectionRoutes: AppRouteRecord[] = [
     },
   },
   {
-    path: ':couId/section/question/:olId/result',
+    path: ':couId/section/question/:olId/result/:questionId',
     name: 'ClientCourseSectionQuestionResult',
     component: '/client/course/section/question/result',
     meta: {

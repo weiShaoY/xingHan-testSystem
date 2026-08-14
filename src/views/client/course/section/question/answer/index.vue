@@ -167,6 +167,7 @@ async function submitQuestion() {
       params: {
         couId: questionInfo.value.couId || route.params.couId,
         olId: olId.value,
+        questionId: questionInfo.value.examId,
       },
     })
   }
