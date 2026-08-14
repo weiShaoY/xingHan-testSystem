@@ -225,6 +225,7 @@ async function submitExam() {
       params: {
         couId: examInfo.value.couId || route.params.couId,
         olId: olId.value,
+        examId: examInfo.value.examId,
       },
     })
   }

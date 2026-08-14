@@ -185,12 +185,15 @@ function handleSection(section: ClientApi.Course.ChaptersItem) {
       params: {
         couId: couId.value,
         olId: section.olId,
+        examId: section.examId || undefined,
       },
     })
   }
   else if (section.olIsAccessory === 3) {
     router.push({
-      name: section.progress === 100 ? 'ClientCourseSectionQuestionResult' : 'ClientCourseSectionQuestionAnswer',
+      // name: section.progress === 100 ? 'ClientCourseSectionQuestionResult' : 'ClientCourseSectionQuestionAnswer',
+
+      name: 'ClientCourseSectionQuestionAnswer',
       params: {
         couId: couId.value,
         olId: section.olId,
@@ -198,19 +201,6 @@ function handleSection(section: ClientApi.Course.ChaptersItem) {
       },
     })
   }
-
-  // // ClientCourseSection
-  // const targetRoute = router.resolve({
-  //   name: getClientSectionRoute(section.olIsAccessory),
-  //   params: {
-  //     couId: couId.value,
-  //     olId: section.olId,
-  //   },
-  // })
-
-  // console.log('🚀 ~ file: index.vue:170 ~ targetRoute:', targetRoute)
-
-  // router.push(targetRoute)
 }
 </script>
 

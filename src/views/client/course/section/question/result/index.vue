@@ -40,6 +40,7 @@ async function getCourseQuestionResult() {
 
   try {
     questionResult.value = await fetchClientCourseQuestionResult(questionId.value)
+    console.log('🚀 ~ file: index.vue:43 ~ questionResult.value:', questionResult.value)
     setClientNavTitle('问卷结果')
   }
   catch (error) {
@@ -51,26 +52,27 @@ async function getCourseQuestionResult() {
   }
 }
 
-function splitAnswer(answer: string) {
-  return answer.split(',')
-    .map(item => item.trim())
-    .filter(Boolean)
+function splitAnswer(answer?: string | null) {
+  return String(answer || '').split(',').map(item => item.trim()).filter(Boolean)
 }
 
 function hasAnswer(question: QuestionResult) {
   return splitAnswer(question.userAnswer).length > 0
 }
 
-function isSelected(question: QuestionResult, optionIndex: number, optionId?: number) {
+function isSelected(question: QuestionResult, optionIndex: number) {
   const answers = splitAnswer(question.userAnswer)
 
-  return answers.includes(String(optionIndex)) || (optionId !== undefined && answers.includes(String(optionId)))
+  return answers.includes(String(optionIndex))
+    || answers.includes(String.fromCharCode(65 + optionIndex))
 }
 
-function isCorrectOption(question: QuestionResult, optionIndex: number, optionId?: number) {
-  const answers = splitAnswer(question.correctAnswer)
+function getUserAnswerText(question: QuestionResult) {
+  const answerTexts = question.qusItems
+    .map((option, index) => isSelected(question, index) ? option.ansContext : '')
+    .filter(Boolean)
 
-  return answers.includes(String(optionIndex)) || (optionId !== undefined && answers.includes(String(optionId)))
+  return answerTexts.length ? answerTexts.join('、') : question.userAnswer || '未作答'
 }
 
 function questionTypeLabel(type: number) {
@@ -225,11 +227,11 @@ onBeforeUnmount(clearClientNavTitle)
             v-for="(option, optionIndex) in question.qusItems"
             :key="option.ansId || optionIndex"
             class="flex items-center gap-3 border rounded-xl px-3 py-3"
-            :class="isSelected(question, optionIndex, option.ansId) ? 'border-teal-500 bg-teal-50' : 'border-slate-200 bg-white'"
+            :class="isSelected(question, optionIndex) ? 'border-teal-500 bg-teal-50' : 'border-slate-200 bg-white'"
           >
             <span
               class="flex size-7 shrink-0 items-center justify-center border rounded-full text-3 font-600"
-              :class="isSelected(question, optionIndex, option.ansId) ? 'border-teal-600 bg-teal-600 text-white' : 'border-slate-300 text-slate-500'"
+              :class="isSelected(question, optionIndex) ? 'border-teal-600 bg-teal-600 text-white' : 'border-slate-300 text-slate-500'"
             >{{ String.fromCharCode(65 + optionIndex) }}</span>
 
             <span
@@ -237,18 +239,12 @@ onBeforeUnmount(clearClientNavTitle)
             >{{ option.ansContext }}</span>
 
             <van-icon
-              v-if="isSelected(question, optionIndex, option.ansId)"
+              v-if="isSelected(question, optionIndex)"
               name="success"
               color="#0f766e"
               size="18"
             />
 
-            <van-icon
-              v-else-if="isCorrectOption(question, optionIndex, option.ansId)"
-              name="passed"
-              color="#f59e0b"
-              size="18"
-            />
           </div>
         </div>
 
@@ -258,6 +254,22 @@ onBeforeUnmount(clearClientNavTitle)
         >
           {{ question.userAnswer || '未作答' }}
         </div>
+
+        <div
+          v-if="question.qusItems?.length"
+          class="mt-4 rounded-xl bg-teal-50 px-3 py-3 text-3.25 text-teal-800"
+        >
+          我的答案：{{ getUserAnswerText(question) }}
+        </div>
+
+        <van-tag
+          v-if="hasAnswer(question)"
+          class="mt-4"
+          plain
+          :type="question.isCorrect ? 'success' : 'warning'"
+        >
+          {{ question.isCorrect ? '本题回答正确' : '本题回答已记录' }}
+        </van-tag>
 
         <div
           v-if="question.qusExplain"

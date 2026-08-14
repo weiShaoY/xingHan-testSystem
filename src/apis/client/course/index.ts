@@ -123,6 +123,19 @@ export function fetchClientCourseExamSubmit(data: ClientApi.Course.CourseExamSub
   })
 }
 
+/**
+ *  获取客户端 考试结果
+ */
+export function fetchClientCourseExamResult(examId: number) {
+  return request.get<ClientApi.Course.CourseExamResultResponse>({
+    url: '/client/learning/getExamCorrectAnswers',
+    authPath: '/client',
+    params: {
+      examId,
+    },
+  })
+}
+
 // % / //// ////////////////////////  问卷  ////////////////////////
 
 /**

@@ -143,6 +143,8 @@ function backToCourse() {
 async function submitQuestion() {
   if (submitting.value) { return }
 
+  console.log('🚀 ~ file: index.vue:147 ~ questions:', questions)
+
   if (answeredCount.value < questions.value.length) {
     showToast(`还有 ${questions.value.length - answeredCount.value} 题未作答`)
     return
@@ -161,7 +163,9 @@ async function submitQuestion() {
   submitting.value = true
   try {
     await fetchClientCourseQuestionSubmit(submitParams)
+    console.log('🚀 ~ file: index.vue:164 ~ submitParams:', submitParams)
     showToast('问卷提交成功')
+
     router.replace({
       name: 'ClientCourseSectionQuestionResult',
       params: {

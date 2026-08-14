@@ -603,8 +603,87 @@ export namespace Course {
     answers: CourseExamSubmitParamsAnswersItem[]
   }
 
+  type CourseExamResultResponseUserQuestionAnswerItem = {
+
+    /**
+     * 正确答案
+     */
+    correctAnswer: string
+
+    /**
+     * 题目难度
+     */
+    qusDiff: number
+
+    /**
+     * 题目解析
+     */
+    qusExplain: string
+
+    /**
+     * 题目ID
+     */
+    qusId: number
+
+    /**
+     * 题目题干
+     */
+    qusTitle: string
+
+    /**
+     * 题目类型（1=单选，2=多选，3=判断，4=填空，5=问答）
+     */
+    qusType: number
+
+    /**
+     * 题目分值
+     */
+    score: number
+
+    /**
+     * 排序（第几题）
+     */
+    sortOrder: number
+
+    /**
+     * 题目选项
+     */
+    qusItems: AdminApi.Question.QuestionOption[]
+  }
+
   /**
-   *  问卷信息响应
+   *  考试结果 响应
+   */
+  type CourseExamResultResponse = {
+
+    /**
+     * 考试用时（秒）
+     */
+    durationSeconds: number
+
+    /**
+     * 得分
+     */
+    score: number
+
+    /**
+     * 得分率
+     */
+    scoringRate: number
+
+    /**
+     * 满分
+     */
+    totalScore: number
+
+    /**
+     * 考试试题列表
+     */
+    examAnswers: CourseExamResultResponseUserQuestionAnswerItem[]
+  }
+
+  /**
+   *  问卷信息 响应
    */
   type CourseQuestionInfoResponse = {
 
@@ -699,11 +778,6 @@ export namespace Course {
     answerTime: number
 
     /**
-     * 正确答案
-     */
-    correctAnswer: string
-
-    /**
      * 是否正确
      */
     isCorrect: boolean
@@ -760,7 +834,7 @@ export namespace Course {
   }
 
   /**
-   *  问卷 结果页响应
+   *  问卷结果 响应
    */
   type CourseQuestionResultResponse = {
 

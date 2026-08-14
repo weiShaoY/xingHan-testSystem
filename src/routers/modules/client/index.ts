@@ -34,7 +34,7 @@ const SectionRoutes: AppRouteRecord[] = [
     },
   },
   {
-    path: ':couId/section/exam/:olId/result',
+    path: ':couId/section/exam/:olId/result/:examId',
     name: 'ClientCourseSectionExamResult',
     component: '/client/course/section/exam/result',
     meta: {
