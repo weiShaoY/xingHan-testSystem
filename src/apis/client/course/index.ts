@@ -48,7 +48,7 @@ export function fetchClientCourseDocumentFile(asId: number) {
 /**
  *  提交文档
  */
-export function fetchClientCourseDocumentSubmit(data: ClientApi.Course.CourseDocumentRecordProgressParams) {
+export function fetchClientCourseDocumentSubmit(data: ClientApi.Course.CourseDocumentSubmitParams) {
   return request.post<boolean>({
     url: '/client/learning/pdfRecordProgress',
     authPath: '/client',
@@ -89,7 +89,7 @@ export function fetchClientCourseVideoFile(asId: number) {
 /**
  *  提交视频
  */
-export function fetchClientCourseVideoSubmit(data: ClientApi.Course.CourseVideoRecordProgressParams) {
+export function fetchClientCourseVideoSubmit(data: ClientApi.Course.CourseVideoSubmitParams) {
   return request.post<boolean>({
     url: '/client/learning/videoRecordProgress',
     authPath: '/client',

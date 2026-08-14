@@ -80,7 +80,7 @@ export namespace Course {
   }
 
   /**
-   *  客户端 课程学习进度响应
+   *  课程学习进度响应
    */
   type CourseProgressResponse = {
 
@@ -192,6 +192,9 @@ export namespace Course {
 
   }
 
+  /**
+   * 上一小节或下一小节信息
+   */
   type PreviousNodeOrNextNode = {
 
     /**
@@ -206,7 +209,7 @@ export namespace Course {
   }
 
   /**
-   * 客户端 文档信息响应
+   * 文档信息响应
    */
   type CourseDocumentInfoResponse = {
 
@@ -273,7 +276,7 @@ export namespace Course {
   }
 
   /**
-   *  客户端视频信息响应
+   *  频信息响应
    */
   type CourseVideoInfoResponse = {
 
@@ -340,9 +343,9 @@ export namespace Course {
   }
 
   /**
-   *  记录视频学习记录
+   *  提交视频
    */
-  type CourseVideoRecordProgressParams = {
+  type CourseVideoSubmitParams = {
 
     /**
      * 课程ID
@@ -377,7 +380,7 @@ export namespace Course {
   }
 
   /**
-   * 记录完成视频记录
+   * 提交视频播放记录参数
    */
   type CourseVideoRecordPlaybackParams = {
 
@@ -428,9 +431,9 @@ export namespace Course {
   }
 
   /**
-   * 记录文档学习记录
+   * 提交文档
    */
-  type CourseDocumentRecordProgressParams = {
+  type CourseDocumentSubmitParams = {
 
     /**
      * 课程ID
@@ -461,22 +464,6 @@ export namespace Course {
      *  是否已完成
      */
     isCompleted: boolean
-  }
-
-  /**
-   *  完成章节请求参数
-   */
-  type CourseCompleteChapterParams = {
-
-    /**
-     * 课程ID
-     */
-    couId: number
-
-    /**
-     * 章节ID
-     */
-    olId: number
   }
 
   type CourseExamInfoResponseQuestionsItem = {
@@ -518,7 +505,7 @@ export namespace Course {
   }
 
   /**
-   *  获取客户端 考试信息响应
+   *  考试信息响应
    */
   type CourseExamInfoResponse = {
 
@@ -612,7 +599,7 @@ export namespace Course {
   }
 
   /**
-   *  获取客户端 问卷信息响应
+   *  问卷信息响应
    */
   type CourseQuestionInfoResponse = {
 
@@ -692,5 +679,105 @@ export namespace Course {
      * 答题记录列表
      */
     answers: CourseQuestionSubmitParamsAnswersItem[]
+  }
+
+  type CourseQuestionResultResponseUserQuestionAnswerItem = {
+
+    /**
+     * 答题状态（0=未做，1=已做，2=标记待定）
+     */
+    answerStatus: number
+
+    /**
+     * 答题耗时（秒）
+     */
+    answerTime: number
+
+    /**
+     * 正确答案
+     */
+    correctAnswer: string
+
+    /**
+     * 是否正确
+     */
+    isCorrect: boolean
+
+    /**
+     * 题目分值
+     */
+    questionScore: number
+
+    /**
+     * 题目难度
+     */
+    qusDiff: number
+
+    /**
+     * 题目解析
+     */
+    qusExplain: string
+
+    /**
+     * 题目ID
+     */
+    qusId: number
+
+    /**
+     * 题目题干
+     */
+    qusTitle: string
+
+    /**
+     * 题目类型（1=单选，2=多选，3=判断，4=填空，5=问答）
+     */
+    qusType: number
+
+    /**
+     * 本题得分
+     */
+    score: number
+
+    /**
+     * 排序（第几题）
+     */
+    sortOrder: number
+
+    /**
+     * 用户答案
+     */
+    userAnswer: string
+
+    /**
+     * 题目选项
+     */
+    qusItems: AdminApi.Question.QuestionOption[]
+  }
+
+  /**
+   *  问卷 结果页响应
+   */
+  type CourseQuestionResultResponse = {
+
+    /**
+     *   /**
+     * 用户问卷答题数目
+     */
+    answersCount: number
+
+    /**
+     * 问卷提交次数
+     */
+    submissionCount: number
+
+    /**
+     * 问卷总题数目
+     */
+    totalCount: number
+
+    /**
+     * 用户问卷答题列表
+     */
+    userQuestionAnswers: CourseQuestionResultResponseUserQuestionAnswerItem[]
   }
 }

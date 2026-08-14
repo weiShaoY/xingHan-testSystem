@@ -1,8 +1,6 @@
 <script lang="ts" setup>
 import type { SectionTypeConfig } from '@/config/course'
 
-import { el } from 'element-plus/es/locale/index.mjs'
-
 import { getClientSectionRoute, getSectionTypeConfig } from '@/config/course'
 
 import { useClientNavTitle } from '@/hooks/core/useClientNavTitle'

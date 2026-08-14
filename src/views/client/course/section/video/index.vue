@@ -57,7 +57,7 @@ const courseVideoInfo = ref<ClientApi.Course.CourseVideoInfoResponse>(createDefa
 /**
  * 记录视频学习进度的请求参数。
  */
-const courseVideoRecordProgressParams = ref<ClientApi.Course.CourseVideoRecordProgressParams>({
+const courseVideoRecordProgressParams = ref<ClientApi.Course.CourseVideoSubmitParams>({
   couId: couId.value,
   olId: olId.value,
   isCompleted: false,
