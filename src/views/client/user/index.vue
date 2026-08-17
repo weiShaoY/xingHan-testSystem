@@ -1,16 +1,33 @@
 <!------  2026-05-21---14:21---星期四  ------>
 <!------------------------------------    ------------------------------------------------->
 <script lang="ts" setup>
+import { showConfirmDialog } from 'vant'
+
+import { useI18n } from 'vue-i18n'
+
 import { useClientUserStore } from '@/store'
 
 const clientUserStore = useClientUserStore()
+
+const { t } = useI18n()
 
 const displayName = computed(() => clientUserStore.userInfo?.userName || '用户')
 
 const displayEmail = computed(() => clientUserStore.userInfo?.email || '--')
 
-function handleLogout() {
-  clientUserStore.logOut()
+async function handleLogout() {
+  try {
+    await showConfirmDialog({
+      title: t('common.tips'),
+      message: t('common.logOutTips'),
+      confirmButtonText: t('common.confirm'),
+      cancelButtonText: t('common.cancel'),
+    })
+    clientUserStore.logOut()
+  }
+  catch {
+    // 用户取消退出时无需处理
+  }
 }
 
 </script>
@@ -81,7 +98,7 @@ function handleLogout() {
       :inset="true"
       class="mt-4!"
     >
-      <van-cell
+      <!-- <van-cell
         title="设置"
         icon="setting-o"
         is-link
@@ -108,7 +125,7 @@ function handleLogout() {
             class="i-carbon:doc text-gray-400 mr-2 self-center"
           />
         </template>
-      </van-cell>
+      </van-cell> -->
     </VanCellGroup>
 
     <van-button
