@@ -158,7 +158,6 @@ onMounted(() => {
  */
 function handleSection(section: ClientApi.Course.ChaptersItem) {
   console.log('🚀 ~ file: index.vue:160 ~ section:', section)
-  console.log('🚀 ~ file: index.vue:194 ~ section.progress:', section.progress)
 
   if (section.olIsAccessory === 0) {
     router.push({
@@ -179,10 +178,10 @@ function handleSection(section: ClientApi.Course.ChaptersItem) {
     })
   }
   else if (section.olIsAccessory === 2) {
-    // 'ClientCourseSectionExamAnswer
     router.push({
-      // name: section.progress === 100 ? 'ClientCourseSectionExamResult' : 'ClientCourseSectionExamAnswer',
-      name: 'ClientCourseSectionExamAnswer',
+      name: section.progress === 100 ? 'ClientCourseSectionExamResult' : 'ClientCourseSectionExamAnswer',
+
+      // name: 'ClientCourseSectionExamAnswer',
       params: {
         couId: couId.value,
         olId: section.olId,
