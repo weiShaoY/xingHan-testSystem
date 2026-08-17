@@ -53,7 +53,10 @@ async function getCourseQuestionResult() {
 }
 
 function splitAnswer(answer?: string | null) {
-  return String(answer || '').split(',').map(item => item.trim()).filter(Boolean)
+  return String(answer || '')
+    .split(',')
+    .map(item => item.trim())
+    .filter(Boolean)
 }
 
 function hasAnswer(question: QuestionResult) {
