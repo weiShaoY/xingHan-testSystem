@@ -2,6 +2,8 @@ import { Auth as AuthNamespace } from './auth/client.auth'
 
 import { Course as CourseNamespace } from './course/client.course'
 
+import { History as HistoryNamespace } from './history/client.history'
+
 import { Project as ProjectNamespace } from './project/client.project'
 
 import { Task as TaskNamespace } from './task/client.task'
@@ -12,5 +14,6 @@ declare global {
     export import Project = ProjectNamespace
     export import Task = TaskNamespace
     export import Course = CourseNamespace
+    export import History = HistoryNamespace
   }
 }
