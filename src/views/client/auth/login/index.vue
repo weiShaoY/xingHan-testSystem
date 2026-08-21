@@ -44,7 +44,7 @@ type LoginForm = {
 }
 
 const formData = reactive<LoginForm>({
-  username: 'qd_admin',
+  username: 'JNAdmin',
   password: '123456',
 })
 
