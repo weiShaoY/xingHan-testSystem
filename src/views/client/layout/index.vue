@@ -64,34 +64,36 @@ function isDesktopNavActive(path: string) {
 
 <template>
   <div
-    class="client-layout"
+    class="flex min-h-dvh flex-col overflow-hidden bg-[#f7f8fa] md:block"
   >
     <aside
-      class="client-desktop-sidebar"
+      class="fixed inset-y-0 left-0 z-10 hidden w-56 flex-col border-r border-[#e8eaed] bg-white px-4 pt-7 pb-5 md:flex md:max-lg:w-18 md:max-lg:items-center md:max-lg:px-2.5"
     >
       <button
         type="button"
-        class="client-brand"
+        class="flex w-fit cursor-pointer items-center gap-2.5 border-0 bg-transparent px-2.5 text-4.5 text-[#172033] font-700 md:max-lg:px-0"
         aria-label="返回首页"
         @click="goToPath('/client/home')"
       >
         <span
-          class="client-brand-mark"
+          class="grid size-8 place-items-center rounded-[7px] bg-[#0f9f8f] text-4 text-white"
         >培</span>
 
-        <span>培训系统</span>
+        <span
+          class="md:max-lg:hidden"
+        >培训系统</span>
       </button>
 
       <nav
-        class="client-desktop-nav"
+        class="mt-10.5 grid gap-1.5"
         aria-label="主导航"
       >
         <button
           v-for="item in desktopNavItems"
           :key="item.path"
           type="button"
-          class="client-desktop-nav-item"
-          :class="{ 'is-active': isDesktopNavActive(item.path) }"
+          class="flex min-h-11 w-full cursor-pointer items-center gap-3 rounded-md border-0 bg-transparent px-3 text-left text-3.5 text-[#5e6878] transition-colors duration-150 hover:bg-[#f0f9f7] hover:text-[#087f73] md:max-lg:justify-center"
+          :class="isDesktopNavActive(item.path) ? 'bg-[#e7f7f3] text-[#087f73] font-600 hover:bg-[#e7f7f3]' : ''"
           @click="goToPath(item.path)"
         >
           <ArtSvgIcon
@@ -99,13 +101,15 @@ function isDesktopNavActive(path: string) {
             class="text-5"
           />
 
-          <span>{{ item.label }}</span>
+          <span
+            class="md:max-lg:hidden"
+          >{{ item.label }}</span>
         </button>
       </nav>
 
       <button
         type="button"
-        class="client-profile"
+        class="mt-auto flex min-h-11 w-full cursor-pointer items-center gap-3 border-0 border-t border-[#edf0f2] bg-transparent px-3 text-left text-3.5 text-[#334155] transition-colors duration-150 hover:bg-[#f0f9f7] hover:text-[#087f73] md:max-lg:justify-center md:max-lg:px-0"
         @click="goToUser"
       >
         <van-image
@@ -116,36 +120,40 @@ function isDesktopNavActive(path: string) {
           class="size-9 overflow-hidden"
         />
 
-        <span>个人主页</span>
+        <span
+          class="md:max-lg:hidden"
+        >个人主页</span>
 
         <ArtSvgIcon
           icon="tdesign:chevron-right"
-          class="ml-auto text-4 text-slate-400"
+          class="ml-auto text-4 text-slate-400 md:max-lg:hidden"
         />
       </button>
     </aside>
 
     <main
-      class="client-main"
+      class="min-h-0 flex flex-1 flex-col md:ml-56 md:block md:min-h-dvh md:w-[calc(100%_-_224px)] md:max-lg:ml-18 md:max-lg:w-[calc(100%_-_72px)]"
     >
       <header
-        class="client-desktop-header"
+        class="sticky top-0 z-5 hidden h-19 items-center justify-between border-b border-[#eceef1] bg-[#f7f8fa]/92 px-[max(32px,calc((100vw-224px-1180px)/2))] backdrop-blur-[10px] md:flex md:max-lg:px-6"
       >
         <div>
           <p
-            class="client-desktop-header-label"
+            class="mb-0.75 mt-0 text-3 text-[#8a94a4]"
           >
             学习中心
           </p>
 
-          <h1>
+          <h1
+            class="m-0 text-5 text-[#172033] font-700 leading-1.25"
+          >
             {{ navTitle }}
           </h1>
         </div>
 
         <button
           type="button"
-          class="client-header-avatar"
+          class="cursor-pointer border-0 bg-transparent p-0"
           aria-label="个人主页"
           @click="goToUser"
         >
@@ -160,7 +168,7 @@ function isDesktopNavActive(path: string) {
       </header>
 
       <div
-        class="client-mobile-header"
+        class="md:hidden"
       >
         <VanNavBar
           :title="navTitle"
@@ -194,7 +202,7 @@ function isDesktopNavActive(path: string) {
       </div>
 
       <div
-        class="client-content"
+        class="min-h-0 flex-1 overflow-y-auto p-4 md:box-border md:min-h-[calc(100dvh_-_76px)] md:w-full md:max-w-311 md:mx-auto md:p-8 md:max-lg:p-6"
       >
         <router-view
           v-slot="{ Component, route: viewRoute }"
@@ -231,203 +239,3 @@ function isDesktopNavActive(path: string) {
     </main>
   </div>
 </template>
-
-<style lang="scss" scoped>
-.client-layout {
-  min-height: 100dvh;
-  background: #f7f8fa;
-}
-
-.client-desktop-sidebar,
-.client-desktop-header {
-  display: none;
-}
-
-.client-main {
-  min-width: 0;
-  min-height: 100dvh;
-}
-
-.client-content {
-  min-height: 0;
-  padding: 1rem;
-  overflow-y: auto;
-}
-
-@media (min-width: 768px) {
-  .client-layout {
-    display: flex;
-  }
-
-  .client-desktop-sidebar {
-    display: flex;
-    position: fixed;
-    inset: 0 auto 0 0;
-    z-index: 10;
-    width: 224px;
-    flex-direction: column;
-    padding: 28px 16px 20px;
-    background: #fff;
-    border-right: 1px solid #e8eaed;
-  }
-
-  .client-brand {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    width: fit-content;
-    padding: 0 10px;
-    color: #172033;
-    font-size: 18px;
-    font-weight: 700;
-    background: transparent;
-    border: 0;
-    cursor: pointer;
-  }
-
-  .client-brand-mark {
-    display: grid;
-    width: 32px;
-    height: 32px;
-    place-items: center;
-    color: #fff;
-    font-size: 16px;
-    background: #0f9f8f;
-    border-radius: 7px;
-  }
-
-  .client-desktop-nav {
-    display: grid;
-    gap: 6px;
-    margin-top: 42px;
-  }
-
-  .client-desktop-nav-item,
-  .client-profile {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    width: 100%;
-    min-height: 44px;
-    padding: 0 12px;
-    color: #5e6878;
-    font-size: 14px;
-    text-align: left;
-    background: transparent;
-    border: 0;
-    border-radius: 6px;
-    cursor: pointer;
-    transition:
-      background-color 150ms,
-      color 150ms;
-  }
-
-  .client-desktop-nav-item:hover,
-  .client-profile:hover {
-    color: #087f73;
-    background: #f0f9f7;
-  }
-
-  .client-desktop-nav-item.is-active {
-    color: #087f73;
-    font-weight: 600;
-    background: #e7f7f3;
-  }
-
-  .client-profile {
-    margin-top: auto;
-    color: #334155;
-    border-top: 1px solid #edf0f2;
-    border-radius: 0;
-  }
-
-  .client-main {
-    width: calc(100% - 224px);
-    margin-left: 224px;
-  }
-
-  .client-desktop-header {
-    display: flex;
-    position: sticky;
-    top: 0;
-    z-index: 5;
-    align-items: center;
-    justify-content: space-between;
-    height: 76px;
-    padding: 0 max(32px, calc((100vw - 224px - 1180px) / 2));
-    background: rgb(247 248 250 / 92%);
-    border-bottom: 1px solid #eceef1;
-    backdrop-filter: blur(10px);
-  }
-
-  .client-desktop-header-label {
-    margin: 0 0 3px;
-    color: #8a94a4;
-    font-size: 12px;
-  }
-
-  .client-desktop-header h1 {
-    margin: 0;
-    color: #172033;
-    font-size: 20px;
-    font-weight: 700;
-    line-height: 1.25;
-  }
-
-  .client-header-avatar {
-    padding: 0;
-    background: transparent;
-    border: 0;
-    cursor: pointer;
-  }
-
-  .client-mobile-header {
-    display: none;
-  }
-
-  .client-content {
-    box-sizing: border-box;
-    width: 100%;
-    max-width: 1244px;
-    min-height: calc(100dvh - 76px);
-    margin: 0 auto;
-    padding: 32px;
-  }
-}
-
-@media (min-width: 768px) and (max-width: 1023px) {
-  .client-desktop-sidebar {
-    width: 72px;
-    align-items: center;
-    padding-right: 10px;
-    padding-left: 10px;
-  }
-
-  .client-brand {
-    padding: 0;
-  }
-  .client-brand > span:last-child,
-  .client-desktop-nav-item span,
-  .client-profile span {
-    display: none;
-  }
-  .client-profile {
-    justify-content: center;
-    padding: 0;
-  }
-  .client-profile :deep(.art-svg-icon) {
-    display: none;
-  }
-  .client-main {
-    width: calc(100% - 72px);
-    margin-left: 72px;
-  }
-  .client-desktop-header {
-    padding-right: 24px;
-    padding-left: 24px;
-  }
-  .client-content {
-    padding: 24px;
-  }
-}
-</style>

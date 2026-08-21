@@ -78,6 +78,11 @@ export const staticRoutes: AppRouteRecordRaw[] = [
 
   // /////////////////////////// 其他路由 ////////////////////////////////////////
   {
+    path: '/',
+    name: 'Root',
+    redirect: '/client/auth/login',
+  },
+  {
     path: '/403',
     name: 'Exception403',
     component: () => import('@views/exception/403/index.vue'),

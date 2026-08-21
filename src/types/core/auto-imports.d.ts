@@ -58,10 +58,7 @@ declare global {
   const effectScope: typeof import('vue').effectScope
   const emojo: typeof import('../../utils/ui/emojo').default
   const extendRef: typeof import('@vueuse/core').extendRef
-  const fetchAdminAssignProjectOrCourse: typeof import('../../apis/admin/organization/index').fetchAdminAssignProjectOrCourse
-  const fetchAdminAssignment: typeof import('../../apis/admin/organization/index').fetchAdminAssignment
   const fetchAdminAssignmentCreateAssignment: typeof import('../../apis/admin/organization/index').fetchAdminAssignmentCreateAssignment
-  const fetchAdminAssignmentGetAssignedOrganizationTreeWithAllUsers: typeof import('../../apis/admin/organization/index').fetchAdminAssignmentGetAssignedOrganizationTreeWithAllUsers
   const fetchAdminAssignmentGetPartialOrganizationTree: typeof import('../../apis/admin/organization/index').fetchAdminAssignmentGetPartialOrganizationTree
   const fetchAdminCourseAdd: typeof import('../../apis/admin/course/index').fetchAdminCourseAdd
   const fetchAdminCourseDelete: typeof import('../../apis/admin/course/index').fetchAdminCourseDelete
@@ -93,7 +90,6 @@ declare global {
   const fetchAdminFileList: typeof import('../../apis/file/index').fetchAdminFileList
   const fetchAdminFileRecover: typeof import('../../apis/file/index').fetchAdminFileRecover
   const fetchAdminFileRecyclingList: typeof import('../../apis/file/index').fetchAdminFileRecyclingList
-  const fetchAdminGetOrganizationTree: typeof import('../../apis/admin/organization/index').fetchAdminGetOrganizationTree
   const fetchAdminGetOrganizationTreeWithAllUsers: typeof import('../../apis/admin/organization/index').fetchAdminGetOrganizationTreeWithAllUsers
   const fetchAdminGetPublicKey: typeof import('../../apis/admin/auth/index').fetchAdminGetPublicKey
   const fetchAdminGetUserInfo: typeof import('../../apis/admin/auth/index').fetchAdminGetUserInfo
@@ -110,28 +106,18 @@ declare global {
   const fetchAdminQuestionSetting: typeof import('../../apis/admin/question/index').fetchAdminQuestionSetting
   const fetchAdminQuestionUpdate: typeof import('../../apis/admin/question/index').fetchAdminQuestionUpdate
   const fetchAdminUploadFile: typeof import('../../apis/file/index').fetchAdminUploadFile
-  const fetchClientCourseCompleteChapter: typeof import('../../apis/client/course/index').fetchClientCourseCompleteChapter
-  const fetchClientCourseCompleteSection: typeof import('../../apis/client/course/index').fetchClientCourseCompleteSection
   const fetchClientCourseDocumentFile: typeof import('../../apis/client/course/index').fetchClientCourseDocumentFile
   const fetchClientCourseDocumentInfo: typeof import('../../apis/client/course/index').fetchClientCourseDocumentInfo
-  const fetchClientCourseDocumentRecordProgress: typeof import('../../apis/client/course/index').fetchClientCourseDocumentSubmit
   const fetchClientCourseDocumentSubmit: typeof import('../../apis/client/course/index').fetchClientCourseDocumentSubmit
   const fetchClientCourseExamInfo: typeof import('../../apis/client/course/index').fetchClientCourseExamInfo
   const fetchClientCourseExamResult: typeof import('../../apis/client/course/index').fetchClientCourseExamResult
   const fetchClientCourseExamSubmit: typeof import('../../apis/client/course/index').fetchClientCourseExamSubmit
   const fetchClientCourseHistory: typeof import('../../apis/client/history/index').fetchClientCourseHistory
-  const fetchClientCourseOutlineList: typeof import('../../apis/client/course/index').fetchClientCourseOutlineList
   const fetchClientCourseQuestionInfo: typeof import('../../apis/client/course/index').fetchClientCourseQuestionInfo
   const fetchClientCourseQuestionResult: typeof import('../../apis/client/course/index').fetchClientCourseQuestionResult
   const fetchClientCourseQuestionSubmit: typeof import('../../apis/client/course/index').fetchClientCourseQuestionSubmit
-  const fetchClientCourseSubmitDocument: typeof import('../../apis/client/course/index').fetchClientCourseDocumentSubmit
   const fetchClientCourseVideoFile: typeof import('../../apis/client/course/index').fetchClientCourseVideoFile
   const fetchClientCourseVideoInfo: typeof import('../../apis/client/course/index').fetchClientCourseVideoInfo
-  const fetchClientCourseVideoPlayback: typeof import('../../apis/client/course/index').fetchClientCourseVideoPlayback
-  const fetchClientCourseVideoRecord: typeof import('../../apis/client/course/index').fetchClientCourseVideoRecord
-  const fetchClientCourseVideoRecordComplete: typeof import('../../apis/client/course/index').fetchClientCourseVideoRecordComplete
-  const fetchClientCourseVideoRecordPlayback: typeof import('../../apis/client/course/index').fetchClientCourseVideoRecordPlayback
-  const fetchClientCourseVideoRecordProgress: typeof import('../../apis/client/course/index').fetchClientCourseVideoSubmit
   const fetchClientCourseVideoSubmit: typeof import('../../apis/client/course/index').fetchClientCourseVideoSubmit
   const fetchClientGetCourseProgress: typeof import('../../apis/client/course/index').fetchClientGetCourseProgress
   const fetchClientGetPublicKey: typeof import('../../apis/client/auth/index').fetchClientGetPublicKey
@@ -520,9 +506,14 @@ declare module 'vue' {
   interface ComponentCustomProperties {
     readonly ApiStatus: UnwrapRef<typeof import('../../apis/http/status')['ApiStatus']>
     readonly EffectScope: UnwrapRef<typeof import('vue')['EffectScope']>
+    readonly ElCheckbox: UnwrapRef<typeof import('element-plus/es')['ElCheckbox']>
+    readonly ElEmpty: UnwrapRef<typeof import('element-plus/es')['ElEmpty']>
     readonly ElLoading: UnwrapRef<typeof import('element-plus/es')['ElLoading']>
     readonly ElMessage: UnwrapRef<typeof import('element-plus/es')['ElMessage']>
+    readonly ElMessageBox: UnwrapRef<typeof import('element-plus/es')['ElMessageBox']>
     readonly ElNotification: UnwrapRef<typeof import('element-plus/es')['ElNotification']>
+    readonly ElRadio: UnwrapRef<typeof import('element-plus/es')['ElRadio']>
+    readonly ElTag: UnwrapRef<typeof import('element-plus/es')['ElTag']>
     readonly HttpError: UnwrapRef<typeof import('../../apis/http/error')['HttpError']>
     readonly PasswordStrength: UnwrapRef<typeof import('../../utils/form/validator')['PasswordStrength']>
     readonly StorageConfig: UnwrapRef<typeof import('../../utils/storage/storage-config')['StorageConfig']>
