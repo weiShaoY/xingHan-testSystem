@@ -116,6 +116,7 @@ declare global {
   const fetchClientCourseQuestionInfo: typeof import('../../apis/client/course/index').fetchClientCourseQuestionInfo
   const fetchClientCourseQuestionResult: typeof import('../../apis/client/course/index').fetchClientCourseQuestionResult
   const fetchClientCourseQuestionSubmit: typeof import('../../apis/client/course/index').fetchClientCourseQuestionSubmit
+  const fetchClientCourseRecommend: typeof import('../../apis/client/course/index').fetchClientCourseRecommend
   const fetchClientCourseVideoFile: typeof import('../../apis/client/course/index').fetchClientCourseVideoFile
   const fetchClientCourseVideoInfo: typeof import('../../apis/client/course/index').fetchClientCourseVideoInfo
   const fetchClientCourseVideoSubmit: typeof import('../../apis/client/course/index').fetchClientCourseVideoSubmit
@@ -508,6 +509,7 @@ declare module 'vue' {
     readonly EffectScope: UnwrapRef<typeof import('vue')['EffectScope']>
     readonly ElLoading: UnwrapRef<typeof import('element-plus/es')['ElLoading']>
     readonly ElMessage: UnwrapRef<typeof import('element-plus/es')['ElMessage']>
+    readonly ElMessageBox: UnwrapRef<typeof import('element-plus/es')['ElMessageBox']>
     readonly ElNotification: UnwrapRef<typeof import('element-plus/es')['ElNotification']>
     readonly HttpError: UnwrapRef<typeof import('../../apis/http/error')['HttpError']>
     readonly PasswordStrength: UnwrapRef<typeof import('../../utils/form/validator')['PasswordStrength']>
@@ -609,6 +611,7 @@ declare module 'vue' {
     readonly fetchClientCourseQuestionInfo: UnwrapRef<typeof import('../../apis/client/course/index')['fetchClientCourseQuestionInfo']>
     readonly fetchClientCourseQuestionResult: UnwrapRef<typeof import('../../apis/client/course/index')['fetchClientCourseQuestionResult']>
     readonly fetchClientCourseQuestionSubmit: UnwrapRef<typeof import('../../apis/client/course/index')['fetchClientCourseQuestionSubmit']>
+    readonly fetchClientCourseRecommend: UnwrapRef<typeof import('../../apis/client/course/index')['fetchClientCourseRecommend']>
     readonly fetchClientCourseVideoFile: UnwrapRef<typeof import('../../apis/client/course/index')['fetchClientCourseVideoFile']>
     readonly fetchClientCourseVideoInfo: UnwrapRef<typeof import('../../apis/client/course/index')['fetchClientCourseVideoInfo']>
     readonly fetchClientCourseVideoSubmit: UnwrapRef<typeof import('../../apis/client/course/index')['fetchClientCourseVideoSubmit']>

@@ -137,6 +137,14 @@ function goToRecommendDetail(item: RecommendCourse) {
     },
   })
 }
+
+async function getRecommendList() {
+  const res = await fetchClientCourseRecommend()
+
+  console.log('🚀 ~ file: index.vue:145 ~ res:', res)
+}
+
+getRecommendList()
 </script>
 
 <template>

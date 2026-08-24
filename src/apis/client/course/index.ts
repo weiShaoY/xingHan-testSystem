@@ -174,3 +174,13 @@ export function fetchClientCourseQuestionResult(questionId: number) {
     },
   })
 }
+
+/**
+ *  获取客户端 首页推荐课程
+ */
+export function fetchClientCourseRecommend() {
+  return request.get<ClientApi.Course.CourseRecommendResponse>({
+    url: '/client/recommend/getRecommendCourses',
+    authPath: '/client',
+  })
+}
