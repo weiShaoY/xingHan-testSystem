@@ -44,7 +44,7 @@ function goToDetail(item: CourseItem) {
   router.push({
     name: 'ClientCourseDetail',
     params: {
-      id: item.id,
+      couId: item.id,
     },
   })
 }

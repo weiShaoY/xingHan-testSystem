@@ -1,15 +1,4 @@
 <script setup lang="ts">
-import cover1 from '@imgs/cover/img1.webp'
-
-import cover2 from '@imgs/cover/img2.webp'
-
-import cover3 from '@imgs/cover/img3.webp'
-
-import cover4 from '@imgs/cover/img4.webp'
-
-import cover5 from '@imgs/cover/img5.webp'
-
-import cover6 from '@imgs/cover/img6.webp'
 
 type NavItem = {
   name: string
@@ -17,15 +6,6 @@ type NavItem = {
   icon: string
   accentClass: string
   cardClass: string
-}
-
-type RecommendCourse = {
-  id: number
-  title: string
-  cover: string
-  sections: number
-  participants: number
-  tag: string
 }
 
 const router = useRouter()
@@ -64,60 +44,13 @@ const navList: NavItem[] = [
   // },
 ]
 
-const recommendList: RecommendCourse[] = [
-  {
-    id: 1,
-    title: '如何使用UMU设计有效果的在线学习项目',
-    cover: cover1,
-    sections: 19,
-    participants: 54061,
-    tag: '热门',
-  },
-  {
-    id: 2,
-    title: 'UMU 快速入门指南',
-    cover: cover2,
-    sections: 5,
-    participants: 182550,
-    tag: '入门',
-  },
-  {
-    id: 3,
-    title: 'UMU AI 微课：降低做课成本，提升业务价值',
-    cover: cover3,
-    sections: 26,
-    participants: 10056,
-    tag: 'AI',
-  },
-  {
-    id: 4,
-    title: '考题本｜难题错题一手抓 知识盲点不落下',
-    cover: cover4,
-    sections: 3,
-    participants: 6989,
-    tag: '测评',
-  },
-  {
-    id: 5,
-    title: '语音微课、视频｜AI 自动生成课程字幕，人人都能快速上手',
-    cover: cover5,
-    sections: 12,
-    participants: 9316,
-    tag: '进阶',
-  },
-  {
-    id: 6,
-    title: '如何将已有视频和文档形成UMU课程',
-    cover: cover6,
-    sections: 3,
-    participants: 20362,
-    tag: '实践',
-  },
-]
+const recommendList = ref<ClientApi.Course.CourseRecommendResponse>([])
 
-const sectionTotal = computed(() => {
-  return recommendList.reduce((total, item) => total + item.sections, 0)
-})
+const levelNameMap: Record<ClientApi.Course.CourseRecommendItem['couLevel'], string> = {
+  1: '初级',
+  2: '中级',
+  3: '高级',
+}
 
 function goToPath(path: string) {
   router.push(path)
@@ -129,19 +62,17 @@ function goToRecommendList() {
   })
 }
 
-function goToRecommendDetail(item: RecommendCourse) {
+function goToRecommendItem(item: ClientApi.Course.CourseRecommendItem) {
   router.push({
-    name: 'ClientRecommendDetail',
+    name: 'ClientCourseDetail',
     params: {
-      id: item.id,
+      couId: item.couId,
     },
   })
 }
 
 async function getRecommendList() {
-  const res = await fetchClientCourseRecommend()
-
-  console.log('🚀 ~ file: index.vue:145 ~ res:', res)
+  recommendList.value = await fetchClientCourseRecommend()
 }
 
 getRecommendList()
@@ -209,7 +140,7 @@ getRecommendList()
         <span
           class="mt-1 block text-3.25 text-slate-500"
         >
-          {{ recommendList.length }}门课程 · {{ sectionTotal }}个小节
+          共 {{ recommendList.length }} 门推荐课程
         </span>
       </template>
 
@@ -229,13 +160,13 @@ getRecommendList()
     >
       <div
         v-for="item in recommendList"
-        :key="item.id"
+        :key="item.couId"
         class="flex cursor-pointer flex-col gap-3.5 rounded-md border border-slate-200 bg-white p-3.5 shadow-[0_10px_24px_rgb(15_23_42/5%)] transition duration-200 active:scale-[0.992] sm:flex-row"
-        @click="goToRecommendDetail(item)"
+        @click="goToRecommendItem(item)"
       >
         <van-image
-          :src="item.cover"
-          :alt="item.title"
+          :src="item.couLogo"
+          :alt="item.couName"
           fit="cover"
           class="h-44 w-full shrink-0 overflow-hidden sm:h-28 sm:w-28 rounded-md!"
         />
@@ -254,7 +185,7 @@ getRecommendList()
                 plain
                 type="primary"
               >
-                {{ item.tag }}
+                {{ item.sbjName }}
               </van-tag>
             </template>
 
@@ -264,7 +195,7 @@ getRecommendList()
               <span
                 class="shrink-0 text-3 text-slate-500"
               >
-                {{ item.participants }}人参与
+                {{ item.couStudentSum }}人学习
               </span>
             </template>
           </van-cell>
@@ -275,7 +206,7 @@ getRecommendList()
             <h3
               class="m-0 min-h-[3.4rem] break-all text-4 text-slate-900 font-700 leading-[1.7]"
             >
-              {{ item.title }}
+              {{ item.couName }}
             </h3>
 
             <div
@@ -288,10 +219,10 @@ getRecommendList()
                   class="inline-flex items-center gap-1.5"
                 >
                   <ArtSvgIcon
-                    icon="ri:list-check-2"
+                    icon="ri:bar-chart-box-line"
                     class="text-4"
                   />
-                  {{ item.sections }}个小节
+                  难度：{{ levelNameMap[item.couLevel] }}
                 </span>
               </div>
 
@@ -299,11 +230,18 @@ getRecommendList()
                 size="small"
                 type="primary"
                 class=""
-                @click.stop="goToRecommendDetail(item)"
+                @click.stop="goToRecommendItem(item)"
               >
-                立即查看
+                查看课程
               </van-button>
             </div>
+
+            <p
+              v-if="item.couIntro"
+              class="mt-3 mb-0 line-clamp-2 text-3 text-slate-500 leading-5"
+            >
+              {{ item.couIntro }}
+            </p>
           </div>
         </div>
       </div>
