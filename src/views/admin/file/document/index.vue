@@ -10,6 +10,8 @@ import ArtButton from '@/components/core/widget/art-button/index.vue'
 
 import { useTable } from '@/hooks'
 
+const DEFAULT_PDF_PREVIEW_TITLE = 'PDF 预览'
+
 /** 下载或恢复操作的加载状态。 */
 const actionLoading = ref(false)
 
@@ -19,30 +21,10 @@ const isShowPdfPreviewDialog = ref(false)
 const pdfPreview = ref({
   source: '',
   loading: false,
-  title: 'PDF 预览',
+  title: DEFAULT_PDF_PREVIEW_TITLE,
 })
 
 let previewRequestId = 0
-
-watch(isShowPdfPreviewDialog, (visible) => {
-  if (visible) { return }
-
-  previewRequestId += 1
-  resetPdfPreview()
-})
-
-function clearPdfPreviewSource() {
-  if (!pdfPreview.value.source) { return }
-
-  URL.revokeObjectURL(pdfPreview.value.source)
-}
-
-function resetPdfPreview() {
-  clearPdfPreviewSource()
-  pdfPreview.value.source = ''
-  pdfPreview.value.loading = false
-  pdfPreview.value.title = 'PDF 预览'
-}
 
 /** 文档列表搜索条件。 */
 const searchFormState = ref({
@@ -139,6 +121,25 @@ const {
 })
 
 /**
+ * 释放当前 PDF 预览地址。
+ */
+function clearPdfPreviewSource() {
+  if (!pdfPreview.value.source) { return }
+
+  URL.revokeObjectURL(pdfPreview.value.source)
+}
+
+/**
+ * 重置 PDF 预览状态。
+ */
+function resetPdfPreview() {
+  clearPdfPreviewSource()
+  pdfPreview.value.source = ''
+  pdfPreview.value.loading = false
+  pdfPreview.value.title = DEFAULT_PDF_PREVIEW_TITLE
+}
+
+/**
  * 上传成功
  */
 function handleUploadSuccess() {
@@ -195,7 +196,7 @@ async function previewTableItem(item: FileApi.FileListItem) {
 
   resetPdfPreview()
   pdfPreview.value.loading = true
-  pdfPreview.value.title = item.asName || 'PDF 预览'
+  pdfPreview.value.title = item.asName || DEFAULT_PDF_PREVIEW_TITLE
   isShowPdfPreviewDialog.value = true
 
   try {
@@ -226,11 +227,6 @@ async function previewTableItem(item: FileApi.FileListItem) {
   }
 }
 
-onBeforeUnmount(() => {
-  previewRequestId += 1
-  resetPdfPreview()
-})
-
 /**
  * 搜索
  */
@@ -239,21 +235,33 @@ function handleSearch() {
   void getData()
 }
 
+watch(isShowPdfPreviewDialog, (visible) => {
+  if (visible) { return }
+
+  previewRequestId += 1
+  resetPdfPreview()
+})
+
+onBeforeUnmount(() => {
+  previewRequestId += 1
+  resetPdfPreview()
+})
+
 </script>
 
 <template>
 
-  <!-- 预览PDF -->
-  <PdfPreviewDialog
-    v-model="isShowPdfPreviewDialog"
-    :source="pdfPreview.source"
-    :loading="pdfPreview.loading"
-    :title="pdfPreview.title"
-  />
-
   <div
     class="mx-auto max-w-7xl px-10 relative max-lg:px-6 max-sm:px-4"
   >
+    <!-- 预览PDF -->
+    <PdfPreviewDialog
+      v-model="isShowPdfPreviewDialog"
+      :source="pdfPreview.source"
+      :loading="pdfPreview.loading"
+      :title="pdfPreview.title"
+    />
+
     <div
       class="my-5 flex w-full items-center justify-between gap-4 max-md:flex-col max-md:items-stretch"
     >
