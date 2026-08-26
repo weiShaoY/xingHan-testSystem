@@ -150,6 +150,8 @@ watch(
     totalPages.value = 0
     currentPage.value = normalizedInitialPage.value
     pageInput.value = String(currentPage.value)
+    zoomScale.value = 1
+    pageBaseWidth.value = DEFAULT_PAGE_WIDTH
     emitPageChange()
   },
 )
@@ -228,7 +230,7 @@ function getPageScrollTop(page: HTMLElement) {
 function updatePageBaseWidth() {
   if (zoomScale.value !== 1) { return }
 
-  const page = document.querySelector<HTMLElement>('.document-pdf-viewer > .document-pdf-panel .vue-pdf-embed__page')
+  const page = viewerRef.value?.querySelector<HTMLElement>('.document-pdf-panel .vue-pdf-embed__page')
 
   if (!page?.offsetWidth) { return }
 
@@ -496,11 +498,11 @@ onBeforeUnmount(() => {
 
       <div
         ref="fullscreenViewerRef"
-        class="document-pdf-panel scrollbar-hide min-h-0 flex-1 overflow-auto rounded-2xl border border-slate-200 bg-slate-100 shadow-[0_10px_24px_rgb(15_23_42/6%)]"
+        class="document-pdf-panel min-h-0 flex-1 overflow-auto rounded-2xl border border-slate-200 bg-slate-100 shadow-[0_10px_24px_rgb(15_23_42/6%)]"
       >
         <div
-          v-if="loading"
-          class=" flex flex-col items-center justify-center gap-3 bg-white text-3.5 text-slate-500 h-full"
+          v-if="props.loading"
+          class="document-pdf-loading flex h-full min-h-[260px] flex-col items-center justify-center gap-3 bg-white text-3.5 text-slate-500"
         >
           <van-loading
             color="#0f766e"
@@ -508,16 +510,20 @@ onBeforeUnmount(() => {
           文档加载中...
         </div>
 
-        <VuePdfEmbed
+        <div
           v-else-if="hasPdf"
-          class="pdf-viewer bg-slate-100"
-          annotation-layer
-          text-layer
-          :source="source"
-          :page="currentPage"
-          :width="pageWidth"
-          @loaded="handleDocumentLoad"
-        />
+          class="document-pdf-stage"
+        >
+          <VuePdfEmbed
+            class="pdf-viewer flex-none bg-slate-100"
+            annotation-layer
+            text-layer
+            :source="source"
+            :page="currentPage"
+            :width="pageWidth"
+            @loaded="handleDocumentLoad"
+          />
+        </div>
 
         <van-empty
           v-else
@@ -532,9 +538,24 @@ onBeforeUnmount(() => {
 </template>
 
 <style lang="scss" scoped>
-.pdf-viewer {
+.document-pdf-stage {
+  display: flex;
   width: max-content;
   min-width: 100%;
+  min-height: 100%;
+  margin: 0 auto;
+  padding: 16px 24px;
+  box-sizing: border-box;
+  justify-content: center;
+}
+
+.pdf-viewer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: max-content;
+  min-width: 100%;
+  margin: 0 auto;
 
   :deep(.vue-pdf-embed__page) {
     margin: 0 auto;
@@ -542,6 +563,15 @@ onBeforeUnmount(() => {
     background: #fff;
     box-shadow: 0 8px 18px rgb(15 23 42 / 8%);
   }
+
+  :deep(.vue-pdf-embed__page:not(:first-child)) {
+    margin-top: 16px;
+  }
+}
+
+.document-pdf-loading,
+.van-empty {
+  min-height: 100%;
 }
 
 .pdf-viewer-dialog {
@@ -560,15 +590,8 @@ onBeforeUnmount(() => {
   border-radius: 12px;
 }
 
-.scrollbar-hide {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-
-  &::-webkit-scrollbar {
-    display: none;
-    width: 0;
-    height: 0;
-  }
+.document-pdf-panel {
+  overscroll-behavior: contain;
 }
 
 @media (width <= 640px) {

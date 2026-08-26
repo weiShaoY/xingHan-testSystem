@@ -13,7 +13,36 @@ import { useTable } from '@/hooks'
 /** 下载或恢复操作的加载状态。 */
 const actionLoading = ref(false)
 
-const pdfViewUrl = ref('')
+/** PDF 预览弹窗显示状态。 */
+const isShowPdfPreviewDialog = ref(false)
+
+const pdfPreview = ref({
+  source: '',
+  loading: false,
+  title: 'PDF 预览',
+})
+
+let previewRequestId = 0
+
+watch(isShowPdfPreviewDialog, (visible) => {
+  if (visible) { return }
+
+  previewRequestId += 1
+  resetPdfPreview()
+})
+
+function clearPdfPreviewSource() {
+  if (!pdfPreview.value.source) { return }
+
+  URL.revokeObjectURL(pdfPreview.value.source)
+}
+
+function resetPdfPreview() {
+  clearPdfPreviewSource()
+  pdfPreview.value.source = ''
+  pdfPreview.value.loading = false
+  pdfPreview.value.title = 'PDF 预览'
+}
 
 /** 文档列表搜索条件。 */
 const searchFormState = ref({
@@ -162,17 +191,45 @@ async function deleteTableItem(_item: FileApi.FileListItem) {
  * 查看表格项
  */
 async function previewTableItem(item: FileApi.FileListItem) {
-  actionLoading.value = true
+  const requestId = ++previewRequestId
+
+  resetPdfPreview()
+  pdfPreview.value.loading = true
+  pdfPreview.value.title = item.asName || 'PDF 预览'
+  isShowPdfPreviewDialog.value = true
 
   try {
     const blob = await fetchAdminFileAttachment(item.asId)
 
-    pdfViewUrl.value = URL.createObjectURL(blob)
+    const objectUrl = URL.createObjectURL(blob)
+
+    if (requestId !== previewRequestId || !isShowPdfPreviewDialog.value) {
+      URL.revokeObjectURL(objectUrl)
+
+      return
+    }
+
+    pdfPreview.value.source = objectUrl
+    pdfPreview.value.loading = false
+  }
+  catch (error) {
+    if (requestId === previewRequestId) {
+      console.error(error)
+      ElNotification.error('文档预览失败')
+      isShowPdfPreviewDialog.value = false
+    }
   }
   finally {
-    actionLoading.value = false
+    if (requestId === previewRequestId) {
+      pdfPreview.value.loading = false
+    }
   }
 }
+
+onBeforeUnmount(() => {
+  previewRequestId += 1
+  resetPdfPreview()
+})
 
 /**
  * 搜索
@@ -188,8 +245,10 @@ function handleSearch() {
 
   <!-- 预览PDF -->
   <PdfPreviewDialog
-    :url="pdfViewUrl"
-
+    v-model="isShowPdfPreviewDialog"
+    :source="pdfPreview.source"
+    :loading="pdfPreview.loading"
+    :title="pdfPreview.title"
   />
 
   <div
