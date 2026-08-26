@@ -224,7 +224,7 @@ function openPrivacyPdf() {
 
           <button
             type="button"
-            class="border-0 bg-transparent p-0 text-[#0f9f8f] outline-none"
+            class="border-0 bg-transparent p-0 text-[#0f9f8f]! outline-none"
             @click="openPrivacyPdf"
           >
             隐私说明

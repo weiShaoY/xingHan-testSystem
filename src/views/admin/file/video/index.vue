@@ -5,6 +5,7 @@ import type { ColumnOption } from '@/types'
 import {
   h,
   onBeforeUnmount,
+  watch,
 } from 'vue'
 
 import ArtPreviewImage from '@/components/core/media/art-preview-image/index.vue'
@@ -13,10 +14,20 @@ import ArtButton from '@/components/core/widget/art-button/index.vue'
 
 import { useTable } from '@/hooks'
 
+const DEFAULT_VIDEO_PREVIEW_TITLE = '视频预览'
+
 /**
  * 是否显示播放弹窗
  */
-const isShowVideoPlayDialog = ref(false)
+const isShowVideoPreviewDialog = ref(false)
+
+const videoPreview = ref({
+  source: '',
+  loading: false,
+  title: DEFAULT_VIDEO_PREVIEW_TITLE,
+})
+
+let previewRequestId = 0
 
 /** 视频列表搜索条件。 */
 const searchFormState = ref({
@@ -170,58 +181,87 @@ function handleSearch() {
 }
 
 /**
- * 视频播放地址
+ * 释放当前视频预览地址。
  */
-const videoPlayUrl = ref('')
+function clearVideoPreviewSource() {
+  if (!videoPreview.value.source) { return }
+
+  URL.revokeObjectURL(videoPreview.value.source)
+}
 
 /**
- * 重置视频播放器
+ * 重置视频预览状态。
  */
-function resetVideoPlayer() {
-  isShowVideoPlayDialog.value = false
-
-  if (videoPlayUrl.value) {
-    URL.revokeObjectURL(videoPlayUrl.value)
-    videoPlayUrl.value = ''
-  }
+function resetVideoPreview() {
+  clearVideoPreviewSource()
+  videoPreview.value.source = ''
+  videoPreview.value.loading = false
+  videoPreview.value.title = DEFAULT_VIDEO_PREVIEW_TITLE
 }
 
 /**
  * 播放视频
  */
 async function playVideo(item: FileApi.FileListItem) {
+  const requestId = ++previewRequestId
+
+  resetVideoPreview()
+  videoPreview.value.loading = true
+  videoPreview.value.title = item.asName || DEFAULT_VIDEO_PREVIEW_TITLE
+  isShowVideoPreviewDialog.value = true
+
   try {
-    resetVideoPlayer()
-    videoPlayUrl.value = URL.createObjectURL(await fetchAdminFileAttachment(item.asId))
-    isShowVideoPlayDialog.value = true
+    const blob = await fetchAdminFileAttachment(item.asId)
+
+    const objectUrl = URL.createObjectURL(blob)
+
+    if (requestId !== previewRequestId || !isShowVideoPreviewDialog.value) {
+      URL.revokeObjectURL(objectUrl)
+
+      return
+    }
+
+    videoPreview.value.source = objectUrl
   }
-  catch {
-    ElNotification.error('播放视频失败')
+  catch (error) {
+    if (requestId === previewRequestId) {
+      console.error(error)
+      ElNotification.error('播放视频失败')
+      isShowVideoPreviewDialog.value = false
+    }
+  }
+  finally {
+    if (requestId === previewRequestId) {
+      videoPreview.value.loading = false
+    }
   }
 }
 
-onBeforeUnmount(resetVideoPlayer)
+watch(isShowVideoPreviewDialog, (visible) => {
+  if (visible) { return }
+
+  previewRequestId += 1
+  resetVideoPreview()
+})
+
+onBeforeUnmount(() => {
+  previewRequestId += 1
+  resetVideoPreview()
+})
 </script>
 
 <template>
   <div
     class="mx-auto max-w-7xl px-10 relative max-lg:px-6 max-sm:px-4"
   >
-    <el-dialog
-      v-if="isShowVideoPlayDialog && videoPlayUrl"
-      v-model="isShowVideoPlayDialog"
-      title="播放视频"
-      width="50%"
-      @close="resetVideoPlayer"
-    >
-      <ArtVideoPlayer
-        player-id="file-video-player"
-        :video-url="videoPlayUrl"
-        :autoplay="true"
-        :volume="0.5"
-      />
-
-    </el-dialog>
+    <VideoPreviewDialog
+      v-model="isShowVideoPreviewDialog"
+      :source="videoPreview.source"
+      :loading="videoPreview.loading"
+      :title="videoPreview.title"
+      autoplay
+      :volume="0.5"
+    />
 
     <div
       class="my-5 flex w-full items-center justify-between gap-4 max-md:flex-col max-md:items-stretch"
