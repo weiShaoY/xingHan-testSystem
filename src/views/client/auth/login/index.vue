@@ -131,48 +131,66 @@ async function handleSubmit() {
 
 <template>
   <div
-    class="min-h-dvh bg-[#f5f6f8] px-6"
+    class="login-page min-h-dvh overflow-hidden bg-[#f7f8fa] px-4 sm:px-6"
   >
     <main
-      class="mx-auto w-full max-w-130 pt-[clamp(64px,8vh,96px)] md:pt-22"
+      class="mx-auto flex min-h-dvh w-full max-w-105 flex-col justify-center py-10 sm:py-14"
     >
       <div
-        class="mb-[54px] flex justify-center md:mb-18"
+        class="mb-8 flex flex-col items-center text-center sm:mb-10"
       >
-        <van-image
-          :src="logoFull"
-          fit="contain"
-          class="w-[200px]"
-          alt="培训系统"
-        />
+        <div
+          class="flex h-13 w-full items-center justify-center"
+        >
+          <van-image
+            :src="logoFull"
+            fit="contain"
+            class="w-46"
+            alt="培训系统"
+          />
+        </div>
+
+        <h1
+          class="mb-0 mt-7 text-6 text-[#172033] font-700 leading-tight"
+        >
+          欢迎登录
+        </h1>
+
+        <p
+          class="mb-0 mt-2 text-3.5 text-[#7b8794] leading-6"
+        >
+          登录后继续您的学习
+        </p>
       </div>
 
       <van-form
         :model="formData"
         :rules="rules"
         validate-trigger="onSubmit"
-        class="grid gap-5"
+        class="login-form rounded-md border border-[#e8eaed] bg-white p-5 shadow-[0_16px_36px_rgb(15_23_42/7%)] sm:p-7"
         @submit="handleSubmit"
       >
         <div
-          class="rounded-md overflow-hidden"
+          class="overflow-hidden rounded-md border border-[#e2e8f0] bg-[#fafbfc] transition-colors focus-within:border-[#0f9f8f] focus-within:bg-white focus-within:shadow-[0_0_0_3px_rgb(15_159_143/12%)]"
         >
           <van-field
             v-model="formData.username"
             :rules="rules.username"
             name="username"
+            left-icon="user-o"
             :placeholder="$t('client.login.placeholder.username')"
           />
         </div>
 
         <div
-          class="mt-4 rounded-md overflow-hidden"
+          class="mt-4 overflow-hidden rounded-md border border-[#e2e8f0] bg-[#fafbfc] transition-colors focus-within:border-[#0f9f8f] focus-within:bg-white focus-within:shadow-[0_0_0_3px_rgb(15_159_143/12%)]"
         >
           <van-field
             v-model.trim="formData.password"
             type="password"
             :rules="rules.password"
             name="password"
+            left-icon="lock"
             :placeholder="$t('client.login.placeholder.password')"
           />
         </div>
@@ -182,6 +200,7 @@ async function handleSubmit() {
           block
           type="primary"
           native-type="submit"
+          class="mt-10! h-12 rounded-md! border-0! bg-[#0f9f8f]! text-4 font-600 shadow-[0_8px_16px_rgb(15_159_143/22%)] active:bg-[#087f73]!"
         >
           {{ $t('client.login.btnText') }}
         </van-button>
@@ -190,3 +209,33 @@ async function handleSubmit() {
     </main>
   </div>
 </template>
+
+<style lang="scss" scoped>
+.login-form {
+  :deep(.van-cell) {
+    align-items: center;
+    min-height: 52px;
+    padding: 0 14px;
+    background: transparent;
+  }
+
+  :deep(.van-field__left-icon) {
+    margin-right: 10px;
+    color: #8a94a4;
+    font-size: 18px;
+  }
+
+  :deep(.van-field__control) {
+    color: #172033;
+    font-size: 15px;
+  }
+
+  :deep(.van-field__control::placeholder) {
+    color: #a3acb9;
+  }
+
+  :deep(.van-field__error-message) {
+    padding: 5px 14px 0;
+  }
+}
+</style>
