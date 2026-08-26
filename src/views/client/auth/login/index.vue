@@ -151,18 +151,6 @@ async function handleSubmit() {
             alt="培训系统"
           />
         </div>
-
-        <h1
-          class="mb-0 mt-7 text-6 text-[#172033] font-700 leading-tight"
-        >
-          欢迎登录
-        </h1>
-
-        <p
-          class="mb-0 mt-2 text-3.5 text-[#7b8794] leading-6"
-        >
-          登录后继续您的学习
-        </p>
       </div>
 
       <van-form
