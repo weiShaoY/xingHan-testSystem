@@ -26,6 +26,8 @@ defineOptions({
   name: 'ClientLogin',
 })
 
+const PRIVACY_PDF_URL = '/pdf/客户隐私说明.pdf'
+
 const userStore = useClientUserStore()
 
 const router = useRouter()
@@ -39,6 +41,10 @@ const systemName = AppConfig.systemInfo.name
 const loading = ref(false)
 
 const passwordVisible = ref(false)
+
+const isPrivacyAccepted = ref(true)
+
+const isShowPdfPreviewDialog = ref(false)
 
 type LoginForm = {
   username: string
@@ -87,6 +93,12 @@ function encryptLoginPayload(payload: LoginForm, publicKey: string, sm2key: stri
 
 /** 提交登录表单并初始化客户端会话。 */
 async function handleSubmit() {
+  if (!isPrivacyAccepted.value) {
+    showFailToast('请先阅读并同意隐私说明')
+
+    return
+  }
+
   try {
     loading.value = true
 
@@ -129,12 +141,24 @@ async function handleSubmit() {
     loading.value = false
   }
 }
+
+function openPrivacyPdf() {
+  isShowPdfPreviewDialog.value = true
+}
 </script>
 
 <template>
   <div
     class="login-page min-h-dvh overflow-hidden bg-[#f7f8fa] px-4 sm:px-6"
   >
+    <!-- 预览PDF -->
+    <PdfPreviewDialog
+      v-model="isShowPdfPreviewDialog"
+      :source="PRIVACY_PDF_URL"
+      title="客户隐私说明"
+      mode="h5"
+    />
+
     <main
       class="mx-auto flex min-h-dvh w-full max-w-105 flex-col justify-center py-10 sm:py-14"
     >
@@ -190,16 +214,26 @@ async function handleSubmit() {
         </div>
 
         <!-- 隐私说明 -->
-        <van-checkbox
-          v-model="checked"
-          class="mt-8"
-          label-disabled
+        <div
+          class="mt-8 flex items-center gap-2 text-3.5 text-[#5f6b7a]"
         >
-          隐私说明
-        </van-checkbox>
+          <van-checkbox
+            v-model="isPrivacyAccepted"
+            icon-size="16"
+          />
+
+          <button
+            type="button"
+            class="border-0 bg-transparent p-0 text-[#0f9f8f] outline-none"
+            @click="openPrivacyPdf"
+          >
+            隐私说明
+          </button>
+        </div>
 
         <van-button
           :loading="loading"
+          :disabled="!isPrivacyAccepted"
           block
           type="primary"
           native-type="submit"

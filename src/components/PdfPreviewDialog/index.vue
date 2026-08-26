@@ -5,6 +5,8 @@ import 'vue-pdf-embed/dist/styles/annotationLayer.css'
 
 import 'vue-pdf-embed/dist/styles/textLayer.css'
 
+type PdfPreviewMode = 'pc' | 'h5'
+
 const props = withDefaults(defineProps<{
 
   /** 弹窗标题。 */
@@ -27,12 +29,18 @@ const props = withDefaults(defineProps<{
    * 初始显示页码。
    */
   initialPage?: number
+
+  /**
+   * 预览模式：PC 连续滚动，H5 单页翻页。
+   */
+  mode?: PdfPreviewMode
 }>(), {
   title: 'PDF 预览',
   width: 'min(1100px, calc(100vw - 32px))',
   loading: false,
   source: '',
   initialPage: 1,
+  mode: 'h5',
 })
 
 const emit = defineEmits<{
@@ -81,9 +89,9 @@ const totalPages = ref(0)
 const currentPage = ref(1)
 
 /**
- * 全屏阅读器根节点，用于页面内全屏时重置滚动位置。
+ * PDF 滚动面板根节点，用于滚动定位和页码同步。
  */
-const fullscreenViewerRef = ref<HTMLElement>()
+const pdfPanelRef = ref<HTMLElement>()
 
 const viewerRef = ref<HTMLElement>()
 
@@ -106,6 +114,18 @@ const pageBaseWidth = ref(DEFAULT_PAGE_WIDTH)
  * 是否存在可预览的 PDF 地址。
  */
 const hasPdf = computed(() => Boolean(props.source))
+
+/**
+ * 是否为 PC 连续滚动模式。
+ */
+const isPcMode = computed(() => props.mode === 'pc')
+
+/**
+ * H5 模式只渲染当前页，PC 模式不传 page 以渲染全部页面。
+ */
+const renderPage = computed(() => {
+  return isPcMode.value ? undefined : currentPage.value
+})
 
 /**
  * 当前缩放百分比文案。
@@ -168,9 +188,20 @@ watch(
 
     pageInput.value = String(currentPage.value)
     emitPageChange()
+
+    if (isPcMode.value) {
+      nextTick(scrollPanelToCurrentPage)
+    }
   },
   {
     immediate: true,
+  },
+)
+
+watch(
+  () => props.mode,
+  () => {
+    nextTick(scrollPanelToCurrentPage)
   },
 )
 
@@ -189,22 +220,33 @@ function handleDocumentLoad(document: { numPages?: number }) {
   checkReachedLastPage()
   nextTick(() => {
     updatePageBaseWidth()
+    if (isPcMode.value) {
+      scrollPanelToCurrentPage()
+    }
   })
 }
 
-/**
- * 进入全屏后滚动到普通模式当前页，保持阅读位置一致。
- */
-function scrollFullscreenToCurrentPage() {
-  if (!fullscreenViewerRef.value) { return }
+function handleDocumentRendered() {
+  updatePageBaseWidth()
 
-  const pages = fullscreenViewerRef.value.querySelectorAll<HTMLElement>('.vue-pdf-embed__page')
+  if (isPcMode.value || isFullscreen.value) {
+    nextTick(scrollPanelToCurrentPage)
+  }
+}
+
+/**
+ * 滚动到当前页，保持阅读位置一致。
+ */
+function scrollPanelToCurrentPage() {
+  if (!pdfPanelRef.value) { return }
+
+  const pages = pdfPanelRef.value.querySelectorAll<HTMLElement>('.vue-pdf-embed__page')
 
   const page = pages[currentPage.value - 1]
 
   if (!page) { return }
 
-  fullscreenViewerRef.value.scrollTop = getPageScrollTop(page)
+  pdfPanelRef.value.scrollTop = getPageScrollTop(page)
 }
 
 /**
@@ -215,13 +257,13 @@ function scrollFullscreenToCurrentPage() {
  * @param page PDF 页面元素。
  */
 function getPageScrollTop(page: HTMLElement) {
-  if (!fullscreenViewerRef.value) { return 0 }
+  if (!pdfPanelRef.value) { return 0 }
 
-  const viewerRect = fullscreenViewerRef.value.getBoundingClientRect()
+  const viewerRect = pdfPanelRef.value.getBoundingClientRect()
 
   const pageRect = page.getBoundingClientRect()
 
-  return Math.max(fullscreenViewerRef.value.scrollTop + pageRect.top - viewerRect.top - 12, 0)
+  return Math.max(pdfPanelRef.value.scrollTop + pageRect.top - viewerRect.top - 12, 0)
 }
 
 /**
@@ -260,9 +302,9 @@ function goToPage(page: number) {
   emitPageChange()
   checkReachedLastPage()
 
-  if (isFullscreen.value) {
+  if (isPcMode.value || isFullscreen.value) {
     nextTick(() => {
-      scrollFullscreenToCurrentPage()
+      scrollPanelToCurrentPage()
     })
   }
 }
@@ -296,7 +338,7 @@ function zoomOut() {
 /**
  * 更新 PDF 缩放比例。
  *
- * 全屏模式下缩放会重新渲染页面，渲染完成后重新定位到当前页。
+ * PC 连续模式和全屏模式下缩放会重新渲染页面，渲染完成后重新定位到当前页。
  *
  * @param step 缩放步长，正数放大，负数缩小。
  */
@@ -305,9 +347,9 @@ function updateZoom(step: number) {
 
   zoomScale.value = Math.min(MAX_ZOOM_SCALE, Math.max(MIN_ZOOM_SCALE, nextScale))
 
-  if (isFullscreen.value) {
+  if (isPcMode.value || isFullscreen.value) {
     nextTick(() => {
-      scrollFullscreenToCurrentPage()
+      scrollPanelToCurrentPage()
     })
   }
 }
@@ -315,6 +357,10 @@ function updateZoom(step: number) {
 /** 恢复默认阅读缩放。 */
 function resetZoom() {
   zoomScale.value = 1
+
+  if (isPcMode.value || isFullscreen.value) {
+    nextTick(scrollPanelToCurrentPage)
+  }
 }
 
 /** 切换浏览器原生全屏阅读。 */
@@ -340,8 +386,39 @@ function handleFullscreenChange() {
   isFullscreen.value = document.fullscreenElement === viewerRef.value
 
   if (isFullscreen.value) {
-    nextTick(scrollFullscreenToCurrentPage)
+    nextTick(scrollPanelToCurrentPage)
   }
+}
+
+function handlePanelScroll() {
+  if (!isPcMode.value || !hasPdf.value || props.loading) { return }
+
+  const panel = pdfPanelRef.value
+
+  if (!panel) { return }
+
+  const pages = panel.querySelectorAll<HTMLElement>('.vue-pdf-embed__page')
+
+  if (!pages.length) { return }
+
+  const panelRect = panel.getBoundingClientRect()
+
+  const markerTop = panelRect.top + Math.min(panelRect.height * 0.35, 160)
+
+  let nextPage = currentPage.value
+
+  pages.forEach((page, index) => {
+    if (page.getBoundingClientRect().top <= markerTop) {
+      nextPage = index + 1
+    }
+  })
+
+  if (nextPage === currentPage.value) { return }
+
+  currentPage.value = nextPage
+  pageInput.value = String(currentPage.value)
+  emitPageChange()
+  checkReachedLastPage()
 }
 
 function handleKeydown(event: KeyboardEvent) {
@@ -397,12 +474,12 @@ onBeforeUnmount(() => {
     :title="props.title"
     :width="props.width"
     destroy-on-close
-    class="pdf-viewer-dialog"
+    class="[&_.el-dialog__body]:px-5 [&_.el-dialog__body]:pt-0 [&_.el-dialog__body]:pb-5 max-sm:[&_.el-dialog__body]:px-3 max-sm:[&_.el-dialog__body]:pb-3"
     align-center
   >
     <div
       ref="viewerRef"
-      class="document-pdf-viewer h-[min(78vh,760px)] min-h-0 flex flex-1 flex-col gap-5 overflow-hidden"
+      class="document-pdf-viewer h-[min(78vh,760px)] min-h-0 flex flex-1 flex-col gap-5 overflow-hidden [&:fullscreen]:gap-3 [&:fullscreen]:bg-slate-100 [&:fullscreen]:p-3 [&:fullscreen_.document-pdf-panel]:rounded-xl"
     >
       <div
         v-if="hasPdf"
@@ -497,8 +574,9 @@ onBeforeUnmount(() => {
       </div>
 
       <div
-        ref="fullscreenViewerRef"
-        class="document-pdf-panel min-h-0 flex-1 overflow-auto rounded-2xl border border-slate-200 bg-slate-100 shadow-[0_10px_24px_rgb(15_23_42/6%)]"
+        ref="pdfPanelRef"
+        class="document-pdf-panel min-h-0 flex-1 overflow-auto overscroll-contain rounded-2xl border border-slate-200 bg-slate-100 shadow-[0_10px_24px_rgb(15_23_42/6%)]"
+        @scroll="handlePanelScroll"
       >
         <div
           v-if="props.loading"
@@ -512,16 +590,17 @@ onBeforeUnmount(() => {
 
         <div
           v-else-if="hasPdf"
-          class="document-pdf-stage"
+          class="mx-auto box-border flex min-h-full w-max min-w-full justify-center px-6 py-4"
         >
           <VuePdfEmbed
-            class="pdf-viewer flex-none bg-slate-100"
+            class="flex w-max min-w-full flex-none flex-col items-center bg-slate-100 [&_.vue-pdf-embed__page]:mx-auto [&_.vue-pdf-embed__page]:overflow-hidden [&_.vue-pdf-embed__page]:bg-white [&_.vue-pdf-embed__page]:shadow-[0_8px_18px_rgb(15_23_42/8%)] [&_.vue-pdf-embed__page:not(:first-child)]:mt-4"
             annotation-layer
             text-layer
             :source="source"
-            :page="currentPage"
+            :page="renderPage"
             :width="pageWidth"
             @loaded="handleDocumentLoad"
+            @rendered="handleDocumentRendered"
           />
         </div>
 
@@ -536,69 +615,3 @@ onBeforeUnmount(() => {
     </div>
   </el-dialog>
 </template>
-
-<style lang="scss" scoped>
-.document-pdf-stage {
-  display: flex;
-  width: max-content;
-  min-width: 100%;
-  min-height: 100%;
-  margin: 0 auto;
-  padding: 16px 24px;
-  box-sizing: border-box;
-  justify-content: center;
-}
-
-.pdf-viewer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: max-content;
-  min-width: 100%;
-  margin: 0 auto;
-
-  :deep(.vue-pdf-embed__page) {
-    margin: 0 auto;
-    overflow: hidden;
-    background: #fff;
-    box-shadow: 0 8px 18px rgb(15 23 42 / 8%);
-  }
-
-  :deep(.vue-pdf-embed__page:not(:first-child)) {
-    margin-top: 16px;
-  }
-}
-
-.document-pdf-loading,
-.van-empty {
-  min-height: 100%;
-}
-
-.pdf-viewer-dialog {
-  :deep(.el-dialog__body) {
-    padding: 0 20px 20px;
-  }
-}
-
-.document-pdf-viewer:fullscreen {
-  gap: 12px;
-  padding: 12px;
-  background: #f1f5f9;
-}
-
-.document-pdf-viewer:fullscreen .document-pdf-panel {
-  border-radius: 12px;
-}
-
-.document-pdf-panel {
-  overscroll-behavior: contain;
-}
-
-@media (width <= 640px) {
-  .pdf-viewer-dialog {
-    :deep(.el-dialog__body) {
-      padding: 0 12px 12px;
-    }
-  }
-}
-</style>

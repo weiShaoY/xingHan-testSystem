@@ -260,6 +260,7 @@ onBeforeUnmount(() => {
       :source="pdfPreview.source"
       :loading="pdfPreview.loading"
       :title="pdfPreview.title"
+      mode="pc"
     />
 
     <div
