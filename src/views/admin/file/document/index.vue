@@ -67,6 +67,8 @@ const {
             h(ArtPreviewImage, {
               path: row.asThumbnailPath,
               class: 'h-20 w-15 shrink-0',
+              preview: false,
+              onClick: () => previewTableItem(row),
             }),
             h('div', {
               class: 'truncate text-sm font-medium text-g-900',
@@ -105,10 +107,7 @@ const {
             type: 'download',
             onClick: () => downloadTableItem(row),
           }),
-          h(ArtButton, {
-            type: 'preview',
-            onClick: () => previewTableItem(row),
-          }),
+
         ]),
       },
     ],
