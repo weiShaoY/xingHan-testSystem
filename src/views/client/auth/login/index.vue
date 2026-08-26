@@ -38,6 +38,8 @@ const systemName = AppConfig.systemInfo.name
 
 const loading = ref(false)
 
+const passwordVisible = ref(false)
+
 type LoginForm = {
   username: string
   password: string
@@ -167,7 +169,7 @@ async function handleSubmit() {
         :model="formData"
         :rules="rules"
         validate-trigger="onSubmit"
-        class="login-form rounded-md border border-[#e8eaed] bg-white p-5 shadow-[0_16px_36px_rgb(15_23_42/7%)] sm:p-7"
+        class="rounded-md border border-[#e8eaed] bg-white p-5 shadow-[0_16px_36px_rgb(15_23_42/7%)] sm:p-7 [&_.van-cell]:min-h-13 [&_.van-cell]:items-center [&_.van-cell]:bg-transparent [&_.van-cell]:px-3.5 [&_.van-field__left-icon]:mr-2.5 [&_.van-field__left-icon]:text-[18px] [&_.van-field__left-icon]:text-[#8a94a4] [&_.van-field__control]:text-[15px] [&_.van-field__control]:text-[#172033] [&_.van-field__control::placeholder]:text-[#a3acb9] [&_.van-field__error-message]:px-3.5 [&_.van-field__error-message]:pt-1.25"
         @submit="handleSubmit"
       >
         <div
@@ -179,6 +181,7 @@ async function handleSubmit() {
             name="username"
             left-icon="user-o"
             :placeholder="$t('client.login.placeholder.username')"
+            clearable
           />
         </div>
 
@@ -187,11 +190,14 @@ async function handleSubmit() {
         >
           <van-field
             v-model.trim="formData.password"
-            type="password"
+            :type="passwordVisible ? 'text' : 'password'"
             :rules="rules.password"
             name="password"
             left-icon="lock"
+            :right-icon="passwordVisible ? 'eye-o' : 'closed-eye'"
             :placeholder="$t('client.login.placeholder.password')"
+            clearable
+            @click-right-icon="passwordVisible = !passwordVisible"
           />
         </div>
 
@@ -209,33 +215,3 @@ async function handleSubmit() {
     </main>
   </div>
 </template>
-
-<style lang="scss" scoped>
-.login-form {
-  :deep(.van-cell) {
-    align-items: center;
-    min-height: 52px;
-    padding: 0 14px;
-    background: transparent;
-  }
-
-  :deep(.van-field__left-icon) {
-    margin-right: 10px;
-    color: #8a94a4;
-    font-size: 18px;
-  }
-
-  :deep(.van-field__control) {
-    color: #172033;
-    font-size: 15px;
-  }
-
-  :deep(.van-field__control::placeholder) {
-    color: #a3acb9;
-  }
-
-  :deep(.van-field__error-message) {
-    padding: 5px 14px 0;
-  }
-}
-</style>
