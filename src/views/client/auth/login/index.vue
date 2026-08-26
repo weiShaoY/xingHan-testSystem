@@ -2,8 +2,6 @@
 <script setup lang="ts">
 import type { FieldRule } from 'vant'
 
-import logoMark from '@imgs/logo/logo-mark.png'
-
 import { sm2, sm3 } from 'sm-crypto'
 
 import { showFailToast, showSuccessToast } from 'vant'
@@ -17,6 +15,8 @@ import {
 } from '@/apis/client/auth'
 
 import { HttpError } from '@/apis/http/error'
+
+import logoFull from '@/assets/svgs/logo-full.svg'
 
 import AppConfig from '@/config'
 
@@ -140,9 +140,9 @@ async function handleSubmit() {
         class="mb-[54px] flex justify-center md:mb-18"
       >
         <van-image
-          :src="logoMark"
+          :src="logoFull"
           fit="contain"
-          class="size-[132px]"
+          class="w-[200px]"
           alt="培训系统"
         />
       </div>
