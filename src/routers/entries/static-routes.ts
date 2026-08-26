@@ -42,24 +42,7 @@ const clientAuthRoutes: AppRouteRecordRaw[] = [
       isHideTab: true,
     },
   },
-  {
-    path: '/client/auth/register',
-    name: 'ClientRegister',
-    component: () => import('@views/client/auth/register/index.vue'),
-    meta: {
-      title: '注册',
-      isHideTab: true,
-    },
-  },
-  {
-    path: '/client/auth/forget-password',
-    name: 'ClientForgetPassword',
-    component: () => import('@views/client/auth/forget-password/index.vue'),
-    meta: {
-      title: '忘记密码',
-      isHideTab: true,
-    },
-  },
+
 ]
 
 /**

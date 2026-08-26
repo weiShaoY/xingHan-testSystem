@@ -187,21 +187,6 @@ async function handleSubmit() {
         </van-button>
       </van-form>
 
-      <nav
-        class="mt-7 grid justify-items-center gap-10 text-[18px] [&_a]:leading-1.5 [&_a]:text-[#2589ed] [&_a]:no-underline"
-      >
-        <RouterLink
-          :to="{ name: 'ClientRegister' }"
-        >
-          {{ $t('client.login.noAccount') }} {{ $t('client.login.register') }}
-        </RouterLink>
-
-        <RouterLink
-          :to="{ name: 'ClientForgetPassword' }"
-        >
-          {{ $t('client.login.forgetPwd') }}
-        </RouterLink>
-      </nav>
     </main>
   </div>
 </template>
