@@ -13,6 +13,8 @@ import { useTable } from '@/hooks'
 /** 下载或恢复操作的加载状态。 */
 const actionLoading = ref(false)
 
+const pdfViewUrl = ref('')
+
 /** 文档列表搜索条件。 */
 const searchFormState = ref({
   name: '',
@@ -92,6 +94,10 @@ const {
             type: 'download',
             onClick: () => downloadTableItem(row),
           }),
+          h(ArtButton, {
+            type: 'preview',
+            onClick: () => previewTableItem(row),
+          }),
         ]),
       },
     ],
@@ -153,6 +159,22 @@ async function deleteTableItem(_item: FileApi.FileListItem) {
 }
 
 /**
+ * 查看表格项
+ */
+async function previewTableItem(item: FileApi.FileListItem) {
+  actionLoading.value = true
+
+  try {
+    const blob = await fetchAdminFileAttachment(item.asId)
+
+    pdfViewUrl.value = URL.createObjectURL(blob)
+  }
+  finally {
+    actionLoading.value = false
+  }
+}
+
+/**
  * 搜索
  */
 function handleSearch() {
@@ -163,6 +185,13 @@ function handleSearch() {
 </script>
 
 <template>
+
+  <!-- 预览PDF -->
+  <PdfPreviewDialog
+    :url="pdfViewUrl"
+
+  />
+
   <div
     class="mx-auto max-w-7xl px-10 relative max-lg:px-6 max-sm:px-4"
   >

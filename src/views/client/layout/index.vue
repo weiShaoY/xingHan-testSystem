@@ -122,7 +122,9 @@ function isDesktopNavActive(path: string) {
 
         <span
           class="md:max-lg:hidden"
-        >个人主页</span>
+        >
+          个人主页
+        </span>
 
         <ArtSvgIcon
           icon="tdesign:chevron-right"

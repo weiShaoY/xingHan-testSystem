@@ -189,6 +189,15 @@ async function handleSubmit() {
           />
         </div>
 
+        <!-- 隐私说明 -->
+        <van-checkbox
+          v-model="checked"
+          class="mt-8"
+          label-disabled
+        >
+          隐私说明
+        </van-checkbox>
+
         <van-button
           :loading="loading"
           block
