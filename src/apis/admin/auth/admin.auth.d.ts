@@ -82,5 +82,10 @@ export namespace Auth {
      * 头像地址
      */
     avatar: string
+
+    /**
+     * 手机号
+     */
+    mobile: string
   }
 }
