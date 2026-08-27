@@ -2,6 +2,7 @@
  * 组织类型
  */
 export namespace Organization {
+
   type UserNode = {
 
     /**

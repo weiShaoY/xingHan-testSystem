@@ -8,7 +8,7 @@ import { useRouter } from 'vue-router'
 
 import { useCurrentUserStore } from '@/store'
 
-import { WEB_LINKS } from '@/utils/constants'
+// import { WEB_LINKS } from '@/utils/constants'
 
 defineOptions({
   name: 'ArtUserMenu',
@@ -35,9 +35,9 @@ function goPage(path: string): void {
 /**
    * 打开文档页面
    */
-function toDocs(): void {
-  window.open(WEB_LINKS.DOCS)
-}
+// function toDocs(): void {
+//   window.open(WEB_LINKS.DOCS)
+// }
 
 /**
    * 用户登出确认
@@ -143,7 +143,7 @@ function closeUserMenu(): void {
             <span>{{ $t('topBar.user.userCenter') }}</span>
           </li>
 
-          <li
+          <!-- <li
             class="btn-item"
             @click="toDocs()"
           >
@@ -152,7 +152,7 @@ function closeUserMenu(): void {
             />
 
             <span>{{ $t('topBar.user.docs') }}</span>
-          </li>
+          </li> -->
 
           <div
             class="w-full h-px my-2 bg-g-300/80"
