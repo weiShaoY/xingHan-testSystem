@@ -11,24 +11,6 @@ const adminAuthRoutes: AppRouteRecordRaw[] = [
       isHideTab: true,
     },
   },
-  {
-    path: '/admin/auth/register',
-    name: 'Register',
-    component: () => import('@views/admin/auth/register/index.vue'),
-    meta: {
-      title: 'menus.register.title',
-      isHideTab: true,
-    },
-  },
-  {
-    path: '/admin/auth/forget-password',
-    name: 'ForgetPassword',
-    component: () => import('@views/admin/auth/forget-password/index.vue'),
-    meta: {
-      title: 'menus.forgetPassword.title',
-      isHideTab: true,
-    },
-  },
 ]
 
 /** 客户端匿名认证路由。 */
