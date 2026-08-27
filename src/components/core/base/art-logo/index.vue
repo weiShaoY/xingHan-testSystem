@@ -1,8 +1,8 @@
 <!-- 系统logo -->
 <script setup lang="ts">
-import logoFull from '@imgs/logo/logo-full.png'
+import logoFull from '@/assets/svgs/logo/logo-full.svg'
 
-import logoMark from '@imgs/logo/logo-mark.png'
+import logoMark from '@/assets/svgs/logo/logo-mark.svg'
 
 defineOptions({
   name: 'ArtLogo',

@@ -287,11 +287,11 @@ function showLoginSuccessNotice() {
         <div
           class="form"
         >
-          <h3
+          <!-- <h3
             class="title"
           >
             管理端
-          </h3>
+          </h3> -->
 
           <h3
             class="title"
@@ -376,14 +376,6 @@ function showLoginSuccessNotice() {
                 }}
               </ElCheckbox>
 
-              <RouterLink
-                class="text-theme"
-                :to="{ name: 'ForgetPassword' }"
-              >
-                {{
-                  $t('admin.login.forgetPwd')
-                }}
-              </RouterLink>
             </div>
 
             <div
@@ -400,20 +392,6 @@ function showLoginSuccessNotice() {
               </ElButton>
             </div>
 
-            <div
-              class="mt-5 text-sm text-gray-600"
-            >
-              <span>{{ $t('admin.login.noAccount') }}</span>
-
-              <RouterLink
-                class="text-theme"
-                :to="{ name: 'Register' }"
-              >
-                {{
-                  $t('admin.login.register')
-                }}
-              </RouterLink>
-            </div>
           </ElForm>
         </div>
       </div>
