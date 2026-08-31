@@ -42,3 +42,23 @@ export function fetchAdminQuestionUpdate(data: AdminApi.Question.QuestionEditor)
     data,
   })
 }
+
+/**
+ *  批量导入题库
+ */
+export function fetchAdminQuestionImport(data: AdminApi.Question.QuestionImportParams) {
+  return request.post<boolean>({
+    url: '/admin/questionbank/importQuestions',
+    data,
+  })
+}
+
+/**
+ *  下载题库模板
+ */
+export function fetchAdminQuestionTemplate() {
+  return request.get<FileApi.FileAttachmentResponse>({
+    url: '/admin/questionbank/downloadTemplate',
+    responseType: 'blob',
+  })
+}

@@ -14,6 +14,8 @@ import ArtButton from '@/components/core/widget/art-button/index.vue'
 
 import { useTable } from '@/hooks'
 
+import FileUpload from '../components/file-upload/index.vue'
+
 const DEFAULT_VIDEO_PREVIEW_TITLE = '视频预览'
 
 /**
@@ -300,7 +302,7 @@ onBeforeUnmount(() => {
           </template>
         </el-input>
 
-        <AdminUpload
+        <FileUpload
           upload-type="video"
           @upload-success="handleUploadSuccess"
           @upload-error="handleUploadError"

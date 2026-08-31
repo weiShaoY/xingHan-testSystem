@@ -202,4 +202,21 @@ export namespace Question {
      */
     questions: Question[]
   }
+
+  /**
+   *  批量导入题库请求参数
+   */
+  type QuestionImportParams = {
+
+    /**
+     * 题库ID（0表示新建题库，大于0表示追加到已有题库）
+     */
+    qbId: number
+
+    /**
+     * Excel文件
+     */
+    file: string
+
+  }
 }

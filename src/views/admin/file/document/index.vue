@@ -10,6 +10,8 @@ import ArtButton from '@/components/core/widget/art-button/index.vue'
 
 import { useTable } from '@/hooks'
 
+import FileUpload from '../components/file-upload/index.vue'
+
 const DEFAULT_PDF_PREVIEW_TITLE = 'PDF 预览'
 
 /** 下载或恢复操作的加载状态。 */
@@ -299,7 +301,7 @@ onBeforeUnmount(() => {
           </template>
         </el-input>
 
-        <AdminUpload
+        <FileUpload
           upload-type="document"
           @upload-success="handleUploadSuccess"
           @upload-error="handleUploadError"

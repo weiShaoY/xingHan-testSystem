@@ -1,6 +1,8 @@
 <!------  2026-04-15---16:08---星期三  ------>
 <!------------------------------------    ------------------------------------------------->
 <script lang="ts" setup>
+import { useThrottleFn } from '@vueuse/core'
+
 import {
   computed,
   onMounted,
@@ -569,14 +571,6 @@ function handleQuestionAction(action: string, question: EditorQuestion, question
 }
 
 /**
- * 批量导入题目示例
- */
-function importQuestions() {
-  formData.value.questions.push(createQuestion(1))
-  formData.value.questions.push(createQuestion(2))
-}
-
-/**
  * 校验表单数据。
  *
  * @returns 是否校验通过。
@@ -673,6 +667,43 @@ onMounted(() => {
   }
 })
 
+/**
+ * 批量导入题目
+ */
+async function importQuestions() {
+  try {
+    // const blob = await fetchAdminQuestionTemplate()
+
+    // await fileDownload(blob, '题库导入模板')
+
+    await fetchAdminQuestionImport({
+      qbId: formData.value.qbId ?? qbId.value,
+      file: formData.value.file,
+    })
+    ElNotification.success('批量导入题目成功')
+  }
+  catch {
+    ElNotification.error('批量导入题目失败')
+  }
+}
+
+/**
+   *  下载 题库导入模板
+   */
+const downloadTemplate = useThrottleFn(async () => {
+  loading.value = true
+  try {
+    const blob = await fetchAdminQuestionTemplate()
+
+    await fileDownload(blob, '题库导入模板')
+  }
+  catch {
+    ElNotification.error('下载题库模板失败')
+  }
+  finally {
+    loading.value = false
+  }
+}, 1000)
 </script>
 
 <template>
@@ -760,6 +791,13 @@ onMounted(() => {
             @click="importQuestions"
           >
             批量导入问题
+          </art-button>
+
+          <art-button
+            type="download"
+            @click="downloadTemplate"
+          >
+            下载导入模板
           </art-button>
 
           <art-button

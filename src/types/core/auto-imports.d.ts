@@ -98,8 +98,10 @@ declare global {
   const fetchAdminProjectStageListUpdate: typeof import('../../apis/admin/project/index').fetchAdminProjectStageListUpdate
   const fetchAdminProjectUpdate: typeof import('../../apis/admin/project/index').fetchAdminProjectUpdate
   const fetchAdminQuestionAdd: typeof import('../../apis/admin/question/index').fetchAdminQuestionAdd
+  const fetchAdminQuestionImport: typeof import('../../apis/admin/question/index').fetchAdminQuestionImport
   const fetchAdminQuestionList: typeof import('../../apis/admin/question/index').fetchAdminQuestionList
   const fetchAdminQuestionSetting: typeof import('../../apis/admin/question/index').fetchAdminQuestionSetting
+  const fetchAdminQuestionTemplate: typeof import('../../apis/admin/question/index').fetchAdminQuestionTemplate
   const fetchAdminQuestionUpdate: typeof import('../../apis/admin/question/index').fetchAdminQuestionUpdate
   const fetchAdminRecommendApply: typeof import('../../apis/admin/recommend/index').fetchAdminRecommendApply
   const fetchAdminRecommendApproval: typeof import('../../apis/admin/recommend/index').fetchAdminRecommendApproval
@@ -599,8 +601,10 @@ declare module 'vue' {
     readonly fetchAdminProjectStageListUpdate: UnwrapRef<typeof import('../../apis/admin/project/index')['fetchAdminProjectStageListUpdate']>
     readonly fetchAdminProjectUpdate: UnwrapRef<typeof import('../../apis/admin/project/index')['fetchAdminProjectUpdate']>
     readonly fetchAdminQuestionAdd: UnwrapRef<typeof import('../../apis/admin/question/index')['fetchAdminQuestionAdd']>
+    readonly fetchAdminQuestionImport: UnwrapRef<typeof import('../../apis/admin/question/index')['fetchAdminQuestionImport']>
     readonly fetchAdminQuestionList: UnwrapRef<typeof import('../../apis/admin/question/index')['fetchAdminQuestionList']>
     readonly fetchAdminQuestionSetting: UnwrapRef<typeof import('../../apis/admin/question/index')['fetchAdminQuestionSetting']>
+    readonly fetchAdminQuestionTemplate: UnwrapRef<typeof import('../../apis/admin/question/index')['fetchAdminQuestionTemplate']>
     readonly fetchAdminQuestionUpdate: UnwrapRef<typeof import('../../apis/admin/question/index')['fetchAdminQuestionUpdate']>
     readonly fetchAdminRecommendApply: UnwrapRef<typeof import('../../apis/admin/recommend/index')['fetchAdminRecommendApply']>
     readonly fetchAdminRecommendList: UnwrapRef<typeof import('../../apis/admin/recommend/index')['fetchAdminRecommendList']>
