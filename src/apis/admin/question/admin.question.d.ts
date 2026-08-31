@@ -216,7 +216,7 @@ export namespace Question {
     /**
      * Excel文件
      */
-    file: string
+    file: File
 
   }
 }

@@ -121,6 +121,7 @@ declare module 'vue' {
     SvgIcon: typeof import('./../../components/SvgIcon/index.vue')['default']
     ThemeSettings: typeof import('./../../components/core/layouts/art-settings-panel/widget/ThemeSettings.vue')['default']
     ThemeSvg: typeof import('./../../components/core/theme/theme-svg/index.vue')['default']
+    UploadButton: typeof import('./../../components/Upload/upload-button/index.vue')['default']
     VanButton: typeof import('vant/es')['Button']
     VanCell: typeof import('vant/es')['Cell']
     VanCellGroup: typeof import('vant/es')['CellGroup']

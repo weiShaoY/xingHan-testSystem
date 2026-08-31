@@ -668,26 +668,6 @@ onMounted(() => {
 })
 
 /**
- * 批量导入题目
- */
-async function importQuestions() {
-  try {
-    // const blob = await fetchAdminQuestionTemplate()
-
-    // await fileDownload(blob, '题库导入模板')
-
-    await fetchAdminQuestionImport({
-      qbId: formData.value.qbId ?? qbId.value,
-      file: formData.value.file,
-    })
-    ElNotification.success('批量导入题目成功')
-  }
-  catch {
-    ElNotification.error('批量导入题目失败')
-  }
-}
-
-/**
    *  下载 题库导入模板
    */
 const downloadTemplate = useThrottleFn(async () => {
@@ -704,6 +684,23 @@ const downloadTemplate = useThrottleFn(async () => {
     loading.value = false
   }
 }, 1000)
+
+/**
+   *  批量导入题目
+   */
+async function handleUpload(file: File) {
+  console.log('🚀 ~ file: index.vue:709 ~ file:', file)
+  try {
+    await fetchAdminQuestionImport({
+      qbId: formData.value.qbId ?? qbId.value,
+      file,
+    })
+    ElNotification.success('批量导入题目成功')
+  }
+  catch {
+    ElNotification.error('批量导入题目失败')
+  }
+}
 </script>
 
 <template>
@@ -786,12 +783,13 @@ const downloadTemplate = useThrottleFn(async () => {
         <div
           class="flex flex-wrap gap-3 max-sm:flex-col"
         >
-          <art-button
-            type="import"
-            @click="importQuestions"
-          >
-            批量导入问题
-          </art-button>
+
+          <UploadButton
+            :file-type="['xlsx', 'xls']"
+            :max-file-size="20"
+            title="批量导入题目"
+            @upload="handleUpload"
+          />
 
           <art-button
             type="download"
