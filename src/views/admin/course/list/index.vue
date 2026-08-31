@@ -367,15 +367,11 @@ getCourseList()
                 class="text-sm text-g-600 flex flex-wrap gap-x-4 gap-y-2 items-center"
               >
                 <span>
-                  总课时: {{ }} 节
+                  总章节: {{ }} 节
                 </span>
 
                 <span>
-                  已完成: {{ }} 节
-                </span>
-
-                <span>
-                  进度: {{ }} %
+                  总小节: {{ }} 节
                 </span>
               </div>
             </section>
