@@ -104,25 +104,65 @@ export const clientRoutes: AppRouteRecord = {
         keepAlive: false,
       },
     },
+
     {
-      path: 'project',
-      name: 'ClientProject',
-      component: '',
+      path: 'history',
+      name: 'ClientHistory',
+      component: '/client/history/list',
       meta: {
-        title: '我的项目',
+        title: '学习历史',
         keepAlive: false,
       },
       children: [
         {
-          path: 'stages/:projId',
-          name: 'ClientProjectStages',
-          component: '/client/project/stages',
+          path: 'list',
+          name: 'ClientHistoryList',
+          component: '/client/history/list',
           meta: {
-            title: '项目阶段列表',
+            title: '学习历史列表',
             keepAlive: false,
           },
         },
+        {
+          path: 'detail',
+          name: 'ClientHistoryDetail',
+          component: '/client/history/detail',
+          meta: {
+            title: '学习历史详情',
+            keepAlive: false,
+          },
+        },
+      ],
 
+    },
+
+    {
+      path: 'recommend',
+      name: 'ClientRecommend',
+      component: '',
+      meta: {
+        title: '推荐课程',
+        keepAlive: false,
+      },
+      children: [
+        {
+          path: 'list',
+          name: 'ClientRecommendList',
+          component: '/client/recommend/list',
+          meta: {
+            title: '推荐课程列表',
+            keepAlive: false,
+          },
+        },
+        {
+          path: 'detail',
+          name: 'ClientRecommendDetail',
+          component: '/client/recommend/detail',
+          meta: {
+            title: '推荐课程详情',
+            keepAlive: false,
+          },
+        },
       ],
     },
 
@@ -144,10 +184,7 @@ export const clientRoutes: AppRouteRecord = {
           title: '课程详情',
           keepAlive: false,
         },
-      }, ...SectionRoutes,
-
-      // ////////
-      {
+      }, {
         path: 'list',
         name: 'ClientCourseList',
         component: '/client/course/list',
@@ -155,69 +192,7 @@ export const clientRoutes: AppRouteRecord = {
           title: '报名的课程',
           keepAlive: false,
         },
-      }],
-    },
-
-    {
-      path: 'history',
-      name: 'ClientHistory',
-      component: '/client/history/list',
-      meta: {
-        title: '学习历史',
-        keepAlive: false,
-      },
-      children: [
-        {
-          path: 'list',
-          name: 'ClientHistoryList',
-          component: '/client/history/list',
-          meta: {
-            title: '学习历史',
-            keepAlive: false,
-          },
-        },
-        {
-          path: 'detail',
-          name: 'ClientHistoryDetail',
-          component: '/client/history/detail',
-          meta: {
-            title: '学习历史详情',
-            keepAlive: false,
-          },
-        },
-      ],
-
-    },
-
-    // 推荐
-    {
-      path: 'recommend',
-      name: 'ClientRecommend',
-      component: '',
-      meta: {
-        title: '推荐课程',
-        keepAlive: false,
-      },
-      children: [
-        {
-          path: 'list',
-          name: 'ClientRecommendList',
-          component: '/client/recommend/list',
-          meta: {
-            title: '推荐课程',
-            keepAlive: false,
-          },
-        },
-        {
-          path: 'detail',
-          name: 'ClientRecommendDetail',
-          component: '/client/recommend/detail',
-          meta: {
-            title: '推荐课程详情',
-            keepAlive: false,
-          },
-        },
-      ],
+      }, ...SectionRoutes],
     },
   ],
 }
