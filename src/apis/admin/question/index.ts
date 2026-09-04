@@ -47,9 +47,14 @@ export function fetchAdminQuestionUpdate(data: AdminApi.Question.QuestionEditor)
  *  批量导入题库
  */
 export function fetchAdminQuestionImport(data: AdminApi.Question.QuestionImportParams) {
+  const formData = new FormData()
+
+  formData.append('qbId', String(data.qbId))
+  formData.append('file', data.file)
+
   return request.post<boolean>({
     url: '/admin/questionbank/importQuestions',
-    data,
+    data: formData,
   })
 }
 
