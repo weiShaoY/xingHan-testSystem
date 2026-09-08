@@ -28,7 +28,7 @@ export namespace Course {
     active: 0 | 1
 
     /**
-     * 小节数
+     * 章节数
      */
     chapterCount: number
 
@@ -117,7 +117,7 @@ export namespace Course {
     sbjName: string
 
     /**
-     * 章节数
+     * 小节数
      */
     sectionCount: number
 

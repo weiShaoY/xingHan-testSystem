@@ -367,15 +367,15 @@ getCourseList()
                 class="text-sm text-g-600 flex flex-wrap gap-x-4 gap-y-2 items-center"
               >
                 <span>
-                  总章节: {{ item.sectionCount }} 节
+                  总章节: {{ item.chapterCount }} 节
                 </span>
 
                 <span>
-                  总小节: {{ item.chapterCount }} 节
+                  总小节: {{ item.sectionCount }} 节
                 </span>
 
                 <span>
-                  学习人数: {{ item.studyCount }}
+                  学习人数: {{ item.studyCount }} 人
                 </span>
               </div>
             </section>
