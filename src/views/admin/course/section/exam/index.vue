@@ -229,6 +229,22 @@ const examFormRules: FormRules = {
       trigger: 'change',
     },
   ],
+  startTime: [
+    {
+      required: true,
+      whitespace: true,
+      message: '请选择开始时间',
+      trigger: 'blur',
+    },
+  ],
+  endTime: [
+    {
+      required: true,
+      whitespace: true,
+      message: '请选择结束时间',
+      trigger: 'blur',
+    },
+  ],
 }
 
 // ==================== Computed State ====================
@@ -259,11 +275,11 @@ const examStats = computed(() => {
 function createInitialFormData(): AdminApi.Course.CourseOutlineSectionExamEditor {
   const baseFormData: AdminApi.Course.CourseOutlineSectionExamEditor = {
     couId: couId.value,
-    attemptLimit: 1,
+    attemptLimit: 3,
     durationMinutes: 60,
     endTime: '',
     examIntro: '',
-    examType: 0,
+    examType: 1,
     isShowAnswer: 1,
     isShowScore: 1,
     passScore: 60,
@@ -663,21 +679,22 @@ onMounted(() => {
       v-loading="pageLoading"
       class="flex flex-col gap-4"
     >
-      <el-tabs
-        v-model="activeTab"
-        class="exam-tabs"
+      <el-form
+        ref="examFormRef"
+        :model="formData"
+        :rules="examFormRules"
+        label-position="top"
+        class="flex flex-col gap-4"
       >
-        <el-tab-pane
-          label="考试编辑"
-          name="edit"
+        <el-tabs
+          v-model="activeTab"
+          class="exam-tabs"
         >
-          <el-form
-            ref="examFormRef"
-            :model="formData"
-            :rules="examFormRules"
-            label-position="top"
-            class="flex flex-col gap-4"
+          <el-tab-pane
+            label="考试编辑"
+            name="edit"
           >
+
             <!-- 考试信息 -->
             <div
               class="flex flex-col gap-4"
@@ -814,7 +831,7 @@ onMounted(() => {
                   </div>
 
                   <div
-                    class="flex flex-col gap-2"
+                    class="flex flex-col gap-5"
                   >
                     <div
                       v-for="(option, optionIndex) in question.qusItems"
@@ -967,22 +984,16 @@ onMounted(() => {
                 从题库添加
               </ArtButton>
             </div>
-          </el-form>
-        </el-tab-pane>
+          </el-tab-pane>
 
-        <el-tab-pane
-          label="考试设置"
-          name="setting"
-        >
-          <div
-            class="art-card"
+          <el-tab-pane
+            label="考试设置"
+            name="setting"
           >
-            <el-form
-              :model="formData"
-              label-position="left"
-              label-width="auto"
-              class="flex flex-col gap-4"
+            <div
+              class="art-card flex flex-col gap-5"
             >
+
               <el-form-item
                 label="考试类型"
                 class="mb-0!"
@@ -1065,6 +1076,7 @@ onMounted(() => {
               <el-form-item
                 label="开始时间"
                 class="mb-0!"
+                prop="startTime"
               >
                 <el-date-picker
                   v-model="formData.startTime"
@@ -1078,6 +1090,7 @@ onMounted(() => {
               <el-form-item
                 label="结束时间"
                 class="mb-0!"
+                prop="endTime"
               >
                 <el-date-picker
                   v-model="formData.endTime"
@@ -1088,7 +1101,7 @@ onMounted(() => {
                 />
               </el-form-item>
 
-              <el-form-item
+              <!-- <el-form-item
                 label="考后显示答案"
                 class="mb-0!"
               >
@@ -1108,11 +1121,12 @@ onMounted(() => {
                   :active-value="1"
                   :inactive-value="0"
                 />
-              </el-form-item>
-            </el-form>
-          </div>
-        </el-tab-pane>
-      </el-tabs>
+              </el-form-item> -->
+            </div>
+          </el-tab-pane>
+        </el-tabs>
+      </el-form>
+
     </div>
   </div>
 </template>
