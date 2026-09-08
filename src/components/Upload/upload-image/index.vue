@@ -100,7 +100,7 @@ function openFileDialog() {
     >
       <div
         :class="props.class"
-        class="w-20 h-10 border border-dashed border-gray-300 rounded-lg flex items-center justify-center cursor-pointer hover:bg-gray-100"
+        class="w-50 h-30 border border-dashed border-gray-300 rounded-lg flex items-center justify-center cursor-pointer hover:bg-gray-100"
       >
         <ElImage
           v-if="props.previewUrl"

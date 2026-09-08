@@ -215,7 +215,7 @@ async function handleUploadLogo(file: File) {
       >
         <el-form
           label-width="120px"
-          label-position="top"
+          label-position="left"
         >
           <el-form-item
             label="课程名称"
@@ -275,9 +275,7 @@ async function handleUploadLogo(file: File) {
             <div
               class="flex w-full items-center gap-10"
             >
-              <el-radio-group
-                v-model="formData.couUnlockMethod"
-              >
+              <el-radio-group>
                 <div
                   class="flex flex-col gap-4"
                 >
