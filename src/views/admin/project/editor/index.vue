@@ -174,328 +174,68 @@ async function handleSubmit() {
       </template>
     </AdminPageHeader>
 
-    <el-tabs
-      v-model="activeTab"
-      v-loading="loading"
-      class="course-editor-tabs"
+    <el-form
+      label-width="120px"
+      label-position="top"
+      class="art-card"
     >
-      <el-tab-pane
-        label="基本信息"
-        name="basic"
-        class="art-card"
+      <el-form-item
+        label="项目名称"
+        required
       >
-        <el-form
-          label-width="120px"
-          label-position="top"
-        >
-          <el-form-item
-            label="项目名称"
-            required
-          >
-            <el-input
-              v-model="formData.projName"
-              placeholder="请输入项目名称"
-              class="w-full"
-            />
-          </el-form-item>
+        <el-input
+          v-model="formData.projName"
+          placeholder="请输入项目名称"
+          class="w-full"
+        />
+      </el-form-item>
 
-          <el-form-item
-            label="项目介绍"
-          >
-            <el-input
-              v-model="formData.projIntro"
-              type="textarea"
-              :rows="6"
-              placeholder="请输入项目介绍"
-              class="w-full"
-            />
-          </el-form-item>
+      <el-form-item
+        label="项目介绍"
+      >
+        <el-input
+          v-model="formData.projIntro"
+          type="textarea"
+          :rows="6"
+          placeholder="请输入项目介绍"
+          class="w-full"
+        />
+      </el-form-item>
 
-          <el-form-item
-            label="项目展示图片设置"
-          >
-            <div
-              class="grid w-full grid-cols-2 gap-8 max-md:grid-cols-1"
-            >
-              <div
-                v-for="item in projectImageOptions"
-                :key="item.label"
-                class="flex flex-col items-start"
-              >
-                <div
-                  class="mb-4 w-full"
-                >
-                  <img
-                    :src="previewImageUrl"
-                    :alt="item.alt"
-                    class="h-40 w-64 rounded object-cover max-sm:h-auto max-sm:w-full max-sm:aspect-16/10"
-                  >
-                </div>
-
-                <div
-                  class="flex flex-wrap gap-2"
-                >
-                  <el-button
-                    type="primary"
-                  >
-                    {{ item.buttonText }}
-                  </el-button>
-
-                </div>
-              </div>
-            </div>
-          </el-form-item>
-        </el-form>
-      </el-tab-pane>
-
-      <el-tab-pane
-        label="报名"
-        name="apply"
-        class="art-card"
+      <el-form-item
+        label="项目展示图片设置"
       >
         <div
-          class="mb-4"
+          class="grid w-full grid-cols-2 gap-8 max-md:grid-cols-1"
         >
           <div
-            class="flex gap-2 items-center"
+            v-for="item in projectImageOptions"
+            :key="item.label"
+            class="flex flex-col items-start"
           >
-            <span
-              class="font-medium"
+            <div
+              class="mb-4 w-full"
             >
-              报名
-            </span>
+              <img
+                :src="previewImageUrl"
+                :alt="item.alt"
+                class="h-40 w-64 rounded object-cover max-sm:h-auto max-sm:w-full max-sm:aspect-16/10"
+              >
+            </div>
 
-            <el-tooltip
-              content="- 开启报名后，可仅查看报名通过的学员数据，如完成率，积分排行榜等。"
+            <div
+              class="flex flex-wrap gap-2"
             >
-              <ArtSvgIcon
-                icon="mingcute:question-fill"
-                class="cursor-help"
-              />
-            </el-tooltip>
+              <el-button
+                type="primary"
+              >
+                {{ item.buttonText }}
+              </el-button>
 
-            <el-switch
-              v-model="formData.projIsApply"
-              :active-value="1"
-              :inactive-value="0"
-            />
+            </div>
           </div>
         </div>
-
-        <el-form
-          v-if="formData.projIsApply === 1"
-          label-position="top"
-          label-width="120px"
-        >
-
-          <el-form-item
-            label="报名名额"
-          >
-            <div
-              class="flex w-full items-center gap-10"
-            >
-              <el-radio-group
-                v-model="formData.projIsRestrict"
-                class="flex flex-wrap gap-x-6 gap-y-2"
-              >
-                <el-radio
-                  :value="0"
-                >
-                  不限制
-                </el-radio>
-
-                <el-radio
-                  :value="1"
-                >
-                  限制
-                </el-radio>
-              </el-radio-group>
-
-              <div
-                v-if="formData.projIsRestrict === 1"
-                class="flex items-center gap-2"
-              >
-                <el-input
-                  v-model="formData.projRestrictCount"
-                  type="number"
-                  placeholder="请输入限制人数"
-                  class="w-40 "
-                />
-
-                <span>个</span>
-
-                <el-tooltip
-                  content="设置报名总名额"
-                >
-                  <el-icon
-                    class="cursor-help"
-                  >
-                    <ArtSvgIcon
-                      icon="mingcute:question-fill"
-                      class="cursor-help"
-                    />
-                  </el-icon>
-                </el-tooltip>
-              </div>
-            </div>
-          </el-form-item>
-
-          <el-form-item
-            label="报名开放时间"
-          >
-            <div
-              class="flex w-full items-center gap-10"
-            >
-              <div
-                class="flex flex-wrap gap-x-4 gap-y-2 items-center"
-              >
-                <el-radio-group
-                  v-model="formData.projIsRestrictTime"
-                  class="flex flex-wrap gap-x-6 gap-y-2"
-                >
-                  <el-radio
-                    :value="0"
-                  >
-                    不限制
-                  </el-radio>
-
-                  <el-radio
-                    :value="1"
-                  >
-                    限制
-                  </el-radio>
-                </el-radio-group>
-
-                <el-tooltip
-                  content="设置报名开始和结束时间"
-                >
-                  <el-icon
-                    class="cursor-help"
-                  >
-                    <ArtSvgIcon
-                      icon="mingcute:question-fill"
-                      class="cursor-help"
-                    />
-                  </el-icon>
-                </el-tooltip>
-              </div>
-
-              <div
-                v-if="formData.projIsRestrictTime === 1"
-                class="flex items-center gap-2"
-              >
-                <el-date-picker
-                  v-model="formData.projApplyStartTime"
-                  type="datetime"
-                  placeholder="开始时间"
-                  class="w-full!"
-                />
-
-                <el-date-picker
-                  v-model="formData.projApplyEndTime"
-                  type="datetime"
-                  placeholder="结束时间"
-                  class="w-full!"
-                />
-              </div>
-            </div>
-          </el-form-item>
-
-          <el-form-item
-            label="审核方式"
-          >
-            <div
-              class="flex flex-wrap gap-x-4 gap-y-2 items-center"
-            >
-              <el-radio-group
-                v-model="formData.projIsApplyApproval"
-                class="flex flex-wrap gap-x-6 gap-y-2"
-              >
-                <el-radio
-                  :value="0"
-                >
-                  自动审核
-                </el-radio>
-
-                <el-radio
-                  :value="1"
-                >
-                  手动审核
-                </el-radio>
-              </el-radio-group>
-
-              <el-tooltip
-                content="设置报名审核方式"
-              >
-                <el-icon
-                  class="cursor-help"
-                >
-                  <ArtSvgIcon
-                    icon="mingcute:question-fill"
-                    class="cursor-help"
-                  />
-                </el-icon>
-              </el-tooltip>
-            </div>
-          </el-form-item>
-
-          <el-form-item
-            label="允许学员取消报名"
-          >
-            <div
-              class="flex flex-wrap gap-x-4 gap-y-2 items-center"
-            >
-              <el-radio-group
-                v-model="formData.projIsCancel"
-                class="flex flex-wrap gap-x-6 gap-y-2"
-              >
-                <el-radio
-                  :value="0"
-                >
-                  不允许
-                </el-radio>
-
-                <el-radio
-                  :value="1"
-                >
-                  允许
-                </el-radio>
-              </el-radio-group>
-
-              <el-tooltip
-                content="设置是否允许学员取消报名"
-              >
-                <el-icon
-                  class="cursor-help"
-                >
-                  <ArtSvgIcon
-                    icon="mingcute:question-fill"
-                    class="cursor-help"
-                  />
-                </el-icon>
-              </el-tooltip>
-            </div>
-          </el-form-item>
-
-          <el-form-item
-            label="报名介绍"
-          >
-            <el-input
-              v-model="formData.projApplyContent"
-              type="textarea"
-              :rows="6"
-              placeholder="请输入报名介绍"
-              class="w-full"
-            />
-          </el-form-item>
-        </el-form>
-      </el-tab-pane>
-
-      <!-- <el-tab-pane
-        label="高级设置"
-        name="setting"
-        class="art-card"
-      /> -->
-    </el-tabs>
+      </el-form-item>
+    </el-form>
   </div>
 </template>
