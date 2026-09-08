@@ -672,7 +672,7 @@ onMounted(() => {
                   </div>
 
                   <div
-                    class="flex flex-col gap-2"
+                    class="flex flex-col gap-5"
                   >
                     <div
                       v-for="(option, optionIndex) in question.qusItems"
