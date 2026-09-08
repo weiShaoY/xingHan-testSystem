@@ -1,5 +1,7 @@
 <!------------------------------------  创建文档小节  ------------------------------------------------->
 <script lang="ts" setup>
+import type { FormInstance, FormRules } from 'element-plus'
+
 import type { ColumnOption } from '@/types'
 
 import { h } from 'vue'
@@ -70,6 +72,31 @@ const searchFormState = ref({
   name: '',
   type: 'document' as const,
 })
+
+/**
+ * 表单实例
+ */
+const formRef = ref<FormInstance>()
+
+/**
+ * 章节表单校验规则
+ */
+const formRules: FormRules = {
+  olName: [
+    {
+      required: true,
+      message: '请输入节点名称',
+      trigger: 'blur',
+    },
+  ],
+  olIntro: [
+    {
+      required: true,
+      message: '请输入节点描述',
+      trigger: 'blur',
+    },
+  ],
+}
 
 /**
  * 文件选择表格。
@@ -235,6 +262,10 @@ function confirmSelectFile() {
     return
   }
 
+  if (!formData.value) {
+    return
+  }
+
   formData.value = {
     ...formData.value,
     asId: selectedFile.value.asId,
@@ -270,6 +301,17 @@ function handleSearch() {
 async function handleSubmit() {
   if (!formData.value.asId) {
     ElNotification.warning('请先选择文件')
+    return
+  }
+
+  if (!formRef.value) {
+    return
+  }
+
+  try {
+    await formRef.value.validate()
+  }
+  catch {
     return
   }
 
@@ -496,13 +538,15 @@ function backToCourseOutline() {
         class="flex-1"
       >
         <el-form
+          ref="formRef"
+          :rules="formRules"
           :model="formData"
           label-position="top"
           class="min-w-0"
         >
           <el-form-item
             label="节点名称"
-            required
+            prop="olName"
           >
             <el-input
               v-model="formData.olName"
@@ -512,7 +556,7 @@ function backToCourseOutline() {
 
           <el-form-item
             label="节点描述"
-            required
+            prop="olIntro"
           >
             <el-input
               v-model="formData.olIntro"
