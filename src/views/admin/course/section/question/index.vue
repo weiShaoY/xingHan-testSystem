@@ -536,21 +536,22 @@ onMounted(() => {
       v-loading="pageLoading"
       class="flex flex-col gap-4"
     >
-      <el-tabs
-        v-model="activeTab"
-        class="question-tabs"
+      <el-form
+        ref="questionFormRef"
+        :model="formData"
+        :rules="questionFormRules"
+        label-position="top"
+        class="flex flex-col gap-4"
       >
-        <el-tab-pane
-          label="问卷编辑"
-          name="edit"
+        <el-tabs
+          v-model="activeTab"
+          class="question-tabs"
         >
-          <el-form
-            ref="questionFormRef"
-            :model="formData"
-            :rules="questionFormRules"
-            label-position="top"
-            class="flex flex-col gap-4"
+          <el-tab-pane
+            label="问卷编辑"
+            name="edit"
           >
+
             <!-- 问卷信息 -->
             <div
               class="flex flex-col gap-4"
@@ -743,30 +744,23 @@ onMounted(() => {
                 添加问题
               </art-button>
 
-              <!-- <ArtButton
+            <!-- <ArtButton
                 type="import"
                 @click="handleOpenTableDialog"
               >
                 从题库添加
               </ArtButton> -->
             </div>
-          </el-form>
-        </el-tab-pane>
+          </el-tab-pane>
 
-        <el-tab-pane
-          label="问卷设置"
-          name="setting"
-        >
-          <div
-            class="art-card"
+          <el-tab-pane
+            label="问卷设置"
+            name="setting"
           >
-            <el-form
-              :model="formData"
-              label-position="left"
-              label-width="auto"
-              class="flex flex-col gap-4"
-              :rules="questionFormRules"
+            <div
+              class="art-card flex flex-col gap-5"
             >
+
               <el-form-item
                 label="问卷类型"
                 class="mb-0!"
@@ -849,10 +843,11 @@ onMounted(() => {
                   :inactive-value="0"
                 />
               </el-form-item> -->
-            </el-form>
-          </div>
-        </el-tab-pane>
-      </el-tabs>
+            </div>
+          </el-tab-pane>
+        </el-tabs>
+      </el-form>
+
     </div>
   </div>
 </template>
