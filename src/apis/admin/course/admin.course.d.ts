@@ -149,6 +149,11 @@ export namespace Course {
   type CourseEditor = {
 
     /**
+     * 课程ID
+     */
+    courseId?: number
+
+    /**
      * 课程名称
      */
     couName: string
@@ -165,152 +170,10 @@ export namespace Course {
     isRecommended: 0 | 1
 
     /**
-     * 课程报名名称
-     */
-    couTitle: string
-
-    /**
-     * 是否限制报名人数
-     * @description 0=不限制，1=限制。
-     */
-    couIsRestrict: 0 | 1
-
-    /**
-     * 限制报名人数上限
-     */
-    couRestrictCount: number
-
-    /**
-     * 是否限制报名时间
-     * @description 0=不限制，1=限制。
-     */
-    couIsRestrictTime: 0 | 1
-
-    /**
-     * 报名开始时间
-     */
-    couApplyStartTime: string
-
-    /**
-     * 报名结束时间
-     */
-    couApplyEndTime: string
-
-    /**
-     * 是否需要人工审批
-     * @description 0=不需要，1=需要。
-     */
-    couIsApplyApproval: 0 | 1
-
-    /**
-     * 是否允许取消报名
-     * @description 0=不允许，1=允许。
-     */
-    couIsCancel: 0 | 1
-
-    /**
-     * 报名介绍/说明
-     */
-    couApplyContent: string
-
-    /**
-     * 章节解锁方式
-     * @description 1=顺序解锁，2=进度解锁，3=章节测试解锁。
-     */
-    couUnlockMethod: 1 | 2 | 3
-
-    /**
-     * 是否展示学习学员信息
-     * @description 0=不展示，1=展示。
-     */
-    couIsStudyInfo: 0 | 1
-
-    /**
-     * 是否限制学习总时长
-     * @description 0=不限制，1=限制。
-     */
-    couIsLimitTime: 0 | 1
-
-    /**
-     * 学习总时长（小时）
-     */
-    couLimitTime: number
-
-    // ==================== 可选字段 ====================
-
-    /**
-     * 公司ID
-     */
-    companyId?: number
-
-    /**
-     * 是否自动审批
-     * @description 0=需人工审批，1=自动通过。
-     */
-    couApplyAutoApprove?: 0 | 1
-
-    /**
-     * 报名需要填写的信息模板
-     */
-    couApplyInfo?: string
-
-    /**
-     * 报名信息模板（JSON格式）
-     */
-    couApplyInfoTemplate?: string
-
-    /**
-     * 报名是否需要填写信息
-     * @description 0=否，1=是。
-     */
-    couApplyNeedInfo?: 0 | 1
-
-    /**
-     * 学习内容（可理解为课程大纲）
-     */
-    couContent?: string
-
-    /**
-     * 是否有考试
-     * @description 0=无，1=有。
-     */
-    couExistExam?: 0 | 1
-
-    /**
-     * 是否需要报名
-     * @description 0=不需要，1=需要。
-     */
-    couIsApply?: 0 | 1
-
-    /**
-     * 是否章节结束时弹出评价
-     * @description 0=不弹出，1=弹出。
-     */
-    couIsEvaluate?: 0 | 1
-
-    /**
-     * 是否展示序列号
-     * @description 0=不展示，1=展示。
-     */
-    couIsNumber?: 0 | 1
-
-    /**
-     * 是否单节模式
-     * @description 0=否，1=是。
-     */
-    couIsSingle?: 0 | 1
-
-    /**
      * 是否启用
      * @description 0=禁用，1=启用。
      */
     couIsUse?: 0 | 1
-
-    /**
-     * 课程难度等级
-     * @description 1=初级，2=中级，3=高级。
-     */
-    couLevel?: 1 | 2 | 3
 
     /**
      * 课程缩略图地址
@@ -318,60 +181,15 @@ export namespace Course {
     couLogo: string
 
     /**
-     * 每人最多报名次数
-     * @description 0=不限制，其他值为限制次数。
+     *  课程封面图上传id
      */
-    couMaxApplyCount?: number
+    asId: number
 
-    /**
-     * 课程ID
-     */
-    courseId?: number
-
-    /**
-     * 学习人数（选课人数统计）
-     */
-    couStudentSum?: number
-
-    /**
-     * 排序号（升序）
-     */
-    couTax?: number
-
-    /**
-     * 课程类型
-     */
-    couType?: number
-
-    /**
-     * 课程拥有者/创建者用户ID
-     */
-    couUID?: number
-
-    /**
-     * 视频课时数量
-     */
-    couVideoCount?: number
-
-    /**
-     * 课程浏览/点击数
-     */
-    couViewNum?: number
-
-    /**
-     * 部门中文名称
-     */
-    depCnName?: string
-
-    /**
-     * 部门ID
-     */
-    depId?: number
-
-    /**
-     * 学科名称
-     */
-    sbjName?: string
+    // /**
+    //  * 章节解锁方式
+    //  * @description 1=顺序解锁，2=进度解锁，3=章节测试解锁。
+    //  */
+    couUnlockMethod: 1 | 2 | 3
   }
 
   /**

@@ -77,20 +77,11 @@ function createDefaultFormData(): AdminApi.Course.CourseEditor {
   return {
     couName: isEditMode.value ? '' : '未命名课程',
     couIntro: '',
-    couIsApply: 1,
-    couTitle: '',
-    couIsRestrict: 1,
-    couRestrictCount: 5,
-    couIsRestrictTime: 1,
-    couApplyStartTime: '',
-    couApplyEndTime: '',
-    couIsApplyApproval: 1,
-    couIsCancel: 1,
-    couApplyContent: '',
+    isRecommended: 1,
+    couIsUse: 1,
+    couLogo: '',
     couUnlockMethod: 1,
-    couIsStudyInfo: 1,
-    couIsLimitTime: 0,
-    couLimitTime: 10,
+    asId: 0,
   }
 }
 
@@ -178,6 +169,7 @@ async function handleUploadLogo(file: File) {
   console.log('🚀 ~ file: index.vue:185 ~ response.data.url:', response.data)
 
   formData.value.couLogo = response.data[0].url
+  formData.value.asId = response.data[0].asId
   ElNotification.success('上传成功')
 }
 </script>
@@ -275,7 +267,10 @@ async function handleUploadLogo(file: File) {
             <div
               class="flex w-full items-center gap-10"
             >
-              <el-radio-group>
+              <el-radio-group
+                v-model="formData.couUnlockMethod"
+                disabled
+              >
                 <div
                   class="flex flex-col gap-4"
                 >
