@@ -397,6 +397,27 @@ getCourseList()
               </p>
             </section>
 
+            <!-- 课程状态 -->
+            <section>
+              <p
+                class="font-medium mb-2 text-g-900"
+              >
+                课程状态
+              </p>
+
+              <el-tag
+                :type="item.couIsUse === 0 ? 'info' : 'success'"
+                effect="light"
+                round
+              >
+                <span
+                  class="mr-1.5 inline-block size-1.5 rounded-full"
+                  :class="item.couIsUse === 0 ? 'bg-g-400' : 'bg-success'"
+                />
+                {{ item.couIsUse === 0 ? '已禁用' : '已启用' }}
+              </el-tag>
+            </section>
+
           </div>
         </div>
       </div>

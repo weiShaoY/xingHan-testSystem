@@ -1,5 +1,6 @@
 <!-- 章节新增或者编辑弹窗 -->
 <script lang="ts" setup>
+import type { FormInstance, FormRules } from 'element-plus'
 
 const props = withDefaults(defineProps<Props>(), {
   mode: 'add',
@@ -48,6 +49,31 @@ const formData = ref<AdminApi.Course.CourseOutlineChapterEditor>({
   olIntro: '',
   olIsUse: 1,
 })
+
+/**
+ * 章节表单实例
+ */
+const formRef = ref<FormInstance>()
+
+/**
+ * 章节表单校验规则
+ */
+const formRules: FormRules = {
+  olName: [
+    {
+      required: true,
+      message: '请输入章节名称',
+      trigger: 'blur',
+    },
+  ],
+  olIntro: [
+    {
+      required: true,
+      message: '请输入章节描述',
+      trigger: 'blur',
+    },
+  ],
+}
 
 /**
  * 是否为编辑模式
@@ -99,6 +125,17 @@ async function handleSubmit() {
     return
   }
 
+  if (!formRef.value) {
+    return
+  }
+
+  try {
+    await formRef.value.validate()
+  }
+  catch {
+    return
+  }
+
   loading.value = true
 
   try {
@@ -139,13 +176,14 @@ onMounted(() => {
     :show-close="false"
   >
     <el-form
+      ref="formRef"
       v-loading="loading"
       :model="formData"
+      :rules="formRules"
       label-position="top"
     >
       <el-form-item
         prop="olName"
-        required
         label="章节名称"
       >
         <el-input
@@ -156,7 +194,6 @@ onMounted(() => {
 
       <el-form-item
         prop="olIntro"
-        required
         label="章节描述"
       >
         <el-input
