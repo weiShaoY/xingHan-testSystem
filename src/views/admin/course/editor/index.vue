@@ -280,375 +280,44 @@ onMounted(() => {
               </div>
             </div>
           </el-form-item>
-        </el-form>
-      </el-tab-pane>
-
-      <el-tab-pane
-        label="报名"
-        name="apply"
-        class="art-card"
-      >
-        <div
-          class="mb-4"
-        >
-          <div
-            class="flex gap-2 items-center"
-          >
-            <span
-              class="font-medium"
-            >
-              报名
-            </span>
-
-            <el-tooltip
-              content="开启报名后可以在小节的更多设置中开启小节试学，学员在报名之前可以完整学习试学小节的内容。"
-            >
-              <ArtSvgIcon
-                icon="mingcute:question-fill"
-                class="cursor-help"
-              />
-            </el-tooltip>
-
-            <el-switch
-              v-model="formData.couIsApply"
-              :active-value="1"
-              :inactive-value="0"
-            />
-          </div>
-        </div>
-
-        <el-form
-          v-if="formData.couIsApply === 1"
-          label-position="top"
-          label-width="120px"
-        >
-          <el-form-item
-            label="报名页标题"
-            required
-          >
-            <el-input
-              v-model="formData.couTitle"
-              placeholder="未命名课程"
-              class="w-full"
-            />
-          </el-form-item>
 
           <el-form-item
-            label="报名名额"
+            label="课程小节解锁方式"
           >
             <div
               class="flex w-full items-center gap-10"
             >
               <el-radio-group
-                v-model="formData.couIsRestrict"
-                class="flex flex-wrap gap-x-6 gap-y-2"
+                v-model="formData.couUnlockMethod"
               >
-                <el-radio
-                  :value="0"
-                >
-                  不限制
-                </el-radio>
-
-                <el-radio
-                  :value="1"
-                >
-                  限制
-                </el-radio>
-              </el-radio-group>
-
-              <div
-                v-if="formData.couIsRestrict === 1"
-                class="flex items-center gap-2"
-              >
-                <el-input
-                  v-model="formData.couRestrictCount"
-                  type="number"
-                  placeholder="请输入限制人数"
-                  class="w-40 "
-                />
-
-                <span>个</span>
-
-                <el-tooltip
-                  content="设置报名总名额"
-                >
-                  <el-icon
-                    class="cursor-help"
-                  >
-                    <ArtSvgIcon
-                      icon="mingcute:question-fill"
-                      class="cursor-help"
-                    />
-                  </el-icon>
-                </el-tooltip>
-              </div>
-            </div>
-          </el-form-item>
-
-          <el-form-item
-            label="报名开放时间"
-          >
-            <div
-              class="flex w-full items-center gap-10"
-            >
-              <div
-                class="flex flex-wrap gap-x-4 gap-y-2 items-center"
-              >
-                <el-radio-group
-                  v-model="formData.couIsRestrictTime"
-                  class="flex flex-wrap gap-x-6 gap-y-2"
-                >
-                  <el-radio
-                    :value="0"
-                  >
-                    不限制
-                  </el-radio>
-
-                  <el-radio
-                    :value="1"
-                  >
-                    限制
-                  </el-radio>
-                </el-radio-group>
-
-                <el-tooltip
-                  content="设置报名开始和结束时间"
-                >
-                  <el-icon
-                    class="cursor-help"
-                  >
-                    <ArtSvgIcon
-                      icon="mingcute:question-fill"
-                      class="cursor-help"
-                    />
-                  </el-icon>
-                </el-tooltip>
-              </div>
-
-              <div
-                v-if="formData.couIsRestrictTime === 1"
-                class="flex items-center gap-2"
-              >
-                <el-date-picker
-                  v-model="formData.couApplyStartTime"
-                  type="datetime"
-                  placeholder="开始时间"
-                  class="w-full!"
-                />
-
-                <el-date-picker
-                  v-model="formData.couApplyEndTime"
-                  type="datetime"
-                  placeholder="结束时间"
-                  class="w-full!"
-                />
-              </div>
-            </div>
-          </el-form-item>
-
-          <el-form-item
-            label="审核方式"
-          >
-            <div
-              class="flex flex-wrap gap-x-4 gap-y-2 items-center"
-            >
-              <el-radio-group
-                v-model="formData.couIsApplyApproval"
-                class="flex flex-wrap gap-x-6 gap-y-2"
-              >
-                <el-radio
-                  :value="0"
-                >
-                  自动审核
-                </el-radio>
-
-                <el-radio
-                  :value="1"
-                >
-                  手动审核
-                </el-radio>
-              </el-radio-group>
-
-              <el-tooltip
-                content="设置报名审核方式"
-              >
-                <el-icon
-                  class="cursor-help"
-                >
-                  <ArtSvgIcon
-                    icon="mingcute:question-fill"
-                    class="cursor-help"
-                  />
-                </el-icon>
-              </el-tooltip>
-            </div>
-          </el-form-item>
-
-          <el-form-item
-            label="允许学员取消报名"
-          >
-            <div
-              class="flex flex-wrap gap-x-4 gap-y-2 items-center"
-            >
-              <el-radio-group
-                v-model="formData.couIsCancel"
-                class="flex flex-wrap gap-x-6 gap-y-2"
-              >
-                <el-radio
-                  :value="0"
-                >
-                  不允许
-                </el-radio>
-
-                <el-radio
-                  :value="1"
-                >
-                  允许
-                </el-radio>
-              </el-radio-group>
-
-              <el-tooltip
-                content="设置是否允许学员取消报名"
-              >
-                <el-icon
-                  class="cursor-help"
-                >
-                  <ArtSvgIcon
-                    icon="mingcute:question-fill"
-                    class="cursor-help"
-                  />
-                </el-icon>
-              </el-tooltip>
-            </div>
-          </el-form-item>
-
-          <el-form-item
-            label="报名介绍"
-          >
-            <el-input
-              v-model="formData.couApplyContent"
-              type="textarea"
-              :rows="6"
-              placeholder="请输入报名介绍"
-              class="w-full"
-            />
-          </el-form-item>
-        </el-form>
-      </el-tab-pane>
-
-      <el-tab-pane
-        label="高级设置"
-        name="setting"
-        class="art-card"
-      >
-        <div>
-          <div
-            class="mb-6"
-          >
-            <p
-              class="text-4 text-g-600"
-            >
-              课程在您的个人主页默认为隐藏状态。您可以设置个人主页是否展示该课程。
-            </p>
-          </div>
-
-          <el-form
-            label-position="top"
-          >
-            <el-form-item
-              label="课程小节解锁方式"
-            >
-              <div
-                class="flex w-full items-center gap-10"
-              >
-                <el-radio-group
-                  v-model="formData.couUnlockMethod"
+                <div
+                  class="flex flex-col gap-4"
                 >
                   <div
-                    class="flex flex-col gap-4"
+                    v-for="item in unlockMethodOptions"
+                    :key="item.value"
+                    class="flex items-center"
                   >
-                    <div
-                      v-for="item in unlockMethodOptions"
-                      :key="item.value"
-                      class="flex items-center"
+                    <el-radio
+                      :value="item.value"
+                      class="w-30"
                     >
-                      <el-radio
-                        :value="item.value"
-                        class="w-30"
-                      >
-                        {{ item.label }}
-                      </el-radio>
+                      {{ item.label }}
+                    </el-radio>
 
-                      <div
-                        class="text-info text-sm"
-                      >
-                        {{ item.description }}
-                      </div>
+                    <div
+                      class="text-info text-sm"
+                    >
+                      {{ item.description }}
                     </div>
                   </div>
-                </el-radio-group>
-              </div>
-            </el-form-item>
-
-            <el-form-item
-              label="视频和微课详情中显示已经学完的学员"
-            >
-              <el-checkbox
-                v-model="formData.couIsStudyInfo"
-                :true-value="1"
-                :false-value="0"
-              />
-
-              <div
-                class=" text-sm text-info "
-              >
-                开启时，学员可在视频和微课小节详情中查看"正在学习"与"已经学完"的学员。关闭时，"正在学习"与"已经学完"的学员将会被隐藏。
-              </div>
-            </el-form-item>
-
-            <el-form-item
-              label="课程学习时长统计上限"
-            >
-              <div
-                class="flex flex-col gap-4"
-              >
-                <div
-                  class="flex items-center gap-2"
-                >
-                  <el-checkbox
-                    v-model="formData.couIsLimitTime"
-                    :true-value="1"
-                    :false-value="0"
-                  />
-
-                  <div
-                    class="text-sm text-info"
-                  >
-                    设置学习时长上限后，学员在本课程有效学习时长的最大值为讲师设置值。实际学习时长会始终被记录。
-                  </div>
-
                 </div>
-
-                <div
-                  v-if="formData.couIsLimitTime"
-                  class="flex items-center gap-2"
-                >
-                  <el-input-number
-                    v-model="formData.couLimitTime"
-                    :min="1"
-                  />
-
-                  <span>小时</span>
-
-                </div>
-
-              </div>
-
-            </el-form-item>
-
-          </el-form>
-        </div>
+              </el-radio-group>
+            </div>
+          </el-form-item>
+        </el-form>
       </el-tab-pane>
+
     </el-tabs>
   </div>
 </template>
