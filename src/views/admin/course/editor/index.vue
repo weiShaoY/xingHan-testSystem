@@ -8,22 +8,6 @@
 const previewImageUrl = 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=autumn%20forest%20road%20scenery%20with%20colorful%20trees&image_size=landscape_4_3'
 
 /**
- * 课程图片配置项。
- */
-const courseImageOptions = [
-  {
-    label: '课程封面图',
-    buttonText: '自定义 课程封面图',
-    alt: '课程封面图',
-  },
-  {
-    label: '课程背景图',
-    buttonText: '自定义 课程背景图',
-    alt: '课程背景图',
-  },
-]
-
-/**
  * 课程小节解锁方式选项。
  */
 const unlockMethodOptions = [
@@ -247,38 +231,23 @@ onMounted(() => {
           </el-form-item>
 
           <el-form-item
+            label="是否推荐"
+          >
+            111
+          </el-form-item>
+
+          <el-form-item
+            label="是否启用"
+          >
+            111
+          </el-form-item>
+
+          <el-form-item
             label="课程展示图片设置"
           >
-            <div
-              class="grid w-full grid-cols-2 gap-8 max-md:grid-cols-1"
-            >
-              <div
-                v-for="item in courseImageOptions"
-                :key="item.label"
-                class="flex flex-col items-start"
-              >
-                <div
-                  class="mb-4 w-full"
-                >
-                  <img
-                    :src="previewImageUrl"
-                    :alt="item.alt"
-                    class="h-40 w-64 rounded object-cover max-sm:h-auto max-sm:w-full max-sm:aspect-16/10"
-                  >
-                </div>
-
-                <div
-                  class="flex flex-wrap gap-2"
-                >
-                  <el-button
-                    type="primary"
-                  >
-                    {{ item.buttonText }}
-                  </el-button>
-
-                </div>
-              </div>
-            </div>
+            <UploadImage
+              :preview-url="formData.couLogo"
+            />
           </el-form-item>
 
           <el-form-item

@@ -314,7 +314,7 @@ export namespace Course {
     /**
      * 课程缩略图地址
      */
-    couLogoSmall?: string
+    couLogo?: string
 
     /**
      * 每人最多报名次数
