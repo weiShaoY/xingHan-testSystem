@@ -177,13 +177,6 @@ function deleteQuestionBank(_item: AdminApi.Question.QuestionListItem) {
   ElNotification.warning('删除接口暂未接入')
 }
 
-/**
- * 导出题库。
- */
-function exportQuestionBank() {
-  ElNotification.warning('导出功能暂未接入')
-}
-
 </script>
 
 <template>
@@ -313,11 +306,6 @@ function exportQuestionBank() {
               <ArtButton
                 type="delete"
                 @click="deleteQuestionBank(item)"
-              />
-
-              <ArtButton
-                type="export"
-                @click="exportQuestionBank"
               />
 
               <ArtButton
