@@ -183,6 +183,21 @@ const questionFormRules: FormRules = {
       trigger: 'change',
     },
   ],
+  startTime: [
+    {
+      required: true,
+      message: '请选择开始时间',
+      trigger: 'change',
+    },
+  ],
+
+  endTime: [
+    {
+      required: true,
+      message: '请选择结束时间',
+      trigger: 'change',
+    },
+  ],
 
 }
 
@@ -203,7 +218,7 @@ const questionStats = computed(() => {
 function createInitialFormData(): AdminApi.Course.CourseOutlineSectionQuestionEditor {
   const baseFormData: AdminApi.Course.CourseOutlineSectionQuestionEditor = {
     couId: couId.value,
-    attemptLimit: 1,
+    attemptLimit: 3,
     durationMinutes: 60,
     endTime: '',
     examIntro: '',
@@ -750,6 +765,7 @@ onMounted(() => {
               label-position="left"
               label-width="auto"
               class="flex flex-col gap-4"
+              :rules="questionFormRules"
             >
               <el-form-item
                 label="问卷类型"
@@ -787,6 +803,7 @@ onMounted(() => {
               <el-form-item
                 label="开始时间"
                 class="mb-0!"
+                prop="startTime"
               >
                 <el-date-picker
                   v-model="formData.startTime"
@@ -800,6 +817,7 @@ onMounted(() => {
               <el-form-item
                 label="结束时间"
                 class="mb-0!"
+                prop="endTime"
               >
                 <el-date-picker
                   v-model="formData.endTime"
@@ -810,7 +828,7 @@ onMounted(() => {
                 />
               </el-form-item>
 
-              <el-form-item
+              <!-- <el-form-item
                 label="问卷后显示答案"
                 class="mb-0!"
               >
@@ -830,7 +848,7 @@ onMounted(() => {
                   :active-value="1"
                   :inactive-value="0"
                 />
-              </el-form-item>
+              </el-form-item> -->
             </el-form>
           </div>
         </el-tab-pane>
