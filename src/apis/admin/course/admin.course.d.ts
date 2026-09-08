@@ -28,6 +28,11 @@ export namespace Course {
     active: 0 | 1
 
     /**
+     * 小节数
+     */
+    chapterCount: number
+
+    /**
      * 公司ID
      */
     companyId: number
@@ -110,6 +115,16 @@ export namespace Course {
      * 学科名称
      */
     sbjName: string
+
+    /**
+     * 章节数
+     */
+    sectionCount: number
+
+    /**
+     * 学习人数
+     */
+    studyCount: number
 
     /**
      * 最后修改人ID

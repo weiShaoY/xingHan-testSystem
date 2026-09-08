@@ -367,35 +367,18 @@ getCourseList()
                 class="text-sm text-g-600 flex flex-wrap gap-x-4 gap-y-2 items-center"
               >
                 <span>
-                  总章节: {{ }} 节
+                  总章节: {{ item.sectionCount }} 节
                 </span>
 
                 <span>
-                  总小节: {{ }} 节
+                  总小节: {{ item.chapterCount }} 节
+                </span>
+
+                <span>
+                  学习人数: {{ item.studyCount }}
                 </span>
               </div>
             </section>
-
-            <!-- 课程标签 -->
-            <!-- <section>
-              <p
-                class="font-medium mb-2 text-g-900"
-              >
-                课程标签
-              </p>
-
-              <div
-                class="flex flex-wrap gap-2"
-              >
-                <el-tag
-                  v-for="(tag, index) in item.tags"
-                  :key="index"
-                  size="small"
-                >
-                  {{ tag }}
-                </el-tag>
-              </div>
-            </section> -->
 
             <!-- 更新时间 -->
             <section
