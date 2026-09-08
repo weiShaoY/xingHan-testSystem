@@ -3,6 +3,8 @@
 <script lang="ts" setup>
 import type { UploadHooks, UploadRequestOptions } from 'element-plus'
 
+import { Plus } from '@element-plus/icons-vue'
+
 import { computed, ref } from 'vue'
 
 type Props = {
@@ -18,11 +20,14 @@ type Props = {
 
   /** 预览图片地址 */
   previewUrl: string
+
+  /** 额外的 CSS 类名 */
+  class?: string | Record<string, boolean> | Array<string | Record<string, boolean>>
 }
 
 const props = withDefaults(defineProps<Props>(), {
   title: '上传图片',
-  fileType: 'image/*',
+  fileType: ['jpg', 'jpeg', 'png', 'gif', 'webp'],
   maxFileSize: 10,
 })
 
@@ -71,6 +76,7 @@ function validateFileBeforeUpload(
 
 /** 将校验通过的文件交给父组件上传 */
 async function handleUploadRequest(options: UploadRequestOptions) {
+  console.log('🚀 ~ file: index.vue:74 ~ options:', options)
   emit('upload', options.file)
   options.onSuccess?.({
   })
@@ -92,12 +98,27 @@ function openFileDialog() {
       :before-upload="validateFileBeforeUpload"
       :http-request="handleUploadRequest"
     >
-      <ElImage
-        :src="previewUrl"
-        fit="contain"
-        style="width: 100px; height: 100px; cursor: pointer;"
-        @click="openFileDialog"
-      />
+      <div
+        :class="props.class"
+        class="w-20 h-10 border border-dashed border-gray-300 rounded-lg flex items-center justify-center cursor-pointer hover:bg-gray-100"
+      >
+        <ElImage
+          v-if="props.previewUrl"
+          class="w-full "
+          :src="previewUrl"
+          fit="contain"
+          @click="openFileDialog"
+        />
+
+        <el-icon
+          v-else
+          class=""
+        >
+          <Plus />
+        </el-icon>
+
+      </div>
+
     </el-upload>
   </div>
 </template>

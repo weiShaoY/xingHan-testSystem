@@ -159,6 +159,12 @@ export namespace Course {
     couIntro: string
 
     /**
+     *  是否推荐
+     *  @description 0=不推荐，1=推荐。
+     */
+    isRecommended: 0 | 1
+
+    /**
      * 课程报名名称
      */
     couTitle: string
@@ -307,14 +313,9 @@ export namespace Course {
     couLevel?: 1 | 2 | 3
 
     /**
-     * 课程展示图片地址
-     */
-    couLogo?: string
-
-    /**
      * 课程缩略图地址
      */
-    couLogo?: string
+    couLogo: string
 
     /**
      * 每人最多报名次数

@@ -3,11 +3,6 @@
 <script lang="ts" setup>
 
 /**
- * 默认课程展示图预览地址。
- */
-const previewImageUrl = 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=autumn%20forest%20road%20scenery%20with%20colorful%20trees&image_size=landscape_4_3'
-
-/**
  * 课程小节解锁方式选项。
  */
 const unlockMethodOptions = [
@@ -170,6 +165,21 @@ onMounted(() => {
     void getCourseSetting()
   }
 })
+
+async function handleUploadLogo(file: File) {
+  console.log('🚀 ~ file: index.vue:175 ~ file:', file)
+  const newFormData = new FormData()
+
+  newFormData.append('file', file)
+
+  const response = await fetchAdminUploadFile(newFormData) as any
+
+  console.log('🚀 ~ file: index.vue:180 ~ response:', response)
+  console.log('🚀 ~ file: index.vue:185 ~ response.data.url:', response.data)
+
+  formData.value.couLogo = response.data[0].url
+  ElNotification.success('上传成功')
+}
 </script>
 
 <template>
@@ -233,20 +243,29 @@ onMounted(() => {
           <el-form-item
             label="是否推荐"
           >
-            111
+            <el-switch
+              v-model="formData.isRecommended"
+              active-value="1"
+              inactive-value="0"
+            />
           </el-form-item>
 
           <el-form-item
             label="是否启用"
           >
-            111
+            <el-switch
+              v-model="formData.couIsUse"
+              active-value="1"
+              inactive-value="0"
+            />
           </el-form-item>
 
           <el-form-item
-            label="课程展示图片设置"
+            label="课程图"
           >
             <UploadImage
-              :preview-url="formData.couLogo"
+              :preview-url="getFileUrl(formData.couLogo)"
+              @upload="handleUploadLogo"
             />
           </el-form-item>
 
