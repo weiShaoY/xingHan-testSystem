@@ -142,9 +142,14 @@ async function handleSubmit() {
     return
   }
 
-  const valid = await formRef.value?.validate().catch(() => false)
+  if (!formRef.value) {
+    return
+  }
 
-  if (!valid) {
+  try {
+    await formRef.value.validate()
+  }
+  catch {
     return
   }
 
