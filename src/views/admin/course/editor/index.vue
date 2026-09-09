@@ -38,6 +38,8 @@ const workTabStore = useWorkTabStore()
  */
 const loading = ref(false)
 
+const uploadLoading = ref(false)
+
 /**
  * 当前课程 ID
  */
@@ -199,15 +201,25 @@ onMounted(() => {
 })
 
 async function handleUploadLogo(file: File) {
-  const newFormData = new FormData()
+  try {
+    uploadLoading.value = true
 
-  newFormData.append('file', file)
+    const newFormData = new FormData()
 
-  const response = await fetchAdminUploadFile(newFormData) as any
+    newFormData.append('file', file)
 
-  formData.value.couLogo = response.data[0].url
-  formData.value.asId = response.data[0].asId
-  ElNotification.success('上传成功')
+    const response = await fetchAdminUploadFile(newFormData) as any
+
+    formData.value.couLogo = response.data[0].url
+    formData.value.asId = response.data[0].asId
+    ElNotification.success('上传成功')
+  }
+  catch {
+    ElNotification.error('封面上传失败，请重试')
+  }
+  finally {
+    uploadLoading.value = false
+  }
 }
 </script>
 
@@ -320,6 +332,7 @@ async function handleUploadLogo(file: File) {
             <UploadImage
               class="h-40  max-w-full"
               :preview-url="getFileUrl(formData.couLogo)"
+              :loading="uploadLoading"
               @upload="handleUploadLogo"
             />
           </el-form-item>
