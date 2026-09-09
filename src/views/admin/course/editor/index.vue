@@ -33,11 +33,6 @@ const router = useRouter()
 const workTabStore = useWorkTabStore()
 
 /**
- * 当前激活的编辑页签。
- */
-const activeTab = ref<'basic' | 'apply' | 'setting'>('basic')
-
-/**
  * 页面提交和详情加载状态。
  */
 const loading = ref(false)
@@ -98,7 +93,6 @@ async function getCourseSetting() {
   loading.value = true
   try {
     formData.value = await fetchAdminCourseSetting(couId.value)
-    console.log('🚀 ~ file: index.vue:136 ~ formData.value:', formData.value)
   }
   catch {
     ElNotification.error('课程详情获取失败')
@@ -158,15 +152,11 @@ onMounted(() => {
 })
 
 async function handleUploadLogo(file: File) {
-  console.log('🚀 ~ file: index.vue:175 ~ file:', file)
   const newFormData = new FormData()
 
   newFormData.append('file', file)
 
   const response = await fetchAdminUploadFile(newFormData) as any
-
-  console.log('🚀 ~ file: index.vue:180 ~ response:', response)
-  console.log('🚀 ~ file: index.vue:185 ~ response.data.url:', response.data)
 
   formData.value.couLogo = response.data[0].url
   formData.value.asId = response.data[0].asId
@@ -176,7 +166,7 @@ async function handleUploadLogo(file: File) {
 
 <template>
   <div
-    class="mx-auto mb-10 flex w-full max-w-7xl flex-col gap-4 px-10 max-lg:px-6 max-sm:px-4"
+    class="mx-auto mb-10 flex w-full max-w-7xl flex-col gap-5 px-10 max-lg:px-6 max-sm:px-4"
   >
     <AdminPageHeader
       :title="pageTitle"
@@ -195,114 +185,207 @@ async function handleUploadLogo(file: File) {
       </template>
     </AdminPageHeader>
 
-    <el-tabs
-      v-model="activeTab"
-      v-loading="loading"
-      class="course-editor-tabs"
+    <el-form
+      label-position="top"
     >
-      <el-tab-pane
-        label="基本信息"
-        name="basic"
-        class="art-card"
+      <div
+        class="grid grid-cols-[minmax(0,1fr)_280px] gap-x-10 gap-y-8 max-lg:grid-cols-1"
       >
-        <el-form
-          label-width="120px"
-          label-position="left"
-        >
+        <section>
+          <div
+            class="mb-5 flex items-baseline gap-2.5"
+          >
+            <h2
+              class="m-0 text-base text-(--el-text-color-primary) font-semibold leading-normal"
+            >
+              课程信息
+            </h2>
+
+            <span
+              class="text-xs text-(--el-text-color-secondary)"
+            >
+              完善课程名称和介绍
+            </span>
+          </div>
+
           <el-form-item
             label="课程名称"
             required
+            class="mb-6"
           >
             <el-input
               v-model="formData.couName"
               placeholder="请输入课程名称"
+              maxlength="50"
+              show-word-limit
               class="w-full"
             />
           </el-form-item>
 
           <el-form-item
             label="课程介绍"
+            class="mb-0"
           >
             <el-input
               v-model="formData.couIntro"
               type="textarea"
-              :rows="6"
+              :rows="8"
+              maxlength="500"
+              show-word-limit
+              resize="vertical"
               placeholder="请输入课程介绍"
               class="w-full"
             />
           </el-form-item>
+        </section>
 
-          <el-form-item
-            label="是否推荐"
+        <section
+          class="border-l border-(--el-border-color-lighter) pl-8 max-lg:border-l-0 max-lg:pl-0"
+        >
+          <div
+            class="mb-5 flex items-baseline gap-2.5"
           >
-            <el-switch
-              v-model="formData.isRecommended"
-              active-value="1"
-              inactive-value="0"
-            />
-          </el-form-item>
+            <h2
+              class="m-0 text-base text-(--el-text-color-primary) font-semibold leading-normal"
+            >
+              课程封面
+            </h2>
 
-          <el-form-item
-            label="是否启用"
+            <span
+              class="text-xs text-(--el-text-color-secondary)"
+            >
+              建议使用横向图片
+            </span>
+          </div>
+
+          <UploadImage
+            class="h-40 w-full max-w-full"
+            :preview-url="getFileUrl(formData.couLogo)"
+            @upload="handleUploadLogo"
+          />
+        </section>
+
+        <section
+          class="col-span-2 max-lg:col-span-1"
+        >
+          <div
+            class="mb-5 flex items-baseline gap-2.5"
           >
-            <el-switch
-              v-model="formData.couIsUse"
-              active-value="1"
-              inactive-value="0"
-            />
-          </el-form-item>
+            <h2
+              class="m-0 text-base text-(--el-text-color-primary) font-semibold leading-normal"
+            >
+              发布设置
+            </h2>
 
-          <el-form-item
-            label="课程图"
-          >
-            <UploadImage
-              :preview-url="getFileUrl(formData.couLogo)"
-              @upload="handleUploadLogo"
-            />
-          </el-form-item>
+            <span
+              class="text-xs text-(--el-text-color-secondary)"
+            >
+              控制课程在平台中的展示状态
+            </span>
+          </div>
 
-          <el-form-item
-            label="课程小节解锁方式"
+          <div
+            class="grid grid-cols-2 gap-4 max-sm:grid-cols-1"
           >
             <div
-              class="flex w-full items-center gap-10"
+              class="flex min-h-18 items-center justify-between gap-4 rounded-lg border border-(--el-border-color-lighter) bg-(--el-fill-color-lighter) px-4.5 py-4"
             >
-              <el-radio-group
-                v-model="formData.couUnlockMethod"
-                disabled
-              >
+              <div>
                 <div
-                  class="flex flex-col gap-4"
+                  class="font-medium text-(--el-text-color-primary)"
                 >
-                  <div
-                    v-for="item in unlockMethodOptions"
-                    :key="item.value"
-                    class="flex items-center"
-                  >
-                    <el-radio
-                      :value="item.value"
-                      class="w-30"
-                    >
-                      {{ item.label }}
-                    </el-radio>
-
-                    <div
-                      class="text-info text-sm"
-                    >
-                      {{ item.description }}
-                    </div>
-                  </div>
+                  推荐课程
                 </div>
-              </el-radio-group>
-            </div>
-          </el-form-item>
-        </el-form>
-      </el-tab-pane>
 
-    </el-tabs>
+                <div
+                  class="mt-1 text-sm text-info"
+                >
+                  在课程列表中优先展示
+                </div>
+              </div>
+
+              <el-switch
+                v-model="formData.isRecommended"
+                active-value="1"
+                inactive-value="0"
+              />
+            </div>
+
+            <div
+              class="flex min-h-18 items-center justify-between gap-4 rounded-lg border border-(--el-border-color-lighter) bg-(--el-fill-color-lighter) px-4.5 py-4"
+            >
+              <div>
+                <div
+                  class="font-medium text-(--el-text-color-primary)"
+                >
+                  启用课程
+                </div>
+
+                <div
+                  class="mt-1 text-sm text-info"
+                >
+                  允许学员正常访问课程
+                </div>
+              </div>
+
+              <el-switch
+                v-model="formData.couIsUse"
+                active-value="1"
+                inactive-value="0"
+              />
+            </div>
+          </div>
+        </section>
+
+        <section
+          class="col-span-2 max-lg:col-span-1"
+        >
+          <div
+            class="mb-5 flex items-baseline gap-2.5"
+          >
+            <h2
+              class="m-0 text-base text-(--el-text-color-primary) font-semibold leading-normal"
+            >
+              学习规则
+            </h2>
+
+            <span
+              class="text-xs text-(--el-text-color-secondary)"
+            >
+              设置课程小节的解锁方式
+            </span>
+          </div>
+
+          <el-radio-group
+            v-model="formData.couUnlockMethod"
+            disabled
+            class="grid w-full grid-cols-3 gap-4 max-lg:grid-cols-1"
+          >
+            <div
+              v-for="item in unlockMethodOptions"
+              :key="item.value"
+              class="min-h-35 rounded-lg border border-(--el-border-color-lighter) bg-(--el-fill-color-lighter) p-4"
+              :class="{
+                'border-primary/40 bg-primary/5': formData.couUnlockMethod === item.value,
+              }"
+            >
+              <el-radio
+                :value="item.value"
+              >
+                <span
+                  class="font-medium"
+                >{{ item.label }}</span>
+              </el-radio>
+
+              <p
+                class="mt-3 mb-0 text-xs text-(--el-text-color-secondary) leading-7"
+              >
+                {{ item.description }}
+              </p>
+            </div>
+          </el-radio-group>
+        </section>
+      </div>
+    </el-form>
   </div>
 </template>
-
-<style lang="scss" scoped>
-
-</style>
