@@ -314,6 +314,7 @@ getCourseList()
                 fit="cover"
                 class="size-full"
               />
+
             </div>
 
             <div

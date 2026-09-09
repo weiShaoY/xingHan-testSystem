@@ -70,11 +70,6 @@ export namespace Course {
     couLogo: string
 
     /**
-     * 课程缩略图地址
-     */
-    couLogoSmall: string
-
-    /**
      * 课程名称
      */
     couName: string

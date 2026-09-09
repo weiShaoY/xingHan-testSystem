@@ -496,6 +496,15 @@ function moveCourse(stageIndex: number, courseIndex: number, direction: 'up' | '
               editable
               @edit="handleTabsEdit"
             >
+              <template
+                #add-icon
+              >
+                <ArtSvgIcon
+                  icon="ri:add-line"
+                  class="text-lg text-primary"
+                />
+              </template>
+
               <el-tab-pane
                 v-for="(stage, index) in projectStageList.nodes"
                 :key="stage.stageId"
@@ -822,4 +831,13 @@ function moveCourse(stageIndex: number, courseIndex: number, direction: 'up' | '
   </div>
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+:deep(.el-tabs__new-tab) {
+  width: 30px !important;
+  height: 30px !important;
+  margin-bottom: 15px !important;
+  &:hover {
+    background-color: var(--el-color-primary-light-9) !important;
+  }
+}
+</style>
