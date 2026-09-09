@@ -3,7 +3,7 @@
 <script lang="ts" setup>
 import type { UploadHooks, UploadRequestOptions } from 'element-plus'
 
-import { Plus } from '@element-plus/icons-vue'
+import { Loading, Plus } from '@element-plus/icons-vue'
 
 import { twMerge } from 'tailwind-merge'
 
@@ -22,6 +22,9 @@ type Props = {
 
   /** 预览图片地址 */
   previewUrl: string
+
+  /** 上传加载状态 */
+  loading?: boolean
 
   /** 额外的 CSS 类名 */
   class?: string | Record<string, boolean> | Array<string | Record<string, boolean>>
@@ -58,7 +61,7 @@ function stringifyClass(
 }
 
 const uploadClass = computed(() => twMerge(
-  'box-border w-50 h-30 max-w-full max-h-full overflow-hidden border border-dashed border-gray-300 rounded-lg flex items-center justify-center cursor-pointer hover:bg-gray-100',
+  'relative box-border w-50 h-30 max-w-full max-h-full overflow-hidden border border-dashed border-gray-300 rounded-lg flex items-center justify-center cursor-pointer hover:bg-gray-100',
   props.class ? stringifyClass(props.class) : '',
 ))
 
@@ -106,6 +109,10 @@ async function handleUploadRequest(options: UploadRequestOptions) {
 }
 
 function openFileDialog() {
+  if (props.loading) {
+    return
+  }
+
   uploadRootRef.value?.querySelector<HTMLInputElement>('input[type="file"]')?.click()
 }
 </script>
@@ -113,13 +120,14 @@ function openFileDialog() {
 <template>
   <div
     ref="uploadRootRef"
-    class="inline-block max-w-full align-top"
+    class="block w-full max-w-full align-top"
   >
     <el-upload
-      class="block max-w-full"
+      class="block w-full! max-w-full"
       :accept="accept"
       :multiple="false"
       :show-file-list="false"
+      :disabled="props.loading"
       :before-upload="validateFileBeforeUpload"
       :http-request="handleUploadRequest"
     >
@@ -128,14 +136,25 @@ function openFileDialog() {
       >
         <ElImage
           v-if="props.previewUrl"
-          class="h-full w-full max-h-full max-w-full"
+          class="h-full w-full! max-h-full max-w-full"
           :src="previewUrl"
           fit="contain"
           @click="openFileDialog"
         />
 
+        <div
+          v-if="props.loading"
+          class="absolute inset-0 z-10 flex items-center justify-center bg-white/70"
+        >
+          <el-icon
+            class="is-loading text-2xl text-primary"
+          >
+            <Loading />
+          </el-icon>
+        </div>
+
         <el-icon
-          v-else
+          v-if="!props.previewUrl && !props.loading"
           class=""
         >
           <Plus />

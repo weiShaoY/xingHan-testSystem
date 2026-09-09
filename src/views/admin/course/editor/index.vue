@@ -1,6 +1,7 @@
 <!------  2026-04-15---16:08---星期三  ------>
 <!------------------------------------  课程新增或者编辑编辑页  ------------------------------------------------->
 <script lang="ts" setup>
+import type { FormInstance, FormRules } from 'element-plus'
 
 /**
  * 课程小节解锁方式选项。
@@ -52,9 +53,44 @@ const isEditMode = computed(() => {
 })
 
 /**
+ * 课程编辑表单实例。
+ */
+const formRef = ref<FormInstance>()
+
+/**
  * 表单数据。
  */
 const formData = ref<AdminApi.Course.CourseEditor>(createDefaultFormData())
+
+/**
+ * 表单校验规则。
+ */
+const formRules: FormRules<AdminApi.Course.CourseEditor> = {
+  couName: [
+    {
+      required: true,
+      whitespace: true,
+      message: '请输入课程名称',
+      trigger: 'blur',
+    },
+  ],
+  couIntro: [
+    {
+      required: true,
+      whitespace: true,
+      message: '请输入课程介绍',
+      trigger: 'blur',
+    },
+  ],
+  couLogo: [
+    {
+      required: true,
+      message: '请上传课程封面',
+      trigger: 'change',
+    },
+  ],
+
+}
 
 /**
  * 页面标题。
@@ -123,6 +159,17 @@ async function handleSubmit() {
     return
   }
 
+  if (!formRef.value) {
+    return
+  }
+
+  try {
+    await formRef.value.validate()
+  }
+  catch {
+    return
+  }
+
   loading.value = true
 
   try {
@@ -186,8 +233,13 @@ async function handleUploadLogo(file: File) {
     </AdminPageHeader>
 
     <el-form
+      ref="formRef"
+      v-loading="loading"
+      :model="formData"
+      :rules="formRules"
       label-position="top"
     >
+
       <div
         class="grid grid-cols-[minmax(0,1fr)_280px] gap-x-10 gap-y-8 max-lg:grid-cols-1"
       >
@@ -209,8 +261,8 @@ async function handleUploadLogo(file: File) {
           </div>
 
           <el-form-item
+            prop="couName"
             label="课程名称"
-            required
             class="mb-6"
           >
             <el-input
@@ -223,6 +275,7 @@ async function handleUploadLogo(file: File) {
           </el-form-item>
 
           <el-form-item
+            prop="couIntro"
             label="课程介绍"
             class="mb-0"
           >
@@ -242,27 +295,34 @@ async function handleUploadLogo(file: File) {
         <section
           class="border-l border-(--el-border-color-lighter) pl-8 max-lg:border-l-0 max-lg:pl-0"
         >
-          <div
-            class="mb-5 flex items-baseline gap-2.5"
+          <el-form-item
+            prop="couLogo"
+            label="课程封面"
+            required
+            class="mb-0"
           >
-            <h2
-              class="m-0 text-base text-(--el-text-color-primary) font-semibold leading-normal"
+            <div
+              class="mb-5 flex items-baseline gap-2.5"
             >
-              课程封面
-            </h2>
+              <h2
+                class="m-0 text-base text-(--el-text-color-primary) font-semibold leading-normal"
+              >
+                课程封面
+              </h2>
 
-            <span
-              class="text-xs text-(--el-text-color-secondary)"
-            >
-              建议使用横向图片
-            </span>
-          </div>
+              <span
+                class="text-xs text-(--el-text-color-secondary)"
+              >
+                建议使用横向图片
+              </span>
+            </div>
 
-          <UploadImage
-            class="h-40 w-full max-w-full"
-            :preview-url="getFileUrl(formData.couLogo)"
-            @upload="handleUploadLogo"
-          />
+            <UploadImage
+              class="h-40  max-w-full"
+              :preview-url="getFileUrl(formData.couLogo)"
+              @upload="handleUploadLogo"
+            />
+          </el-form-item>
         </section>
 
         <section

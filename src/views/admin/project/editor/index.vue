@@ -28,6 +28,8 @@ function backToProjectList() {
  */
 const loading = ref(false)
 
+const uploadLoading = ref(false)
+
 /**
  * 项目编辑表单实例。
  */
@@ -53,7 +55,7 @@ const isEditMode = computed(() => {
 const formData = ref<AdminApi.Project.ProjectEditor>(createDefaultFormData(isEditMode.value))
 
 /**
- * 项目表单校验规则。
+ * 表单校验规则。
  */
 const formRules: FormRules<AdminApi.Project.ProjectEditor> = {
   projName: [
@@ -176,6 +178,7 @@ async function handleSubmit() {
 
 async function handleUploadCover(file: File) {
   try {
+    uploadLoading.value = true
     const newFormData = new FormData()
 
     newFormData.append('file', file)
@@ -185,9 +188,13 @@ async function handleUploadCover(file: File) {
     formData.value.projCover = response.data[0].url
     formData.value.asId = response.data[0].asId
     ElNotification.success('上传成功')
+    uploadLoading.value = false
   }
   catch {
     ElNotification.error('封面上传失败，请重试')
+  }
+  finally {
+    uploadLoading.value = false
   }
 }
 </script>
@@ -301,6 +308,7 @@ async function handleUploadCover(file: File) {
             <UploadImage
               class="h-40 w-full max-w-full"
               :preview-url="getFileUrl(formData.projCover)"
+              :loading="uploadLoading"
               @upload="handleUploadCover"
             />
           </el-form-item>
