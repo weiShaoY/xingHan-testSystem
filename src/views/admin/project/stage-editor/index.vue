@@ -517,6 +517,7 @@ function moveCourse(stageIndex: number, courseIndex: number, direction: 'up' | '
                       v-model="stage.stageName"
                       placeholder="请输入阶段名称"
                       class="w-full"
+                      clearable
                     />
                   </el-form-item>
 
@@ -529,6 +530,7 @@ function moveCourse(stageIndex: number, courseIndex: number, direction: 'up' | '
                       :rows="4"
                       placeholder="请输入阶段描述"
                       class="w-full"
+                      clearable
                     />
                   </el-form-item>
 
