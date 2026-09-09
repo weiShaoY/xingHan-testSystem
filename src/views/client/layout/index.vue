@@ -206,7 +206,12 @@ function isDesktopNavActive(path: string) {
       <div
         class="min-h-0 flex-1 overflow-y-auto p-4 md:box-border md:min-h-[calc(100dvh_-_76px)] md:w-full md:max-w-311 md:mx-auto md:p-8 md:max-lg:p-6"
       >
+        <slot
+          v-if="$slots.default"
+        />
+
         <router-view
+          v-else
           v-slot="{ Component, route: viewRoute }"
         >
           <!-- 缓存路由动画 -->
