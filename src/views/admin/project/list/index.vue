@@ -321,57 +321,75 @@ async function deleteProject(item: AdminApi.Project.ProjectListItem) {
           @click="goToDetail(item)"
         >
           <div
-            class="flex items-start justify-between gap-4 max-sm:flex-col"
+            class="grid grid-cols-[180px_minmax(0,1fr)] items-start gap-5 max-md:grid-cols-1 max-md:gap-4"
           >
             <div
-              class="min-w-0"
+              class="aspect-16/9 w-full overflow-hidden rounded-lg bg-(--el-fill-color-lighter)"
             >
-              <h3
-                class="truncate text-base font-semibold text-g-900"
-              >
-                {{ item.projName }}
-              </h3>
-
-              <p
-                class="mt-2 line-clamp-2 text-sm text-g-600"
-              >
-                {{ item.projIntro }}
-              </p>
+              <ElImage
+                :src="getFileUrl(item.projCover)"
+                fit="cover"
+                class="size-full"
+              />
             </div>
 
             <div
-              class="flex shrink-0 gap-2 items-center justify-center max-sm:w-full max-sm:justify-end"
-              @click.stop
+              class="min-w-0"
             >
-              <!-- <ArtButton
-                type="preview"
-                @click="goToPreview(item)"
-              /> -->
+              <div
+                class="flex items-start justify-between gap-4 max-sm:flex-col"
+              >
+                <div
+                  class="min-w-0"
+                >
+                  <h3
+                    class="truncate text-base font-semibold text-g-900"
+                  >
+                    {{ item.projName }}
+                  </h3>
 
-              <!-- 分配用户弹窗 -->
-              <AminAssignUserDialog
-                :id="item.projId"
-                :name="item.projName"
-                type="project"
-              />
+                  <p
+                    class="mt-2 line-clamp-2 text-sm text-g-600"
+                  >
+                    {{ item.projIntro || '暂无项目介绍' }}
+                  </p>
+                </div>
 
-              <ArtButton
-                type="edit"
-                @click="goToSetting(item)"
-              />
+                <div
+                  class="flex shrink-0 items-center justify-center gap-2 max-sm:w-full max-sm:justify-end"
+                  @click.stop
+                >
+                  <ArtButton
+                    type="preview"
+                    @click="goToPreview(item)"
+                  />
 
-              <ArtButton
-                type="delete"
-                @click="deleteProject(item)"
-              />
+                  <!-- 分配用户弹窗 -->
+                  <AminAssignUserDialog
+                    :id="item.projId"
+                    :name="item.projName"
+                    type="project"
+                  />
 
+                  <ArtButton
+                    type="edit"
+                    @click="goToSetting(item)"
+                  />
+
+                  <ArtButton
+                    type="delete"
+                    @click="deleteProject(item)"
+                  />
+
+                </div>
+              </div>
             </div>
           </div>
 
           <el-divider />
 
           <div
-            class="grid grid-cols-[1fr_1fr_1.5fr] gap-4 items-center max-sm:grid-cols-1"
+            class="grid grid-cols-[1fr_1fr_1.5fr] items-start gap-5 max-lg:grid-cols-2 max-sm:grid-cols-1"
           >
             <div
               class="rounded-custom-sm bg-primary/10 px-4 py-3 text-primary"
@@ -390,7 +408,7 @@ async function deleteProject(item: AdminApi.Project.ProjectListItem) {
             </div>
 
             <div
-              class="rounded-custom-sm bg-primary/10 px-4 py-3 text-primary"
+              class="rounded-custom-sm bg-[#11bbd2]/10 px-4 py-3 text-[#0a91a4]"
             >
               <p
                 class="text-lg font-semibold"
@@ -405,14 +423,27 @@ async function deleteProject(item: AdminApi.Project.ProjectListItem) {
               </p>
             </div>
 
-            <!-- <el-link
-              :href="item.link"
-              type="primary"
-              class="justify-self-end max-sm:justify-self-start"
-              @click.stop
+            <section
+              class="max-lg:col-span-2 max-sm:col-span-1"
             >
-              {{ getCourseText(item) }} >
-            </el-link> -->
+              <p
+                class="mb-2 font-medium text-g-900"
+              >
+                项目状态
+              </p>
+
+              <el-tag
+                :type="item.projIsUse === 0 ? 'info' : 'success'"
+                effect="light"
+                round
+              >
+                <span
+                  class="mr-1.5 inline-block size-1.5 rounded-full"
+                  :class="item.projIsUse === 0 ? 'bg-g-400' : 'bg-success'"
+                />
+                {{ item.projIsUse === 0 ? '已禁用' : '已启用' }}
+              </el-tag>
+            </section>
           </div>
         </div>
       </div>

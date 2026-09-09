@@ -135,6 +135,12 @@ export namespace Course {
      * 最后修改时间
      */
     updateTime: string
+
+    /**
+     * 是否推荐在首页
+     * @description 0=不推荐，1=推荐。
+     */
+    isRecommended: 0 | 1
   }
 
   /**

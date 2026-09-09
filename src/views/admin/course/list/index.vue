@@ -184,7 +184,6 @@ function goToOutline(item: AdminApi.Course.CourseListItem) {
  * @param item 需要删除的课程。
  */
 async function deleteCourse(item: AdminApi.Course.CourseListItem) {
-  console.log('🚀 ~ file: index.vue:200 ~ item:', item.couId)
   try {
     await fetchAdminCourseDelete(item.couId)
     await getCourseList()
@@ -305,66 +304,83 @@ getCourseList()
           class="art-card flex flex-1 flex-col cursor-pointer justify-center relative transition hover:border-primary/30 max-sm:p-4"
         >
           <div
-            class="flex items-start justify-between gap-4 max-sm:flex-col"
+            class="grid grid-cols-[180px_minmax(0,1fr)] items-start gap-5 max-md:grid-cols-1 max-md:gap-4"
           >
             <div
-              class="min-w-0"
+              class="aspect-16/9 w-full overflow-hidden rounded-lg bg-(--el-fill-color-lighter)"
             >
-              <h3
-                class="truncate text-base font-semibold text-g-900"
-              >
-                {{ item.couName }}
-              </h3>
-
-              <p
-                class="mt-2 line-clamp-2 max-w-3xl text-sm text-g-600"
-              >
-                {{ item.couIntro }}
-              </p>
+              <ElImage
+                :src="getFileUrl(item.couLogo)"
+                fit="cover"
+                class="size-full"
+              />
             </div>
 
             <div
-              class="flex shrink-0 gap-2 items-center justify-center max-sm:w-full max-sm:justify-end"
-              @click.stop
+              class="min-w-0"
             >
-              <ArtButton
-                type="preview"
-                @click="goToPreview(item)"
-              />
+              <div
+                class="flex items-start justify-between gap-4 max-sm:flex-col"
+              >
+                <div
+                  class="min-w-0"
+                >
+                  <h3
+                    class="truncate text-base font-semibold text-g-900"
+                  >
+                    {{ item.couName }}
+                  </h3>
 
-              <ArtButton
-                type="edit"
-                @click="goToSetting(item)"
-              />
+                  <p
+                    class="mt-2 line-clamp-2 text-sm text-g-600"
+                  >
+                    {{ item.couIntro || '暂无课程介绍' }}
+                  </p>
+                </div>
 
-              <ArtButton
-                type="delete"
-                @click="deleteCourse(item)"
-              />
+                <div
+                  class="flex shrink-0 items-center justify-center gap-2 max-sm:w-full max-sm:justify-end"
+                  @click.stop
+                >
+                  <ArtButton
+                    type="preview"
+                    @click="goToPreview(item)"
+                  />
 
-              <AminAssignUserDialog
-                :id="item.couId"
-                :name="item.couName"
-                type="course"
-              />
+                  <ArtButton
+                    type="edit"
+                    @click="goToSetting(item)"
+                  />
+
+                  <ArtButton
+                    type="delete"
+                    @click="deleteCourse(item)"
+                  />
+
+                  <AminAssignUserDialog
+                    :id="item.couId"
+                    :name="item.couName"
+                    type="course"
+                  />
+                </div>
+              </div>
             </div>
           </div>
 
           <el-divider />
 
           <div
-            class="grid grid-cols-[1.2fr_1fr_1.4fr] gap-5 items-start max-lg:grid-cols-2 max-sm:grid-cols-1"
+            class="grid grid-cols-[1.4fr_1fr_1fr_1fr] items-start gap-5 max-xl:grid-cols-2 max-sm:grid-cols-1"
           >
-            <!-- 参与信息 -->
             <section>
               <p
-                class="font-medium mb-2 text-g-900"
+                class="mb-2 font-medium text-g-900"
               >
                 参与信息
               </p>
 
               <div
-                class="text-sm text-g-600 flex flex-wrap gap-x-4 gap-y-2 items-center"
+                class="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-g-600"
               >
                 <span>
                   总章节: {{ item.chapterCount }} 节
@@ -380,12 +396,11 @@ getCourseList()
               </div>
             </section>
 
-            <!-- 更新时间 -->
             <section
-              class="max-lg:col-span-2 max-sm:col-span-1"
+              class="max-sm:col-span-1"
             >
               <p
-                class="font-medium mb-2 text-g-900"
+                class="mb-2 font-medium text-g-900"
               >
                 更新时间
               </p>
@@ -397,10 +412,9 @@ getCourseList()
               </p>
             </section>
 
-            <!-- 课程状态 -->
             <section>
               <p
-                class="font-medium mb-2 text-g-900"
+                class="mb-2 font-medium text-g-900"
               >
                 课程状态
               </p>
@@ -415,6 +429,26 @@ getCourseList()
                   :class="item.couIsUse === 0 ? 'bg-g-400' : 'bg-success'"
                 />
                 {{ item.couIsUse === 0 ? '已禁用' : '已启用' }}
+              </el-tag>
+            </section>
+
+            <section>
+              <p
+                class="mb-2 font-medium text-g-900"
+              >
+                首页推荐
+              </p>
+
+              <el-tag
+                :type="item.isRecommended === 1 ? 'success' : 'info'"
+                effect="light"
+                round
+              >
+                <span
+                  class="mr-1.5 inline-block size-1.5 rounded-full"
+                  :class="item.isRecommended === 1 ? 'bg-success' : 'bg-g-400'"
+                />
+                {{ item.isRecommended === 1 ? '已推荐' : '未推荐' }}
               </el-tag>
             </section>
 
