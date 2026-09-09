@@ -18,7 +18,11 @@ import {
   ref,
 } from 'vue'
 
+import { useWorkTabStore } from '@/store/modules/workTab'
+
 import AddCourseDialog from './AddCourseDialog.vue'
+
+const store = useWorkTabStore()
 
 const route = useRoute()
 
@@ -219,11 +223,13 @@ function setStageFormRef(formRef: FormInstance | undefined, index: number) {
 }
 
 /**
- * 返回项目阶段列表页
+ * 关闭当前页并返回项目阶段列表页
  */
-function backToProjectStagesEditor() {
-  router.push({
-    name: 'AdminProjectStagesEditor',
+function backToProjectStages() {
+  store.removeTab(route.path)
+
+  return router.push({
+    name: 'AdminProjectStages',
     params: {
       projId: projId.value,
     },
@@ -348,9 +354,6 @@ async function handleSubmitProject() {
 
   refreshSortOrder()
 
-  console.log('🚀 ~ file: index.vue:302 ~ projId.value:', projId.value)
-  console.log('🚀 ~ file: index.vue:302 ~ projectStageList.value:', projectStageList.value)
-
   const formData: AdminApi.Project.ProjectStageListEditor = {
     ...projectStageList.value,
     projSectionCount: projectStageStats.value.sectionCount,
@@ -363,16 +366,11 @@ async function handleSubmitProject() {
     })),
   }
 
-  console.log('学习项目表单数据:', formData)
-
   try {
     await fetchAdminProjectStageListUpdate(formData)
     ElMessage.success('保存成功')
 
-    alert('保存成功，点击确定后将返回项目阶段列表页')
-
-    // 关闭当前页 然后返回项目阶段列表页
-    backToProjectStagesEditor()
+    await backToProjectStages()
   }
   catch {
     ElMessage.error('保存失败')
@@ -469,7 +467,7 @@ function moveCourse(stageIndex: number, courseIndex: number, direction: 'up' | '
         课程总数: ${projectStageStats.courseCount},
         小节总数: ${projectStageStats.sectionCount},
       `]"
-      @back="backToProjectStagesEditor"
+      @back="backToProjectStages"
     >
       <template
         #extra
