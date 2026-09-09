@@ -636,12 +636,33 @@ function moveCourse(stageIndex: number, courseIndex: number, direction: 'up' | '
 
                     <el-divider />
 
-                    <ArtButton
-                      type="add"
-                      @click="addCourse(index)"
+                    <div
+                      class="flex items-center justify-between gap-4 rounded-lg border border-dashed border-primary/40 bg-primary/5 px-4 py-3 max-sm:flex-col max-sm:items-stretch"
                     >
-                      添加课程
-                    </ArtButton>
+                      <div
+                        class="min-w-0"
+                      >
+                        <div
+                          class="font-medium text-primary"
+                        >
+                          继续添加课程
+                        </div>
+
+                        <div
+                          class="mt-1 text-xs text-g-600"
+                        >
+                          为当前阶段选择需要学习的课程
+                        </div>
+                      </div>
+
+                      <ArtButton
+                        type="add"
+                        class="shrink-0 max-sm:w-full"
+                        @click="addCourse(index)"
+                      >
+                        添加课程
+                      </ArtButton>
+                    </div>
                   </el-form-item>
                 </el-form>
               </el-tab-pane>
