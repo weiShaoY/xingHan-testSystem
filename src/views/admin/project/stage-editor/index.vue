@@ -167,6 +167,14 @@ const stageRules: FormRules<ProjectStage> = {
       trigger: 'blur',
     },
   ],
+  stageIntro: [
+    {
+      required: true,
+      whitespace: true,
+      message: '请输入阶段描述',
+      trigger: 'blur',
+    },
+  ],
   course: [
     {
       validator: validateStageCourses,
@@ -213,9 +221,9 @@ function setStageFormRef(formRef: FormInstance | undefined, index: number) {
 /**
  * 返回项目阶段列表页
  */
-function backToProjectStages() {
+function backToProjectStagesEditor() {
   router.push({
-    name: 'AdminProjectStages',
+    name: 'AdminProjectStagesEditor',
     params: {
       projId: projId.value,
     },
@@ -325,18 +333,18 @@ async function handleSubmitProject() {
 
   await nextTick()
 
-  // for (const [index, stage] of projectStageList.value.nodes.entries()) {
-  //   activeStageId.value = stage.stageId
-  //   await nextTick()
+  for (const [index, stage] of projectStageList.value.nodes.entries()) {
+    activeStageId.value = stage.stageId
+    await nextTick()
 
-  //   try {
-  //     await stageFormRefs.value[index]?.validate()
-  //   }
-  //   catch {
-  //     ElMessage.warning(`请完善阶段 ${index + 1} 的信息`)
-  //     return
-  //   }
-  // }
+    try {
+      await stageFormRefs.value[index]?.validate()
+    }
+    catch {
+      ElMessage.warning(`请完善阶段 ${index + 1} 的信息`)
+      return
+    }
+  }
 
   refreshSortOrder()
 
@@ -360,6 +368,11 @@ async function handleSubmitProject() {
   try {
     await fetchAdminProjectStageListUpdate(formData)
     ElMessage.success('保存成功')
+
+    alert('保存成功，点击确定后将返回项目阶段列表页')
+
+    // 关闭当前页 然后返回项目阶段列表页
+    backToProjectStagesEditor()
   }
   catch {
     ElMessage.error('保存失败')
@@ -456,7 +469,7 @@ function moveCourse(stageIndex: number, courseIndex: number, direction: 'up' | '
         课程总数: ${projectStageStats.courseCount},
         小节总数: ${projectStageStats.sectionCount},
       `]"
-      @back="backToProjectStages"
+      @back="backToProjectStagesEditor"
     >
       <template
         #extra
@@ -532,6 +545,8 @@ function moveCourse(stageIndex: number, courseIndex: number, direction: 'up' | '
 
                   <el-form-item
                     label="阶段描述"
+                    prop="stageIntro"
+                    required
                   >
                     <el-input
                       v-model="stage.stageIntro"
