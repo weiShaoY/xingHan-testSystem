@@ -68,6 +68,7 @@ declare global {
   const fetchAdminCourseOutlineChapterDetail: typeof import('../../apis/admin/course/index').fetchAdminCourseOutlineChapterDetail
   const fetchAdminCourseOutlineChapterUpdate: typeof import('../../apis/admin/course/index').fetchAdminCourseOutlineChapterUpdate
   const fetchAdminCourseOutlineList: typeof import('../../apis/admin/course/index').fetchAdminCourseOutlineList
+  const fetchAdminCourseOutlineListUpdate: typeof import('../../apis/admin/course/index').fetchAdminCourseOutlineListUpdate
   const fetchAdminCourseOutlineSectionDelete: typeof import('../../apis/admin/course/index').fetchAdminCourseOutlineSectionDelete
   const fetchAdminCourseOutlineSectionDocumentAdd: typeof import('../../apis/admin/course/index').fetchAdminCourseOutlineSectionDocumentAdd
   const fetchAdminCourseOutlineSectionDocumentDetail: typeof import('../../apis/admin/course/index').fetchAdminCourseOutlineSectionDocumentDetail
@@ -571,6 +572,7 @@ declare module 'vue' {
     readonly fetchAdminCourseOutlineChapterDetail: UnwrapRef<typeof import('../../apis/admin/course/index')['fetchAdminCourseOutlineChapterDetail']>
     readonly fetchAdminCourseOutlineChapterUpdate: UnwrapRef<typeof import('../../apis/admin/course/index')['fetchAdminCourseOutlineChapterUpdate']>
     readonly fetchAdminCourseOutlineList: UnwrapRef<typeof import('../../apis/admin/course/index')['fetchAdminCourseOutlineList']>
+    readonly fetchAdminCourseOutlineListUpdate: UnwrapRef<typeof import('../../apis/admin/course/index')['fetchAdminCourseOutlineListUpdate']>
     readonly fetchAdminCourseOutlineSectionDelete: UnwrapRef<typeof import('../../apis/admin/course/index')['fetchAdminCourseOutlineSectionDelete']>
     readonly fetchAdminCourseOutlineSectionDocumentAdd: UnwrapRef<typeof import('../../apis/admin/course/index')['fetchAdminCourseOutlineSectionDocumentAdd']>
     readonly fetchAdminCourseOutlineSectionDocumentDetail: UnwrapRef<typeof import('../../apis/admin/course/index')['fetchAdminCourseOutlineSectionDocumentDetail']>

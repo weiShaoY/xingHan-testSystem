@@ -1,9 +1,13 @@
 <!------  2026-04-15---16:08---星期三  ------>
 <!------------------------------------  课程大纲列表  ------------------------------------------------->
 <script lang="ts" setup>
+import type { MoveEvent } from 'vue-draggable-plus'
+
 import type { SectionType } from '@/config/course'
 
 import { computed, ref } from 'vue'
+
+import { VueDraggable } from 'vue-draggable-plus'
 
 import AminAssignUserDialog from '@/components/admin/admin-assign-user-dialog/index.vue'
 
@@ -79,7 +83,55 @@ const currentEditChapterId = ref<number>()
  */
 const currentCreateSectionChapter = ref<AdminApi.Course.Chapter>()
 
-const courseNodes = computed(() => courseOutlineList.value.nodes || [])
+const courseNodes = computed({
+  get: () => courseOutlineList.value.nodes || [],
+  set: (nodes) => {
+    courseOutlineList.value.nodes = nodes
+  },
+})
+
+const draggableGroup = {
+  name: 'course-outline',
+  pull: true,
+  put: true,
+}
+
+/**
+ * 仅允许小节进入章节内部，章节只能在第一层排序。
+ */
+function canMoveOutlineItem(event: MoveEvent) {
+  const itemType = event.dragged?.dataset.itemType
+
+  const targetType = event.to?.dataset.containerType
+
+  return targetType === 'root' || itemType === 'section'
+}
+
+/**
+ * 重新计算所有同级节点的排序号。
+ */
+function refreshSectionOrder() {
+  let sectionOrder = 1
+
+  courseNodes.value.forEach((item) => {
+    if (item.itemType === 'section') {
+      item.order = sectionOrder++
+    }
+    else {
+      item.sectionList.forEach((section, index) => {
+        section.order = index + 1
+      })
+    }
+  })
+}
+
+/**
+ * 拖动完成后同步当前大纲的排序数据。
+ */
+function handleOutlineDragEnd() {
+  refreshSectionOrder()
+  ElNotification.success('目录顺序已调整')
+}
 
 /**
  * 获取课程章节列表
@@ -87,7 +139,12 @@ const courseNodes = computed(() => courseOutlineList.value.nodes || [])
 async function getCourseOutlineList() {
   loading.value = false
   try {
-    courseOutlineList.value = await fetchAdminCourseOutlineList(couId.value)
+    const response = await fetchAdminCourseOutlineList(couId.value)
+
+    courseOutlineList.value = {
+      ...response,
+      nodes: response.nodes || [],
+    }
   }
   finally {
     loading.value = false
@@ -228,6 +285,21 @@ async function editSection({
   }
 }
 
+async function handleSubmit() {
+  try {
+    loading.value = true
+    await fetchAdminCourseOutlineListUpdate(courseOutlineList.value.nodes || [])
+    ElNotification.success('保存成功')
+    await getCourseOutlineList()
+  }
+  catch {
+    ElNotification.error('保存失败')
+  }
+  finally {
+    loading.value = false
+  }
+}
+
 </script>
 
 <template>
@@ -285,18 +357,34 @@ async function editSection({
           添加章节
         </ArtButton>
 
+        <ArtButton
+          type="primary"
+          @click="handleSubmit"
+        >
+          完成
+        </ArtButton>
       </template>
     </AdminPageHeader>
 
     <!-- 课程内容列表 -->
-    <div
+    <VueDraggable
       v-if="courseNodes.length"
+      v-model="courseNodes"
       v-loading="loading"
+      :group="draggableGroup"
+      handle=".outline-drag-handle"
+      ghost-class="course-outline-ghost"
+      chosen-class="course-outline-chosen"
+      :animation="200"
       class="flex flex-col gap-4"
+      data-container-type="root"
+      @move="canMoveOutlineItem"
+      @end="handleOutlineDragEnd"
     >
       <div
         v-for="item in courseNodes"
         :key="item.id"
+        :data-item-type="item.itemType"
       >
         <!-- 章节 -->
         <section
@@ -307,29 +395,49 @@ async function editSection({
             class="flex items-start justify-between gap-4 max-md:flex-col"
           >
             <div
-              class="min-w-0"
+              class="min-w-0 flex items-start gap-2"
             >
+              <el-tooltip
+                content="拖动排序"
+                placement="top"
+              >
+                <button
+                  type="button"
+                  aria-label="拖动章节排序"
+                  class="outline-drag-handle mt-0.5 flex size-7 shrink-0 cursor-move items-center justify-center rounded-custom-sm border-0 bg-transparent text-g-400 transition-colors hover:bg-g-100 hover:text-primary"
+                >
+                  <ArtSvgIcon
+                    icon="ri:drag-move-2-fill"
+                    class="text-base"
+                  />
+                </button>
+              </el-tooltip>
+
               <div
-                class="flex flex-wrap gap-3 items-center"
+                class="min-w-0"
               >
                 <div
-                  class="truncate text-base font-semibold text-g-900"
+                  class="flex flex-wrap gap-3 items-center"
                 >
-                  {{ item.name }}
+                  <div
+                    class="truncate text-base font-semibold text-g-900"
+                  >
+                    {{ item.name }}
+                  </div>
+
+                  <el-tag
+                    type="info"
+                    size="small"
+                  >
+                    {{ item.sectionList.length }} 个小节
+                  </el-tag>
                 </div>
 
-                <el-tag
-                  type="info"
-                  size="small"
+                <div
+                  class="mt-2 text-sm text-g-600"
                 >
-                  {{ item.sectionList.length }} 个小节
-                </el-tag>
-              </div>
-
-              <div
-                class="mt-2 text-sm text-g-600"
-              >
-                {{ item.description }}
+                  {{ item.description }}
+                </div>
               </div>
             </div>
 
@@ -360,35 +468,51 @@ async function editSection({
             </div>
           </div>
 
-          <div
-            v-if="item.sectionList.length"
+          <VueDraggable
+            v-model="item.sectionList"
+            :group="draggableGroup"
+            handle=".outline-drag-handle"
+            ghost-class="course-outline-ghost"
+            chosen-class="course-outline-chosen"
+            :animation="200"
+            filter=".outline-empty-state"
+            :prevent-on-filter="false"
             class="flex flex-col gap-3"
+            data-container-type="chapter"
+            @move="canMoveOutlineItem"
+            @end="handleOutlineDragEnd"
           >
             <!-- 章节里的小节 -->
-            <CourseSectionItem
+            <div
               v-for="section in item.sectionList"
               :key="section.id"
-              inner
-              :section="section"
-              :type-config="getSectionTypeConfig(section.sectionType)"
-              @delete="deleteSection"
-              @edit="editSection({
-                section,
-                chapter: item,
-              })"
-            />
-          </div>
+              data-item-type="section"
+              class="cursor-grab active:cursor-grabbing"
+            >
+              <CourseSectionItem
+                inner
+                :section="section"
+                :type-config="getSectionTypeConfig(section.sectionType)"
+                @delete="deleteSection"
+                @edit="editSection({
+                  section,
+                  chapter: item,
+                })"
+              />
+            </div>
 
-          <div
-            v-else
-            class="rounded-custom-sm border-full-d"
-          >
-            <el-empty
-              description="暂无小节"
-              :image-size="30"
-              class="py-2!"
-            />
-          </div>
+            <div
+              v-if="!item.sectionList.length"
+              class="outline-empty-state rounded-custom-sm border-full-d"
+            >
+              <el-empty
+                description="拖动小节到这里"
+                :image-size="30"
+                class="py-2!"
+              />
+            </div>
+          </VueDraggable>
+
         </section>
 
         <!-- 独立小节 -->
@@ -396,13 +520,14 @@ async function editSection({
           v-else-if="item.itemType === 'section'"
           :section="item"
           :type-config="getSectionTypeConfig(item.sectionType)"
+          class="outline-section-item"
           @delete="deleteSection"
           @edit="editSection({
             section: item,
           })"
         />
       </div>
-    </div>
+    </VueDraggable>
 
     <el-empty
       v-else

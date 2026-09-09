@@ -72,6 +72,18 @@ export function fetchAdminCourseOutlineList(couId: number) {
   })
 }
 
+/**
+ *  保存后台管理课程大纲列表
+ */
+export function fetchAdminCourseOutlineListUpdate(nodes: AdminApi.Course.CourseOutlineListNodesItem[]) {
+  return request.post<boolean>({
+    url: '/admin/outline/orderOutlineList',
+    data: {
+      nodes,
+    },
+  })
+}
+
 // ! /////////////////////////////////////////////////////   课程章节  /////////////////////////////////////////////////////
 
 /**

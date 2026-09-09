@@ -29,8 +29,24 @@ const emit = defineEmits<{
     :class="inner ? 'px-5 max-sm:px-4' : 'px-10 max-sm:px-4'"
   >
     <div
-      class="grid grid-cols-[48px_96px_minmax(0,1fr)_auto] gap-5 items-center max-md:grid-cols-[40px_80px_minmax(0,1fr)] max-md:gap-4 max-sm:grid-cols-1 max-sm:items-start"
+      class="grid grid-cols-[28px_48px_96px_minmax(0,1fr)_auto] gap-4 items-center max-md:grid-cols-[28px_40px_80px_minmax(0,1fr)] max-md:gap-3 max-sm:grid-cols-1 max-sm:items-start"
     >
+      <el-tooltip
+        content="拖动排序"
+        placement="top"
+      >
+        <button
+          type="button"
+          aria-label="拖动小节排序"
+          class="outline-drag-handle flex size-7 shrink-0 cursor-move items-center justify-center rounded-custom-sm border-0 bg-transparent text-g-400 transition-colors hover:bg-g-100 hover:text-primary"
+        >
+          <ArtSvgIcon
+            icon="ri:drag-move-2-fill"
+            class="text-base"
+          />
+        </button>
+      </el-tooltip>
+
       <div
         class="text-lg font-bold text-primary max-sm:text-base"
       >
@@ -80,7 +96,7 @@ const emit = defineEmits<{
       </div>
 
       <div
-        class="flex gap-2 items-center justify-end max-md:col-span-3 max-sm:col-span-1 max-sm:w-full max-sm:justify-end"
+        class="flex gap-2 items-center justify-end max-md:col-span-4 max-sm:col-span-1 max-sm:w-full max-sm:justify-end"
         @click.stop
       >
 
