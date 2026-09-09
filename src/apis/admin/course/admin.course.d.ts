@@ -176,14 +176,14 @@ export namespace Course {
     couIsUse?: 0 | 1
 
     /**
-     * 课程缩略图地址
-     */
-    couLogo: string
-
-    /**
      *  课程封面图上传id
      */
     asId: number
+
+    /**
+     * 课程缩略图地址
+     */
+    couLogo: string
 
     // /**
     //  * 章节解锁方式
