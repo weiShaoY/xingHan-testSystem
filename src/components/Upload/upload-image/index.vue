@@ -5,6 +5,8 @@ import type { UploadHooks, UploadRequestOptions } from 'element-plus'
 
 import { Plus } from '@element-plus/icons-vue'
 
+import { twMerge } from 'tailwind-merge'
+
 import { computed, ref } from 'vue'
 
 type Props = {
@@ -27,7 +29,7 @@ type Props = {
 
 const props = withDefaults(defineProps<Props>(), {
   title: '上传图片',
-  fileType: ['jpg', 'jpeg', 'png', 'gif', 'webp'],
+  fileType: () => ['jpg', 'jpeg', 'png', 'gif', 'webp'],
   maxFileSize: 10,
 })
 
@@ -37,6 +39,28 @@ const emit = defineEmits<{
 }>()
 
 const uploadRootRef = ref<HTMLElement>()
+
+function stringifyClass(
+  input: NonNullable<Props['class']>,
+): string {
+  if (typeof input === 'string') {
+    return input
+  }
+
+  if (Array.isArray(input)) {
+    return input.map(item => stringifyClass(item)).join(' ')
+  }
+
+  return Object.entries(input)
+    .filter(([_, value]) => value)
+    .map(([key]) => key)
+    .join(' ')
+}
+
+const uploadClass = computed(() => twMerge(
+  'box-border w-50 h-30 max-w-full max-h-full overflow-hidden border border-dashed border-gray-300 rounded-lg flex items-center justify-center cursor-pointer hover:bg-gray-100',
+  props.class ? stringifyClass(props.class) : '',
+))
 
 const accept = computed(() => {
   const types = Array.isArray(props.fileType) ? props.fileType : [props.fileType]
@@ -76,7 +100,6 @@ function validateFileBeforeUpload(
 
 /** 将校验通过的文件交给父组件上传 */
 async function handleUploadRequest(options: UploadRequestOptions) {
-  console.log('🚀 ~ file: index.vue:74 ~ options:', options)
   emit('upload', options.file)
   options.onSuccess?.({
   })
@@ -90,8 +113,10 @@ function openFileDialog() {
 <template>
   <div
     ref="uploadRootRef"
+    class="inline-block max-w-full align-top"
   >
     <el-upload
+      class="block max-w-full"
       :accept="accept"
       :multiple="false"
       :show-file-list="false"
@@ -99,12 +124,11 @@ function openFileDialog() {
       :http-request="handleUploadRequest"
     >
       <div
-        :class="props.class"
-        class="w-50 h-30 border border-dashed border-gray-300 rounded-lg flex items-center justify-center cursor-pointer hover:bg-gray-100"
+        :class="uploadClass"
       >
         <ElImage
           v-if="props.previewUrl"
-          class="w-full "
+          class="h-full w-full max-h-full max-w-full"
           :src="previewUrl"
           fit="contain"
           @click="openFileDialog"
