@@ -108,28 +108,9 @@ function canMoveOutlineItem(event: MoveEvent) {
 }
 
 /**
- * 重新计算所有同级节点的排序号。
- */
-// function refreshSectionOrder() {
-//   let sectionOrder = 1
-
-//   courseNodes.value.forEach((item) => {
-//     if (item.itemType === 'section') {
-//       item.order = sectionOrder++
-//     }
-//     else {
-//       item.sectionList.forEach((section, index) => {
-//         section.order = index + 1
-//       })
-//     }
-//   })
-// }
-
-/**
  * 拖动完成后同步当前大纲的排序数据。
  */
 function handleOutlineDragEnd() {
-  // refreshSectionOrder()
   ElNotification.success('目录顺序已调整')
 }
 
@@ -291,6 +272,10 @@ async function handleSubmit() {
     await fetchAdminCourseOutlineListUpdate(courseOutlineList.value.nodes || [])
     ElNotification.success('保存成功')
     await getCourseOutlineList()
+
+    // 关闭当前标签页 调转到 课程列表页
+    workTabStore.removeTab(route.path)
+    await router.push('/admin/course')
   }
   catch {
     ElNotification.error('保存失败')
