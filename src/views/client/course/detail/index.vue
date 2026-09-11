@@ -57,11 +57,6 @@ const courseRecords = computed(() => courseProgress.value.chapters || [])
 /** 章节记录。 */
 const chapterRecords = computed(() => courseRecords.value.filter(record => record.olType === 1))
 
-/** 不属于任何章节的小节记录。 */
-const independentSectionRecords = computed(() => courseRecords.value.filter((record) => {
-  return record.olType === 2
-}))
-
 /**
  * 课程章节数量。
  */
@@ -118,6 +113,11 @@ function getLearningStatus(status: number) {
 /** 获取指定章节下的小节。 */
 function getChapterSections(chapter: ClientApi.Course.ChaptersItem) {
   return chapter.children || []
+}
+
+/** 获取章节在章节列表中的索引。 */
+function getChapterIndex(chapter: ClientApi.Course.ChaptersItem) {
+  return chapterRecords.value.findIndex(item => item.olId === chapter.olId) + 1
 }
 
 /** 获取小节附件类型对应的图标配置。 */
@@ -374,27 +374,152 @@ function handleSection(section: ClientApi.Course.ChaptersItem) {
           v-else
         >
           <van-collapse
-            v-if="chapterRecords.length"
+            v-if="courseRecords.length"
             v-model="activeNames"
             class="course-collapse flex flex-col gap-3 bg-transparent"
             :border="false"
           >
-            <van-collapse-item
-              v-for="(chapter, index) in chapterRecords"
-              :key="chapter.olId"
-              :name="chapter.olId"
-              class="chapter-item overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_8px_20px_rgb(15_23_42/5%)]"
+            <template
+              v-for="record in courseRecords"
+              :key="record.olId"
             >
-              <template
-                #title
+              <van-collapse-item
+                v-if="record.olType === 1"
+                :name="record.olId"
+                class="chapter-item overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_8px_20px_rgb(15_23_42/5%)]"
               >
-                <div
-                  class="min-w-0 flex flex-1 items-center gap-3"
+                <template
+                  #title
                 >
                   <div
-                    class="h-9 w-9 flex shrink-0 items-center justify-center rounded-xl bg-teal-600 text-3.5 text-white font-700"
+                    class="min-w-0 flex flex-1 items-center gap-3"
                   >
-                    {{ index + 1 }}
+                    <div
+                      class="h-9 w-9 flex shrink-0 items-center justify-center rounded-xl bg-teal-600 text-3.5 text-white font-700"
+                    >
+                      {{ getChapterIndex(record) }}
+                    </div>
+
+                    <div
+                      class="min-w-0 flex-1"
+                    >
+                      <div
+                        class="truncate text-3.75 text-slate-900 font-700"
+                      >
+                        {{ record.olName }}
+                      </div>
+
+                      <div
+                        class="mt-1 flex items-center gap-2 text-3 text-slate-500"
+                      >
+                        <span>{{ getChapterSections(record).length }} 个小节</span>
+
+                        <span>{{ getLearningStatus(record.status) }}</span>
+                      </div>
+                    </div>
+
+                    <span
+                      class="shrink-0 text-3.25 text-teal-700 font-700"
+                    >{{ record.progress }}%</span>
+                  </div>
+                </template>
+
+                <div
+                  class="mb-3"
+                >
+                  <van-progress
+                    :percentage="record.progress"
+                    stroke-width="5"
+                    :color="record.isCompleted ? '#16a34a' : '#0f766e'"
+                    :show-pivot="false"
+                  />
+                </div>
+
+                <div
+                  v-for="section in getChapterSections(record)"
+                  :key="section.olId"
+                  class="mb-2 rounded-xl bg-slate-50 px-3 py-3 last:mb-0"
+                  :class="section.canUnlock ? 'active:bg-slate-100' : 'cursor-not-allowed opacity-70'"
+                  @click="handleSection(section)"
+                >
+                  <div
+                    class="flex items-center gap-3"
+                  >
+                    <div
+                      class="h-8 w-8 flex shrink-0 items-center justify-center rounded-lg text-white"
+                      :style="{ backgroundColor: getSectionType(section).sectionIconBgColor }"
+                    >
+                      <ArtSvgIcon
+                        :icon="getSectionType(section).sectionIcon"
+                        class="text-4.5"
+                      />
+                    </div>
+
+                    <div
+                      class="min-w-0 flex-1"
+                    >
+                      <div
+                        class="truncate text-3.5 text-slate-800 font-600"
+                      >
+                        {{ section.olName }}
+                      </div>
+
+                      <div
+                        class="mt-1 flex items-center gap-2 text-3 text-slate-500"
+                      >
+                        <span>{{ getLearningStatus(section.status) }}</span>
+
+                        <span
+                          class="inline-flex items-center rounded-full px-1.5 py-0.5 text-2.5 font-600"
+                          :class="getUnlockStatusClass(section)"
+                        >
+                          {{ getUnlockStatusText(section) }}
+                        </span>
+
+                        <!-- <span>{{ formatStudyTime(section.totalLearningTime) }}</span> -->
+                      </div>
+                    </div>
+
+                    <span
+                      class="shrink-0 text-3.25 text-teal-700 font-700"
+                    >{{ section.progress }}%</span>
+                  </div>
+
+                  <van-progress
+                    class="mt-2"
+                    :percentage="section.progress"
+                    stroke-width="4"
+                    :color="section.isCompleted ? '#16a34a' : '#0f766e'"
+                    :show-pivot="false"
+                  />
+                </div>
+
+                <div
+                  v-if="!getChapterSections(record).length"
+                  class="rounded-xl bg-slate-50 py-4 text-center text-3.25 text-slate-500"
+                >
+                  暂无小节
+                </div>
+              </van-collapse-item>
+
+              <div
+                v-else-if="record.olType === 2"
+                :key="record.olId"
+                class="rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-[0_8px_20px_rgb(15_23_42/5%)]"
+                :class="record.canUnlock ? 'active:bg-slate-50' : 'cursor-not-allowed opacity-70'"
+                @click="handleSection(record)"
+              >
+                <div
+                  class="flex items-center gap-3"
+                >
+                  <div
+                    class="h-9 w-9 flex shrink-0 items-center justify-center rounded-xl text-white"
+                    :style="{ backgroundColor: getSectionType(record).sectionIconBgColor }"
+                  >
+                    <ArtSvgIcon
+                      :icon="getSectionType(record).sectionIcon"
+                      class="text-5"
+                    />
                   </div>
 
                   <div
@@ -403,166 +528,40 @@ function handleSection(section: ClientApi.Course.ChaptersItem) {
                     <div
                       class="truncate text-3.75 text-slate-900 font-700"
                     >
-                      {{ chapter.olName }}
+                      {{ record.olName }}
                     </div>
 
                     <div
                       class="mt-1 flex items-center gap-2 text-3 text-slate-500"
                     >
-                      <span>{{ getChapterSections(chapter).length }} 个小节</span>
-
-                      <span>{{ getLearningStatus(chapter.status) }}</span>
-                    </div>
-                  </div>
-
-                  <span
-                    class="shrink-0 text-3.25 text-teal-700 font-700"
-                  >{{ chapter.progress }}%</span>
-                </div>
-              </template>
-
-              <div
-                class="mb-3"
-              >
-                <van-progress
-                  :percentage="chapter.progress"
-                  stroke-width="5"
-                  :color="chapter.isCompleted ? '#16a34a' : '#0f766e'"
-                  :show-pivot="false"
-                />
-              </div>
-
-              <div
-                v-for="section in getChapterSections(chapter)"
-                :key="section.olId"
-                class="mb-2 rounded-xl bg-slate-50 px-3 py-3 last:mb-0"
-                :class="section.canUnlock ? 'active:bg-slate-100' : 'cursor-not-allowed opacity-70'"
-                @click="handleSection(section)"
-              >
-                <div
-                  class="flex items-center gap-3"
-                >
-                  <div
-                    class="h-8 w-8 flex shrink-0 items-center justify-center rounded-lg text-white"
-                    :style="{ backgroundColor: getSectionType(section).sectionIconBgColor }"
-                  >
-                    <ArtSvgIcon
-                      :icon="getSectionType(section).sectionIcon"
-                      class="text-4.5"
-                    />
-                  </div>
-
-                  <div
-                    class="min-w-0 flex-1"
-                  >
-                    <div
-                      class="truncate text-3.5 text-slate-800 font-600"
-                    >
-                      {{ section.olName }}
-                    </div>
-
-                    <div
-                      class="mt-1 flex items-center gap-2 text-3 text-slate-500"
-                    >
-                      <span>{{ getLearningStatus(section.status) }}</span>
+                      <span>{{ getLearningStatus(record.status) }}</span>
 
                       <span
                         class="inline-flex items-center rounded-full px-1.5 py-0.5 text-2.5 font-600"
-                        :class="getUnlockStatusClass(section)"
+                        :class="getUnlockStatusClass(record)"
                       >
-                        {{ getUnlockStatusText(section) }}
+                        {{ getUnlockStatusText(record) }}
                       </span>
 
-                      <!-- <span>{{ formatStudyTime(section.totalLearningTime) }}</span> -->
+                      <!-- <span>{{ formatStudyTime(record.totalLearningTime) }}</span> -->
                     </div>
                   </div>
 
                   <span
                     class="shrink-0 text-3.25 text-teal-700 font-700"
-                  >{{ section.progress }}%</span>
+                  >{{ record.progress }}%</span>
                 </div>
 
                 <van-progress
-                  class="mt-2"
-                  :percentage="section.progress"
-                  stroke-width="4"
-                  :color="section.isCompleted ? '#16a34a' : '#0f766e'"
+                  class="mt-3"
+                  :percentage="record.progress"
+                  stroke-width="5"
+                  :color="record.isCompleted ? '#16a34a' : '#0f766e'"
                   :show-pivot="false"
                 />
               </div>
-
-              <div
-                v-if="!getChapterSections(chapter).length"
-                class="rounded-xl bg-slate-50 py-4 text-center text-3.25 text-slate-500"
-              >
-                暂无小节
-              </div>
-            </van-collapse-item>
+            </template>
           </van-collapse>
-
-          <div
-            v-if="independentSectionRecords.length"
-            class="mt-3 flex flex-col gap-3"
-          >
-            <div
-              v-for="section in independentSectionRecords"
-              :key="section.olId"
-              class="rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-[0_8px_20px_rgb(15_23_42/5%)]"
-              :class="section.canUnlock ? 'active:bg-slate-50' : 'cursor-not-allowed opacity-70'"
-              @click="handleSection(section)"
-            >
-              <div
-                class="flex items-center gap-3"
-              >
-                <div
-                  class="h-9 w-9 flex shrink-0 items-center justify-center rounded-xl text-white"
-                  :style="{ backgroundColor: getSectionType(section).sectionIconBgColor }"
-                >
-                  <ArtSvgIcon
-                    :icon="getSectionType(section).sectionIcon"
-                    class="text-5"
-                  />
-                </div>
-
-                <div
-                  class="min-w-0 flex-1"
-                >
-                  <div
-                    class="truncate text-3.75 text-slate-900 font-700"
-                  >
-                    {{ section.olName }}
-                  </div>
-
-                  <div
-                    class="mt-1 flex items-center gap-2 text-3 text-slate-500"
-                  >
-                    <span>{{ getLearningStatus(section.status) }}</span>
-
-                    <span
-                      class="inline-flex items-center rounded-full px-1.5 py-0.5 text-2.5 font-600"
-                      :class="getUnlockStatusClass(section)"
-                    >
-                      {{ getUnlockStatusText(section) }}
-                    </span>
-
-                    <!-- <span>{{ formatStudyTime(section.totalLearningTime) }}</span> -->
-                  </div>
-                </div>
-
-                <span
-                  class="shrink-0 text-3.25 text-teal-700 font-700"
-                >{{ section.progress }}%</span>
-              </div>
-
-              <van-progress
-                class="mt-3"
-                :percentage="section.progress"
-                stroke-width="5"
-                :color="section.isCompleted ? '#16a34a' : '#0f766e'"
-                :show-pivot="false"
-              />
-            </div>
-          </div>
         </template>
       </div>
     </div>

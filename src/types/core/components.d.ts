@@ -13,7 +13,6 @@ declare module 'vue' {
   export interface GlobalComponents {
     AdminAssignUserDialog: typeof import('./../../components/admin/admin-assign-user-dialog/index.vue')['default']
     AdminPageHeader: typeof import('./../../components/admin/admin-page-header/index.vue')['default']
-    AdminUpload: typeof import('./../../components/admin/admin-upload/index.vue')['default']
     ArtBackToTop: typeof import('./../../components/core/base/art-back-to-top/index.vue')['default']
     ArtBasicBanner: typeof import('./../../components/core/banners/art-basic-banner/index.vue')['default']
     ArtBreadcrumb: typeof import('./../../components/core/layouts/art-breadcrumb/index.vue')['default']
@@ -54,10 +53,8 @@ declare module 'vue' {
     AuthTopBar: typeof import('./../../components/core/views/login/AuthTopBar.vue')['default']
     BasicSettings: typeof import('./../../components/core/layouts/art-settings-panel/widget/BasicSettings.vue')['default']
     BoxStyleSettings: typeof import('./../../components/core/layouts/art-settings-panel/widget/BoxStyleSettings.vue')['default']
-    ClientPageHeader: typeof import('./../../components/client/client-page-header/index.vue')['default']
     ColorSettings: typeof import('./../../components/core/layouts/art-settings-panel/widget/ColorSettings.vue')['default']
     ContainerSettings: typeof import('./../../components/core/layouts/art-settings-panel/widget/ContainerSettings.vue')['default']
-    copy: typeof import('./../../components/Upload/upload-image/index copy.vue')['default']
     ElAvatar: typeof import('element-plus/es')['ElAvatar']
     ElButton: typeof import('element-plus/es')['ElButton']
     ElCard: typeof import('element-plus/es')['ElCard']
@@ -127,7 +124,6 @@ declare module 'vue' {
     VanCell: typeof import('vant/es')['Cell']
     VanCellGroup: typeof import('vant/es')['CellGroup']
     VanCheckbox: typeof import('vant/es')['Checkbox']
-    VanCheckboxGroup: typeof import('vant/es')['CheckboxGroup']
     VanCollapse: typeof import('vant/es')['Collapse']
     VanCollapseItem: typeof import('vant/es')['CollapseItem']
     VanEmpty: typeof import('vant/es')['Empty']
@@ -148,7 +144,6 @@ declare module 'vue' {
     VanTabbarItem: typeof import('vant/es')['TabbarItem']
     VanTabs: typeof import('vant/es')['Tabs']
     VanTag: typeof import('vant/es')['Tag']
-    VantButton: typeof import('vant/es')['tButton']
     VideoPreviewDialog: typeof import('./../../components/VideoPreviewDialog/index.vue')['default']
   }
   export interface GlobalDirectives {
