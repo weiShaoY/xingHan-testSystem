@@ -1,16 +1,10 @@
 <script setup lang="ts">
 const router = useRouter()
 
-const accentClasses = [
-  'from-teal-600 to-cyan-500',
-  'from-sky-600 to-teal-500',
-  'from-emerald-600 to-teal-500',
-]
-
 const surfaceClasses = [
-  'border-teal-100 bg-linear-to-b from-teal-50 to-white',
-  'border-sky-100 bg-linear-to-b from-sky-50 to-white',
-  'border-emerald-100 bg-linear-to-b from-emerald-50 to-white',
+  'border-teal-100 bg-teal-50/50',
+  'border-sky-100 bg-sky-50/50',
+  'border-emerald-100 bg-emerald-50/50',
 ]
 
 type TaskListResponse = ClientApi.Task.TaskListResponse
@@ -26,10 +20,6 @@ type TaskViewItem = {
   cover: string
   type: 'project' | 'course'
   progress: number
-}
-
-function getAccentClass(index: number): string {
-  return accentClasses[index % accentClasses.length]
 }
 
 function getSurfaceClass(index: number): string {
@@ -197,8 +187,18 @@ function goToTask(item: TaskViewItem) {
             class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[0_10px_24px_rgb(15_23_42/5%)] transition duration-200 active:scale-[0.992]"
           >
             <div
-              class="relative overflow-hidden bg-linear-to-r px-4 py-4 text-white sm:px-5"
-              :class="getAccentClass(index)"
+              class="relative h-32 w-full overflow-hidden border-b border-slate-200 bg-slate-100 sm:h-40"
+            >
+              <van-image
+                :src="getFileUrl(item.cover)"
+                :alt="item.title"
+                fit="cover"
+                class="size-full"
+              />
+            </div>
+
+            <div
+              class="relative overflow-hidden bg-slate-50 px-4 py-4 text-slate-800 sm:px-5"
             >
               <div
                 class="relative z-1 flex items-start justify-between gap-3"
@@ -209,29 +209,27 @@ function goToTask(item: TaskViewItem) {
                   <div
                     class="mb-2 flex items-center gap-2"
                   >
-                    <van-tag
-                      size="medium"
-                      :type="item.type === 'project' ? 'primary' : 'warning'"
-                      class="bg-white/20 text-white!"
+                    <span
+                      class="inline-flex items-center rounded-full border border-slate-200 bg-slate-100 px-2 py-0.5 text-3 font-700 text-slate-700"
                     >
                       {{ item.type === 'project' ? '项目' : '课程' }}
-                    </van-tag>
+                    </span>
 
                     <span
-                      class="text-3 text-white/80"
+                      class="text-3 text-slate-500"
                     >
                       {{ item.progress > 0 ? '进行中' : '未开始' }}
                     </span>
                   </div>
 
                   <h3
-                    class="m-0 wrap-break-word text-5.5 font-700 leading-1.35"
+                    class="m-0 wrap-break-word text-5.5 font-700 leading-1.35 text-slate-900"
                   >
                     {{ item.title }}
                   </h3>
 
                   <p
-                    class="mt-2 mb-0 text-4 leading-1.6 text-white/90"
+                    class="mt-2 mb-0 text-4 leading-1.6 text-slate-600"
                   >
                     {{ item.subtitle }}
                   </p>
@@ -240,20 +238,9 @@ function goToTask(item: TaskViewItem) {
             </div>
 
             <div
-              class="flex flex-col gap-3 p-3.5 sm:flex-row sm:items-center"
+              class="flex flex-col gap-3 border-t border-slate-100 bg-white p-3.5 sm:flex-row sm:items-center"
               :class="getSurfaceClass(index)"
             >
-              <div
-                class="relative h-28 w-full overflow-hidden rounded-lg border border-slate-200 bg-slate-100 sm:h-30 sm:w-32"
-              >
-                <van-image
-                  :src="getFileUrl(item.cover)"
-                  :alt="item.title"
-                  fit="cover"
-                  class="size-full"
-                />
-              </div>
-
               <div
                 class="min-w-0 flex-1"
               >
@@ -281,7 +268,7 @@ function goToTask(item: TaskViewItem) {
                   class="mt-3 flex items-center justify-between gap-2"
                 >
                   <div
-                    class="flex min-w-0 items-center gap-2 text-3 text-slate-500"
+                    class="flex min-w-0 items-center gap-2 rounded-full bg-white/80 px-2.5 py-1 text-3 text-slate-600 ring-1 ring-slate-200"
                   >
                     <ArtSvgIcon
                       :icon="item.type === 'project' ? 'ri:folder-2-line' : 'ri:book-open-line'"
