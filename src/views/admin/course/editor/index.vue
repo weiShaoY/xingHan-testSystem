@@ -379,8 +379,8 @@ async function handleUploadLogo(file: File) {
 
               <el-switch
                 v-model="formData.isRecommended"
-                active-value="1"
-                inactive-value="0"
+                :active-value="1"
+                :inactive-value="0"
               />
             </div>
 
@@ -403,8 +403,8 @@ async function handleUploadLogo(file: File) {
 
               <el-switch
                 v-model="formData.couIsUse"
-                active-value="1"
-                inactive-value="0"
+                :active-value="1"
+                :inactive-value="0"
               />
             </div>
           </div>
