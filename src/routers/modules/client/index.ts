@@ -104,6 +104,26 @@ export const clientRoutes: AppRouteRecord = {
         keepAlive: false,
       },
     },
+    {
+      path: 'project',
+      name: 'ClientProject',
+      component: '',
+      meta: {
+        title: '我的项目',
+        keepAlive: false,
+      },
+      children: [
+        {
+          path: 'stages/:projId',
+          name: 'ClientProjectStages',
+          component: '/client/project/stages',
+          meta: {
+            title: '项目阶段列表',
+            keepAlive: false,
+          },
+        },
+      ],
+    },
 
     {
       path: 'history',
@@ -123,15 +143,16 @@ export const clientRoutes: AppRouteRecord = {
             keepAlive: false,
           },
         },
-        {
-          path: 'detail',
-          name: 'ClientHistoryDetail',
-          component: '/client/history/detail',
-          meta: {
-            title: '学习历史详情',
-            keepAlive: false,
-          },
-        },
+
+        // {
+        //   path: 'detail',
+        //   name: 'ClientHistoryDetail',
+        //   component: '/client/history/detail',
+        //   meta: {
+        //     title: '学习历史详情',
+        //     keepAlive: false,
+        //   },
+        // },
       ],
 
     },
@@ -154,15 +175,16 @@ export const clientRoutes: AppRouteRecord = {
             keepAlive: false,
           },
         },
-        {
-          path: 'detail',
-          name: 'ClientRecommendDetail',
-          component: '/client/recommend/detail',
-          meta: {
-            title: '推荐课程详情',
-            keepAlive: false,
-          },
-        },
+
+        // {
+        //   path: 'detail',
+        //   name: 'ClientRecommendDetail',
+        //   component: '/client/recommend/detail',
+        //   meta: {
+        //     title: '推荐课程详情',
+        //     keepAlive: false,
+        //   },
+        // },
       ],
     },
 
