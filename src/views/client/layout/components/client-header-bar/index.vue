@@ -3,7 +3,7 @@
 <script lang="ts" setup>
 import { useWindowSize } from '@vueuse/core'
 
-import ClientUserLanguage from '../../client-user-language.vue/index.js'
+import ClientUserLanguage from './client-user-language.vue'
 
 import ClientUserMenu from './client-user-menu.vue'
 
