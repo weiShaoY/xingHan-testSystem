@@ -120,7 +120,7 @@ async function loadTaskList(reset = false) {
   }
 }
 
-const active = ref(0)
+const active = ref(1)
 
 onMounted(() => {
   void loadTaskList(true)
@@ -128,7 +128,7 @@ onMounted(() => {
 
 async function handleChange(index: number) {
   active.value = index
-  params.value.learningType = active.value === 0 ? 1 : 2
+  params.value.learningType = active.value === 0 ? 2 : 1
 
   await loadTaskList(true)
 }
@@ -322,15 +322,15 @@ function goToTask(item: TaskViewItem) {
       @change="handleChange"
     >
       <van-tabbar-item
-        icon="apps-o"
-      >
-        项目
-      </van-tabbar-item>
-
-      <van-tabbar-item
         icon="desktop-o"
       >
         课程
+      </van-tabbar-item>
+
+      <van-tabbar-item
+        icon="apps-o"
+      >
+        项目
       </van-tabbar-item>
 
     </van-tabbar>
