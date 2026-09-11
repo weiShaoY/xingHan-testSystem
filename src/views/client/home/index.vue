@@ -114,8 +114,6 @@ getRecommendList()
 
     <van-cell
       title="推荐课程"
-      value="查看全部"
-      is-link
       center
       class="bg-transparent! px-0!"
       @click="goToRecommendList"
@@ -138,13 +136,15 @@ getRecommendList()
         </span>
       </template>
 
-      <template
+      <!-- <template
         #value
       >
         <span
           class="text-3.5 text-teal-700"
-        >查看全部</span>
-      </template>
+        >
+          查看全部
+        </span>
+      </template> -->
     </van-cell>
 
     <van-space
