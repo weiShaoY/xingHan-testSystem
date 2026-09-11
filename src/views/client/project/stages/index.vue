@@ -37,6 +37,7 @@ function createEmptyProjectStagesData(currentProjId: number): ProjectStagesData 
     projId: currentProjId,
     projName: '',
     projIntro: '',
+    projCover: '',
     projStage: 0,
     projStageCourseCount: 0,
     learningProgress: '',
@@ -156,6 +157,18 @@ function handleGoCourseDetail(couId: number) {
         <div
           class="relative z-1"
         >
+          <div
+            v-if="projectStageList.projCover"
+            class="mb-4 overflow-hidden rounded-xl border border-white/20 bg-white/10 shadow-[0_10px_24px_rgb(15_23_42/10%)]"
+          >
+            <van-image
+              :src="getFileUrl(projectStageList.projCover)"
+              :alt="projectStageList.projName || '项目封面'"
+              fit="cover"
+              class="h-40 w-full"
+            />
+          </div>
+
           <h1
             class="m-0 wrap-break-word text-6 font-700 leading-1.3"
           >

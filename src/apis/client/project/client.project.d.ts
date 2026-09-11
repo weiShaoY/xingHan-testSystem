@@ -61,6 +61,11 @@ export namespace Project {
     projIntro: string
 
     /**
+     *  项目封面
+     */
+    projCover: string
+
+    /**
      *  阶段数量
      */
     projStage: 0
