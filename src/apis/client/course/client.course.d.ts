@@ -865,18 +865,10 @@ export namespace Course {
     userQuestionAnswers: CourseQuestionResultResponseUserQuestionAnswerItem[]
   }
 
+  /**
+   *  首页 推荐课程列表项
+   */
   type CourseRecommendItem = {
-
-    /**
-     * 报名状态
-     * @description （0=待审批，1=已通过，2=已驳回，3=已撤回，4=已取消）
-     */
-    applyStatus: 1 | 2 | 3 | 4
-
-    /**
-     * 报名状态名称
-     */
-    applyStatusName: string
 
     /**
      * 课程ID
@@ -884,21 +876,14 @@ export namespace Course {
     couId: number
 
     /**
+     * 课程名称
+     */
+    couName: string
+
+    /**
      * 课程介绍
      */
     couIntro: string
-
-    /**
-     * 是否启用
-     * @description （0=禁用，1=启用）
-     */
-    couIsUse: 0 | 1
-
-    /**
-     * 课程难度等级
-     * @description （1=初级，2=中级，3=高级）
-     */
-    couLevel: 1 | 2 | 3
 
     /**
      * 课程封面图
@@ -906,34 +891,15 @@ export namespace Course {
     couLogo: string
 
     /**
-     * 课程名称
-     */
-    couName: string
-
-    /**
      * 学习人数
      */
     couStudentSum: number
 
     /**
-     * 是否已报名
+     * 是否启用
+     * @description （0=禁用，1=启用）
      */
-    isApplied: boolean
-
-    /**
-     * 是否已分配（管理员分配）
-     */
-    isAssigned: boolean
-
-    /**
-     * 学科ID
-     */
-    sbjId: number
-
-    /**
-     * 学科名称
-     */
-    sbjName: string
+    couIsUse: 0 | 1
   }
 
   /**

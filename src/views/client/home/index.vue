@@ -46,12 +46,6 @@ const navList: NavItem[] = [
 
 const recommendList = ref<ClientApi.Course.CourseRecommendResponse>([])
 
-const levelNameMap: Record<ClientApi.Course.CourseRecommendItem['couLevel'], string> = {
-  1: '初级',
-  2: '中级',
-  3: '高级',
-}
-
 function goToPath(path: string) {
   router.push(path)
 }
@@ -165,7 +159,7 @@ getRecommendList()
         @click="goToRecommendItem(item)"
       >
         <van-image
-          :src="item.couLogo"
+          :src="getFileUrl(item.couLogo)"
           :alt="item.couName"
           fit="cover"
           class="h-44 w-full shrink-0 overflow-hidden sm:h-28 sm:w-28 rounded-md!"
@@ -185,7 +179,7 @@ getRecommendList()
                 plain
                 type="primary"
               >
-                {{ item.sbjName }}
+                {{ item.couIsUse === 1 ? '启用' : '禁用' }}
               </van-tag>
             </template>
 
@@ -222,7 +216,7 @@ getRecommendList()
                     icon="ri:bar-chart-box-line"
                     class="text-4"
                   />
-                  难度：{{ levelNameMap[item.couLevel] }}
+                  <!-- 难度：{{ item.couLevel }} -->
                 </span>
               </div>
 
