@@ -120,7 +120,7 @@ async function loadTaskList(reset = false) {
   }
 }
 
-const active = ref(1)
+const active = ref(0)
 
 onMounted(() => {
   void loadTaskList(true)
