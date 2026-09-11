@@ -23,6 +23,7 @@ type TaskViewItem = {
   id: number
   title: string
   subtitle: string
+  cover: string
   type: 'project' | 'course'
   progress: number
 }
@@ -46,6 +47,7 @@ function normalizeProjectTask(item: ProjectTaskItem): TaskViewItem {
     id: item.projId,
     title: item.projName,
     subtitle: `${item.projStage || 0}个学习阶段 ${item.projStageCourse || 0}门课程`,
+    cover: item.projCover,
     type: 'project',
     progress: clampProgress(Number(item.learningProgress || 0)),
   }
@@ -56,6 +58,7 @@ function normalizeCourseTask(item: CourseTaskItem): TaskViewItem {
     id: item.couId,
     title: item.couName,
     subtitle: `${item.couOutlineCount || 0}个课程小节`,
+    cover: item.couLogo,
     type: 'course',
     progress: clampProgress(Number(item.learningProgress || 0)),
   }
@@ -97,18 +100,29 @@ const finished = ref(false)
 /**
  * 获取任务列表。
  */
-async function fetchTaskList() {
+async function loadTaskList(reset = false) {
+  if (reset) {
+    taskList.value = []
+    finished.value = false
+  }
+
+  listLoading.value = true
+
   try {
     const data = await fetchClientTaskList(params.value)
 
     taskList.value = normalizeTaskList(data, params.value.learningType)
     finished.value = true
+
+    return true
   }
   catch (error) {
     finished.value = true
     taskList.value = []
     window.$toast?.('获取任务列表失败')
     console.error('fetchTaskList error:', error)
+
+    return false
   }
   finally {
     refreshing.value = false
@@ -120,26 +134,17 @@ const active = ref(0)
 
 async function handleChange(index: number) {
   active.value = index
-  if (active.value === 0) {
-    params.value.learningType = 1
-  }
-  else {
-    params.value.learningType = 2
-  }
+  params.value.learningType = active.value === 0 ? 1 : 2
 
-  finished.value = false
-  taskList.value = []
-  listLoading.value = true
-
-  await fetchTaskList()
+  await loadTaskList(true)
 }
 
 async function onRefresh() {
-  finished.value = false
-  listLoading.value = true
+  const success = await loadTaskList(true)
 
-  await fetchTaskList()
-  window.$toast('刷新成功')
+  if (success) {
+    window.$toast('刷新成功')
+  }
 }
 
 async function onLoad() {
@@ -147,8 +152,7 @@ async function onLoad() {
     return
   }
 
-  listLoading.value = true
-  await fetchTaskList()
+  await loadTaskList()
 }
 
 function goToTask(item: TaskViewItem) {
@@ -190,59 +194,107 @@ function goToTask(item: TaskViewItem) {
           <div
             v-for="(item, index) in taskList"
             :key="`${item.type}-${item.id}`"
-            class="overflow-hidden rounded-md border border-slate-200 bg-white shadow-[0_10px_24px_rgb(15_23_42/5%)] transition duration-200 active:scale-[0.992]"
+            class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[0_10px_24px_rgb(15_23_42/5%)] transition duration-200 active:scale-[0.992]"
           >
             <div
-              class="relative overflow-hidden bg-linear-to-r px-4 py-5 text-white sm:px-5"
+              class="relative overflow-hidden bg-linear-to-r px-4 py-4 text-white sm:px-5"
               :class="getAccentClass(index)"
             >
               <div
-                class="pointer-events-none absolute right--6 top--5 h-24 w-24 rounded-full bg-white/10"
-              />
-
-              <div
-                class="pointer-events-none absolute right-10 bottom--8 h-20 w-20 rounded-full bg-white/8 blur-2xl"
-              />
-
-              <div
-                class="relative z-1"
+                class="relative z-1 flex items-start justify-between gap-3"
               >
-                <h3
-                  class="m-0 wrap-break-word text-5.5 font-700 leading-1.35"
+                <div
+                  class="min-w-0 flex-1"
                 >
-                  {{ item.title }}
-                </h3>
+                  <div
+                    class="mb-2 flex items-center gap-2"
+                  >
+                    <van-tag
+                      size="medium"
+                      :type="item.type === 'project' ? 'primary' : 'warning'"
+                      class="bg-white/20 text-white!"
+                    >
+                      {{ item.type === 'project' ? '项目' : '课程' }}
+                    </van-tag>
 
-                <p
-                  class="mt-3 mb-0 text-4 leading-1.6 text-white/90"
-                >
-                  {{ item.subtitle }}
-                </p>
+                    <span
+                      class="text-3 text-white/80"
+                    >
+                      {{ item.progress > 0 ? '进行中' : '未开始' }}
+                    </span>
+                  </div>
+
+                  <h3
+                    class="m-0 wrap-break-word text-5.5 font-700 leading-1.35"
+                  >
+                    {{ item.title }}
+                  </h3>
+
+                  <p
+                    class="mt-2 mb-0 text-4 leading-1.6 text-white/90"
+                  >
+                    {{ item.subtitle }}
+                  </p>
+                </div>
               </div>
             </div>
 
             <div
-              class="px-4 py-4 sm:px-5"
+              class="flex flex-col gap-3 p-3.5 sm:flex-row sm:items-center"
               :class="getSurfaceClass(index)"
             >
-              <van-cell
-                center
-                class="rounded-4 bg-transparent px-0 py-0 [&_.van-cell__value]:flex [&_.van-cell__value]:items-center [&_.van-cell__value]:justify-end"
+              <div
+                class="relative h-28 w-full overflow-hidden rounded-lg border border-slate-200 bg-slate-100 sm:h-30 sm:w-32"
               >
-                <template
-                  #title
-                >
-                  <van-tag
-                    size="large"
-                    :type="item.type === 'project' ? 'primary' : 'warning'"
-                  >
-                    {{ item.type === 'project' ? '项目' : '课程' }}
-                  </van-tag>
-                </template>
+                <van-image
+                  :src="getFileUrl(item.cover)"
+                  :alt="item.title"
+                  fit="cover"
+                  class="size-full"
+                />
+              </div>
 
-                <template
-                  #value
+              <div
+                class="min-w-0 flex-1"
+              >
+                <div
+                  class="mb-2 flex items-center justify-between gap-2 text-3.5 text-slate-500"
                 >
+                  <span>学习进度</span>
+
+                  <span
+                    class="font-700 text-slate-700"
+                  >
+                    {{ item.progress }}%
+                  </span>
+                </div>
+
+                <van-progress
+                  :percentage="item.progress"
+                  stroke-width="6"
+                  color="linear-gradient(90deg, #0f766e 0%, #14b8a6 100%)"
+                  track-color="#e2e8f0"
+                  :show-pivot="false"
+                />
+
+                <div
+                  class="mt-3 flex items-center justify-between gap-2"
+                >
+                  <div
+                    class="flex min-w-0 items-center gap-2 text-3 text-slate-500"
+                  >
+                    <ArtSvgIcon
+                      :icon="item.type === 'project' ? 'ri:folder-2-line' : 'ri:book-open-line'"
+                      class="text-4"
+                    />
+
+                    <span
+                      class="truncate"
+                    >
+                      {{ item.type === 'project' ? '项目任务' : '课程任务' }}
+                    </span>
+                  </div>
+
                   <van-button
                     size="small"
                     type="primary"
@@ -255,29 +307,7 @@ function goToTask(item: TaskViewItem) {
                       class="ml-1"
                     />
                   </van-button>
-                </template>
-              </van-cell>
-
-              <div
-                class="mt-3 rounded-4 bg-white/70 px-3.5 py-3 backdrop-blur-sm"
-              >
-                <div
-                  class="mb-2 flex items-center justify-between text-3.5 text-slate-500"
-                >
-                  <span>学习进度</span>
-
-                  <span>
-                    {{ item.progress }}%
-                  </span>
                 </div>
-
-                <van-progress
-                  :percentage="item.progress"
-                  stroke-width="6"
-                  color="linear-gradient(90deg, #0f766e 0%, #14b8a6 100%)"
-                  track-color="#e2e8f0"
-                  :show-pivot="false"
-                />
               </div>
             </div>
           </div>

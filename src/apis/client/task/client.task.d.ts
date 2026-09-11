@@ -25,6 +25,11 @@ export namespace Task {
     couName: string
 
     /**
+     * 课程封面图
+     */
+    couLogo: string
+
+    /**
      * 课程小节数量
      */
     couOutlineCount: number
@@ -39,11 +44,6 @@ export namespace Task {
   type TaskListResponseProjectListItem = {
 
     /**
-     * 学习进度
-     */
-    learningProgress: number
-
-    /**
      * 项目ID
      */
     projId: number
@@ -54,6 +54,11 @@ export namespace Task {
     projName: string
 
     /**
+     * 项目封面图
+     */
+    projCover: string
+
+    /**
      * 阶段数量
      */
     projStage: number
@@ -62,6 +67,11 @@ export namespace Task {
      * 课程数量
      */
     projStageCourse: number
+
+    /**
+     * 学习进度
+     */
+    learningProgress: number
   }
 
   /** 任务列表响应 */
