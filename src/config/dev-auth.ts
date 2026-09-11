@@ -16,6 +16,7 @@ export const devAdminUserInfo: AdminApi.Auth.UserInfo = {
   userName: 'Dev Admin',
   email: 'dev-admin@example.com',
   avatar: '',
+  mobile: '13800000000',
 }
 
 /** 开发环境客户端用户信息。 */
