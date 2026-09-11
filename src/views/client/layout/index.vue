@@ -206,7 +206,7 @@ function isDesktopNavActive(path: string) {
 
       <nav
         v-if="breadcrumbs.length"
-        class="hidden border-b border-[#eceef1] bg-[#f7f8fa]/92 px-[max(32px,calc((100vw-224px-1180px)/2))] py-2.5 md:block md:max-lg:px-6"
+        class="hidden items-center justify-between border-b border-[#eceef1] bg-[#f7f8fa]/92 px-[max(32px,calc((100vw-224px-1180px)/2))] py-2.5 md:flex md:max-lg:px-6"
         aria-label="面包屑"
       >
         <ol
@@ -232,6 +232,13 @@ function isDesktopNavActive(path: string) {
             />
           </li>
         </ol>
+
+        <van-button
+          class="cursor-pointer border-0 bg-transparent p-0 text-3.25 text-[#8a94a4] transition-colors duration-150 hover:text-[#087f73]"
+          @click="onBack"
+        >
+          返回
+        </van-button>
       </nav>
 
       <div
