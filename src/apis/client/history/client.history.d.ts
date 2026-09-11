@@ -9,6 +9,11 @@ export namespace History {
   export type HistoryCourseResponseItem = {
 
     /**
+     *  课程封面图
+     */
+    couLogo: string
+
+    /**
      * 完成时间
      */
     completeTime: string

@@ -225,53 +225,80 @@ onMounted(() => {
             @click="goToLearning(item)"
           >
             <div
-              class="flex items-start gap-3 px-4 pt-4"
+              class="relative h-32 overflow-hidden bg-slate-100 sm:h-36"
             >
+              <van-image
+                v-if="item.couLogo"
+                :key="item.couLogo"
+                :src="(getFileUrl(item.couLogo))"
+                :alt="item.targetName"
+                fit="cover"
+                class="size-full"
+              />
+
               <div
-                class="flex size-10 shrink-0 items-center justify-center rounded-md text-5"
-                :class="item.targetTypeValue === 1 ? 'bg-sky-50 text-sky-600' : 'bg-teal-50 text-teal-700'"
+                v-else
+                class="flex size-full items-center justify-center bg-linear-to-br from-slate-200 to-slate-100 text-slate-400"
               >
                 <van-icon
-                  :name="item.targetTypeValue === 1 ? 'description-o' : 'play-circle-o'"
+                  name="photo-o"
+                  size="28"
                 />
               </div>
+            </div>
 
+            <div
+              class="px-4 pt-4"
+            >
               <div
-                class="min-w-0 flex-1"
+                class="flex items-start gap-3"
               >
                 <div
-                  class="flex min-w-0 items-center gap-2"
+                  class="flex size-10 shrink-0 items-center justify-center rounded-md text-5"
+                  :class="item.targetTypeValue === 1 ? 'bg-sky-50 text-sky-600' : 'bg-teal-50 text-teal-700'"
                 >
-                  <h3
-                    class="m-0 min-w-0 flex-1 truncate text-4 text-slate-900 font-700 leading-1.45"
-                  >
-                    {{ item.targetName }}
-                  </h3>
-
-                  <van-tag
-                    plain
-                    :type="getStatusType(item)"
-                    size="medium"
-                    class="shrink-0"
-                  >
-                    {{ item.statusText || (item.isCompleted ? '已完成' : '学习中') }}
-                  </van-tag>
+                  <van-icon
+                    :name="item.targetTypeValue === 1 ? 'description-o' : 'play-circle-o'"
+                  />
                 </div>
 
                 <div
-                  class="mt-2 flex items-center gap-3 text-3.25 text-slate-500"
+                  class="min-w-0 flex-1"
                 >
-                  <span
-                    class="inline-flex items-center gap-1"
-                  ><van-icon
-                    name="label-o"
-                  />{{ getTypeLabel(item) }}</span>
+                  <div
+                    class="flex min-w-0 items-center gap-2"
+                  >
+                    <h3
+                      class="m-0 min-w-0 flex-1 truncate text-4 text-slate-900 font-700 leading-1.45"
+                    >
+                      {{ item.targetName }}
+                    </h3>
 
-                  <span
-                    class="inline-flex items-center gap-1"
-                  ><van-icon
-                    name="clock-o"
-                  />{{ getStudyTime(item) }}</span>
+                    <van-tag
+                      plain
+                      :type="getStatusType(item)"
+                      size="medium"
+                      class="shrink-0"
+                    >
+                      {{ item.statusText || (item.isCompleted ? '已完成' : '学习中') }}
+                    </van-tag>
+                  </div>
+
+                  <div
+                    class="mt-2 flex items-center gap-3 text-3.25 text-slate-500"
+                  >
+                    <span
+                      class="inline-flex items-center gap-1"
+                    ><van-icon
+                      name="label-o"
+                    />{{ getTypeLabel(item) }}</span>
+
+                    <span
+                      class="inline-flex items-center gap-1"
+                    ><van-icon
+                      name="clock-o"
+                    />{{ getStudyTime(item) }}</span>
+                  </div>
                 </div>
               </div>
             </div>
