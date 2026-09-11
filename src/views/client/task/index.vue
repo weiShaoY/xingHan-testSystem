@@ -104,6 +104,12 @@ async function fetchTaskList() {
     taskList.value = normalizeTaskList(data, params.value.learningType)
     finished.value = true
   }
+  catch (error) {
+    finished.value = true
+    taskList.value = []
+    window.$toast?.('获取任务列表失败')
+    console.error('fetchTaskList error:', error)
+  }
   finally {
     refreshing.value = false
     listLoading.value = false
@@ -136,8 +142,13 @@ async function onRefresh() {
   window.$toast('刷新成功')
 }
 
-function onLoad() {
-  fetchTaskList()
+async function onLoad() {
+  if (listLoading.value || finished.value) {
+    return
+  }
+
+  listLoading.value = true
+  await fetchTaskList()
 }
 
 function goToTask(item: TaskViewItem) {
