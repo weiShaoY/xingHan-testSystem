@@ -148,6 +148,7 @@ getRecommendList()
     </van-cell>
 
     <van-space
+      v-if="recommendList.length"
       direction="vertical"
       fill
       :size="14"
@@ -168,55 +169,56 @@ getRecommendList()
         <div
           class="min-w-0 flex flex-1 flex-col overflow-hidden"
         >
-          <van-cell
-            center
-            class="rounded-4 bg-transparent px-0 py-0 [&_.van-cell__value]:flex [&_.van-cell__value]:items-center [&_.van-cell__value]:justify-end"
+          <div
+            class="flex items-center justify-between gap-3"
           >
-            <template
-              #title
+            <van-tag
+              plain
+              :type="item.couIsUse === 1 ? 'primary' : 'default'"
             >
-              <van-tag
-                plain
-                type="primary"
-              >
-                {{ item.couIsUse === 1 ? '启用' : '禁用' }}
-              </van-tag>
-            </template>
+              {{ item.couIsUse === 1 ? '已启用' : '已禁用' }}
+            </van-tag>
 
-            <template
-              #value
+            <span
+              class="shrink-0 inline-flex items-center gap-1 text-3 text-slate-500"
             >
-              <span
-                class="shrink-0 text-3 text-slate-500"
-              >
-                {{ item.couStudentSum }}人学习
-              </span>
-            </template>
-          </van-cell>
+              <ArtSvgIcon
+                icon="ri:group-line"
+                class="text-3.5"
+              />
+              {{ item.couStudentSum }}人学习
+            </span>
+          </div>
 
           <div
             class="mt-3 rounded-4 bg-slate-50/70 px-3 py-3 backdrop-blur-sm"
           >
             <h3
-              class="m-0 min-h-[3.4rem] break-all text-4 text-slate-900 font-700 leading-[1.7]"
+              class="m-0 break-all text-4 text-slate-900 font-700 leading-[1.7]"
             >
               {{ item.couName }}
             </h3>
+
+            <p
+              class="mt-3 mb-0 line-clamp-2 text-3 text-slate-500 leading-5"
+            >
+              {{ item.couIntro || '暂无课程介绍' }}
+            </p>
 
             <div
               class="mt-3 flex items-center justify-between gap-3 border-t border-slate-100 pt-3"
             >
               <div
-                class="flex flex-wrap gap-x-4 gap-y-2 text-3 text-teal-700"
+                class="flex flex-wrap items-center gap-x-4 gap-y-2 text-3 text-slate-500"
               >
                 <span
                   class="inline-flex items-center gap-1.5"
                 >
                   <ArtSvgIcon
-                    icon="ri:bar-chart-box-line"
+                    icon="ri:book-open-line"
                     class="text-4"
                   />
-                  <!-- 难度：{{ item.couLevel }} -->
+                  推荐课程
                 </span>
               </div>
 
@@ -229,16 +231,16 @@ getRecommendList()
                 查看课程
               </van-button>
             </div>
-
-            <p
-              v-if="item.couIntro"
-              class="mt-3 mb-0 line-clamp-2 text-3 text-slate-500 leading-5"
-            >
-              {{ item.couIntro }}
-            </p>
           </div>
         </div>
       </div>
     </van-space>
+
+    <div
+      v-else
+      class="flex min-h-30 items-center justify-center rounded-md border border-dashed border-slate-200 bg-slate-50/60 px-4 py-8 text-3.5 text-slate-500"
+    >
+      暂无推荐课程
+    </div>
   </div>
 </template>
