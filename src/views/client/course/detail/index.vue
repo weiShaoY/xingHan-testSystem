@@ -125,6 +125,18 @@ function getSectionType(section: ClientApi.Course.ChaptersItem): SectionTypeConf
   return getSectionTypeConfig(section.olIsAccessory)
 }
 
+/** 获取小节解锁状态文本。 */
+function getUnlockStatusText(section: ClientApi.Course.ChaptersItem) {
+  return section.isUnlocked ? '已解锁' : '未解锁'
+}
+
+/** 获取小节解锁状态徽章样式。 */
+function getUnlockStatusClass(section: ClientApi.Course.ChaptersItem) {
+  return section.isUnlocked
+    ? 'border border-emerald-200 bg-emerald-50 text-emerald-700'
+    : 'border border-slate-200 bg-slate-100 text-slate-500'
+}
+
 /**
  * 设置顶部导航标题。
  *
@@ -159,6 +171,11 @@ onMounted(() => {
  */
 function handleSection(section: ClientApi.Course.ChaptersItem) {
   console.log('🚀 ~ file: index.vue:160 ~ section:', section)
+
+  if (!section.canUnlock) {
+    window.$toast('该小节暂未解锁，完成前置条件后再学习')
+    return
+  }
 
   if (section.olIsAccessory === 0) {
     router.push({
@@ -418,7 +435,8 @@ function handleSection(section: ClientApi.Course.ChaptersItem) {
               <div
                 v-for="section in getChapterSections(chapter)"
                 :key="section.olId"
-                class="mb-2 rounded-xl bg-slate-50 px-3 py-3 last:mb-0 active:bg-slate-100"
+                class="mb-2 rounded-xl bg-slate-50 px-3 py-3 last:mb-0"
+                :class="section.canUnlock ? 'active:bg-slate-100' : 'cursor-not-allowed opacity-70'"
                 @click="handleSection(section)"
               >
                 <div
@@ -447,6 +465,13 @@ function handleSection(section: ClientApi.Course.ChaptersItem) {
                       class="mt-1 flex items-center gap-2 text-3 text-slate-500"
                     >
                       <span>{{ getLearningStatus(section.status) }}</span>
+
+                      <span
+                        class="inline-flex items-center rounded-full px-1.5 py-0.5 text-2.5 font-600"
+                        :class="getUnlockStatusClass(section)"
+                      >
+                        {{ getUnlockStatusText(section) }}
+                      </span>
 
                       <!-- <span>{{ formatStudyTime(section.totalLearningTime) }}</span> -->
                     </div>
@@ -482,7 +507,8 @@ function handleSection(section: ClientApi.Course.ChaptersItem) {
             <div
               v-for="section in independentSectionRecords"
               :key="section.olId"
-              class="rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-[0_8px_20px_rgb(15_23_42/5%)] active:bg-slate-50"
+              class="rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-[0_8px_20px_rgb(15_23_42/5%)]"
+              :class="section.canUnlock ? 'active:bg-slate-50' : 'cursor-not-allowed opacity-70'"
               @click="handleSection(section)"
             >
               <div
@@ -511,6 +537,13 @@ function handleSection(section: ClientApi.Course.ChaptersItem) {
                     class="mt-1 flex items-center gap-2 text-3 text-slate-500"
                   >
                     <span>{{ getLearningStatus(section.status) }}</span>
+
+                    <span
+                      class="inline-flex items-center rounded-full px-1.5 py-0.5 text-2.5 font-600"
+                      :class="getUnlockStatusClass(section)"
+                    >
+                      {{ getUnlockStatusText(section) }}
+                    </span>
 
                     <!-- <span>{{ formatStudyTime(section.totalLearningTime) }}</span> -->
                   </div>

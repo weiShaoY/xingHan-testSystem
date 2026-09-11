@@ -82,6 +82,16 @@ export namespace Course {
      *  考试ID or 问卷ID （仅当olIsAccessory为2或3时有效）
      */
     examId?: number
+
+    /**
+     *  是否解锁
+     */
+    isUnlocked: boolean
+
+    /**
+     *  是否可以解锁
+     */
+    canUnlock: boolean
   }
 
   /**

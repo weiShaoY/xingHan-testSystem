@@ -73,7 +73,7 @@ function normalizeTaskList(
 }
 
 const params = ref<ClientApi.Task.TaskListParams>({
-  learningType: 1,
+  learningType: 2,
 })
 
 /**
