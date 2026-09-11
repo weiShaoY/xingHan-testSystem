@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { SectionTypeConfig } from '@/config/course'
 
-import { getClientSectionRoute, getSectionTypeConfig } from '@/config/course'
+import { getSectionTypeConfig } from '@/config/course'
 
 import { useClientNavTitle } from '@/hooks/core/useClientNavTitle'
 
@@ -24,6 +24,7 @@ const activeNames = ref<number[]>([])
 const couId = computed(() => Number(route.params.couId || 0))
 
 const courseProgress = ref<ClientApi.Course.CourseProgressResponse>({
+  couLogo: '',
   completedChapters: 0,
   courseId: 0,
   courseName: '',
@@ -214,51 +215,77 @@ function handleSection(section: ClientApi.Course.ChaptersItem) {
       class="flex flex-col gap-4 pb-4"
     >
       <div
-        class="relative overflow-hidden rounded-2xl bg-linear-to-br from-teal-700 via-teal-600 to-cyan-500 px-5 py-5 text-white shadow-[0_12px_28px_rgb(13_148_136/22%)]"
+        class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_12px_28px_rgb(15_23_42/5%)]"
       >
         <div
-          class="pointer-events-none absolute right--7 top--8 h-28 w-28 rounded-full bg-white/10"
-        />
-
-        <div
-          class="pointer-events-none absolute bottom--10 right-10 h-24 w-24 rounded-full bg-cyan-300/20 blur-2xl"
-        />
-
-        <div
-          class="relative z-1"
+          class="relative h-36 overflow-hidden bg-slate-100 sm:h-40"
         >
+          <van-image
+            v-if="courseProgress.couLogo"
+            :src="getFileUrl(courseProgress.couLogo)"
+            :alt="courseProgress.courseName || DEFAULT_NAV_TITLE"
+            fit="cover"
+            class="size-full"
+          />
+
           <div
-            class="mb-3 inline-flex items-center gap-1.5 rounded-full bg-white/14 px-3 py-1 text-3 text-white/90 backdrop-blur"
+            v-else
+            class="flex size-full items-center justify-center bg-linear-to-br from-slate-200 to-slate-100 text-slate-400"
           >
             <van-icon
-              name="play-circle-o"
-              size="14"
+              name="photo-o"
+              size="28"
             />
-            我的课程
           </div>
+        </div>
 
-          <h1
-            class="m-0 wrap-break-word text-6 font-700 leading-1.3"
-          >
-            {{ courseProgress.courseName || DEFAULT_NAV_TITLE }}
-          </h1>
+        <div
+          class="relative overflow-hidden bg-linear-to-br from-teal-700 via-teal-600 to-cyan-500 px-5 py-5 text-white"
+        >
+          <div
+            class="pointer-events-none absolute right--7 top--8 h-28 w-28 rounded-full bg-white/10"
+          />
 
           <div
-            class="mt-5 flex items-center gap-5 text-3.5 text-white/90"
-          >
-            <span
-              class="inline-flex items-center gap-1.5"
-            ><van-icon
-              name="orders-o"
-              size="16"
-            />{{ courseProgress.completedChapters }}/{{ chapterCount }} 个章节</span>
+            class="pointer-events-none absolute bottom--10 right-10 h-24 w-24 rounded-full bg-cyan-300/20 blur-2xl"
+          />
 
-            <span
-              class="inline-flex items-center gap-1.5"
-            ><van-icon
-              name="clock-o"
-              size="16"
-            />{{ formatStudyTime(courseProgress.totalStudyTime) }}</span>
+          <div
+            class="relative z-1"
+          >
+            <div
+              class="mb-3 inline-flex items-center gap-1.5 rounded-full bg-white/14 px-3 py-1 text-3 text-white/90 backdrop-blur"
+            >
+              <van-icon
+                name="play-circle-o"
+                size="14"
+              />
+              我的课程
+            </div>
+
+            <h1
+              class="m-0 wrap-break-word text-6 font-700 leading-1.3"
+            >
+              {{ courseProgress.courseName || DEFAULT_NAV_TITLE }}
+            </h1>
+
+            <div
+              class="mt-5 flex items-center gap-5 text-3.5 text-white/90"
+            >
+              <span
+                class="inline-flex items-center gap-1.5"
+              ><van-icon
+                name="orders-o"
+                size="16"
+              />{{ courseProgress.completedChapters }}/{{ chapterCount }} 个章节</span>
+
+              <span
+                class="inline-flex items-center gap-1.5"
+              ><van-icon
+                name="clock-o"
+                size="16"
+              />{{ formatStudyTime(courseProgress.totalStudyTime) }}</span>
+            </div>
           </div>
         </div>
       </div>

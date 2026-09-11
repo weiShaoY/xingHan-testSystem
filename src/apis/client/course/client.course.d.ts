@@ -90,6 +90,11 @@ export namespace Course {
   type CourseProgressResponse = {
 
     /**
+     *  课程封面图
+     */
+    couLogo: string
+
+    /**
      * 已完成章节数量
      */
     completedChapters: number
