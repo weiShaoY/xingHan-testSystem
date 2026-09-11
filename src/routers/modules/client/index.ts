@@ -143,16 +143,6 @@ export const clientRoutes: AppRouteRecord = {
             keepAlive: false,
           },
         },
-
-        // {
-        //   path: 'detail',
-        //   name: 'ClientHistoryDetail',
-        //   component: '/client/history/detail',
-        //   meta: {
-        //     title: '学习历史详情',
-        //     keepAlive: false,
-        //   },
-        // },
       ],
 
     },
@@ -176,19 +166,9 @@ export const clientRoutes: AppRouteRecord = {
           },
         },
 
-        // {
-        //   path: 'detail',
-        //   name: 'ClientRecommendDetail',
-        //   component: '/client/recommend/detail',
-        //   meta: {
-        //     title: '推荐课程详情',
-        //     keepAlive: false,
-        //   },
-        // },
       ],
     },
 
-    // ////////
     {
       path: 'course',
       name: 'ClientCourse',

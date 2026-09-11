@@ -39,6 +39,41 @@ const navTitle = computed(() => {
   return customClientNavTitle.value || String(route.meta?.title || '')
 })
 
+const breadcrumbs = computed(() => {
+  const matched: Array<{ meta?: Record<string, any>, path: string }> = []
+
+  for (const item of route.matched) {
+    if (item.meta?.title && item.path !== '/client') {
+      matched.push(item)
+    }
+  }
+
+  if (!matched.length) {
+    return []
+  }
+
+  let currentPath = '/client'
+
+  return matched.map((item) => {
+    const resolvedPath = item.path.startsWith('/')
+      ? item.path
+      : `${currentPath}/${item.path}`
+
+    const finalPath = resolvedPath.replace(/:([^/]+)/g, (_, key) => {
+      const value = route.params[key]
+
+      return value ? String(value) : key
+    })
+
+    currentPath = finalPath
+
+    return {
+      label: String(item.meta?.title || ''),
+      path: finalPath,
+    }
+  })
+})
+
 function onBack() {
   if (window.history.state.back) {
     history.back()
@@ -134,7 +169,7 @@ function isDesktopNavActive(path: string) {
     </aside>
 
     <main
-      class="min-h-0 flex flex-1 flex-col md:ml-56 md:block md:min-h-dvh md:w-[calc(100%_-_224px)] md:max-lg:ml-18 md:max-lg:w-[calc(100%_-_72px)]"
+      class="min-h-0 flex flex-1 flex-col md:ml-56 md:block md:min-h-dvh md:w-[calc(100%-224px)] md:max-lg:ml-18 md:max-lg:w-[calc(100%-72px)]"
     >
       <header
         class="sticky top-0 z-5 hidden h-19 items-center justify-between border-b border-[#eceef1] bg-[#f7f8fa]/92 px-[max(32px,calc((100vw-224px-1180px)/2))] backdrop-blur-[10px] md:flex md:max-lg:px-6"
@@ -168,6 +203,36 @@ function isDesktopNavActive(path: string) {
           />
         </button>
       </header>
+
+      <nav
+        v-if="breadcrumbs.length"
+        class="hidden border-b border-[#eceef1] bg-[#f7f8fa]/92 px-[max(32px,calc((100vw-224px-1180px)/2))] py-2.5 md:block md:max-lg:px-6"
+        aria-label="面包屑"
+      >
+        <ol
+          class="flex flex-wrap items-center gap-1.5 text-3.25 text-[#8a94a4]"
+        >
+          <li
+            v-for="(item, index) in breadcrumbs"
+            :key="`${item.path}-${index}`"
+            class="flex items-center"
+          >
+            <button
+              type="button"
+              class="cursor-pointer border-0 bg-transparent p-0 text-left text-3.25 text-[#8a94a4] transition-colors duration-150 hover:text-[#087f73]"
+              @click="goToPath(item.path)"
+            >
+              {{ item.label }}
+            </button>
+
+            <ArtSvgIcon
+              v-if="index < breadcrumbs.length - 1"
+              icon="tdesign:chevron-right"
+              class="mx-1 text-3.5 text-[#b0b9c4]"
+            />
+          </li>
+        </ol>
+      </nav>
 
       <div
         class="md:hidden"
@@ -204,7 +269,7 @@ function isDesktopNavActive(path: string) {
       </div>
 
       <div
-        class="min-h-0 flex-1 overflow-y-auto p-4 md:box-border md:min-h-[calc(100dvh_-_76px)] md:w-full md:max-w-311 md:mx-auto md:p-8 md:max-lg:p-6"
+        class="min-h-0 flex-1 overflow-y-auto p-4 md:box-border md:min-h-[calc(100dvh-76px)] md:w-full md:max-w-311 md:mx-auto md:p-8 md:max-lg:p-6"
       >
         <slot
           v-if="$slots.default"
