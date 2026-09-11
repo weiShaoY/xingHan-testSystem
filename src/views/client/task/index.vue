@@ -122,6 +122,10 @@ async function loadTaskList(reset = false) {
 
 const active = ref(0)
 
+onMounted(() => {
+  void loadTaskList(true)
+})
+
 async function handleChange(index: number) {
   active.value = index
   params.value.learningType = active.value === 0 ? 1 : 2
