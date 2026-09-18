@@ -23,6 +23,9 @@ type ImportMetaEnv = {
   /** 开发代理目标地址 */
   readonly VITE_APP_API_PROXY_URL: string
 
+  /** 文件访问地址 */
+  readonly VITE_APP_FILE_URL: string
+
   /** 权限模式 */
   readonly VITE_APP_ACCESS_MODE: 'frontend' | 'backend'
 

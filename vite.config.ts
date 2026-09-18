@@ -36,13 +36,15 @@ export default ({ mode }: { mode: string }) => {
   console.log(`🚀 API_URL = ${VITE_APP_API_URL}`)
   console.log(`🚀 VERSION = ${VITE_APP_VERSION}`)
 
+  const resolvedBase = VITE_APP_BASE_URL || './'
+
   return defineConfig({
 
     define: {
       __APP_VERSION__: JSON.stringify(VITE_APP_VERSION),
     },
 
-    base: VITE_APP_BASE_URL,
+    base: resolvedBase,
 
     server: {
       port: Number(VITE_APP_PORT),
