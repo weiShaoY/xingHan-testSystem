@@ -75,7 +75,7 @@ const {
             h(ArtPreviewImage, {
               path: row.asThumbnailPath,
               preview: false,
-              class: 'h-20 w-15 shrink-0 cursor-pointer',
+              class: 'h-20! w-15! min-h-20 min-w-15 shrink-0 cursor-pointer',
               onClick: () => playVideo(row),
             }),
             h('div', {

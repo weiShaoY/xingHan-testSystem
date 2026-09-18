@@ -68,7 +68,7 @@ const {
           }, [
             h(ArtPreviewImage, {
               path: row.asThumbnailPath,
-              class: 'h-20 w-15 shrink-0',
+              class: 'h-20! w-15! min-h-20 min-w-15 shrink-0',
               preview: false,
               onClick: () => previewTableItem(row),
             }),
