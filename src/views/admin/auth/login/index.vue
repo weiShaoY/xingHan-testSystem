@@ -268,6 +268,60 @@ function showLoginSuccessNotice() {
     })
   }, 1000)
 }
+
+/**
+   *  单点登录
+   */
+async function handleSingleLogin() {
+  // 从地址栏拿 ?ua=jnadmin 这个ua的值
+  const userName = computed(() => {
+    const value = route.query.ua
+
+    return (Array.isArray(value) ? value[0] : value) ?? ''
+  })
+
+  console.log('🚀 ~ file: index.vue:278 ~ userName:', userName)
+
+  if (!userName.value) {
+    return
+  }
+
+  try {
+    const loginResult = await fetchAdminSingleLogin(userName.value)
+
+    // // 验证token
+    if (!loginResult.token) {
+      throw new Error('登录失败-未收到令牌')
+    }
+
+    // 存储 token 和登录状态
+    userStore.setToken(loginResult.token, '')
+
+    userStore.setLoginStatus(true)
+
+    const { userInfo } = await fetchAdminGetUserInfo()
+
+    userStore.setUserInfo(userInfo)
+    userStore.checkAndClearWorkTabs()
+
+    // 登录成功处理
+    showLoginSuccessNotice()
+
+    router.push(getAdminRedirect(route.query.redirect))
+  }
+  catch (error) {
+    if (error instanceof HttpError) {
+      return
+    }
+
+    ElMessage.error('单点登录失败，请稍后重试')
+    console.error('[单点登录]意外错误：', error)
+  }
+}
+
+onMounted(() => {
+  handleSingleLogin()
+})
 </script>
 
 <template>

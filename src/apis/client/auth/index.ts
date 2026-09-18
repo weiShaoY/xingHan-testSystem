@@ -31,3 +31,13 @@ export function fetchClientGetUserInfo() {
     authPath: '/client',
   })
 }
+
+/**
+ *  单点登录
+ */
+export function fetchClientSingleLogin(userName: string) {
+  return request.post<ClientApi.Auth.LoginResponse>({
+    url: '/admin/auth/ssologin',
+    data: userName,
+  })
+}

@@ -145,6 +145,63 @@ async function handleSubmit() {
 function openPrivacyPdf() {
   isShowPdfPreviewDialog.value = true
 }
+
+/**
+   *  单点登录
+   */
+async function handleSingleLogin() {
+  // 从地址栏拿 ?ua=jnadmin 这个ua的值
+  const userName = computed(() => {
+    const value = route.query.ua
+
+    return (Array.isArray(value) ? value[0] : value) ?? ''
+  })
+
+  console.log('🚀 ~ file: index.vue:278 ~ userName:', userName)
+
+  if (!userName.value) {
+    return
+  }
+
+  try {
+    loading.value = true
+
+    const loginResult = await fetchClientSingleLogin(userName.value)
+
+    if (!loginResult.token) {
+      throw new Error('登录失败-未收到令牌')
+    }
+
+    userStore.setToken(loginResult.token, '')
+    userStore.setLoginStatus(true)
+
+    const { userInfo } = await fetchClientGetUserInfo()
+
+    userStore.setUserInfo(userInfo)
+    showSuccessToast(`${t('client.login.success.message')}, ${systemName}!`)
+
+    const redirect = route.query.redirect
+
+    await router.push(
+      typeof redirect === 'string' && redirect.startsWith('/client')
+        ? redirect
+        : '/client',
+    )
+  }
+  catch (error) {
+    if (!(error instanceof HttpError)) {
+      console.error('[单点登录]意外错误：', error)
+      showFailToast('单点登录失败，请稍后重试')
+    }
+  }
+  finally {
+    loading.value = false
+  }
+}
+
+onMounted(() => {
+  handleSingleLogin()
+})
 </script>
 
 <template>

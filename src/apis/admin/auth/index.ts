@@ -30,3 +30,13 @@ export function fetchAdminGetUserInfo() {
     url: '/admin/auth/userInfo',
   })
 }
+
+/**
+ *  单点登录
+ */
+export function fetchAdminSingleLogin(userName: string) {
+  return request.post<AdminApi.Auth.LoginResponse>({
+    url: '/admin/auth/ssologin',
+    data: userName,
+  })
+}
