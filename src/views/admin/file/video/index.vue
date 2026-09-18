@@ -254,7 +254,7 @@ onBeforeUnmount(() => {
 
 <template>
   <div
-    class="mx-auto max-w-7xl px-10 relative max-lg:px-6 max-sm:px-4"
+    class="mx-auto flex h-[var(--art-full-height)] max-w-7xl flex-col px-10 relative max-lg:px-6 max-sm:px-4"
   >
     <VideoPreviewDialog
       v-model="isShowVideoPreviewDialog"
@@ -266,7 +266,7 @@ onBeforeUnmount(() => {
     />
 
     <div
-      class="my-5 flex w-full items-center justify-between gap-4 max-md:flex-col max-md:items-stretch"
+      class="my-5 flex w-full shrink-0 items-center justify-between gap-4 max-md:flex-col max-md:items-stretch"
     >
       <div>
         <h2
@@ -313,6 +313,9 @@ onBeforeUnmount(() => {
 
     <!-- 数据表格 -->
     <ArtTable
+      class="video-table flex min-h-0 flex-1 flex-col"
+      height="100%"
+      :show-table-header="false"
       :loading="loading || actionLoading"
       :data="data"
       :columns="columns"
@@ -325,4 +328,14 @@ onBeforeUnmount(() => {
 </template>
 
 <style lang="scss" scoped>
+.video-table {
+  :deep(.el-table) {
+    flex: 1;
+    min-height: 0;
+  }
+
+  :deep(.pagination) {
+    flex-shrink: 0;
+  }
+}
 </style>
