@@ -327,7 +327,7 @@ async function deleteProject(item: AdminApi.Project.ProjectListItem) {
               class="aspect-16/9 w-full overflow-hidden rounded-lg bg-(--el-fill-color-lighter)"
             >
               <ElImage
-                :src="getFileUrl(item.projCover)"
+                :src="item.projCover"
                 fit="cover"
                 class="size-full"
               />

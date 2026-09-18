@@ -331,7 +331,7 @@ async function handleUploadLogo(file: File) {
 
             <UploadImage
               class="h-40  max-w-full"
-              :preview-url="getFileUrl(formData.couLogo)"
+              :preview-url="formData.couLogo"
               :loading="uploadLoading"
               @upload="handleUploadLogo"
             />

@@ -160,7 +160,7 @@ getRecommendList()
         @click="goToRecommendItem(item)"
       >
         <van-image
-          :src="getFileUrl(item.couLogo)"
+          :src="item.couLogo"
           :alt="item.couName"
           fit="cover"
           class="h-44 w-full shrink-0 overflow-hidden sm:h-28 sm:w-28 rounded-md!"

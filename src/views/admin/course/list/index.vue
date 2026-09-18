@@ -310,7 +310,7 @@ getCourseList()
               class="aspect-16/9 w-full overflow-hidden rounded-lg bg-(--el-fill-color-lighter)"
             >
               <ElImage
-                :src="getFileUrl(item.couLogo)"
+                :src="item.couLogo"
                 fit="cover"
                 class="size-full"
               />

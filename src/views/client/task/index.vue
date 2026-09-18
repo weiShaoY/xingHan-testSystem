@@ -194,7 +194,7 @@ function goToTask(item: TaskViewItem) {
               class="relative h-32 w-full overflow-hidden border-b border-slate-200 bg-slate-100 sm:h-40"
             >
               <van-image
-                :src="getFileUrl(item.cover)"
+                :src="item.cover"
                 :alt="item.title"
                 fit="cover"
                 class="size-full"

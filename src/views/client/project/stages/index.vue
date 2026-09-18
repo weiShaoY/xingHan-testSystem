@@ -162,7 +162,7 @@ function handleGoCourseDetail(couId: number) {
             class="mb-4 overflow-hidden rounded-xl border border-white/20 bg-white/10 shadow-[0_10px_24px_rgb(15_23_42/10%)]"
           >
             <van-image
-              :src="getFileUrl(projectStageList.projCover)"
+              :src="projectStageList.projCover"
               :alt="projectStageList.projName || '项目封面'"
               fit="cover"
               class="h-40 w-full"

@@ -38,9 +38,9 @@ const props = withDefaults(defineProps<Props>(), {
   minScale: 0.2,
 })
 
-const imageUrl = computed(() => getFileUrl(props.path))
+const imageUrl = computed(() => props.path)
 
-const previewUrl = computed(() => getFileUrl(props.previewPath || props.path))
+const previewUrl = computed(() => props.previewPath || props.path)
 </script>
 
 <template>

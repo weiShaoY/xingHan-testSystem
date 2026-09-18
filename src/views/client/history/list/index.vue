@@ -230,7 +230,7 @@ onMounted(() => {
               <van-image
                 v-if="item.couLogo"
                 :key="item.couLogo"
-                :src="(getFileUrl(item.couLogo))"
+                :src="item.couLogo"
                 :alt="item.targetName"
                 fit="cover"
                 class="size-full"

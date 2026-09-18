@@ -239,7 +239,7 @@ function handleSection(section: ClientApi.Course.ChaptersItem) {
         >
           <van-image
             v-if="courseProgress.couLogo"
-            :src="getFileUrl(courseProgress.couLogo)"
+            :src="courseProgress.couLogo"
             :alt="courseProgress.courseName || DEFAULT_NAV_TITLE"
             fit="cover"
             class="size-full"

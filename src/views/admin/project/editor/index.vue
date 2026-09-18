@@ -307,7 +307,7 @@ async function handleUploadCover(file: File) {
 
             <UploadImage
               class="h-40 w-full max-w-full"
-              :preview-url="getFileUrl(formData.projCover)"
+              :preview-url="formData.projCover"
               :loading="uploadLoading"
               @upload="handleUploadCover"
             />
