@@ -26,7 +26,7 @@ defineOptions({
   name: 'ClientLogin',
 })
 
-const PRIVACY_PDF_URL = '/pdf/客户隐私说明.pdf'
+const PRIVACY_PDF_URL = '/pdf/customerPrivacyNotice.pdf'
 
 const userStore = useClientUserStore()
 
