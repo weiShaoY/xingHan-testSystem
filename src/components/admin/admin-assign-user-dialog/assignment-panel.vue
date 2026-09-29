@@ -256,7 +256,8 @@ async function confirmSelectUsers() {
     if (version !== loadVersion) { return }
 
     ElNotification.success('分配成功')
-    emit('close')
+
+    // emit('close')
   }
   catch {
     if (version === loadVersion) { ElNotification.error('分配失败') }
