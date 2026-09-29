@@ -98,6 +98,12 @@ export namespace Organization {
     targetType: 1 | 2
 
     /**
+     * 目标受众
+     * @description 0=佐敦，1=佐敦客户
+     */
+    targetAudience: 0 | 1
+
+    /**
      * 分配对象列表
      */
     recipients: OrganizationTreeWithAllUsersResponse

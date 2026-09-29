@@ -571,7 +571,6 @@ declare module 'vue' {
     readonly emojo: UnwrapRef<typeof import('../../utils/ui/emojo')['default']>
     readonly extendRef: UnwrapRef<typeof import('@vueuse/core')['extendRef']>
     readonly fetchAdminAssignmentCreateAssignment: UnwrapRef<typeof import('../../apis/admin/organization/index')['fetchAdminAssignmentCreateAssignment']>
-    readonly fetchAdminAssignmentGetPartialOrganizationTree: UnwrapRef<typeof import('../../apis/admin/organization/index')['fetchAdminAssignmentGetPartialOrganizationTree']>
     readonly fetchAdminCourseAdd: UnwrapRef<typeof import('../../apis/admin/course/index')['fetchAdminCourseAdd']>
     readonly fetchAdminCourseDelete: UnwrapRef<typeof import('../../apis/admin/course/index')['fetchAdminCourseDelete']>
     readonly fetchAdminCourseList: UnwrapRef<typeof import('../../apis/admin/course/index')['fetchAdminCourseList']>
@@ -603,7 +602,6 @@ declare module 'vue' {
     readonly fetchAdminFileList: UnwrapRef<typeof import('../../apis/file/index')['fetchAdminFileList']>
     readonly fetchAdminFileRecover: UnwrapRef<typeof import('../../apis/file/index')['fetchAdminFileRecover']>
     readonly fetchAdminFileRecyclingList: UnwrapRef<typeof import('../../apis/file/index')['fetchAdminFileRecyclingList']>
-    readonly fetchAdminGetOrganizationTreeWithAllUsers: UnwrapRef<typeof import('../../apis/admin/organization/index')['fetchAdminGetOrganizationTreeWithAllUsers']>
     readonly fetchAdminGetOrganizationTreeWithAllUsersCustomer: UnwrapRef<typeof import('../../apis/admin/organization/index')['fetchAdminGetOrganizationTreeWithAllUsersCustomer']>
     readonly fetchAdminGetOrganizationTreeWithAllUsersJotun: UnwrapRef<typeof import('../../apis/admin/organization/index')['fetchAdminGetOrganizationTreeWithAllUsersJotun']>
     readonly fetchAdminGetPartialOrganizationTreeCustomer: UnwrapRef<typeof import('../../apis/admin/organization/index')['fetchAdminGetPartialOrganizationTreeCustomer']>
