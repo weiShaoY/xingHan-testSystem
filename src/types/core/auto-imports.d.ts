@@ -91,7 +91,13 @@ declare global {
   const fetchAdminFileList: typeof import('../../apis/file/index').fetchAdminFileList
   const fetchAdminFileRecover: typeof import('../../apis/file/index').fetchAdminFileRecover
   const fetchAdminFileRecyclingList: typeof import('../../apis/file/index').fetchAdminFileRecyclingList
+  const fetchAdminGetOrganizationTreeJotun: typeof import('../../apis/admin/organization/index').fetchAdminGetOrganizationTreeJotun
   const fetchAdminGetOrganizationTreeWithAllUsers: typeof import('../../apis/admin/organization/index').fetchAdminGetOrganizationTreeWithAllUsers
+  const fetchAdminGetOrganizationTreeWithAllUsersCustomer: typeof import('../../apis/admin/organization/index').fetchAdminGetOrganizationTreeWithAllUsersCustomer
+  const fetchAdminGetOrganizationTreeWithAllUsersJotun: typeof import('../../apis/admin/organization/index').fetchAdminGetOrganizationTreeWithAllUsersJotun
+  const fetchAdminGetPartialOrganizationTreeCustomer: typeof import('../../apis/admin/organization/index').fetchAdminGetPartialOrganizationTreeCustomer
+  const fetchAdminGetPartialOrganizationTreeJotun: typeof import('../../apis/admin/organization/index').fetchAdminGetPartialOrganizationTreeJotun
+  const fetchAdminGetPartialOrganizationTreeJotunCustomer: typeof import('../../apis/admin/organization/index').fetchAdminGetPartialOrganizationTreeJotunCustomer
   const fetchAdminGetPublicKey: typeof import('../../apis/admin/auth/index').fetchAdminGetPublicKey
   const fetchAdminGetUserInfo: typeof import('../../apis/admin/auth/index').fetchAdminGetUserInfo
   const fetchAdminLogin: typeof import('../../apis/admin/auth/index').fetchAdminLogin
@@ -518,14 +524,10 @@ declare module 'vue' {
   interface ComponentCustomProperties {
     readonly ApiStatus: UnwrapRef<typeof import('../../apis/http/status')['ApiStatus']>
     readonly EffectScope: UnwrapRef<typeof import('vue')['EffectScope']>
-    readonly ElCheckbox: UnwrapRef<typeof import('element-plus/es')['ElCheckbox']>
-    readonly ElEmpty: UnwrapRef<typeof import('element-plus/es')['ElEmpty']>
     readonly ElLoading: UnwrapRef<typeof import('element-plus/es')['ElLoading']>
     readonly ElMessage: UnwrapRef<typeof import('element-plus/es')['ElMessage']>
     readonly ElMessageBox: UnwrapRef<typeof import('element-plus/es')['ElMessageBox']>
     readonly ElNotification: UnwrapRef<typeof import('element-plus/es')['ElNotification']>
-    readonly ElRadio: UnwrapRef<typeof import('element-plus/es')['ElRadio']>
-    readonly ElTag: UnwrapRef<typeof import('element-plus/es')['ElTag']>
     readonly HttpError: UnwrapRef<typeof import('../../apis/http/error')['HttpError']>
     readonly PasswordStrength: UnwrapRef<typeof import('../../utils/form/validator')['PasswordStrength']>
     readonly StorageConfig: UnwrapRef<typeof import('../../utils/storage/storage-config')['StorageConfig']>
@@ -602,6 +604,10 @@ declare module 'vue' {
     readonly fetchAdminFileRecover: UnwrapRef<typeof import('../../apis/file/index')['fetchAdminFileRecover']>
     readonly fetchAdminFileRecyclingList: UnwrapRef<typeof import('../../apis/file/index')['fetchAdminFileRecyclingList']>
     readonly fetchAdminGetOrganizationTreeWithAllUsers: UnwrapRef<typeof import('../../apis/admin/organization/index')['fetchAdminGetOrganizationTreeWithAllUsers']>
+    readonly fetchAdminGetOrganizationTreeWithAllUsersCustomer: UnwrapRef<typeof import('../../apis/admin/organization/index')['fetchAdminGetOrganizationTreeWithAllUsersCustomer']>
+    readonly fetchAdminGetOrganizationTreeWithAllUsersJotun: UnwrapRef<typeof import('../../apis/admin/organization/index')['fetchAdminGetOrganizationTreeWithAllUsersJotun']>
+    readonly fetchAdminGetPartialOrganizationTreeCustomer: UnwrapRef<typeof import('../../apis/admin/organization/index')['fetchAdminGetPartialOrganizationTreeCustomer']>
+    readonly fetchAdminGetPartialOrganizationTreeJotun: UnwrapRef<typeof import('../../apis/admin/organization/index')['fetchAdminGetPartialOrganizationTreeJotun']>
     readonly fetchAdminGetPublicKey: UnwrapRef<typeof import('../../apis/admin/auth/index')['fetchAdminGetPublicKey']>
     readonly fetchAdminGetUserInfo: UnwrapRef<typeof import('../../apis/admin/auth/index')['fetchAdminGetUserInfo']>
     readonly fetchAdminLogin: UnwrapRef<typeof import('../../apis/admin/auth/index')['fetchAdminLogin']>

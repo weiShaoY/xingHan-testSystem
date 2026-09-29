@@ -23,6 +23,8 @@ const visible = defineModel<boolean>({
   default: false,
 })
 
+const activeName = ref('customer')
+
 /** 分配用户接口返回的组织树节点类型。 */
 type OrganizationTreeItem = AdminApi.Organization.OrganizationTreeItem
 
@@ -254,270 +256,288 @@ async function openAllocateDialog() {
     width="80%"
     destroy-on-close
   >
-    <div
-      class="assign-user-layout"
+    <el-tabs
+      v-model="activeName"
+      class="demo-tabs"
     >
-      <section
-        class="assign-user-panel"
+      <el-tab-pane
+        label="客户"
+        name="customer"
       >
         <div
-          class="mb-4 flex items-center justify-between"
+          class="assign-user-layout"
         >
-          <div>
-            <div
-              class="font-600 text-g-900"
-            >
-              待选用户
-            </div>
-
-            <div
-              class="mt-1 text-xs text-g-500"
-            >
-              按部门或人员选择
-            </div>
-          </div>
-
-          <span
-            class="assign-user-count"
-          >{{ pendingUserIds.length }}</span>
-        </div>
-
-        <el-input
-          v-model="keyword"
-          placeholder="搜索用户姓名或账号"
-          clearable
-          class="mb-4"
-        >
-          <template
-            #prefix
+          <section
+            class="assign-user-panel"
           >
-            <el-icon>
-              <Search />
-            </el-icon>
-          </template>
-        </el-input>
-
-        <div
-          class="assign-user-scroll"
-        >
-          <el-tree
-            class="assign-user-tree"
-            :data="availableDepartmentTree"
-            :props="treeProps"
-            node-key="id"
-            default-expand-all
-            :expand-on-click-node="false"
-            :indent="40"
-          >
-            <template
-              #default="{ data }"
+            <div
+              class="mb-4 flex items-center justify-between"
             >
-              <div
-                class="tree-node tree-node-available"
-              >
+              <div>
                 <div
-                  class="flex items-center gap-2"
-                  @click.stop
+                  class="font-600 text-g-900"
                 >
-                  <el-checkbox
-                    :model-value="getDepartmentCheckedState(data)"
-                    :indeterminate="getDepartmentIndeterminateState(data)"
-                    @update:model-value="toggleDepartmentUsers(data, $event === true)"
-                  />
-
-                  <el-icon>
-                    <FolderOpened />
-                  </el-icon>
-
-                  <span
-                    class="truncate font-500"
-                  >{{ data.name }}</span>
-
-                  <span
-                    class="text-12px"
-                  >{{ getDepartmentUsers(data).length }}</span>
+                  待选用户
                 </div>
 
                 <div
-                  v-if="data.users.length"
-                  class="ml-7 mt-2 flex flex-col gap-1"
-                  @click.stop
+                  class="mt-1 text-xs text-g-500"
                 >
-                  <el-checkbox
-                    v-for="user in data.users"
-                    :key="user.userId"
-                    :model-value="pendingUserIds.includes(user.userId)"
-                    @update:model-value="togglePendingUser(user.userId, $event === true)"
-                  >
-                    <el-icon
-                      class="mr-1"
-                    >
-                      <User />
-                    </el-icon>
-
-                    <span
-                      class="font-500"
-                    >{{ user.userName }}</span>
-
-                    <span
-                      class="ml-2 text-12px"
-                    >{{ user.userAccount }}</span>
-                  </el-checkbox>
+                  按部门或人员选择
                 </div>
               </div>
-            </template>
-          </el-tree>
-        </div>
-      </section>
 
-      <div
-        class="assign-user-transfer"
-      >
-        <el-button
-          type="primary"
-          circle
-          :disabled="!pendingUserIds.length"
-          title="添加所选用户"
-          @click="addUsers"
-        >
-          <el-icon>
-            <ArrowRight />
-          </el-icon>
-        </el-button>
-      </div>
-
-      <section
-        class="assign-user-panel assign-user-panel-selected"
-      >
-        <div
-          class="mb-4 flex items-center justify-between"
-        >
-          <div>
-            <div
-              class="font-600 text-g-900"
-            >
-              已选用户
+              <span
+                class="assign-user-count"
+              >{{ pendingUserIds.length }}</span>
             </div>
 
-            <div
-              class="mt-1 text-xs text-g-500"
+            <el-input
+              v-model="keyword"
+              placeholder="搜索用户姓名或账号"
+              clearable
+              class="mb-4"
             >
-              保存后将获得访问权限
-            </div>
-          </div>
-
-          <span
-            class="assign-user-count assign-user-count-selected"
-          >{{ selectedUsers.length }}</span>
-        </div>
-
-        <div
-          class="assign-user-scroll"
-        >
-          <el-empty
-            v-if="!selectedUsers.length"
-            description="暂未选择用户"
-            :image-size="72"
-          />
-
-          <el-tree
-            v-else
-            class="assign-user-tree"
-            :data="selectedDepartmentTree"
-            :props="treeProps"
-            node-key="id"
-            default-expand-all
-            :expand-on-click-node="false"
-            :indent="40"
-          >
-            <template
-              #default="{ data }"
-            >
-              <div
-                class="tree-node tree-node-selected"
+              <template
+                #prefix
               >
-                <div
-                  class="flex w-full items-center gap-2"
-                >
-                  <el-icon>
-                    <FolderOpened />
-                  </el-icon>
+                <el-icon>
+                  <Search />
+                </el-icon>
+              </template>
+            </el-input>
 
-                  <span
-                    class="truncate font-500"
-                  >{{ data.name }}</span>
-
-                  <el-button
-                    class="ml-auto mr-2"
-                    link
-                    type="danger"
-                    @click.stop="removeDepartment(data)"
-                  >
-                    移除
-                  </el-button>
-                </div>
-
-                <div
-                  v-if="data.users.length"
-                  class="ml-7 mt-2 flex flex-col gap-1"
+            <div
+              class="assign-user-scroll"
+            >
+              <el-tree
+                class="assign-user-tree"
+                :data="availableDepartmentTree"
+                :props="treeProps"
+                node-key="id"
+                default-expand-all
+                :expand-on-click-node="false"
+                :indent="40"
+              >
+                <template
+                  #default="{ data }"
                 >
                   <div
-                    v-for="user in data.users"
-                    :key="user.userId"
-                    class="selected-user-row"
+                    class="tree-node tree-node-available"
                   >
-                    <el-avatar
-                      :size="24"
+                    <div
+                      class="flex items-center gap-2"
+                      @click.stop
                     >
-                      {{ user.userName.slice(0, 1) }}
-                    </el-avatar>
+                      <el-checkbox
+                        :model-value="getDepartmentCheckedState(data)"
+                        :indeterminate="getDepartmentIndeterminateState(data)"
+                        @update:model-value="toggleDepartmentUsers(data, $event === true)"
+                      />
 
-                    <span
-                      class="font-500"
-                    >{{ user.userName }}</span>
+                      <el-icon>
+                        <FolderOpened />
+                      </el-icon>
 
-                    <span
-                      class="text-12px"
-                    >{{ user.userAccount }}</span>
+                      <span
+                        class="truncate font-500"
+                      >{{ data.name }}</span>
 
-                    <el-button
-                      class="ml-auto mr-2"
-                      link
-                      type="danger"
-                      @click.stop="removeUser(user.userId)"
+                      <span
+                        class="text-12px"
+                      >{{ getDepartmentUsers(data).length }}</span>
+                    </div>
+
+                    <div
+                      v-if="data.users.length"
+                      class="ml-7 mt-2 flex flex-col gap-1"
+                      @click.stop
                     >
-                      移除
-                    </el-button>
+                      <el-checkbox
+                        v-for="user in data.users"
+                        :key="user.userId"
+                        :model-value="pendingUserIds.includes(user.userId)"
+                        @update:model-value="togglePendingUser(user.userId, $event === true)"
+                      >
+                        <el-icon
+                          class="mr-1"
+                        >
+                          <User />
+                        </el-icon>
+
+                        <span
+                          class="font-500"
+                        >{{ user.userName }}</span>
+
+                        <span
+                          class="ml-2 text-12px"
+                        >{{ user.userAccount }}</span>
+                      </el-checkbox>
+                    </div>
                   </div>
+                </template>
+              </el-tree>
+            </div>
+          </section>
+
+          <div
+            class="assign-user-transfer"
+          >
+            <el-button
+              type="primary"
+              circle
+              :disabled="!pendingUserIds.length"
+              title="添加所选用户"
+              @click="addUsers"
+            >
+              <el-icon>
+                <ArrowRight />
+              </el-icon>
+            </el-button>
+          </div>
+
+          <section
+            class="assign-user-panel assign-user-panel-selected"
+          >
+            <div
+              class="mb-4 flex items-center justify-between"
+            >
+              <div>
+                <div
+                  class="font-600 text-g-900"
+                >
+                  已选用户
+                </div>
+
+                <div
+                  class="mt-1 text-xs text-g-500"
+                >
+                  保存后将获得访问权限
                 </div>
               </div>
-            </template>
-          </el-tree>
+
+              <span
+                class="assign-user-count assign-user-count-selected"
+              >{{ selectedUsers.length }}</span>
+            </div>
+
+            <div
+              class="assign-user-scroll"
+            >
+              <el-empty
+                v-if="!selectedUsers.length"
+                description="暂未选择用户"
+                :image-size="72"
+              />
+
+              <el-tree
+                v-else
+                class="assign-user-tree"
+                :data="selectedDepartmentTree"
+                :props="treeProps"
+                node-key="id"
+                default-expand-all
+                :expand-on-click-node="false"
+                :indent="40"
+              >
+                <template
+                  #default="{ data }"
+                >
+                  <div
+                    class="tree-node tree-node-selected"
+                  >
+                    <div
+                      class="flex w-full items-center gap-2"
+                    >
+                      <el-icon>
+                        <FolderOpened />
+                      </el-icon>
+
+                      <span
+                        class="truncate font-500"
+                      >{{ data.name }}</span>
+
+                      <el-button
+                        class="ml-auto mr-2"
+                        link
+                        type="danger"
+                        @click.stop="removeDepartment(data)"
+                      >
+                        移除
+                      </el-button>
+                    </div>
+
+                    <div
+                      v-if="data.users.length"
+                      class="ml-7 mt-2 flex flex-col gap-1"
+                    >
+                      <div
+                        v-for="user in data.users"
+                        :key="user.userId"
+                        class="selected-user-row"
+                      >
+                        <el-avatar
+                          :size="24"
+                        >
+                          {{ user.userName.slice(0, 1) }}
+                        </el-avatar>
+
+                        <span
+                          class="font-500"
+                        >{{ user.userName }}</span>
+
+                        <span
+                          class="text-12px"
+                        >{{ user.userAccount }}</span>
+
+                        <el-button
+                          class="ml-auto mr-2"
+                          link
+                          type="danger"
+                          @click.stop="removeUser(user.userId)"
+                        >
+                          移除
+                        </el-button>
+                      </div>
+                    </div>
+                  </div>
+                </template>
+              </el-tree>
+            </div>
+          </section>
         </div>
-      </section>
-    </div>
+
+        <div
+          class="flex items-center justify-end gap-3 mt-4"
+        >
+          <el-button
+            @click="closeDialog"
+          >
+            取消
+          </el-button>
+
+          <ArtButton
+            type="primary"
+            :disabled="!selectedOrganizationTree.length"
+            @click="confirmSelectQuestions"
+          >
+            保存分配
+          </ArtButton>
+        </div>
+      </el-tab-pane>
+
+      <el-tab-pane
+        label="佐敦"
+        name="zouDun"
+      >
+        佐敦
+      </el-tab-pane>
+
+    </el-tabs>
 
     <template
       #footer
-    >
-      <div
-        class="flex items-center justify-end gap-3"
-      >
-        <el-button
-          @click="closeDialog"
-        >
-          取消
-        </el-button>
-
-        <ArtButton
-          type="primary"
-          :disabled="!selectedOrganizationTree.length"
-          @click="confirmSelectQuestions"
-        >
-          保存分配
-        </ArtButton>
-      </div>
-    </template>
+    />
   </el-dialog>
 </template>
 
