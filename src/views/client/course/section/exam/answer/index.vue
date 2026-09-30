@@ -28,6 +28,8 @@ const pageOpenTime = ref(0)
 
 let pageOpenTimer: ReturnType<typeof setInterval> | undefined
 
+const projId = computed(() => Number(route.query.projId || 0))
+
 const selectedAnswers = ref<Record<number, number[]>>({
 })
 
@@ -98,7 +100,7 @@ async function getExamInfo() {
   stopPageOpenTimer()
 
   try {
-    examInfo.value = await fetchClientCourseExamInfo(olId.value)
+    examInfo.value = await fetchClientCourseExamInfo(olId.value, projId.value)
     setClientNavTitle(examInfo.value.testPaperName || '课程考试')
     examStartedAt.value = Date.now()
     markQuestionStarted(0)
@@ -202,6 +204,7 @@ async function submitExam() {
     examId: examInfo.value.examId,
     olId: olId.value,
     couId: examInfo.value.couId || 0,
+    projId: projId.value,
     durationSeconds: getExamDuration(),
 
     answers: questions.value.map((question, index) => ({

@@ -34,6 +34,8 @@ const questionAnswerTimes = ref<Record<number, number>>({
 
 const questionStartedAtPage = ref(0)
 
+const projId = computed(() => Number(route.query.projId || 0))
+
 const questionInfo = ref<ClientApi.Course.CourseQuestionInfoResponse>({
   couId: 0,
   examId: 0,
@@ -83,7 +85,7 @@ async function getQuestionInfo() {
   questionStartedAtPage.value = 0
 
   try {
-    questionInfo.value = await fetchClientCourseQuestionInfo(olId.value)
+    questionInfo.value = await fetchClientCourseQuestionInfo(olId.value, projId.value)
     setClientNavTitle(questionInfo.value.testPaperName || '课程问卷')
     questionStartedAtPage.value = Date.now()
     markQuestionStarted(0)
@@ -153,6 +155,7 @@ async function submitQuestion() {
   const submitParams: ClientApi.Course.CourseQuestionSubmitParams = {
     olId: olId.value,
     couId: questionInfo.value.couId || 0,
+    projId: projId.value || 0,
     examId: questionInfo.value.examId || 0,
     answers: questions.value.map((question, index) => ({
       qusId: question.qusId || 0,

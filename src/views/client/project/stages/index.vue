@@ -28,7 +28,7 @@ const projId = computed(() => Number(route.params.projId || 0))
 
 /**
  * 创建项目阶段列表默认数据。
- *
+ *1
  * @param currentProjId 当前项目 ID。
  * @returns 空的项目阶段列表数据。
  */
@@ -128,6 +128,9 @@ function handleGoCourseDetail(couId: number) {
     name: 'ClientCourseDetail',
     params: {
       couId,
+    },
+    query: {
+      projId: projId.value,
     },
   })
 }

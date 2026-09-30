@@ -37,6 +37,10 @@ const olId = computed(() => {
   return Number(route.params.olId || 0)
 })
 
+const projId = computed(() => Number(route.query.projId || 0))
+
+console.log('🚀 ~ file: index.vue:27 ~ projId:', projId.value)
+
 const courseDocumentInfo = ref<ClientApi.Course.CourseDocumentInfoResponse>({
   accessoryId: 0,
   couId: 0,
@@ -89,7 +93,7 @@ async function getCourseDocumentInfo() {
   stopPageOpenTimer()
   revokePdfUrl()
   try {
-    courseDocumentInfo.value = await fetchClientCourseDocumentInfo(olId.value)
+    courseDocumentInfo.value = await fetchClientCourseDocumentInfo(olId.value, projId.value)
     setNavTitle(courseDocumentInfo.value.couName)
     resumePage.value = normalizePage(courseDocumentInfo.value.pdfStudyPage)
     currentPage.value = resumePage.value
@@ -209,6 +213,7 @@ async function recordDocumentProgress() {
     await fetchClientCourseDocumentSubmit({
       olId: olId.value,
       couId: courseDocumentInfo.value.couId,
+      projId: projId.value,
       totalPages: totalPages.value,
       progressSpecific: currentPage.value,
       totalLearningTime: pageOpenTime.value,

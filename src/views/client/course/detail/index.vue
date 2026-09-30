@@ -1,6 +1,8 @@
 <script lang="ts" setup>
 import type { SectionTypeConfig } from '@/config/course'
 
+import { P } from 'vue-router/dist/index-BN0B0y8a.js'
+
 import { getSectionTypeConfig } from '@/config/course'
 
 import { useClientNavTitle } from '@/hooks/core/useClientNavTitle'
@@ -22,6 +24,8 @@ const activeNames = ref<number[]>([])
  * 当前课程 ID
  */
 const couId = computed(() => Number(route.params.couId || 0))
+
+const projId = computed(() => Number(route.query.projId || 0))
 
 const courseProgress = ref<ClientApi.Course.CourseProgressResponse>({
   couLogo: '',
@@ -74,7 +78,7 @@ async function getClientCourseProgress(showSuccessToast = false) {
   loading.value = true
 
   try {
-    courseProgress.value = await fetchClientGetCourseProgress(couId.value)
+    courseProgress.value = await fetchClientGetCourseProgress(couId.value, projId.value)
 
     setNavTitle(courseProgress.value.courseName)
 
@@ -184,6 +188,9 @@ function handleSection(section: ClientApi.Course.ChaptersItem) {
         couId: couId.value,
         olId: section.olId,
       },
+      query: {
+        projId: projId.value,
+      },
     })
   }
   else if (section.olIsAccessory === 1) {
@@ -192,6 +199,9 @@ function handleSection(section: ClientApi.Course.ChaptersItem) {
       params: {
         couId: couId.value,
         olId: section.olId,
+      },
+      query: {
+        projId: projId.value,
       },
     })
   }
@@ -205,6 +215,9 @@ function handleSection(section: ClientApi.Course.ChaptersItem) {
         olId: section.olId,
         examId: section.examId || undefined,
       },
+      query: {
+        projId: projId.value,
+      },
     })
   }
   else if (section.olIsAccessory === 3) {
@@ -216,6 +229,9 @@ function handleSection(section: ClientApi.Course.ChaptersItem) {
         couId: couId.value,
         olId: section.olId,
         questionId: section.examId || undefined,
+      },
+      query: {
+        projId: projId.value,
       },
     })
   }

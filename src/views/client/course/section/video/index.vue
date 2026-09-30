@@ -24,6 +24,8 @@ const olId = computed(() => {
   return Number(route.params.olId || 0)
 })
 
+const projId = computed(() => Number(route.query.projId || 0))
+
 const loading = ref(false)
 
 const loadError = ref('')
@@ -60,6 +62,7 @@ const courseVideoInfo = ref<ClientApi.Course.CourseVideoInfoResponse>(createDefa
 const courseVideoRecordProgressParams = ref<ClientApi.Course.CourseVideoSubmitParams>({
   couId: couId.value,
   olId: olId.value,
+  projId: projId.value,
   isCompleted: false,
   videoTime: 0,
   totalLearningTime: 0,
@@ -120,7 +123,7 @@ async function getCourseVideoInfo(sectionId = olId.value) {
   revokeVideoUrl()
 
   try {
-    courseVideoInfo.value = await fetchClientCourseVideoInfo(sectionId)
+    courseVideoInfo.value = await fetchClientCourseVideoInfo(sectionId, projId.value)
     currentTime.value = courseVideoInfo.value.videoStudyTime || 0
     setNavTitle(courseVideoInfo.value.couName)
 
@@ -218,6 +221,7 @@ async function recordVideoRecordProgress() {
     courseVideoRecordProgressParams.value = {
       couId: couId.value,
       olId: olId.value,
+      projId: projId.value,
       isCompleted: isVideoCompleted.value,
       videoTime: currentTime.value,
       totalLearningTime: pageOpenTime.value,

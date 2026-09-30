@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { showToast } from 'vant'
+
 import { useClientNavTitle } from '@/hooks/core/useClientNavTitle'
 
 defineOptions({
@@ -113,6 +115,16 @@ function backToCourse() {
 
 onMounted(getCourseExamResult)
 onBeforeUnmount(clearClientNavTitle)
+
+async function retryExam() {
+  const res = await fetchClientCourseExamRetakeSubmit(examId.value) as any
+
+  console.log('🚀 ~ file: index.vue:119 ~ res:', res)
+
+  if (res.success) {
+    showToast(res.message)
+  }
+}
 </script>
 
 <template>
@@ -324,6 +336,14 @@ onBeforeUnmount(clearClientNavTitle)
         @click="backToCourse"
       >
         返回课程目录
+      </van-button>
+
+      <van-button
+        type="warning"
+        block
+        @click="retryExam()"
+      >
+        重考
       </van-button>
     </template>
   </div>

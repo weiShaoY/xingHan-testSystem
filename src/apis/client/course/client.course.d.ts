@@ -378,6 +378,11 @@ export namespace Course {
     olId: number
 
     /**
+     * 项目ID
+     */
+    projId: number
+
+    /**
      * 小节总共学习时间
      */
     totalLearningTime: number
@@ -464,6 +469,11 @@ export namespace Course {
      * 小节ID
      */
     olId: number
+
+    /**
+     * 项目ID
+     */
+    projId: number
 
     /**
      * 当前学习到的页码
@@ -611,6 +621,11 @@ export namespace Course {
      * 课程ID
      */
     couId: number
+
+    /**
+     * 项目ID
+     */
+    projId: number
 
     /**
      * 答题记录列表
@@ -778,6 +793,11 @@ export namespace Course {
      * 课程ID
      */
     couId: number
+
+    /**
+     * 项目ID
+     */
+    projId: number
 
     /**
      * 答题记录列表
