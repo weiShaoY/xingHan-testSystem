@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { showToast } from 'vant'
+import { showDialog, showToast } from 'vant'
 
 import { useClientNavTitle } from '@/hooks/core/useClientNavTitle'
 
@@ -122,6 +122,15 @@ async function retryExam() {
   console.log('🚀 ~ file: index.vue:119 ~ res:', res)
 
   if (res.success) {
+    await showDialog({
+      title: '提示',
+      message: res.message,
+      confirmButtonText: '确定',
+    })
+
+    backToCourse()
+  }
+  else {
     showToast(res.message)
   }
 }
